@@ -17,7 +17,7 @@
 		<div class="grid-x grid-margin-x margin-y">
 			<div class="cell large-6 xlarge-4">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_FROM_NAME').acym_info('ACYM_FROM_DESC'); ?></span>
+					<span class="cell"><?php echo acym_translation('ACYM_FROM_NAME').acym_info(['textShownInTooltip' => 'ACYM_FROM_DESC']); ?></span>
 					<input type="text"
 						   name="config[from_name]"
 						   placeholder="<?php echo acym_translation('ACYM_FROM_NAME_PLACEHOLDER'); ?>"
@@ -26,7 +26,7 @@
 			</div>
 			<div class="cell large-6 xlarge-4">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_FROM_EMAIL').acym_info('ACYM_FROM_DESC'); ?></span>
+					<span class="cell"><?php echo acym_translation('ACYM_FROM_EMAIL').acym_info(['textShownInTooltip' => 'ACYM_FROM_DESC']); ?></span>
 					<input type="email"
 						   name="config[from_email]"
 						   placeholder="<?php echo acym_translation('ACYM_FROM_EMAIL_PLACEHOLDER'); ?>"
@@ -48,7 +48,7 @@
 
 			<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_NAME').acym_info('ACYM_REPLYTO_DESC'); ?></span>
+					<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_NAME').acym_info(['textShownInTooltip' => 'ACYM_REPLYTO_DESC']); ?></span>
 					<input type="text"
 						   name="config[replyto_name]"
 						   placeholder="<?php echo acym_translation('ACYM_REPLYTO_NAME_PLACEHOLDER'); ?>"
@@ -57,7 +57,7 @@
 			</div>
 			<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_EMAIL').acym_info('ACYM_REPLYTO_DESC'); ?></span>
+					<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_EMAIL').acym_info(['textShownInTooltip' => 'ACYM_REPLYTO_DESC']); ?></span>
 					<input type="email"
 						   name="config[replyto_email]"
 						   placeholder="<?php echo acym_translation('ACYM_REPLYTO_EMAIL_PLACEHOLDER'); ?>"
@@ -67,13 +67,17 @@
 
 			<div class="cell grid-x">
 				<div class="cell medium-6 large-4 xlarge-3 grid-x">
-                    <?php echo acym_switch('config[add_names]', $this->config->get('add_names'), acym_translation('ACYM_ADD_NAMES').acym_info('ACYM_ADD_NAMES_DESC')); ?>
+                    <?php echo acym_switch(
+                        'config[add_names]',
+                        $this->config->get('add_names'),
+                        acym_translation('ACYM_ADD_NAMES').acym_info(['textShownInTooltip' => 'ACYM_ADD_NAMES_DESC'])
+                    ); ?>
 				</div>
 			</div>
 
 			<div class="cell grid-x">
 				<label class="cell large-6 xlarge-4 grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL').acym_info('ACYM_BOUNCE_ADDRESS_DESC'); ?></span>
+					<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL').acym_info(['textShownInTooltip' => 'ACYM_BOUNCE_ADDRESS_DESC']); ?></span>
 					<input type="text"
 						   name="config[bounce_email]"
 						   placeholder="<?php echo acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER'); ?>"
@@ -85,7 +89,9 @@
 	</div>
 
 	<div class="cell acym__configuration__mail-settings">
-		<div class="acym__title acym__title__secondary margin-top-3"><?php echo acym_translation('ACYM_CONFIGURATION_MAIL').acym_info('ACYM_INTRO_MAIL_SETTINGS'); ?></div>
+		<div class="acym__title acym__title__secondary margin-top-3"><?php echo acym_translation('ACYM_CONFIGURATION_MAIL').acym_info(
+                    ['textShownInTooltip' => 'ACYM_INTRO_MAIL_SETTINGS']
+                ); ?></div>
         <?php include acym_getPartial('configuration', 'sending_methods'); ?>
 	</div>
 </div>
@@ -98,7 +104,7 @@
             echo acym_switch(
                 'config[save_thumbnail]',
                 $this->config->get('save_thumbnail', 1),
-                acym_translation('ACYM_SAVE_TEMPLATE_THUMBNAIL').acym_info('ACYM_SAVE_TEMPLATE_THUMBNAIL_DESC'),
+                acym_translation('ACYM_SAVE_TEMPLATE_THUMBNAIL').acym_info(['textShownInTooltip' => 'ACYM_SAVE_TEMPLATE_THUMBNAIL_DESC']),
                 [],
                 'xlarge-3 medium-5 small-9'
             );
@@ -131,7 +137,7 @@
 		<div class="cell grid-x">
 			<label class="cell medium-6 grid-x">
 				<span class="cell medium-6">
-					<?php echo acym_translation('ACYM_UNSPLASH_ACCESS_KEY').acym_info('ACYM_UNSPLASH_ACCESS_KEY_DESC'); ?>
+					<?php echo acym_translation('ACYM_UNSPLASH_ACCESS_KEY').acym_info(['textShownInTooltip' => 'ACYM_UNSPLASH_ACCESS_KEY_DESC']); ?>
 				</span>
                 <?php
                 $unsplashKey = $this->config->get('unsplash_key');
@@ -148,7 +154,7 @@
 		<div class="cell grid-x">
 			<label class="cell medium-6 grid-x">
 				<span class="cell medium-6">
-					<?php echo acym_translation('ACYM_TENOR_ACCESS_KEY').acym_info('ACYM_TENOR_ACCESS_KEY_DESC'); ?>
+					<?php echo acym_translation('ACYM_TENOR_ACCESS_KEY').acym_info(['textShownInTooltip' => 'ACYM_TENOR_ACCESS_KEY_DESC']); ?>
 				</span>
                 <?php
                 $tenorKey = $this->config->get('tenor_key');
@@ -244,7 +250,7 @@
                 }
 
                 if (!empty($info)) {
-                    $info = acym_info($info);
+                    $info = acym_info(['textShownInTooltip' => $info]);
                 }
 
                 $default = empty($option['default']) ? 0 : $option['default'];
@@ -262,7 +268,7 @@
             ?>
 			<div class="cell medium-6 grid-x" id="attachments_position" <?php echo $style; ?>>
 				<div class="cell large-6">
-                    <?php echo acym_translation('ACYM_CONFIGURATION_ATTACHMENTS_POSITION').acym_info('ACYM_CONFIGURATION_ATTACHMENTS_POSITION_DESC'); ?>
+                    <?php echo acym_translation('ACYM_CONFIGURATION_ATTACHMENTS_POSITION').acym_info(['textShownInTooltip' => 'ACYM_CONFIGURATION_ATTACHMENTS_POSITION_DESC']); ?>
 				</div>
 				<div class="cell large-6">
                     <?php
@@ -281,7 +287,7 @@
 			<div class="cell medium-6 grid-x">
 				<label class="cell grid-x">
 				<span class="cell medium-6">
-					<?php echo acym_translation('ACYM_MAIL_MAX_LINE_LENGTH').acym_info('ACYM_MAIL_MAX_LINE_LENGTH_DESC'); ?>
+					<?php echo acym_translation('ACYM_MAIL_MAX_LINE_LENGTH').acym_info(['textShownInTooltip' => 'ACYM_MAIL_MAX_LINE_LENGTH_DESC']); ?>
 				</span>
 					<input type="number"
 						   name="config[mailer_wordwrap]"
@@ -295,7 +301,7 @@
                 <?php echo acym_switch(
                     'config[dkim]',
                     $this->config->get('dkim'),
-                    acym_translation('ACYM_CONFIGURATION_DKIM').acym_info('ACYM_INTRO_DKIM'),
+                    acym_translation('ACYM_CONFIGURATION_DKIM').acym_info(['textShownInTooltip' => 'ACYM_INTRO_DKIM']),
                     [],
                     'medium-6 small-9',
                     'auto',

@@ -1,6 +1,6 @@
 <?php $abTestParams = empty($data['currentCampaign']->sending_params['abtest']) ? [] : $data['currentCampaign']->sending_params['abtest']; ?>
 <h5 class="cell margin-top-1 acym__title acym__title__secondary">
-    <?php echo acym_translation('ACYM_AB_TEST_REPARTITION').acym_info('ACYM_AB_TEST_REPARTITION_DESC'); ?>
+    <?php echo acym_translation('ACYM_AB_TEST_REPARTITION').acym_info(['textShownInTooltip' => 'ACYM_AB_TEST_REPARTITION_DESC']); ?>
 </h5>
 <div class="cell grid-x align-center">
 	<div class="cell grid-x medium-11 acym__campaign__sendsettings__send-type grid-margin-x margin-top-1">

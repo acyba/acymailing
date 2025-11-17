@@ -4,7 +4,7 @@ use AcyMailing\Classes\ListClass;
 
 trait SubscriptionAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $listClass = new ListClass();
         $list = [
@@ -70,7 +70,7 @@ trait SubscriptionAutomationConditions
         $conditions['classic']['acy_list_all']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list_all][date-max]');
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

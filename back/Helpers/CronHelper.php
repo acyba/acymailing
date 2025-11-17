@@ -47,6 +47,11 @@ class CronHelper extends AcymObject
         self::STEP_SCENARIO,
     ];
 
+    const SEND_REPORT_NO = 0;
+    const SEND_REPORT_EACH_TIME = 1;
+    const SEND_REPORT_ONLY_ON_ACTION = 2;
+    const SEND_REPORT_ONLY_ON_ERROR = 3;
+
     private array $messages = [];
     private array $detailMessages = [];
     private array $emailTypes = [];
@@ -69,17 +74,21 @@ class CronHelper extends AcymObject
     private bool $externalSendingActivated = false;
     private bool $externalSendingRepeat;
     private bool $externalSendingNotFinished = false;
+    private bool $isSendingCall = false;
 
     public function __construct()
     {
         parent::__construct();
-        $this->startQueue = acym_getVar('int', 'startqueue', 0);
 
         acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$this->externalSendingActivated]);
 
+        $callType = acym_getVar('string', 'type', '');
+        $this->startQueue = acym_getVar('int', 'startqueue', 0);
         $this->externalSendingRepeat = !empty(acym_getVar('int', 'external_sending_repeat', 0));
-        if (!empty($this->startQueue) || !empty($this->externalSendingRepeat)) {
+
+        if ($callType === 'sending' || !empty($this->startQueue) || !empty($this->externalSendingRepeat)) {
             $this->skip = array_diff(self::ALL_STEPS, [self::STEP_SEND]);
+            $this->isSendingCall = true;
         }
     }
 
@@ -114,20 +123,13 @@ class CronHelper extends AcymObject
 
         $this->queueScheduledCampaigns();
         $this->cleanQueue();
-        $this->sendQueuedEmails();
-        $this->checkTimeRemaining();
+        $this->handleQueue();
         $this->handleBounceMessages();
-        $this->checkTimeRemaining();
         $this->handleAutomations();
-        $this->checkTimeRemaining();
         $this->handleAutomaticCampaigns();
-        $this->checkTimeRemaining();
         $this->handleSpecificEmails();
-        $this->checkTimeRemaining();
         $this->handleFollowups();
-        $this->checkTimeRemaining();
         $this->handleMailboxActions();
-        $this->checkTimeRemaining();
         $this->cleanData();
         $this->handleABTestCampaigns();
         $this->handleScenario();
@@ -199,9 +201,13 @@ class CronHelper extends AcymObject
 
     public function handleCronReport(): void
     {
-        $sendReport = $this->config->get('cron_sendreport');
+        $sendReport = (int)$this->config->get('cron_sendreport');
 
-        if (($sendReport == 2 && $this->processed) || $sendReport == 1 || ($sendReport == 3 && $this->errorDetected)) {
+        if (
+            ($sendReport === self::SEND_REPORT_ONLY_ON_ACTION && $this->processed)
+            || $sendReport === self::SEND_REPORT_EACH_TIME
+            || ($sendReport === self::SEND_REPORT_ONLY_ON_ERROR && $this->errorDetected)
+        ) {
             $mailerHelper = new MailerHelper();
             $mailerHelper->report = false;
             $mailerHelper->autoAddUser = true;
@@ -238,14 +244,15 @@ class CronHelper extends AcymObject
 
         $this->saveReport();
 
-        $newConfig = new \stdClass();
-        $newConfig->cron_report = implode("\n", $this->messages);
+        $newConfig = [
+            'cron_report' => implode("\n", $this->messages),
+        ];
 
-        if (strlen($newConfig->cron_report) > 800) {
-            $newConfig->cron_report = substr($newConfig->cron_report, 0, 795).'...';
+        if (strlen($newConfig['cron_report']) > 800) {
+            $newConfig['cron_report'] = substr($newConfig['cron_report'], 0, 795).'...';
         }
 
-        $this->config->save($newConfig);
+        $this->config->saveConfig($newConfig);
     }
 
     /**
@@ -261,7 +268,7 @@ class CronHelper extends AcymObject
         $configLicenseKey = $this->config->get('license_key');
 
         if (!empty($configLicenseKey) && $configLicenseKey === $callLicenseKey) {
-            $this->config->save(['license_key' => '', 'active_cron' => 0]);
+            $this->config->saveConfig(['license_key' => '', 'active_cron' => 0]);
         }
 
         exit;
@@ -282,7 +289,7 @@ class CronHelper extends AcymObject
      */
     private function checkCronFrequency(): bool
     {
-        if (!empty($this->startQueue)) {
+        if ($this->isSendingCall) {
             return true;
         }
 
@@ -293,9 +300,7 @@ class CronHelper extends AcymObject
         if ($nextCronTime > $time) {
             if ($nextCronTime > ($time + $cronFrequency)) {
                 // The next cron time is too far in the future, should not happen but we'll handle the case, so we reset the next cron time
-                $newConfig = new \stdClass();
-                $newConfig->cron_next = $time + $cronFrequency;
-                $this->config->save($newConfig);
+                $this->config->saveConfig(['cron_next' => $time + $cronFrequency]);
             }
 
             $notTimeMessage = acym_translationSprintf('ACYM_CRON_NEXT', acym_date($this->config->get('cron_next'), 'd F Y H:i'));
@@ -307,16 +312,17 @@ class CronHelper extends AcymObject
         }
 
         // We update the next cron and the last cron dates
-        $newConfig = new \stdClass();
-        $newConfig->cron_last = $time;
-        $newConfig->cron_fromip = acym_getIP();
-        $newConfig->cron_next = $nextCronTime + $cronFrequency;
+        $newConfig = [
+            'cron_last' => $time,
+            'cron_fromip' => acym_getIP(),
+            'cron_next' => $nextCronTime + $cronFrequency,
+        ];
 
-        if ($newConfig->cron_next <= $time || $newConfig->cron_next > $time + $cronFrequency) {
-            $newConfig->cron_next = $time + $cronFrequency;
+        if ($newConfig['cron_next'] <= $time || $newConfig['cron_next'] > $time + $cronFrequency) {
+            $newConfig['cron_next'] = $time + $cronFrequency;
         }
 
-        $this->config->save($newConfig);
+        $this->config->saveConfig($newConfig);
 
         return true;
     }
@@ -332,7 +338,7 @@ class CronHelper extends AcymObject
 
         $queueClass = new QueueClass();
         $nbScheduled = $queueClass->scheduleReady();
-        if ($nbScheduled) {
+        if (!empty($nbScheduled)) {
             $this->messages[] = acym_translationSprintf('ACYM_NB_SCHEDULED', $nbScheduled);
             $this->detailMessages = array_merge($this->detailMessages, $queueClass->messages);
             $this->processed = true;
@@ -357,77 +363,17 @@ class CronHelper extends AcymObject
         }
     }
 
-    /**
-     * Sends the emails that are queued and ready to be sent
-     */
-    private function sendQueuedEmails(): void
+    private function handleQueue(): void
     {
-        if (in_array(self::STEP_SEND, $this->skip) || $this->config->get('queue_type') === 'manual') {
+        if (in_array(self::STEP_SEND, $this->skip) || !$this->canSendQueuedEmails()) {
             return;
         }
 
-        // Make sure we are within the sending hours defined in the configuration
-        $fromHour = $this->config->get('queue_send_from_hour', '00');
-        $fromMinute = $this->config->get('queue_send_from_minute', '00');
-        $toHour = $this->config->get('queue_send_to_hour', '23');
-        $toMinute = $this->config->get('queue_send_to_minute', '59');
-        $time = time();
-
-        if ($fromHour != '00' || $fromMinute != '00' || $toHour != '23' || $toMinute != '59') {
-            // The day it is currently based on the timezone specified in the CMS configuration
-            $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
-            // The UTC timestamp of the current day based on the CMS timezone, at the specified hour
-            $fromBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$fromHour.':'.$fromMinute);
-            $toBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$toHour.':'.$toMinute);
-            // In case we want to send during the night and the FROM is superior to the TO (from 8pm to 4am), we should change the day of ones of the limits
-            if ($fromBasedOnCMSTimezoneAtSpecifiedHour > $toBasedOnCMSTimezoneAtSpecifiedHour) {
-                // TO becomes tomorrow as we are not passed midnight
-                if ($time > $fromBasedOnCMSTimezoneAtSpecifiedHour) {
-                    $toBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate(acym_date('tomorrow', 'Y-m-d').' '.$toHour.':'.$toMinute);
-                } elseif ($time < $toBasedOnCMSTimezoneAtSpecifiedHour) {
-                    // FROM becomes yesterday as we are passed midnight
-                    $fromBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate(acym_date('yesterday', 'Y-m-d').' '.$fromHour.':'.$fromMinute);
-                }
-            }
-
-            if ($time < $fromBasedOnCMSTimezoneAtSpecifiedHour || $time > $toBasedOnCMSTimezoneAtSpecifiedHour) {
-                return;
-            }
+        if ($this->isSendingCall || !acym_level(ACYM_ENTERPRISE) || !function_exists('fsockopen')) {
+            $this->sendQueuedEmails();
+        } else {
+            $this->handleMultiCron();
         }
-
-        // Check if we are allowed to send emails on weekends
-        $dayOfWeek = acym_date('now', 'N');
-        if ($this->config->get('queue_stop_weekend', 0) && $dayOfWeek >= 6) {
-            return;
-        }
-
-        $this->handleMultiCron();
-        $queueHelper = new QueueHelper();
-        $queueHelper->send_limit = (int)$this->config->get('queue_nbmail_auto');
-        $queueHelper->report = false;
-        $queueHelper->emailTypes = $this->emailTypes;
-        $queueHelper->process();
-
-        if (!empty($queueHelper->messages)) {
-            $this->detailMessages = array_merge($this->detailMessages, $queueHelper->messages);
-        }
-
-        if (!empty($queueHelper->nbprocess)) {
-            $this->processed = true;
-
-            if (!$queueHelper->finish && $this->externalSendingActivated) {
-                $this->externalSendingNotFinished = true;
-            }
-        }
-
-        $this->mainMessage = acym_translationSprintf('ACYM_CRON_PROCESS', $queueHelper->nbprocess, $queueHelper->successSend, $queueHelper->errorSend);
-        $this->messages[] = $this->mainMessage;
-
-        if (!empty($queueHelper->errorSend)) {
-            $this->errorDetected = true;
-        }
-
-        $this->cronTimeLimit = $queueHelper->stoptime;
     }
 
     /**
@@ -450,32 +396,30 @@ class CronHelper extends AcymObject
      */
     private function handleMultiCron(): void
     {
-        if (!empty($this->startQueue) || !acym_level(ACYM_ENTERPRISE)) {
-            return;
-        }
-
-        $emailsBatches = $this->config->get('queue_batch_auto', 1);
-        $emailsBatches = intval($emailsBatches);
         $emailsPerBatches = $this->config->get('queue_nbmail_auto', 70);
-        if ($emailsBatches < 2 || empty($emailsPerBatches)) {
+        if (empty($emailsPerBatches)) {
             return;
         }
 
-        $cronKey = '';
+        $cronParams = '&t='.time();
         if (!empty($this->config->get('cron_security', 0)) && !empty($this->config->get('cron_key'))) {
-            $cronKey = '&cronKey='.$this->config->get('cron_key');
+            $cronParams .= '&cronKey='.$this->config->get('cron_key');
         }
+
+        $nbBatches = $this->config->get('queue_batch_auto', 1);
+        $nbBatches = intval($nbBatches);
 
         $urls = [];
-        for ($i = 1; $i <= $emailsBatches - 1; $i++) {
-            $urls[] = acym_frontendLink('cron&task=cron&startqueue='.($emailsPerBatches * $i).'&t='.time().$cronKey);
+        for ($i = 0; $i < $nbBatches; $i++) {
+            $urls[] = acym_frontendLink('cron&task=cron&type=sending&startqueue='.($emailsPerBatches * $i).$cronParams);
         }
 
-        acym_asyncCurlCall($urls);
+        acym_asyncUrlCalls($urls);
     }
 
     private function handleBounceMessages(): void
     {
+        $this->checkTimeRemaining();
         $time = time();
         $autoBounceHandlingActive = (int)$this->config->get('auto_bounce', 0) === 1;
         $autoBounceHandlingNextTime = (int)$this->config->get('auto_bounce_next', 0);
@@ -486,21 +430,23 @@ class CronHelper extends AcymObject
             return;
         }
 
-        $newConfig = new \stdClass();
-        $newConfig->auto_bounce_last = $time;
-        $newConfig->auto_bounce_next = $time + $autoBounceHandlingFrequency;
-        $this->config->save($newConfig);
+        $this->config->saveConfig(
+            [
+                'auto_bounce_last' => $time,
+                'auto_bounce_next' => $time + $autoBounceHandlingFrequency,
+            ]
+        );
 
         $bounceHelper = new BounceHelper();
         $bounceHelper->report = false;
         $bounceHelper->stoptime = $this->cronTimeLimit;
 
-        $newConfig = new \stdClass();
+        $newConfig = [];
         if ($bounceHelper->init() && $bounceHelper->connect()) {
             $nbMessages = $bounceHelper->getNBMessages();
             $nbMessagesReport = acym_translationSprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
             $this->messages[] = $nbMessagesReport;
-            $newConfig->auto_bounce_report = $nbMessagesReport;
+            $newConfig['auto_bounce_report'] = $nbMessagesReport;
             $this->detailMessages[] = $nbMessagesReport;
             if (!empty($nbMessages)) {
                 $bounceHelper->handleMessages();
@@ -509,7 +455,7 @@ class CronHelper extends AcymObject
             $this->detailMessages = array_merge($this->detailMessages, $bounceHelper->messages);
         } else {
             $bounceErrors = $bounceHelper->getErrors();
-            $newConfig->auto_bounce_report = implode('<br />', $bounceErrors);
+            $newConfig['auto_bounce_report'] = implode('<br />', $bounceErrors);
             //We add "bounce handling" just before the error so the user knows where it comes from...
             if (!empty($bounceErrors[0])) {
                 $bounceErrors[0] = acym_translation('ACYM_BOUNCE_HANDLING').' : '.$bounceErrors[0];
@@ -519,7 +465,7 @@ class CronHelper extends AcymObject
             $this->errorDetected = true;
         }
 
-        $this->config->save($newConfig);
+        $this->config->saveConfig($newConfig);
     }
 
     /**
@@ -527,6 +473,7 @@ class CronHelper extends AcymObject
      */
     private function handleAutomations(): void
     {
+        $this->checkTimeRemaining();
         if (in_array(self::STEP_AUTOMATION, $this->skip) || $this->cronTimeLimitReached || !acym_level(ACYM_ENTERPRISE)) {
             return;
         }
@@ -548,6 +495,7 @@ class CronHelper extends AcymObject
 
     private function handleAutomaticCampaigns(): void
     {
+        $this->checkTimeRemaining();
         if (in_array(self::STEP_CAMPAIGN, $this->skip) || $this->cronTimeLimitReached || !acym_level(ACYM_ENTERPRISE)) {
             return;
         }
@@ -566,6 +514,7 @@ class CronHelper extends AcymObject
      */
     private function handleSpecificEmails(): void
     {
+        $this->checkTimeRemaining();
         if (in_array(self::STEP_SPECIFIC, $this->skip) || $this->cronTimeLimitReached) {
             return;
         }
@@ -590,6 +539,7 @@ class CronHelper extends AcymObject
      */
     private function handleFollowups(): void
     {
+        $this->checkTimeRemaining();
         if (in_array(self::STEP_FOLLOWUP, $this->skip) || $this->cronTimeLimitReached) {
             return;
         }
@@ -623,6 +573,7 @@ class CronHelper extends AcymObject
      */
     private function handleMailboxActions(): void
     {
+        $this->checkTimeRemaining();
         if (in_array(self::STEP_MAILBOX_ACTION, $this->skip) || $this->cronTimeLimitReached || !acym_level(ACYM_ENTERPRISE)) {
             return;
         }
@@ -703,7 +654,7 @@ class CronHelper extends AcymObject
 
         if ($this->isDailyCron()) {
             $time = time();
-            $this->config->save(['cron_last_daily' => $time]);
+            $this->config->saveConfig(['cron_last_daily' => $time]);
         }
     }
 
@@ -727,6 +678,7 @@ class CronHelper extends AcymObject
 
     private function handleABTestCampaigns(): void
     {
+        $this->checkTimeRemaining();
         if (in_array(self::STEP_ABTEST, $this->skip) || $this->cronTimeLimitReached) {
             return;
         }
@@ -743,6 +695,7 @@ class CronHelper extends AcymObject
 
     private function handleScenario(): void
     {
+        $this->checkTimeRemaining();
         if (in_array(self::STEP_SCENARIO, $this->skip) || $this->cronTimeLimitReached) {
             return;
         }
@@ -764,5 +717,84 @@ class CronHelper extends AcymObject
             }
             acym_makeCurlCall(acym_frontendLink('cron&task=cron&external_sending_repeat=1&t='.time().$cronKey), ['verifySsl' => false]);
         }
+    }
+
+    private function canSendQueuedEmails(): bool
+    {
+        if ($this->config->get('queue_type') === 'manual') {
+            return false;
+        }
+
+        $dayOfWeek = acym_date('now', 'N');
+        if ($this->config->get('queue_stop_weekend', 0) && $dayOfWeek >= 6) {
+            return false;
+        }
+
+        // Make sure we are within the sending hours defined in the configuration
+        $fromHour = $this->config->get('queue_send_from_hour', '00');
+        $fromMinute = $this->config->get('queue_send_from_minute', '00');
+        $toHour = $this->config->get('queue_send_to_hour', '23');
+        $toMinute = $this->config->get('queue_send_to_minute', '59');
+        $time = time();
+
+        if ($fromHour != '00' || $fromMinute != '00' || $toHour != '23' || $toMinute != '59') {
+            // The day it is currently based on the timezone specified in the CMS configuration
+            $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
+            // The UTC timestamp of the current day based on the CMS timezone, at the specified hour
+            $fromBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$fromHour.':'.$fromMinute);
+            $toBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$toHour.':'.$toMinute);
+            // In case we want to send during the night and the FROM is superior to the TO (from 8pm to 4am), we should change the day of ones of the limits
+            if ($fromBasedOnCMSTimezoneAtSpecifiedHour > $toBasedOnCMSTimezoneAtSpecifiedHour) {
+                // TO becomes tomorrow as we are not passed midnight
+                if ($time > $fromBasedOnCMSTimezoneAtSpecifiedHour) {
+                    $toBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate(acym_date('tomorrow', 'Y-m-d').' '.$toHour.':'.$toMinute);
+                } elseif ($time < $toBasedOnCMSTimezoneAtSpecifiedHour) {
+                    // FROM becomes yesterday as we are passed midnight
+                    $fromBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate(acym_date('yesterday', 'Y-m-d').' '.$fromHour.':'.$fromMinute);
+                }
+            }
+
+            if ($time < $fromBasedOnCMSTimezoneAtSpecifiedHour || $time > $toBasedOnCMSTimezoneAtSpecifiedHour) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function sendQueuedEmails(): void
+    {
+        $queueHelper = new QueueHelper();
+        $queueHelper->send_limit = (int)$this->config->get('queue_nbmail_auto');
+        $queueHelper->report = false;
+        $queueHelper->emailTypes = $this->emailTypes;
+        $queueHelper->startSendingFrom = $this->startQueue;
+        $queueHelper->process();
+
+        if (!empty($queueHelper->messages)) {
+            $this->detailMessages = array_merge($this->detailMessages, $queueHelper->messages);
+        }
+
+        if (!empty($queueHelper->nbprocess)) {
+            $this->processed = true;
+
+            if (!$queueHelper->finish && $this->externalSendingActivated) {
+                $this->externalSendingNotFinished = true;
+            }
+        }
+
+        $this->mainMessage = acym_translationSprintf(
+            'ACYM_CRON_PROCESS',
+            $queueHelper->nbprocess,
+            $queueHelper->successSend,
+            $queueHelper->errorSend
+        );
+        $this->messages[] = $this->mainMessage;
+
+        if (!empty($queueHelper->errorSend)) {
+            $this->errorDetected = true;
+        }
+
+        $this->cronTimeLimit = $queueHelper->stoptime;
     }
 }

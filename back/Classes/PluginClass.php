@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymClass;
 
 class PluginClass extends AcymClass
 {
-    private $plugins;
+    private array $plugins;
 
     public function __construct()
     {
@@ -23,17 +23,17 @@ class PluginClass extends AcymClass
         $this->plugins = $acymPluginByFolderName;
     }
 
-    public function getPlugins()
+    public function getPlugins(): array
     {
         return $this->plugins;
     }
 
-    public function getOnePluginByFolderName(string $folderName)
+    public function getOnePluginByFolderName(string $folderName): ?object
     {
         return $this->plugins[$folderName] ?? null;
     }
 
-    public function getNotUptoDatePlugins()
+    public function getNotUptoDatePlugins(): array
     {
         $result = acym_loadResult('SHOW TABLES LIKE "%_acym_plugin"');
         if (empty($result)) {
@@ -43,14 +43,7 @@ class PluginClass extends AcymClass
         return acym_loadResultArray('SELECT folder_name FROM #__acym_plugin WHERE uptodate = 0');
     }
 
-    public function getSettings($addon)
-    {
-        $settings = acym_loadResult('SELECT settings FROM #__acym_plugin WHERE folder_name = '.acym_escapeDB($addon));
-
-        return empty($settings) ? [] : json_decode($settings, true);
-    }
-
-    public function addIntegrationIfMissing($plugin)
+    public function addIntegrationIfMissing(object $plugin): void
     {
         if (empty($plugin->pluginDescription->name)) {
             return;
@@ -90,7 +83,7 @@ class PluginClass extends AcymClass
         $this->save($newPlugin);
     }
 
-    public function enable($folderName)
+    public function enable(string $folderName): void
     {
         $plugin = $this->getOnePluginByFolderName($folderName);
         if (empty($plugin)) return;
@@ -99,7 +92,7 @@ class PluginClass extends AcymClass
         $this->save($plugin);
     }
 
-    public function disable($folderName)
+    public function disable(string $folderName): void
     {
         $plugin = $this->getOnePluginByFolderName($folderName);
         if (empty($plugin)) return;
@@ -108,7 +101,7 @@ class PluginClass extends AcymClass
         $this->save($plugin);
     }
 
-    public function deleteByFolderName($folderName)
+    public function deleteByFolderName(string $folderName): void
     {
         $plugin = $this->getOnePluginByFolderName($folderName);
         if (empty($plugin)) return;
@@ -116,12 +109,12 @@ class PluginClass extends AcymClass
         parent::delete($plugin->id);
     }
 
-    public function updateAddon(string $addon)
+    public function updateAddon(string $addon): ?int
     {
         $plugin = $this->getOnePluginByFolderName($addon);
 
         if (empty($plugin)) {
-            return false;
+            return null;
         }
 
         $pluginClass = new PluginClass();
@@ -132,10 +125,10 @@ class PluginClass extends AcymClass
         $pluginToSave->version = $plugin->latest_version;
         $pluginToSave->uptodate = 1;
 
-        return $this->save($pluginToSave);
+        return (int)$this->save($pluginToSave);
     }
 
-    public function downloadAddon(string $name, bool $ajax = true)
+    public function downloadAddon(string $name, bool $ajax = true): ?string
     {
         //__START__joomla_
         $response = acym_fileGetContent(ACYM_UPDATEME_API_URL.'public/download/addon?file_name='.$name.'&api_key='.$this->config->get('license_key'));
@@ -169,15 +162,15 @@ class PluginClass extends AcymClass
 
         //__END__joomla_
 
-        return true;
+        return null;
     }
 
-    private function handleError($error, $ajax)
+    private function handleError(string $error, bool $ajax): string
     {
         if ($ajax) {
             acym_sendAjaxResponse(acym_translation($error), [], false);
-        } else {
-            return acym_translation($error);
         }
+
+        return acym_translation($error);
     }
 }

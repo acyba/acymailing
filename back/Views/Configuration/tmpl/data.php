@@ -41,7 +41,7 @@
 						value="acymailing"
                     <?php echo stripos($trackingMode, 'acymailing') !== false ? 'checked="checked"' : ''; ?>
 				/>
-				<label for="trackingsystem[0]">AcyMailing<?php echo acym_info('ACYM_TRACKINGSYSTEM_ACY_DESC'); ?></label>
+				<label for="trackingsystem[0]">AcyMailing<?php echo acym_info(['textShownInTooltip' => 'ACYM_TRACKINGSYSTEM_ACY_DESC']); ?></label>
 
 				<input
 						type="checkbox"
@@ -50,7 +50,7 @@
 						value="google"
                     <?php echo stripos($trackingMode, 'google') !== false ? 'checked="checked"' : ''; ?>
 				/>
-				<label for="trackingsystem[1]">Google Analytics<?php echo acym_info('ACYM_TRACKINGSYSTEM_GA_DESC'); ?></label>
+				<label for="trackingsystem[1]">Google Analytics<?php echo acym_info(['textShownInTooltip' => 'ACYM_TRACKINGSYSTEM_GA_DESC']); ?></label>
 
 				<input type="hidden" name="config[trackingsystem][]" value="1" />
 			</div>
@@ -61,7 +61,7 @@
             echo acym_switch(
                 'config[trackingsystemexternalwebsite]',
                 $this->config->get('trackingsystemexternalwebsite'),
-                acym_translation('ACYM_TRACKINGSYSTEM_EXTERNAL_LINKS').acym_info('ACYM_TRACKINGSYSTEM_EXTERNAL_LINKS_DESC'),
+                acym_translation('ACYM_TRACKINGSYSTEM_EXTERNAL_LINKS').acym_info(['textShownInTooltip' => 'ACYM_TRACKINGSYSTEM_EXTERNAL_LINKS_DESC']),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
@@ -79,7 +79,7 @@
                 echo acym_switch(
                     'config[delete_stats_enabled]',
                     $this->config->get('delete_stats_enabled', 0),
-                    acym_translation('ACYM_DELETE_DETAILED_STATS_AFTER').acym_info('ACYM_DELETE_DETAILED_STATS_AFTER_DESC'),
+                    acym_translation('ACYM_DELETE_DETAILED_STATS_AFTER').acym_info(['textShownInTooltip' => 'ACYM_DELETE_DETAILED_STATS_AFTER_DESC']),
                     [],
                     'xlarge-3 medium-5 small-9',
                     'auto',
@@ -89,7 +89,7 @@
 				<div class="cell grid-x" id="delete_stats_enabled">
                     <?php
                     $delayTypeAuto = $data['typeDelay'];
-                    echo $delayTypeAuto->display('config[delete_stats]', $this->config->get('delete_stats', 86400 * 360), 4);
+                    echo $delayTypeAuto->display('config[delete_stats]', $this->config->get('delete_stats', 86400 * 360), \AcyMailing\Types\DelayType::TYPE_WEEKS_MONTHS);
                     ?>
 				</div>
 			</div>
@@ -109,7 +109,7 @@
 			<div class="cell grid-x" id="delete_user_history_enabled">
                 <?php
                 $delayTypeAuto = $data['typeDelay'];
-                echo $delayTypeAuto->display('config[delete_user_history]', $this->config->get('delete_user_history', 0), 4);
+                echo $delayTypeAuto->display('config[delete_user_history]', $this->config->get('delete_user_history', 0), \AcyMailing\Types\DelayType::TYPE_WEEKS_MONTHS);
                 ?>
 			</div>
 		</div>
@@ -131,7 +131,7 @@
                 echo $delayTypeAuto->display(
                     'config[delete_archive_history_after]',
                     $this->config->get('delete_archive_history_after', 86400 * 90),
-                    4
+                    \AcyMailing\Types\DelayType::TYPE_WEEKS_MONTHS
                 );
                 ?>
 			</div>
@@ -144,7 +144,7 @@
             echo acym_switch(
                 'config[export_data_changes]',
                 $this->config->get('export_data_changes', 0),
-                acym_translation('ACYM_EXPORT_DATA_CHANGES').acym_info('ACYM_EXPORT_DATA_CHANGES_DESC'),
+                acym_translation('ACYM_EXPORT_DATA_CHANGES').acym_info(['textShownInTooltip' => 'ACYM_EXPORT_DATA_CHANGES_DESC']),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
@@ -179,6 +179,41 @@
                         ?>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cell margin-bottom-2">
+		<div class="acym__title acym__title__secondary">
+            <?php echo acym_translation('ACYM_DATA_EXPORT_MANAGEMENT'); ?>
+		</div>
+
+		<div class="grid-x grid-margin-x margin-y">
+			<label class="cell xlarge-3 medium-5 small-9">
+                <?php
+                echo acym_translation('ACYM_CSV_SEPARATOR_CHOICE');
+                echo acym_info(
+                    [
+                        'textShownInTooltip' => acym_translation('ACYM_CSV_SEPARATOR_CHOICE_DESC'),
+                    ]
+                );
+                ?>
+			</label>
+			<div class="cell xlarge-9 medium-7 small-12 acym_vcenter">
+				<label class="margin-right-1">
+					<input type="radio"
+						   name="config[csv_separator]"
+						   value=";"
+                        <?php echo $this->config->get('csv_separator', ',') === ';' ? 'checked="checked"' : ''; ?> />
+					;
+				</label>
+
+				<label>
+					<input type="radio"
+						   name="config[csv_separator]"
+						   value=","
+                        <?php echo $this->config->get('csv_separator', ',') === ',' ? 'checked="checked"' : ''; ?> />
+					,
+				</label>
 			</div>
 		</div>
 	</div>

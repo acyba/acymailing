@@ -64,15 +64,19 @@
 							</div>
 							<div class="acym__listing__controls acym__field__controls medium-1 small-3 text-center cell">
                                 <?php
-                                $class = $field->required == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
-                                echo '<i data-acy-table="field" data-acy-field="required" data-acy-elementid="'.acym_escape(
-                                        $field->id
-                                    ).'" class="'.(in_array($field->id, [2, $data['languageFieldId']]) ? ' acym_opacity-5 acym_disabled ' : ' acym_toggleable cursor-pointer ').$class.'"></i>';
+                                $class = $field->required == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
+                                    : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                                echo '<i data-acy-table="field" 
+										data-acy-field="required" 
+										data-acy-elementid="'.acym_escape($field->id).'" 
+										class="'.(in_array($field->id, [2, $data['languageFieldId']]) ? ' acym_opacity-5 acym_disabled '
+                                        : ' acym_toggleable cursor-pointer ').$class.'"></i>';
                                 ?>
 							</div>
 							<div class="acym__listing__controls hide-for-small-only acym__field__controls medium-1 small-1 text-center cell">
                                 <?php
-                                $class = $field->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                                $class = $field->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
+                                    : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
                                 echo '<i data-acy-table="field" data-acy-field="active" data-acy-elementid="'.acym_escape($field->id).'" class="'.$generalClass.$class.'"></i>';
                                 ?>
 							</div>

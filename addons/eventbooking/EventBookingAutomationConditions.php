@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorInType;
 
 trait EventBookingAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
         acym_loadLanguageFile('com_eventbooking', JPATH_ADMINISTRATOR);
@@ -85,7 +85,7 @@ trait EventBookingAutomationConditions
         $conditions['user']['ebregistration']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

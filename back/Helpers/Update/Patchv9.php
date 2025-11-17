@@ -17,9 +17,7 @@ trait Patchv9
         if (empty($socialIcons['telegram'])) {
             $socialIcons['telegram'] = ACYM_IMAGES.'logo/telegram.png';
 
-            $newConfig = new \stdClass();
-            $newConfig->social_icons = json_encode($socialIcons);
-            $config->save($newConfig);
+            $config->saveConfig(['social_icons' => json_encode($socialIcons)]);
         }
 
         $this->updateQuery('ALTER TABLE #__acym_mail_stat ADD COLUMN `click_unique` INT NOT NULL DEFAULT 0');
@@ -63,7 +61,7 @@ trait Patchv9
             return;
         }
 
-        $config->save([
+        $config->saveConfig([
             'from_email' => acym_strtolower($config->get('from_email')),
             'replyto_email' => acym_strtolower($config->get('replyto_email')),
             'bounce_email' => acym_strtolower($config->get('bounce_email')),
@@ -82,7 +80,7 @@ trait Patchv9
                 $acymailerParams[acym_strtolower($domain)] = $acymailerParams[$domain];
                 unset($acymailerParams[$domain]);
             }
-            $config->save(['acymailer_domains' => json_encode($acymailerParams)]);
+            $config->saveConfig(['acymailer_domains' => json_encode($acymailerParams)]);
         }
 
         $this->updateQuery('ALTER TABLE `#__acym_field` DROP COLUMN `access`');

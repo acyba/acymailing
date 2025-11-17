@@ -78,7 +78,7 @@
 				<input type="hidden" id="acym__file__select__mapid" value="<?php echo acym_escape($data['map']); ?>">
 			</div>
 			<div class="acym__file__select__area cell grid-x text-center">
-                <?php echo acym_inputFile('uploadedFile', '', '', 'cell medium-shrink'); ?>
+                <?php echo acym_inputFile('uploadedFile', '', 'cell medium-shrink'); ?>
 				<input type="hidden" name="currentFolder" value="<?php echo acym_escape($data['uploadFolder']); ?>" />
 				<input type="hidden" name="id" value="<?php echo acym_escape($data['map']); ?>" />
 				<div class="cell medium-auto hide-for-small-only"></div>

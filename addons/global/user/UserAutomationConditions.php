@@ -6,7 +6,7 @@ use AcyMailing\Types\OperatorType;
 
 trait UserAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $allGroups = acym_getGroups();
         $groups = ['' => acym_translation('ACYM_NO_GROUP')];
@@ -74,7 +74,7 @@ trait UserAutomationConditions
             ).'</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

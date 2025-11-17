@@ -14,6 +14,9 @@ trait Ajax
         acym_checkToken();
         $genericImport = acym_getVar('boolean', 'generic', false);
         $selectedListsIds = json_decode(acym_getVar('string', 'selected', '[]'));
+        if (empty($selectedListsIds)) {
+            $selectedListsIds = [];
+        }
 
         $listClass = new ListClass();
         $listToAdd = new \stdClass();
@@ -175,7 +178,7 @@ trait Ajax
         if ($this->config->get('dashboard_last_update', 0) + 86400 < time()) {
             $usersByList = $listClass->getListsSubscribersAndUnsubscribeUsersFromUserHasList();
             foreach ($usersByList as $list) {
-                $subscriberEvolution = current($listClass->getSubscribersEvolutionByList($list->list_id));
+                $subscriberEvolution = current($listClass->getSubscribersEvolutionByListIds([$list->list_id]));
                 $listClass->updateListsSubscribersAndUnsubscribeUsers(
                     $list->list_id,
                     $list->subscribers,
@@ -184,7 +187,7 @@ trait Ajax
                     $subscriberEvolution->newUnsub ?? 0
                 );
             }
-            $this->config->save(['dashboard_last_update' => time()]);
+            $this->config->saveConfig(['dashboard_last_update' => time()]);
         }
         $mostUsedList = $listClass->getMostUsedLists();
 

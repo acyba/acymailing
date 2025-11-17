@@ -21,7 +21,7 @@ trait License
         $resultUnlinkLicenseOnUpdateMe = $this->unlinkLicenseOnUpdateMe($licenseKey);
 
         if ($resultUnlinkLicenseOnUpdateMe['success'] === true) {
-            $this->config->save(['license_key' => '']);
+            $this->config->saveConfig(['license_key' => '']);
         }
 
         if (!empty($resultUnlinkLicenseOnUpdateMe['message'])) {
@@ -51,13 +51,13 @@ trait License
         }
 
         //We save the license key
-        $this->config->save(['license_key' => $config['license_key']]);
+        $this->config->saveConfig(['license_key' => $config['license_key']]);
 
         //We call updateme to attach the website to the license
         $resultAttachLicenseOnUpdateMe = $this->attachLicenseOnUpdateMe();
 
         if ($resultAttachLicenseOnUpdateMe['success'] === false) {
-            $this->config->save(['license_key' => '']);
+            $this->config->saveConfig(['license_key' => '']);
         }
 
         if (!empty($resultAttachLicenseOnUpdateMe['message'])) {
@@ -174,7 +174,7 @@ trait License
         $result = $this->modifyCron('activateCron');
         //If everything went ok we save config with an active_cron to true
         if (!empty($result) && !empty($this->displayMessage($result['message']))) {
-            $this->config->save(['active_cron' => 1]);
+            $this->config->saveConfig(['active_cron' => 1]);
         }
 
         $this->listing();
@@ -194,7 +194,7 @@ trait License
         $result = $this->modifyCron('deactivateCron', $licenseKey);
         //If everything went ok we save config with an active_cron to false
         if (!empty($result) && !empty($this->displayMessage($result['message']))) {
-            $this->config->save(['active_cron' => 0]);
+            $this->config->saveConfig(['active_cron' => 0]);
         }
 
         if ($listing) {
@@ -253,7 +253,7 @@ trait License
         if (empty($acyMailerLicenseKey)) {
             acym_enqueueMessage(acym_translation('ACYM_LICENCE_NO_SENDING_SERVICE'), 'error');
         } else {
-            $this->config->save(['mailer_method' => 'acymailer']);
+            $this->config->saveConfig(['mailer_method' => 'acymailer']);
             acym_enqueueMessage(acym_translation('ACYM_SENDING_SERVICE_ACTIVATED'), 'success', false);
         }
 

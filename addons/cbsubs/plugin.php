@@ -19,7 +19,7 @@ class plgAcymCbsubs extends AcymPlugin
         $this->installed = in_array(acym_getPrefix().'cbsubs_plans', acym_getTableList());
     }
 
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $allGroups = acym_loadObjectList('SELECT `name` AS `text`, `id` AS `value` FROM #__cbsubs_plans ORDER BY `ordering` ASC');
         if (empty($allGroups)) return;
@@ -101,7 +101,7 @@ class plgAcymCbsubs extends AcymPlugin
         $conditions['user']['cbsubs']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }
@@ -214,7 +214,7 @@ class plgAcymCbsubs extends AcymPlugin
         $automationCondition = $finalText;
     }
 
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
         $this->filtersFromConditions($filters);
     }

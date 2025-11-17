@@ -79,8 +79,8 @@ trait Edition
             acym_translation('ACYM_MANAGE_SUBSCRIPTION'),
             $entityHelper->entitySelect('list', ['join' => 'join_user-'.$userId], $columnsToDisplay, ['text' => acym_translation('ACYM_CONFIRM'), 'action' => 'apply']),
             null,
-            '',
-            'class="cell medium-6 large-shrink button button-secondary"'
+            [],
+            ['class' => 'cell medium-6 large-shrink button button-secondary']
         );
     }
 
@@ -226,8 +226,8 @@ trait Edition
                     acym_translation('ACYM_VIEW_DETAILS'),
                     $details,
                     null,
-                    'style="word-break: break-word;"',
-                    'class="history_details"',
+                    ['style' => 'word-break: break-word;'],
+                    ['class' => 'history_details'],
                     true,
                     false
                 );
@@ -247,8 +247,8 @@ trait Edition
                     acym_translation('ACYM_VIEW_SOURCE'),
                     $details,
                     null,
-                    'style="word-break: break-word;"',
-                    'class="history_details"'
+                    ['style' => 'word-break: break-word;'],
+                    ['class' => 'history_details']
                 );
             }
         }
@@ -302,7 +302,7 @@ trait Edition
                     (
                         (
                             is_array($data['fieldsValues'][$one->id])
-                            || $data['fieldsValues'][$one->id] instanceof Countable
+                            || $data['fieldsValues'][$one->id] instanceof \Countable
                         )
                         && count($data['fieldsValues'][$one->id]) > 0
                     )
@@ -317,9 +317,16 @@ trait Edition
             } else {
                 $defaultValue = $one->default_value;
             }
-            $size = empty($one->option->size) ? '' : 'width:'.$one->option->size.'px';
 
-            $data['allFields'][$one->id]->html = $fieldClass->displayField($one, $defaultValue, $size, $valuesArray, true, !acym_isAdmin(), null, $one->$fieldVisibility);
+            $data['allFields'][$one->id]->html = $fieldClass->displayField(
+                $one,
+                $defaultValue,
+                $valuesArray,
+                true,
+                !acym_isAdmin(),
+                null,
+                $one->$fieldVisibility != 0
+            );
         }
     }
 
@@ -331,9 +338,6 @@ trait Edition
     public function apply(bool $listing = false): void
     {
         $userInformation = acym_getVar('array', 'user');
-        $userId = acym_getVar('int', 'userId');
-        $listsToAdd = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
-        $listsToUnsub = json_decode(acym_getVar('string', 'acym__entity_select__unselected', '{}'));
 
         $user = new \stdClass();
         $user->name = $userInformation['name'];
@@ -346,7 +350,7 @@ trait Edition
             $user->confirmed = $userInformation['confirmed'];
         }
         $user->tracking = $userInformation['tracking'];
-        $customFields = acym_getVar('array', 'customField');
+        $customFields = acym_getVar('array', 'customField', []);
 
         preg_match('/'.acym_getEmailRegex().'/i', $user->email, $matches);
 
@@ -360,6 +364,8 @@ trait Edition
         $userClass = new UserClass();
         $frontCreation = false;
         $existingUser = $userClass->getOneByEmail($user->email);
+        $userId = acym_getVar('int', 'userId');
+
         if (empty($userId)) {
             if (!empty($existingUser) && acym_isAdmin()) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
@@ -398,9 +404,12 @@ trait Edition
             $userClass->save($user, $customFields);
         }
 
+        $listsToAdd = json_decode(acym_getVar('string', 'acym__entity_select__selected', '[]'), true);
         if (!empty($listsToAdd)) {
-            $this->subscribeUser(false, $frontCreation);
+            $this->subscribeUser(false, $listsToAdd, $frontCreation);
         }
+
+        $listsToUnsub = json_decode(acym_getVar('string', 'acym__entity_select__unselected', '[]'), true);
         if (!empty($listsToUnsub)) {
             $userClass->unsubscribeOnSubscriptions($userId, $listsToUnsub);
         }

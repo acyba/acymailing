@@ -43,7 +43,7 @@ if ($data['mail']->type === $data['mailClass']::TYPE_TEMPLATE) {
 			<label class="cell">
                 <?php
                 echo acym_translation('ACYM_TEMPLATE_ACCESS');
-                echo acym_info('ACYM_TEMPLATE_ACCESS_DESC');
+                echo acym_info(['textShownInTooltip' => 'ACYM_TEMPLATE_ACCESS_DESC']);
                 echo acym_selectMultiple(
                     acym_getGroups(),
                     'mail[access]',
@@ -64,7 +64,7 @@ if (!empty($data['langChoice'])) {
 		<label class="cell">
             <?php
             echo acym_translation('ACYM_EMAIL_LANGUAGE');
-            echo acym_info('ACYM_EMAIL_LANGUAGE_DESC');
+            echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_LANGUAGE_DESC']);
             echo $data['langChoice'];
             ?>
 		</label>

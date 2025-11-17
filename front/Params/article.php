@@ -52,7 +52,14 @@ class JFormFieldArticle extends AcymJFormField
         $html = '<span class="input-append">';
         $html .= '<input class="input-medium" id="'.$this->id.'_name" type="text" value="'.acym_escape($title).'" disabled="disabled" size="35" />';
         $urlSelect = acym_articleSelectionPage().'&function='.$callback;
-        $html .= acym_cmsModal(true, $urlSelect, 'ACYM_SELECT', true, acym_translation('ACYM_SELECT_AN_ARTICLE'), $modalId);
+        $html .= acym_cmsModal(
+            true,
+            $urlSelect,
+            'ACYM_SELECT',
+            true,
+            acym_translation('ACYM_SELECT_AN_ARTICLE'),
+            $modalId
+        );
         $html .= '<a id="clear_'.$modalId.'" class="btn hasTooltip" data-toggle="modal" role="button" onclick="toggle_'.$callback.'(0);">'.acym_translation('ACYM_CLEAR').'</a>';
         $html .= '</span>';
 

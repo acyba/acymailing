@@ -30,8 +30,8 @@
         acym_translation('ACYM_IMPORT_SUBSCRIBERS'),
         $modalData,
         'acym__user__import__add-subscription__modal',
-        '',
-        'style="display: none"'
+        [],
+        ['style' => 'display: none']
     );
     ?>
 	<input type="hidden" name="import_from" />

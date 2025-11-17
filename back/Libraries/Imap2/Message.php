@@ -262,24 +262,6 @@ class Message
         }
     }
 
-    public static function bodyStruct($imap, $messageNum, $flags = 0)
-    {
-        if (!is_a($imap, Connection::class)) {
-            return Errors::invalidImapConnection(debug_backtrace(), 1, false);
-        }
-
-        $client = $imap->getClient();
-        #$client->setDebug(true);
-
-        $messages = $client->fetch($imap->getMailboxName(), $messageNum, false, ['BODY['.$section.']']);
-
-        if ($section) {
-            return $messages[$messageNum]->bodypart[$section];
-        }
-
-        return $messages[$messageNum]->body;
-    }
-
     public static function fetchHeader($imap, $messageNum, $flags = 0)
     {
         if (!is_a($imap, Connection::class)) {

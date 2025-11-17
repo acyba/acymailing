@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorInType;
 
 trait MemberpressAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $allGroups = acym_loadObjectList(
             'SELECT post.post_title AS `text`, post.`ID` AS `value` 
@@ -88,7 +88,7 @@ trait MemberpressAutomationConditions
         $conditions['user']['memberpress']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

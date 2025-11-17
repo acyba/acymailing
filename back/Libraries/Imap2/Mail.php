@@ -70,41 +70,4 @@ class Mail
 
         return $client->move($messageNums, $imap->getMailboxName(), $mailbox);
     }
-
-    /**
-     * Send an email message.
-     *
-     * @param $to
-     * @param $subject
-     * @param $message
-     * @param $additionalHeaders
-     * @param $cc
-     * @param $bcc
-     * @param $returnPath
-     *
-     * @return false|mixed
-     */
-    public static function send($to, $subject, $message, $additionalHeaders = null, $cc = null, $bcc = null, $returnPath = null)
-    {
-        if (!is_a($imap, Connection::class)) {
-            return Errors::invalidImapConnection(debug_backtrace(), 1, false);
-        }
-
-        $client = $imap->getClient();
-
-        if (!($options & ST_UID)) {
-            $messages = $client->fetch($imap->getMailboxName(), $sequence, false, ['UID']);
-
-            $uid = [];
-            foreach ($messages as $message) {
-                $uid[] = $message->uid;
-            }
-
-            $sequence = implode(',', $uid);
-        }
-
-        $client->flag($imap->getMailboxName(), $sequence, strtoupper(substr($flag, 1)));
-
-        return false;
-    }
 }

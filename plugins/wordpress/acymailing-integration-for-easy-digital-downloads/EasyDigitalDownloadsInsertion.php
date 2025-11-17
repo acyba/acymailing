@@ -7,7 +7,7 @@ trait EasyDigitalDownloadsInsertion
     private $minProductDisplayLastPurchased = 1;
     private $maxProductDisplayLastPurchased = 3;
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -24,7 +24,7 @@ trait EasyDigitalDownloadsInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -32,7 +32,7 @@ trait EasyDigitalDownloadsInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT download.*
                     FROM #__posts AS download
@@ -45,7 +45,7 @@ trait EasyDigitalDownloadsInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
         $this->prepareWPCategories('download_category');
@@ -375,7 +375,7 @@ trait EasyDigitalDownloadsInsertion
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
                 <?php
                 echo wp_kses(
-                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'),
+                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MIN_NUMBER_OF_PRODUCTS_DESC']),
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -395,7 +395,7 @@ trait EasyDigitalDownloadsInsertion
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
                 <?php
                 echo wp_kses(
-                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'),
+                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MAX_NUMBER_OF_PRODUCTS_DESC']),
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -415,7 +415,7 @@ trait EasyDigitalDownloadsInsertion
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
                 <?php
                 echo wp_kses(
-                    acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'),
+                    acym_translation('ACYM_CATEGORY_FILTER').acym_info(['textShownInTooltip' => 'ACYM_CATEGORY_FILTER_DESC']),
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -462,7 +462,7 @@ trait EasyDigitalDownloadsInsertion
 				<label class="cell medium-6">
                     <?php
                     echo wp_kses(
-                        acym_translation('ACYM_START_DATE').acym_info('ACYM_START_DATE_PURCHASED_PRODUCT_DESC'),
+                        acym_translation('ACYM_START_DATE').acym_info(['textShownInTooltip' => 'ACYM_START_DATE_PURCHASED_PRODUCT_DESC']),
                         [
                             'span' => ['class' => []],
                             'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -520,7 +520,7 @@ trait EasyDigitalDownloadsInsertion
         return ob_get_clean();
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT download.ID, download.post_title, download.post_date ';
         $this->query = 'FROM #__posts AS download ';
@@ -563,7 +563,7 @@ trait EasyDigitalDownloadsInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email, $send)
+    public function replaceContent(object &$email, bool $send = true): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
@@ -586,7 +586,7 @@ trait EasyDigitalDownloadsInsertion
         $this->pluginHelper->replaceTags($email, $this->tags, true);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $tags = array_merge($tags, $this->pluginHelper->extractTags($email, $this->name.'_tags'));
@@ -631,7 +631,7 @@ trait EasyDigitalDownloadsInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT download.*
                     FROM #__posts AS download
@@ -702,9 +702,12 @@ trait EasyDigitalDownloadsInsertion
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): array
     {
-        if (empty($user)) return;
+        if (empty($user)) {
+			return [];
+        }
+
         $this->replaceCoupons($email, $user, $send);
         $generated = $this->replaceLastPurchased($email, $user, $send);
         if ($generated === '') {
@@ -723,7 +726,11 @@ trait EasyDigitalDownloadsInsertion
             ];
         }
 
-        if ($generated == 1 || $generatedCart == 1) return ['send' => true, 'emogrifier' => true];
+        if ($generated == 1 || $generatedCart == 1) {
+			return ['send' => true, 'emogrifier' => true];
+        }
+
+		return [];
     }
 
     private function replaceLastPurchased(&$email, $user, $send)

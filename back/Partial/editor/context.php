@@ -65,14 +65,14 @@
 		</div>
 		<p class="cell acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_ADVANCED_OPTIONS'); ?><i class="acymicon-keyboard-arrow-up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
-			<label class="cell small-5"><?php echo acym_translation('ACYM_HTML_ID').acym_info('ACYM_HTML_ID_DESC'); ?></label>
+			<label class="cell small-5"><?php echo acym_translation('ACYM_HTML_ID').acym_info(['textShownInTooltip' => 'ACYM_HTML_ID_DESC']); ?></label>
 			<input type="text"
 				   class="cell small-6"
 				   id="acym__wysid__context__block__custom_id"
 				   placeholder="<?php echo acym_escape(acym_translation('ACYM_HTML_ID')); ?>">
 			<div class="cell grid-x acym__wysid__context__block__code-source">
 				<label class="cell small-5 acym_vcenter">
-                    <?php echo acym_translation('ACYM_EDIT_BLOCK_HTML').acym_info('ACYM_BECAREFUL_EDITING_SOURCE_CODE'); ?>
+                    <?php echo acym_translation('ACYM_EDIT_BLOCK_HTML').acym_info(['textShownInTooltip' => 'ACYM_BECAREFUL_EDITING_SOURCE_CODE']); ?>
 				</label>
 				<div class="cell shrink acym_vcenter">
 					<button type="button" class="button button-secondary" id="acym__wysid__context__block__edit-html">
@@ -131,11 +131,17 @@
 					<input id="acym__wysid__context__button__link" class="input-group-field cell auto" type="text" placeholder="https://www.example.com">
 				</div>
 			</div>
+			<div class="grid-x cell acym__wysid__context__button__redirection__container">
+				<div class="cell grid-x">
+					<label class="cell small-5" for="acym__wysid__context__button__redirection"><?php echo acym_translation('ACYM_REDIRECTION_URL'); ?></label>
+					<input id="acym__wysid__context__button__redirection" class="input-group-field cell auto" type="text" placeholder="https://www.example.com">
+				</div>
+			</div>
 			<div class="grid-x cell acym__wysid__context__button__link__file">
 				<div class="cell grid-x">
 					<label class="cell small-5">
                         <?php echo acym_translation('ACYM_FILE'); ?>
-                        <?php echo acym_info('ACYM_FILE_GENERATE_LINK_BUTTON_EDITOR'); ?>
+                        <?php echo acym_info(['textShownInTooltip' => 'ACYM_FILE_GENERATE_LINK_BUTTON_EDITOR']); ?>
 					</label>
 					<button id="acym__wysid__context__button__file" type="button" class="button button-secondary"><?php echo acym_translation('ACYM_SELECT_FILE'); ?></button>
 				</div>
@@ -224,7 +230,7 @@
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label for="acym__wysid__context__button__background-color" class="cell small-5">
-                    <?php echo acym_translation('ACYM_BACKGROUND_COLOR').acym_info('ACYM_BACKGROUND_COLOR_BUTTON_DESC'); ?>
+                    <?php echo acym_translation('ACYM_BACKGROUND_COLOR').acym_info(['textShownInTooltip' => 'ACYM_BACKGROUND_COLOR_BUTTON_DESC']); ?>
 				</label>
 				<input type="text" id="acym__wysid__context__button__background-color" class="small-5 cell">
 			</div>
@@ -359,7 +365,7 @@
 				   placeholder="https://www.example.com/image.png"
 				   class="cell small-8">
 			<label for="acym__upload__context__image__alt" class="cell small-4">
-                <?php echo acym_translation('ACYM_IMAGE_ALT').acym_info('ACYM_IMAGE_ALT_DESCRIPTION'); ?>
+                <?php echo acym_translation('ACYM_IMAGE_ALT').acym_info(['textShownInTooltip' => 'ACYM_IMAGE_ALT_DESCRIPTION']); ?>
 			</label>
 			<input type="text"
 				   name="image_alt"
@@ -367,7 +373,7 @@
 				   id="acym__upload__context__image__alt"
 				   class="cell small-8">
 			<label for="acym__upload_context__image__title" class="cell small-4">
-                <?php echo acym_translation('ACYM_IMAGE_TITLE').acym_info('ACYM_IMAGE_TITLE_DESCRIPTION'); ?>
+                <?php echo acym_translation('ACYM_IMAGE_TITLE').acym_info(['textShownInTooltip' => 'ACYM_IMAGE_TITLE_DESCRIPTION']); ?>
 			</label>
 			<input type="text"
 				   name="image_title"

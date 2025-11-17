@@ -16,7 +16,7 @@ class plgAcymAutomationexport extends AcymPlugin
         $this->pluginDescription->description = '- Export the filtered users in the automations';
     }
 
-    public function onAcymDeclareActions(&$actions)
+    public function onAcymDeclareActions(array &$actions): void
     {
         $actions['export'] = new stdClass();
         $actions['export']->name = acym_translation('ACYM_EXPORT_SUBSCRIBERS');
@@ -90,19 +90,23 @@ class plgAcymAutomationexport extends AcymPlugin
 
         $actions['export']->option .= '<div class="cell xlarge-6 xxlarge-5 grid-x">';
         $actions['export']->option .= '<label class="cell acym_vcenter margin-left-0" for="action__and__exportpath">'.acym_translation('ACYM_REPORT_SAVE_TO_DESC').'</label>';
-        $actions['export']->option .= '<input class="cell" type="text" name="acym_action[actions][__and__][export][path]" value="'.ACYM_LOGS_FOLDER.'export_%Y_%m_%d.csv" id="action__and__exportpath"/>';
+        $actions['export']->option .= '<input class="cell" 
+                                            type="text" 
+                                            name="acym_action[actions][__and__][export][path]" 
+                                            value="'.acym_escapeUrl(ACYM_LOGS_FOLDER.'export_%Y_%m_%d.csv').'" 
+                                            id="action__and__exportpath" />';
         $actions['export']->option .= '</div>';
     }
 
     public function onAcymProcessAction_export(&$cquery, $action)
     {
-        // Get the file name
-        $currentDate = gmdate('Y-m-d');
-        $pathtolog = ACYM_ROOT.ACYM_LOGS_FOLDER.'export_'.$currentDate.'.csv';
+        $pathtolog = ACYM_ROOT.ACYM_LOGS_FOLDER.'export_%Y-%m-%d.csv';
         if (!empty($action['path']) && false === strpos($action['path'], '..')) {
-            $dateParts = explode('-', $currentDate);
-            $pathtolog = ACYM_ROOT.str_replace(['%Y', '%m', '%d'], $dateParts, $action['path']);
+            $pathtolog = $action['path'];
         }
+
+        $dateParts = explode('-', date('Y-m-d-H-i-s'));
+        $pathtolog = ACYM_ROOT.str_replace(['%Y', '%m', '%d', '%H', '%i', '%s'], $dateParts, $pathtolog);
 
         if (empty($action['core']) && empty($action['custom'])) {
             return '['.acym_translation('ACYM_EXPORT_SUBSCRIBERS').'] '.acym_translation('ACYM_EXPORT_SELECT_FIELD');

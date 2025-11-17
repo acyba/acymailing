@@ -73,7 +73,7 @@ class plgAcymJticketing extends AcymPlugin
         }
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -90,7 +90,7 @@ class plgAcymJticketing extends AcymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -99,7 +99,7 @@ class plgAcymJticketing extends AcymPlugin
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $element = acym_getColumns('content', false);
         if (empty($element)) {
@@ -111,7 +111,7 @@ class plgAcymJticketing extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') {
             return null;
@@ -120,7 +120,7 @@ class plgAcymJticketing extends AcymPlugin
         return $this->pluginDescription;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -279,7 +279,7 @@ class plgAcymJticketing extends AcymPlugin
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT element.id, element.title ';
         $this->query = 'FROM #__jticketing_events AS element ';
@@ -319,13 +319,13 @@ class plgAcymJticketing extends AcymPlugin
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         if (!ACYM_J40 && !require_once JPATH_SITE.DS.'components'.DS.'com_jticketing'.DS.'helpers'.DS.'route.php') {
             return false;
@@ -334,7 +334,7 @@ class plgAcymJticketing extends AcymPlugin
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $tags = array_merge($tags, $this->pluginHelper->extractTags($email, $this->name.'_tags'));
@@ -408,7 +408,7 @@ class plgAcymJticketing extends AcymPlugin
         return $this->generateCampaignResult;
     }
 
-    protected function handleOrderBy(&$query, $parameter, $table = null)
+    protected function handleOrderBy(&$query, $parameter, $table = null): void
     {
         if (empty($parameter->order)) return;
 
@@ -431,7 +431,7 @@ class plgAcymJticketing extends AcymPlugin
         }
     }
 
-    protected function groupByCategory($elements)
+    protected function groupByCategory(array $elements): array
     {
         if (!$this->groupedByCategory || empty($elements)) return $elements;
 
@@ -451,7 +451,7 @@ class plgAcymJticketing extends AcymPlugin
         return $elements;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT element.*, concat(m.path,"/",m.source) as images,`user`.`name` AS authorname, cat.`title` AS category_title, cat.`access` AS category_access
                     FROM #__jticketing_events AS element 

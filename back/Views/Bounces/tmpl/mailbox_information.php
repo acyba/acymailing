@@ -22,7 +22,7 @@
             echo $data['delayType']->display(
                 'mailbox[frequency]',
                 $data['mailboxActions']->frequency,
-                2
+                \AcyMailing\Types\DelayType::TYPE_MINUTES_HOURS
             );
             ?>
 		</div>

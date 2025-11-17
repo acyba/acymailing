@@ -58,12 +58,28 @@ trait Listing
 
     public function duplicateMailboxAction(): void
     {
-        $this->mailboxDoListingAction('duplicate');
+        $mailboxActionSelected = acym_getVar('int', 'elements_checked');
+        if (empty($mailboxActionSelected)) {
+            return;
+        }
+
+        $mailboxClass = new MailboxClass();
+        $mailboxClass->duplicate($mailboxActionSelected);
+
+        $this->mailboxes();
     }
 
     public function deleteMailboxAction(): void
     {
-        $this->mailboxDoListingAction('delete');
+        $mailboxActionSelected = acym_getVar('array', 'elements_checked');
+        if (empty($mailboxActionSelected)) {
+            return;
+        }
+
+        $mailboxClass = new MailboxClass();
+        $mailboxClass->delete($mailboxActionSelected);
+
+        $this->mailboxes();
     }
 
     private function prepareMailboxesActions(array &$data): void
@@ -88,23 +104,5 @@ trait Listing
 
             $data['allMailboxes'][$key]->actionsRendered = $actionsRendered;
         }
-    }
-
-    private function mailboxDoListingAction(string $action): void
-    {
-        $mailboxClass = new MailboxClass();
-        if (!method_exists($mailboxClass, $action)) {
-            return;
-        }
-
-        $mailboxActionSelected = acym_getVar('int', 'elements_checked');
-
-        if (empty($mailboxActionSelected)) {
-            return;
-        }
-
-        $mailboxClass->$action($mailboxActionSelected);
-
-        $this->mailboxes();
     }
 }

@@ -24,8 +24,8 @@ class acym_archive_widget extends WP_Widget
         $params = [
             'title' => 'See all newsletters',
             'lists' => '',
-            'popup' => '1',
-            'displayUserListOnly' => '1',
+            'popup' => true,
+            'displayUserListOnly' => true,
             'nbNewslettersPerPage' => '10',
         ];
 
@@ -46,7 +46,11 @@ class acym_archive_widget extends WP_Widget
                 $valueParam = implode(',', $valueParam);
             }
 
-            $valueParam = esc_attr($valueParam);
+            if (in_array($keyParam, ['popup', 'displayUserListOnly'])) {
+                $valueParam = (bool)$valueParam;
+            } else {
+                $valueParam = esc_attr($valueParam);
+            }
         }
 
         echo '<div class="acyblock">';

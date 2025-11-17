@@ -1,5 +1,5 @@
 {
-    "max_version": "10.5.0",
+    "max_version": "10.6.0",
     "splash_content": [
         {
             "menu_title": "General",
@@ -7,12 +7,32 @@
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "Follow-up campaigns: new trigger",
-                    "desc": "The follow-up campaigns can now be triggered when a user confirms their email address."
+                    "title": "Subscription forms links",
+                    "desc": "You can now add a link in the subscription form to redirect to the privacy policy and terms of service pages instead of opening them in a popup."
                 },
                 {
-                    "title": "Improved security and reliability",
-                    "desc": "We improved security and reliability of our code by adding new automated tests."
+                    "title": "Direct unsubscribe link with redirection",
+                    "desc": "We added the possibility to insert a direct unsubscribe link with a redirection option in your emails, that will unsubscribe the user from the campaign's lists with one click even if you have enabled the unsubscribe page."
+                },
+                {
+                    "title": "Detailed statistics export",
+                    "desc": "A new option is available in the Data Collection tab to choose the separator to use in the CSV export files for statistics export."
+                },
+                {
+                    "title": "User export in automations",
+                    "desc": "It is now possible to dynamically add the time to the exported files for the user export action in automations, to generate a file per time period."
+                },
+                {
+                    "title": "Internal improvements",
+                    "desc": "The internal structure of the extension has been improved to increase security and stability."
+                },
+                {
+                    "title": "RTL support in notifications center",
+                    "desc": "The notifications center now handles RTL languages and multiple notifications can be removed at once."
+                },
+                {
+                    "title": "Scenarios unsubscribe",
+                    "desc": "We added the possibility to unsubscribe from a scenario's emails using the unsubscribe link."
                 }
             ]
         },
@@ -22,32 +42,16 @@
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "RSEventsPro: featured events first",
-                    "desc": "We added a setting in the email editor with RSEventsPro to display featured events first in the inserted events list."
+                    "title": "EventBooking time in emails",
+                    "desc": "A new option lets you hide the time in event dates for EventBooking."
                 },
                 {
-                    "title": "Zoo: new field types and selection",
-                    "desc": "The Zoo integration add-on now handles more field types and lets you select which fields to insert in your emails."
+                    "title": "Joomla 6 compatibility",
+                    "desc": "Modifications have been made for a better compatibility with Joomla 6."
                 },
                 {
-                    "title": "Community Builder: new exclusion conditions",
-                    "desc": "The way users are filtered in the Community Builder Subscription integration has been improved to also include AcyMailing users with no subscription when you select an exclusion condition."
-                },
-                {
-                    "title": "RSEventsPro fix menu item",
-                    "desc": "We fixed the menu item ID option for RSEventsPro."
-                },
-                {
-                    "title": "Compatibility with SEBLOD",
-                    "desc": "We fixed a compatibility issue with SEBLOD latest version."
-                },
-                {
-                    "title": "Follow-up campaigns: fix add-on activation",
-                    "desc": "We fixed an error that blocked the display of the follow-up campaigns listing when you deactivate an add-on used in one of the follow-up campaigns."
-                },
-                {
-                    "title": "Automation: fix blank page",
-                    "desc": "We fixed an error that could occur when trying to create an automation that caused a blank page to be shown."
+                    "title": "ACL improvements",
+                    "desc": "The Joomla ACL system was not applied for managers and administrators. You can now restrict access to AcyMailing without needing to change the AcyMailing advanced ACL."
                 }
             ]
         },
@@ -57,20 +61,8 @@
             "title": "WHAT CHANGED FOR WORDPRESS",
             "articles": [
                 {
-                    "title": "WordPress standards",
-                    "desc": "Default templates are now stored differently to better match WordPress standards."
-                },
-                {
-                    "title": "Auto-update fix",
-                    "desc": "In some cases the auto-update of AcyMailing could install the free version instead of the current edition. The update process has been reworked to avoid this."
-                },
-                {
-                    "title": "AcyMailing header fix",
-                    "desc": "We fixed an issue that could occur on some new WordPress installations where the AcyMailing header caused a fatal error in the plugin."
-                },
-                {
-                    "title": "Contact Form 7 fix",
-                    "desc": "Fixed an issue with Contact Form 7 integration, preventing the subscriber creation"
+                    "title": "GDPR data export",
+                    "desc": "The AcyMailing user data is now added to the WordPress user data export system."
                 }
             ]
         },
@@ -80,20 +72,24 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Subscription form: fix double display",
-                    "desc": "The subscription form in popup mode could be shown twice in some cases, this has been fixed."
+                    "title": "Template duplication",
+                    "desc": "When duplicating a template, its previous creator ID was copied. It now correctly takes the ID of the user that duplicated the template."
                 },
                 {
-                    "title": "Security: fix base64 image loading",
-                    "desc": "We added a security when loading base64 encoded images in the editor."
+                    "title": "Bounce address connection for POP3",
+                    "desc": "The connection to the bounce address has been fixed for the POP3 protocol without IMAP in some cases."
                 },
                 {
-                    "title": "Email: fix email without email address",
-                    "desc": "We have fixed the error that could occur when sending a campaign to users without an email address."
+                    "title": "Multilingual welcome email",
+                    "desc": "Saving an alternate version of a welcome email when the multilingual option is active doesn't replace the original version anymore."
                 },
                 {
-                    "title": "Editor: fix video loading",
-                    "desc": "We fixed an issue when loading videos in the editor video block."
+                    "title": "RSS feed authors",
+                    "desc": "The authors are now correctly shown when inserting RSS feed items and its shortcode in custom views is now working properly."
+                },
+                {
+                    "title": "Default templates",
+                    "desc": "We fixed the reinstallation of default templates which created empty templates."
                 }
             ]
         }

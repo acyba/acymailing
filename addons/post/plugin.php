@@ -80,7 +80,7 @@ class plgAcymPost extends AcymPlugin
         }
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -97,7 +97,7 @@ class plgAcymPost extends AcymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -106,7 +106,7 @@ class plgAcymPost extends AcymPlugin
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT post.*
                     FROM #__posts AS post
@@ -119,12 +119,12 @@ class plgAcymPost extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
         $this->prepareWPCategories('category');
@@ -258,7 +258,7 @@ class plgAcymPost extends AcymPlugin
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT post.ID, post.post_title, post.post_date, post.post_content ';
         $this->query = 'FROM #__posts AS post ';
@@ -314,14 +314,14 @@ class plgAcymPost extends AcymPlugin
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->initAcfData();
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -365,7 +365,7 @@ class plgAcymPost extends AcymPlugin
         return $this->generateCampaignResult;
     }
 
-    protected function groupByCategory($elements)
+    protected function groupByCategory(array $elements): array
     {
         if (!$this->groupedByCategory || empty($elements)) return $elements;
 
@@ -393,7 +393,7 @@ class plgAcymPost extends AcymPlugin
         return $elements;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $allowedStatuses = ['publish'];
         $allowedStatuses = acym_triggerCmsHook('onAcymPostInsertion', [$allowedStatuses], false);
@@ -569,9 +569,8 @@ class plgAcymPost extends AcymPlugin
         }
     }
 
-    protected function getTranslationId($elementId, $translationTool, $defaultLanguage = false)
+    protected function getTranslationId(int $elementId, string $translationTool, bool $defaultLanguage = false): int
     {
-        $elementId = intval($elementId);
         $languageCode = $this->emailLanguage;
 
         if ($defaultLanguage) {

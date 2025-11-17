@@ -14,42 +14,35 @@ class ZoneClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function save($element)
+    public function save(object $element): ?int
     {
-        $element = clone $element;
-        $element->name = strip_tags($element->name);
-        $element->content = base64_encode($element->content);
+        $zone = clone $element;
+        $zone->name = strip_tags($zone->name);
+        $zone->content = base64_encode($zone->content);
 
-        return parent::save($element);
+        return parent::save($zone);
     }
 
-    public function getOneById($id)
+    public function getOneById(int $id): ?object
     {
         $element = parent::getOneById($id);
 
-        return $this->decodeContent($element);
+        return empty($element) ? null : $this->decodeContent($element);
     }
 
-    public function getOneByName($name)
+    public function getOneByName(string $name): ?object
     {
         $element = acym_loadObject('SELECT * FROM #__acym_custom_zone WHERE name = '.acym_escapeDB($name));
 
-        return $this->decodeContent($element);
-    }
-
-    private function decodeContent($element)
-    {
-        if (empty($element->content)) return $element;
-
-        $element->content = base64_decode($element->content);
-
-        return $element;
+        return empty($element) ? null : $this->decodeContent($element);
     }
 
     public function getAll(?string $key = null): array
     {
         $elements = parent::getAll();
-        if (empty($elements)) return $elements;
+        if (empty($elements)) {
+            return $elements;
+        }
 
         foreach ($elements as $i => $element) {
             $elements[$i] = $this->decodeContent($element);
@@ -58,12 +51,9 @@ class ZoneClass extends AcymClass
         return $elements;
     }
 
-    public function delete($elements)
+    public function delete(array $elements): int
     {
         if (empty($elements)) return 0;
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
 
         foreach ($elements as $oneElementId) {
             $zone = $this->getOneById($oneElementId);
@@ -73,5 +63,16 @@ class ZoneClass extends AcymClass
         }
 
         return parent::delete($elements);
+    }
+
+    private function decodeContent(object $element): object
+    {
+        if (empty($element->content)) {
+            return $element;
+        }
+
+        $element->content = base64_decode($element->content);
+
+        return $element;
     }
 }

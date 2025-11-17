@@ -21,6 +21,11 @@ class AcymParameter
         }
     }
 
+    /**
+     * @param mixed $default
+     *
+     * @return mixed
+     */
     public function get(string $path, $default = null)
     {
         if (empty($this->paramObject)) {

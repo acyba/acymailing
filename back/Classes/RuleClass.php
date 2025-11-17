@@ -27,14 +27,14 @@ class RuleClass extends AcymClass
         return $rules;
     }
 
-    public function getOneById($id)
+    public function getOneById(int $id): ?object
     {
         $rule = acym_loadObject('SELECT * FROM `#__acym_rule` WHERE `id` = '.intval($id));
 
-        return $this->prepareRule($rule);
+        return empty($rule) ? null : $this->prepareRule($rule);
     }
 
-    private function prepareRule($rule)
+    private function prepareRule(object $rule): object
     {
         //We have a rule from the database, let's prepare it to be displayed nicely
         $columns = ['executed_on', 'action_message', 'action_user'];
@@ -47,21 +47,21 @@ class RuleClass extends AcymClass
         return $rule;
     }
 
-    public function save($rule)
+    public function save(object $element): ?int
     {
-        if (empty($rule)) {
-            return false;
+        if (empty($element)) {
+            return null;
         }
 
-        return parent::save($rule);
+        return parent::save($element);
     }
 
-    public function getOrderingNumber()
+    public function getOrderingNumber(): int
     {
-        return acym_loadResult('SELECT COUNT(`id`) FROM #__acym_rule');
+        return (int)acym_loadResult('SELECT COUNT(`id`) FROM #__acym_rule');
     }
 
-    public function cleanTable()
+    public function cleanTable(): void
     {
         acym_query('TRUNCATE TABLE `#__acym_rule`');
     }

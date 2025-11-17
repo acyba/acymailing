@@ -130,7 +130,7 @@ class PaginationHelper extends AcymObject
         $listLimitSelect = acym_getVar('int', 'acym_pagination_element_per_page', 0);
 
         if (!empty($listLimitSelect) && $listLimitSelect !== $currentConfig) {
-            $this->config->save(['list_limit_'.$currentUserId => $listLimitSelect]);
+            $this->config->saveConfig(['list_limit_'.$currentUserId => $listLimitSelect]);
             $currentConfig = $listLimitSelect;
         }
 

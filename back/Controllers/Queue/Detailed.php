@@ -60,8 +60,13 @@ trait Detailed
             '<i class="acymicon-paper-plane"></i>'.acym_translation('ACYM_SEND_ALL'),
             '',
             null,
-            'data-reveal-larger',
-            'class="cell medium-shrink button" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
+            ['data-reveal-larger' => true],
+            [
+                'class' => 'cell medium-shrink button',
+                'data-reload' => 'true',
+                'data-ajax' => 'true',
+                'data-iframe' => '&ctrl=queue&task=continuesend&id=0&totalsend=0',
+            ]
         );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addFilterByTag($data, 'dqueue_tag', 'acym__queue__filter__tags acym__select');

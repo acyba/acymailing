@@ -75,7 +75,7 @@ trait ContactRegistration
 
 						<div class="cell xlarge-3 medium-5">
 							<label for="acym__config__regacy__contact-autolists">
-                                <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC'); ?>
+                                <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info(['textShownInTooltip' => 'ACYM_AUTO_SUBSCRIBE_TO_DESC']); ?>
 							</label>
 						</div>
 						<div class="cell xlarge-4 medium-7">

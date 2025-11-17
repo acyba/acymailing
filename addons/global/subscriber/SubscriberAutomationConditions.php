@@ -32,7 +32,7 @@ trait SubscriberAutomationConditions
         }
     }
 
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $userClass = new UserClass();
         $fieldClass = new FieldClass();
@@ -85,7 +85,7 @@ trait SubscriberAutomationConditions
         $conditions['user']['acy_field']->option = ob_get_clean();
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

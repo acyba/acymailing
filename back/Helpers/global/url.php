@@ -79,28 +79,28 @@ function acym_absoluteURL(string $text): string
     return preg_replace($replace, $replaceBy, $text);
 }
 
-function acym_mainURL(&$link)
+function acym_mainURL(string &$link): string
 {
-    static $mainurl = '';
-    static $otherarguments = false;
-    if (empty($mainurl)) {
+    static $baseUrl = '';
+    static $otherArguments = false;
+    if (empty($baseUrl)) {
         $urls = parse_url(ACYM_LIVE);
         if (isset($urls['path']) && strlen($urls['path']) > 0) {
-            $mainurl = substr(ACYM_LIVE, 0, strrpos(ACYM_LIVE, $urls['path'])).'/';
-            $otherarguments = trim(str_replace($mainurl, '', ACYM_LIVE), '/');
-            if (strlen($otherarguments) > 0) {
-                $otherarguments .= '/';
+            $baseUrl = substr(ACYM_LIVE, 0, strrpos(ACYM_LIVE, $urls['path'])).'/';
+            $otherArguments = trim(str_replace($baseUrl, '', ACYM_LIVE), '/');
+            if (strlen($otherArguments) > 0) {
+                $otherArguments .= '/';
             }
         } else {
-            $mainurl = ACYM_LIVE;
+            $baseUrl = ACYM_LIVE;
         }
     }
 
-    if ($otherarguments && strpos($link, $otherarguments) === false) {
-        $link = $otherarguments.$link;
+    if ($otherArguments && strpos($link, $otherArguments) === false) {
+        $link = $otherArguments.$link;
     }
 
-    return $mainurl;
+    return $baseUrl;
 }
 
 function acym_currentURL(): string
@@ -149,7 +149,7 @@ function acym_internalUrlToPath(string $url): string
     return $url;
 }
 
-function acym_isValidUrl($url): bool
+function acym_isValidUrl(string $url): bool
 {
     // If this option is not activated in the php.ini file, we return true because the function get_headers will not work
     if (empty(ini_get('allow_url_fopen'))) {

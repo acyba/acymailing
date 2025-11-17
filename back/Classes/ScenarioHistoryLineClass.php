@@ -15,22 +15,13 @@ class ScenarioHistoryLineClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function save($element)
+    public function save(object $element): ?int
     {
         if (isset($element->params) && is_array($element->params)) {
             $element->params = json_encode($element->params);
         }
 
         return parent::save($element);
-    }
-
-    private function formatHistoryLine($historyLine)
-    {
-        if (!empty($historyLine->params)) {
-            $historyLine->params = json_decode($historyLine->params);
-        }
-
-        return $historyLine;
     }
 
     public function getAllByProcessId(int $processId): array
@@ -85,5 +76,14 @@ class ScenarioHistoryLineClass extends AcymClass
         $results['total'] = acym_loadObject($queryCount);
 
         return $results;
+    }
+
+    private function formatHistoryLine(object $historyLine): object
+    {
+        if (!empty($historyLine->params)) {
+            $historyLine->params = json_decode($historyLine->params);
+        }
+
+        return $historyLine;
     }
 }

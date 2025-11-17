@@ -1,6 +1,6 @@
 <?php
 
-function acym_getModuleFormName()
+function acym_getModuleFormName(): string
 {
     static $i = 1;
 
@@ -11,7 +11,7 @@ function acym_getModuleFormName()
 /**
  * $params Is mainly an AcymParameter, but is of unknown type in the subscription module (mod_acym.php)
  */
-function acym_initModule($params = null, $options = [])
+function acym_initModule(?object $params = null, array $options = []): void
 {
     if (acym_isAjax()) {
         return;

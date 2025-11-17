@@ -16,7 +16,7 @@
             echo acym_switch(
                 'config[generate_name]',
                 $this->config->get('generate_name'),
-                acym_translation('ACYM_GENERATE_NAME').acym_info('ACYM_GENERATE_NAME_DESC'),
+                acym_translation('ACYM_GENERATE_NAME').acym_info(['textShownInTooltip' => 'ACYM_GENERATE_NAME_DESC']),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto'
@@ -28,7 +28,7 @@
             echo acym_switch(
                 'config[require_confirmation]',
                 $this->config->get('require_confirmation'),
-                acym_translation('ACYM_REQUIRE_CONFIRMATION').acym_info('ACYM_REQUIRE_CONFIRMATION_DESC'),
+                acym_translation('ACYM_REQUIRE_CONFIRMATION').acym_info(['textShownInTooltip' => 'ACYM_REQUIRE_CONFIRMATION_DESC']),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
@@ -62,7 +62,7 @@
 		<div class="cell medium-3">
             <?php
             echo acym_translation('ACYM_ALLOW_MODIFICATION_UNAUTH');
-            echo '&nbsp;'.acym_info('ACYM_ALLOW_MODIFICATION_DESC');
+            echo '&nbsp;'.acym_info(['textShownInTooltip' => 'ACYM_ALLOW_MODIFICATION_DESC']);
             ?>
 		</div>
 		<div class="cell medium-9">
@@ -80,7 +80,7 @@
             echo acym_switch(
                 'config[extra_errors]',
                 $this->config->get('extra_errors'),
-                acym_translation('ACYM_EXTRA_ERRORS').acym_info('ACYM_EXTRA_ERRORS_DESC'),
+                acym_translation('ACYM_EXTRA_ERRORS').acym_info(['textShownInTooltip' => 'ACYM_EXTRA_ERRORS_DESC']),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
@@ -275,7 +275,7 @@
                         } ?>
 						<div class="cell grid-x acym__customs__change margin-bottom-1" id="acym__customs__answer">
 							<label class="cell large-3 margin-top-1" for="unsubscribe_survey">
-                                <?php echo acym_translation('ACYM_CUSTOM_SURVEY').acym_info('ACYM_CUSTOM_SURVEY_DESC'); ?>
+                                <?php echo acym_translation('ACYM_CUSTOM_SURVEY').acym_info(['textShownInTooltip' => 'ACYM_CUSTOM_SURVEY_DESC']); ?>
 							</label>
 							<div class="cell grid-x acym__listing">
 								<div class="acym__customs__answers__listing__sortable cell medium-6 grid-x">
@@ -317,7 +317,7 @@
                             echo acym_switch(
                                 'config[unsubpage_languages_multi_only]',
                                 $this->config->get('unsubpage_languages_multi_only', 0),
-                                acym_translation('ACYM_UNSUBSCRIBE_USED_LANGUAGE').acym_info('ACYM_UNSUBSCRIBE_USED_LANGUAGE_DESC'),
+                                acym_translation('ACYM_UNSUBSCRIBE_USED_LANGUAGE').acym_info(['textShownInTooltip' => 'ACYM_UNSUBSCRIBE_USED_LANGUAGE_DESC']),
                                 [],
                                 'xlarge-3 medium-5 small-9'
                             );
@@ -418,7 +418,7 @@
 				<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 				<div class="cell xlarge-3 medium-5">
 					<label for="acym__config__regacy-lists">
-                        <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC'); ?>
+                        <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info(['textShownInTooltip' => 'ACYM_DISPLAYED_LISTS_DESC']); ?>
 					</label>
 				</div>
 				<div class="cell xlarge-4 medium-7">
@@ -437,7 +437,7 @@
 
 				<div class="cell xlarge-3 medium-5">
 					<label for="acym__config__regacy-checkedlists">
-                        <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC'); ?>
+                        <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info(['textShownInTooltip' => 'ACYM_LISTS_CHECKED_DEFAULT_DESC']); ?>
 					</label>
 				</div>
 				<div class="cell xlarge-4 medium-7">
@@ -456,7 +456,7 @@
 
 				<div class="cell xlarge-3 medium-5">
 					<label for="acym__config__regacy-autolists">
-                        <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC'); ?>
+                        <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info(['textShownInTooltip' => 'ACYM_AUTO_SUBSCRIBE_TO_DESC']); ?>
 					</label>
 				</div>
 				<div class="cell xlarge-4 medium-7">
@@ -508,7 +508,10 @@
 					</div>
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__regacy-listsposition">
-                            <?php echo acym_escape(acym_translation('ACYM_HTML_REGISTRATION_FORM_STRUCTURE')).acym_info('ACYM_HTML_REGISTRATION_FORM_STRUCTURE_DESC'); ?>
+                            <?php
+                            echo acym_escape(acym_translation('ACYM_HTML_REGISTRATION_FORM_STRUCTURE'));
+                            echo acym_info(['textShownInTooltip' => 'ACYM_HTML_REGISTRATION_FORM_STRUCTURE_DESC']);
+                            ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">

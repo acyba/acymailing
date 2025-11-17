@@ -64,7 +64,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 										class="button-secondary button margin-top-0 margin-bottom-2 margin-right-0 cell medium-shrink">
                                     <?php echo acym_translation('ACYM_REFRESH_ARCHIVE'); ?>
 								</button>
-                                <?php echo acym_info('ACYM_REFRESH_ARCHIVE_DESC'); ?>
+                                <?php echo acym_info(['textShownInTooltip' => 'ACYM_REFRESH_ARCHIVE_DESC']); ?>
 								<div id="acym__campaigns__summary__refresh__archive__message"></div>
 							</div>
                         <?php } ?>
@@ -115,7 +115,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 						<b>
                             <?php
                             echo acym_translation('ACYM_RECIPIENTS');
-                            echo ' ('.$data['nbSubscribers'].' '.acym_translation('ACYM_SUBSCRIBERS').acym_info('ACYM_SUMMARY_NUMBER_RECEIVERS_DESC').')';
+                            echo ' ('.$data['nbSubscribers'].' '.acym_translation('ACYM_SUBSCRIBERS').acym_info(['textShownInTooltip' => 'ACYM_SUMMARY_NUMBER_RECEIVERS_DESC']).')';
                             ?>
 						</b>
 					</h5>
@@ -138,7 +138,6 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                     'task' => 'usersSummary',
                                     'list_id' => $oneList->list_id,
                                 ],
-                                '',
                                 'acym__modal__users__summary__container'
                             );
                             echo '<div class="cell grid-x acym__listing__row">
@@ -393,7 +392,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                     acym_translation($buttonText),
                                     $popupData,
                                     'acym__acymailer__popup',
-                                    '',
+                                    [],
                                     ['class' => 'cell button medium-shrink'.$buttonClass]
                                 );
                             } else {

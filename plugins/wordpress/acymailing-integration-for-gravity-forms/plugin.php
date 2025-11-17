@@ -82,7 +82,7 @@ class plgAcymGravityforms extends AcymPlugin
             acym_logError('Error while subscribing user '.$user->email.' to lists '.implode(',', $lists)."\n Error: ".json_encode($userClass->errors), 'gravityforms');
         }
 
-        $subscribed = $userClass->subscribe($user->id, $lists);
+        $subscribed = $userClass->subscribe([$user->id], $lists);
 
         if (!$subscribed) {
             acym_logError('Error while subscribing user '.$user->email.' to lists '.implode(',', $lists), 'gravityforms');

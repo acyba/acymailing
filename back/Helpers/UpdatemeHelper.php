@@ -54,7 +54,7 @@ class UpdatemeHelper extends AcymObject
         return $return;
     }
 
-    public static function getLicenseInfo(bool $ajax): string
+    public static function getLicenseInfo(bool $ajax): ?int
     {
         // Get any error correctly
         ob_start();
@@ -78,7 +78,7 @@ class UpdatemeHelper extends AcymObject
 
         // Could not load the user information
         if (empty($userInformation)) {
-            $config->save(['lastlicensecheck' => time()]);
+            $config->saveConfig(['lastlicensecheck' => time()]);
             if ($ajax) {
                 acym_sendAjaxResponse(
                     '',
@@ -89,21 +89,22 @@ class UpdatemeHelper extends AcymObject
                     false
                 );
             } else {
-                return '';
+                return null;
             }
         }
 
-        $newConfig = new \stdClass();
+        $newConfig = [
+            'latestversion' => $userInformation['latestversion'],
+            'expirationdate' => $userInformation['expiration'],
+            'lastlicensecheck' => time(),
+            'isTrial' => empty($userInformation['isTrial']) ? 0 : 1,
+        ];
 
-        $newConfig->latestversion = $userInformation['latestversion'];
-        $newConfig->expirationdate = $userInformation['expiration'];
-        $newConfig->lastlicensecheck = time();
-        $newConfig->isTrial = empty($userInformation['isTrial']) ? 0 : 1;
-        $config->save($newConfig);
+        $config->saveConfig($newConfig);
 
         //check for plugins
         acym_checkPluginsVersion();
 
-        return $newConfig->lastlicensecheck;
+        return $newConfig['lastlicensecheck'];
     }
 }

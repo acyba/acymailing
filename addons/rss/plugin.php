@@ -49,7 +49,7 @@ class plgAcymRss extends AcymPlugin
         }
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -66,7 +66,7 @@ class plgAcymRss extends AcymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -74,14 +74,14 @@ class plgAcymRss extends AcymPlugin
         ];
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') return null;
 
         return $this->pluginDescription;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -136,12 +136,12 @@ class plgAcymRss extends AcymPlugin
         $this->pluginHelper->displayOptions($displayOptions, $this->name, 'simple', $this->defaultValues);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, $this->name);
         if (empty($tags)) return $this->generateCampaignResult;
@@ -325,7 +325,7 @@ class plgAcymRss extends AcymPlugin
             $contentText = $varFields['{desc}'];
         }
 
-        $varFields['{authors}'] = '';
+        $varFields['{author}'] = '';
         $varFields['{date}'] = '';
 
         if ($type === 'RSS') {
@@ -342,17 +342,17 @@ class plgAcymRss extends AcymPlugin
                 foreach ($authors as $oneAuthor) {
                     $textAuthors[] = $oneAuthor->__toString();
                 }
-                $varFields['{authors}'] = $textAuthors;
+                $varFields['{author}'] = implode(', ', $textAuthors);
             }
         } else {
             if ($oneFeed->author && $oneFeed->author->name) {
-                $varFields['{authors}'] = $oneFeed->author->name->__toString();
+                $varFields['{author}'] = $oneFeed->author->name->__toString();
             }
         }
 
-        if (in_array('author', $parameter->display) && !empty($varFields['{authors}'])) {
+        if (in_array('author', $parameter->display) && !empty($varFields['{author}'])) {
             $customFields[] = [
-                $varFields['{authors}'],
+                $varFields['{author}'],
                 acym_translation('ACYM_AUTHOR'),
             ];
         }

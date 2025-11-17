@@ -1,6 +1,6 @@
 <?php
 
-function acym_getEmailOverrides()
+function acym_getEmailOverrides(): array
 {
     $emailOverrides = [
         [
@@ -149,7 +149,7 @@ function acym_getEmailOverrides()
     return $emailOverrides;
 }
 
-function acym_getOverrideParamsByName($name)
+function acym_getOverrideParamsByName(string $name): array
 {
     $overridesParamsAll = [
         'joomla-resetPwd' => [

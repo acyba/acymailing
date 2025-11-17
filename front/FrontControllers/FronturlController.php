@@ -55,32 +55,30 @@ class FronturlController extends AcymController
             acym_redirect($urlObject->url);
         }
 
-        $urlClick = [
-            'mail_id' => $mailId,
-            'url_id' => $urlObject->id,
-            'click' => 1,
-            'user_id' => $userId,
-            'date_click' => acym_date('now', 'Y-m-d H:i:s'),
-        ];
+        $urlClick = new \stdClass();
+        $urlClick->mail_id = $mailId;
+        $urlClick->url_id = $urlObject->id;
+        $urlClick->click = 1;
+        $urlClick->user_id = $userId;
+        $urlClick->date_click = acym_date('now', 'Y-m-d H:i:s');
 
         $mailStatClass = new MailStatClass();
         $urlClickClass = new UrlClickClass();
         $urlClickClass->save($urlClick);
 
         if (empty($userStat->open)) {
-            $userStatToInsert = [];
-            $userStatToInsert['user_id'] = $userId;
-            $userStatToInsert['mail_id'] = $mailId;
-            $userStatToInsert['open'] = 1;
-            $userStatToInsert['open_date'] = acym_date('now', 'Y-m-d H:i:s');
+            $userStatToInsert = new \stdClass();
+            $userStatToInsert->user_id = $userId;
+            $userStatToInsert->mail_id = $mailId;
+            $userStatToInsert->open = 1;
+            $userStatToInsert->open_date = acym_date('now', 'Y-m-d H:i:s');
             $userStatClass->save($userStatToInsert);
 
-            $mailStatToInsert = [
-                'mail_id' => $mailId,
-                'open_unique' => 1,
-                'open_total' => 1,
-            ];
-            $mailStatClass->save($mailStatToInsert);
+            $mailStat = new \stdClass();
+            $mailStat->mail_id = $mailId;
+            $mailStat->open_unique = 1;
+            $mailStat->open_total = 1;
+            $mailStatClass->save($mailStat);
         }
 
         $clickStats = $urlClickClass->getOneByMailIdAndUserId($mailId, $userId);

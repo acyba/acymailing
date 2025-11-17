@@ -21,23 +21,26 @@ trait SubscriptionInsertion
     private $mailLists = [];
     private $userClass = null;
 
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         $others = [];
         $others['unsubscribe'] = ['name' => acym_translation('ACYM_UNSUBSCRIBE_LINK'), 'default' => 'ACYM_UNSUBSCRIBE'];
         $others['unsubscribeall'] = ['name' => acym_translation('ACYM_UNSUBSCRIBE_ALL_LISTS_LINK'), 'default' => 'ACYM_UNSUBSCRIBE_ALL_LISTS'];
+        $others['direct_unsubscribe'] = ['name' => acym_translation('ACYM_DIRECT_UNSUBSCRIBE_LINK'), 'default' => 'ACYM_UNSUBSCRIBE'];
         $others['confirm'] = ['name' => acym_translation('ACYM_CONFIRM_SUBSCRIPTION_LINK'), 'default' => 'ACYM_CONFIRM_SUBSCRIPTION'];
         $others['subscribe'] = ['name' => acym_translation('ACYM_SUBSCRIBE_LINK'), 'default' => 'ACYM_SUBSCRIBE'];
 
         ?>
 		<script type="text/javascript">
-            var openedLists = false;
-            var selectedSubscriptionDText = '';
+            let openedLists = false;
+            let openedDirectUnsubscribeRedirect = false;
+            let openedUnsubscribeAllRedirect = false;
+            let selectedSubscriptionDText = '';
 
             function changeSubscriptionTag(tagName) {
                 selectedSubscriptionDText = tagName;
@@ -54,15 +57,33 @@ trait SubscriptionInsertion
             }
 
             function setSubscriptionTag() {
-                var tag = '{' + selectedSubscriptionDText;
-                var lists = jQuery('#acym__popup__subscription__listids');
-
-                if ('subscribe' === selectedSubscriptionDText) {
-                    tag += '|lists:' + lists.html();
-                } else if (openedLists) {
+                if (openedLists && selectedSubscriptionDText !== 'subscribe') {
                     jQuery('#acym__popup__plugin__subscription__lists__modal').slideUp();
                     jQuery('#select_lists_zone').hide();
                     openedLists = false;
+                }
+                if (openedDirectUnsubscribeRedirect && selectedSubscriptionDText !== 'direct_unsubscribe') {
+                    jQuery('#acym__popup__plugin__direct_unsubscribe__modal').slideUp();
+                    openedDirectUnsubscribeRedirect = false;
+                }
+                if (openedUnsubscribeAllRedirect && selectedSubscriptionDText !== 'unsubscribeall') {
+                    jQuery('#acym__popup__plugin__unsubscribeall__modal').slideUp();
+                    openedUnsubscribeAllRedirect = false;
+                }
+
+                let tag = '{' + selectedSubscriptionDText;
+                let lists = jQuery('#acym__popup__subscription__listids');
+
+                if ('subscribe' === selectedSubscriptionDText) {
+                    tag += '|lists:' + lists.html();
+                }
+
+                if (selectedSubscriptionDText === 'direct_unsubscribe') {
+                    let redirect = jQuery('#acym__popup__direct_unsubscribe__redirect').val();
+                    if (redirect) tag += '|redirect:' + encodeURIComponent(redirect);
+                } else if (selectedSubscriptionDText === 'unsubscribeall') {
+                    let redirect = jQuery('#acym__popup__unsubscribeall__redirect').val();
+                    if (redirect) tag += '|redirect:' + encodeURIComponent(redirect);
                 }
 
                 tag += '}' + jQuery('#acym__popup__subscription__tagtext').val() + '{/' + selectedSubscriptionDText + '}';
@@ -76,10 +97,35 @@ trait SubscriptionInsertion
                 jQuery.acymModal();
                 jQuery('#acym__popup__plugin__subscription__lists__modal').slideDown();
                 jQuery('#select_lists_zone').toggle();
-                jQuery('#acym__popup__subscription__change').on('change', function () {
-                    var lists = JSON.parse(jQuery('#acym__modal__lists-selected').val());
+
+                jQuery('#acym__popup__subscription__change').off('change').on('change', function () {
+                    const lists = JSON.parse(jQuery('#acym__modal__lists-selected').val());
                     jQuery('#acym__popup__subscription__listids').html(lists.join());
                     changeSubscriptionTag('subscribe');
+                });
+            }
+
+            function displayDirectUnsubscribeRedirect() {
+                if (openedDirectUnsubscribeRedirect) return;
+                openedDirectUnsubscribeRedirect = true;
+                jQuery('#acym__popup__plugin__direct_unsubscribe__modal').slideDown();
+
+                jQuery('#acym__popup__direct_unsubscribe__redirect').off('input').on('input', function () {
+                    let redirectLink = jQuery(this).val();
+                    jQuery('#acym__popup__direct_unsubscribe__preview').html(redirectLink);
+                    changeSubscriptionTag('direct_unsubscribe');
+                });
+            }
+
+            function displayUnsubscribeAllRedirect() {
+                if (openedUnsubscribeAllRedirect) return;
+                openedUnsubscribeAllRedirect = true;
+                jQuery('#acym__popup__plugin__unsubscribeall__modal').slideDown();
+
+                jQuery('#acym__popup__unsubscribeall__redirect').off('input').on('input', function () {
+                    let redirectLink = jQuery(this).val();
+                    jQuery('#acym__popup__unsubscribeall__preview').html(redirectLink);
+                    changeSubscriptionTag('unsubscribeall');
                 });
             }
 		</script>
@@ -105,6 +151,10 @@ trait SubscriptionInsertion
             $onclick = "changeSubscriptionTag('".$tagname."');";
             if ($tagname == 'subscribe') {
                 $onclick .= 'displayLists();return false;';
+            } elseif ($tagname == 'direct_unsubscribe') {
+                $onclick .= 'displayDirectUnsubscribeRedirect();return false;';
+            } elseif ($tagname == 'unsubscribeall') {
+                $onclick .= 'displayUnsubscribeAllRedirect();return false;';
             }
             $text .= '<div class="grid-x small-12 cell acym__row__no-listing acym__listing__row__popup text-left"  onclick="'.$onclick.'" id="tr_'.$tagname.'" >';
             $text .= '<div class="cell small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['name'].'</div>';
@@ -115,10 +165,21 @@ trait SubscriptionInsertion
                     <div class="medium-10 text-left">';
         $text .= acym_modalPaginationLists(
             'acym__popup__subscription__change',
-            '',
-            false,
-            'style="display: none;" id="acym__popup__plugin__subscription__lists__modal"'
+            ''
         );
+        $text .= '
+			<div style="display: none;" id="acym__popup__plugin__direct_unsubscribe__modal" class="grid-x cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">
+				<label>'.acym_translation('ACYM_REDIRECTION_URL').'</label>
+				<input type="text" id="acym__popup__direct_unsubscribe__redirect" placeholder="https://example.com/unsubscribed" />
+				<p id="acym__popup__direct_unsubscribe__preview" class="acym_smalltext text-gray"></p>
+			</div>';
+
+        $text .= '
+			<div style="display: none;" id="acym__popup__plugin__unsubscribeall__modal" class="grid-x cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">
+				<label>'.acym_translation('ACYM_REDIRECTION_URL').'</label>
+				<input type="text" id="acym__popup__unsubscribeall__redirect" placeholder="https://example.com/all-unsubscribed" />
+    			<p id="acym__popup__unsubscribeall__preview" class="acym_smalltext text-gray"></p>
+			</div>';
         $text .= '  </div>
                     <div class="medium-1"></div>
 				</div>';
@@ -174,7 +235,7 @@ trait SubscriptionInsertion
         echo $text;
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $this->replacelisttags($email, $user, $send);
 
@@ -210,7 +271,7 @@ trait SubscriptionInsertion
         // Make sure we unsubscribe from the correct lists and not all the lists
         if (!empty($this->mailLists[$email->id])) {
             $userClass = $this->getUserClass();
-            $userLists = $userClass->getSubscriptionStatus($user->id, [], 1);
+            $userLists = $userClass->getSubscriptionStatus($user->id, [], UserClass::STATUS_SUBSCRIBED);
             if (!empty($userLists)) {
                 $commonLists = array_intersect($this->mailLists[$email->id], array_keys($userLists));
 
@@ -229,7 +290,7 @@ trait SubscriptionInsertion
         $email->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
     }
 
-    public function replaceContent(&$email, $send = true)
+    public function replaceContent(object &$email): void
     {
         $this->replaceSubscriptionTags($email);
         $this->replacemailtags($email);
@@ -535,7 +596,7 @@ trait SubscriptionInsertion
 
     private function replaceSubscriptionTags(&$email)
     {
-        $match = '#(?:{|%7B)(confirm|unsubscribe(?:\|[^}]+)*|unsubscribeall|subscribe(?:\|[^}]+)*)(?:}|%7D)(.*)(?:{|%7B)/(confirm|unsubscribe|unsubscribeall|subscribe)(?:}|%7D)#Uis';
+        $match = '#(?:{|%7B)(confirm|unsubscribe(?:\|[^}]+)*|unsubscribeall(?:\|[^}]+)*|direct_unsubscribe(?:\|[^}]+)*|subscribe(?:\|[^}]+)*)(?:}|%7D)(.*)(?:{|%7B)/(confirm|unsubscribe|direct_unsubscribe|unsubscribeall|subscribe)(?:}|%7D)#Uis';
         $variables = ['subject', 'body'];
         $found = false;
         $results = [];
@@ -594,15 +655,37 @@ trait SubscriptionInsertion
             }
 
             return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_subscribe acym_link">'.$allresults[2][$i].'</span></a>';
+        } elseif ($parameters->id === 'direct_unsubscribe') {
+            $mailId = $email->id;
+            $myLink = acym_frontendLink(
+                'frontusers&task=unsubscribe'
+                .'&userId={subscriber:id}'
+                .'&userKey={subscriber:key|urlencode}'
+                .'&direct=1'
+                .'&mail_id='.$mailId
+                .$lang
+            );
+            if (!empty($parameters->redirect)) {
+                $myLink .= '&redirectunsub='.urlencode($parameters->redirect);
+            }
+
+            if (empty($allresults[2][$i])) {
+                return $myLink;
+            }
+
+            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_unsubscribe_direct acym_link">'.$allresults[2][$i].'</span></a>';
         } else {
             $baseLink = 'frontusers'.$lang.'&mail_id='.$email->id;
             if ($parameters->id === 'unsubscribe') {
                 $unsubscribeLink = $baseLink.'&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}';
-				$unsubscribeLink .= '&'.acym_noTemplate();
+                $unsubscribeLink .= '&'.acym_noTemplate();
                 $unsubClass = 'acym_unsubscribe';
             } else {
                 $unsubscribeLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';
                 $unsubClass = 'acym_unsubscribe_all_lists';
+                if (!empty($parameters->redirect)) {
+                    $unsubscribeLink .= '&redirectunsub='.urlencode($parameters->redirect);
+                }
             }
 
             $needToCompleteLink = true;

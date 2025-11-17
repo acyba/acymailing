@@ -23,7 +23,7 @@ class ScenarioQueueClass extends AcymClass
         return acym_query('DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `step_id` IN ('.implode(',', $stepIds).')');
     }
 
-    public function getByProcessId(int $processId): ?\stdClass
+    public function getByProcessId(int $processId): ?object
     {
         $query = 'SELECT step.type, step.params, queue.execution_date FROM #__acym_scenario_queue AS `queue`
                     JOIN #__acym_scenario_step AS `step` ON step.id = queue.step_id

@@ -5,7 +5,7 @@ use AcyMailing\Classes\PluginClass;
 global $acymPlugins;
 global $acymAddonsForSettings;
 
-function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = null)
+function acym_trigger(string $method, array $args = [], ?string $plugin = null, ?callable $callbackOnePlugin = null): ?array
 {
     // On WordPress we load the addons before the tables are created on installation
     if (!in_array(acym_getPrefix().'acym_configuration', acym_getTableList())) {
@@ -38,7 +38,10 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
         // There may be an error here, but I don't know how to handle it. At least don't block the execution
         try {
             $value = call_user_func_array([$onePlugin, $method], $args);
-            if (isset($value)) $result[] = $value;
+            if (isset($value)) {
+                $result[] = $value;
+            }
+
             if (!empty($onePlugin->errors)) {
                 $onePlugin->errorCallback();
             }

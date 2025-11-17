@@ -6,12 +6,12 @@ trait EasysocialInsertion
 {
     private $esConfig;
 
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         acym_loadLanguageFile('com_easysocial', JPATH_SITE);
         acym_loadLanguageFile('com_easysocial', JPATH_ADMINISTRATOR);
@@ -79,7 +79,7 @@ trait EasysocialInsertion
         echo $text;
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $extractedTags = $this->pluginHelper->extractTags($email, $this->name.'field');
         if (empty($extractedTags)) return;
@@ -154,7 +154,7 @@ trait EasysocialInsertion
         $this->pluginHelper->replaceTags($email, $tags);
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -171,7 +171,7 @@ trait EasysocialInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -182,7 +182,7 @@ trait EasysocialInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT `event`.*, `eventdata`.start_gmt, `eventdata`.end_gmt, `eventdata`.all_day, avatars.large AS avatar 
 					FROM #__social_clusters AS `event` 
@@ -197,7 +197,7 @@ trait EasysocialInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         acym_loadLanguageFile('com_easysocial', JPATH_SITE);
         $this->defaultValues = $defaultValues;
@@ -298,7 +298,7 @@ trait EasysocialInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT event.*, `eventdata`.start_gmt ';
         $this->query = 'FROM `#__social_clusters` AS event ';
@@ -350,13 +350,13 @@ trait EasysocialInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         acym_loadLanguageFile('com_easysocial', JPATH_SITE);
         require_once JPATH_ADMINISTRATOR.'/components/com_easysocial/includes/foundry.php';
@@ -366,7 +366,7 @@ trait EasysocialInsertion
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $time = time();
 
@@ -422,7 +422,7 @@ trait EasysocialInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT `event`.*, `eventdata`.start_gmt, `eventdata`.end_gmt, `eventdata`.all_day, avatars.large AS avatar, avatars.storage  
 					FROM #__social_clusters AS `event` 

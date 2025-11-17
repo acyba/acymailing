@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait VirtuemartInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -36,7 +36,7 @@ trait VirtuemartInsertion
         }
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -45,10 +45,10 @@ trait VirtuemartInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $product = acym_loadResult('SELECT virtuemart_product_id FROM #__virtuemart_products ORDER BY virtuemart_product_id desc');
-        if (false === $this->loadLibraries('') || empty($product)) return;
+        if (false === $this->loadLibraries(null) || empty($product)) return;
         $vmProductModel = VmModel::getModel('product');
         // VirtueMart generates a PHP notice even when the correct data is passed
         $element = @$vmProductModel->getProduct($product, true, true, true, 1);
@@ -58,7 +58,7 @@ trait VirtuemartInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         if (!in_array(acym_getPrefix().'virtuemart_products_'.$this->lang, acym_getTableList())) {
             acym_display('The language '.$this->lang.' isn\'t in the VirtueMart\'s Language settings, make sure it is the case first.', 'error', false);
@@ -315,7 +315,7 @@ trait VirtuemartInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         acym_loadLanguageFile('com_virtuemart', JPATH_ADMINISTRATOR.'/components/com_virtuemart');
 
@@ -363,13 +363,13 @@ trait VirtuemartInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -419,7 +419,7 @@ trait VirtuemartInsertion
         return $this->generateCampaignResult;
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         acym_loadLanguageFile('com_virtuemart', JPATH_ADMINISTRATOR.DS.'components'.DS.'com_virtuemart');
 
@@ -437,7 +437,7 @@ trait VirtuemartInsertion
         return true;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $tag->shoppergroup = empty($tag->shoppergroup) ? 0 : intval($tag->shoppergroup);
 
@@ -637,7 +637,7 @@ trait VirtuemartInsertion
         $varFields['{price2}'] = empty($price2) ? 0 : $price2;
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $this->replaceCoupons($email, $user, $send);
     }

@@ -115,7 +115,7 @@ class ExportHelper extends AcymObject
         // 6 - Create the zip archive
         $zipFiles = [];
         $folders = acym_getFolders($exportFolder, '.', true, true);
-        array_push($folders, $exportFolder);
+        $folders[] = $exportFolder;
         foreach ($folders as $folder) {
             $files = acym_getFiles($folder, '.', false, true);
             foreach ($files as $file) {
@@ -199,7 +199,8 @@ class ExportHelper extends AcymObject
         $mailsStats = $mailClass->decode($mailsStats);
         acym_displayErrors();
 
-        $separator = '","';
+        $csvSeparator = $this->config->get('csv_separator', ',');
+        $separator = '"'.$csvSeparator.'"';
         $csvLines = [];
 
         $csvLines[] = $this->before.implode($separator, $columns).$this->after;

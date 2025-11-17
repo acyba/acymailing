@@ -371,8 +371,19 @@ const acym_editorWysidDynamic = {
         });
     },
     setDTexts: function () {
-        // We hide the real tabs system and show an other one above
+        // We hide the real tabs system and show another one above
         jQuery('#dtext_options').hide();
+
+        jQuery('#dtextcode').on('click', function () {
+            const $input = jQuery(this);
+            const shortcode = $input.val();
+
+            $input.trigger('select');
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(shortcode);
+            }
+        });
     }
 };
 

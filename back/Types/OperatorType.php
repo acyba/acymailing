@@ -6,8 +6,8 @@ use AcyMailing\Core\AcymObject;
 
 class OperatorType extends AcymObject
 {
-    public $values = [];
-    public $attributes = [];
+    public array $values = [];
+    public array $attributes = [];
 
     public function __construct()
     {
@@ -31,9 +31,11 @@ class OperatorType extends AcymObject
         $this->values[] = acym_selectOption('IS NOT NULL', 'IS NOT NULL');
     }
 
-    public function display($name, $valueSelected = '', $class = 'acym__select')
+    public function display(string $name, string $valueSelected = '', string $class = 'acym__select'): string
     {
-        if (empty($this->attributes['class'])) $this->attributes['class'] = $class;
+        if (empty($this->attributes['class'])) {
+            $this->attributes['class'] = $class;
+        }
 
         return acym_select($this->values, $name, $valueSelected, $this->attributes);
     }

@@ -14,18 +14,21 @@ const acym_helperNotification = {
 
         $button.off('click').on('click', function () {
             acym_helperNotification.readFullNotification();
-            let $notifButton = jQuery(this);
-            let $notificationCenter = jQuery('.acym__header__notification__center');
-            let notifButtonOffset = $notifButton.offset();
+            const $notifButton = jQuery(this);
+            const $notificationCenter = jQuery('.acym__header__notification__center');
+            const notifButtonOffset = $notifButton.offset();
 
             let left = (notifButtonOffset.left - $notificationCenter.width()) + $notifButton.width() + 'px';
-            let top = (notifButtonOffset.top + $notifButton.height()) + 10 + 'px';
+            if (jQuery('html').attr('dir') === 'rtl') {
+                left = '42px';
+            }
+
             $notificationCenter.css({
-                'top': top,
+                'top': (notifButtonOffset.top + $notifButton.height()) + 10 + 'px',
                 'left': left
             }).addClass('acym__header__notification__center__visible');
 
-            let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=markNotificationRead';
+            const ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=markNotificationRead';
 
             jQuery.post(ajaxUrl, function (res) {
                 jQuery('.acym__header__notification')
@@ -67,17 +70,16 @@ const acym_helperNotification = {
         });
     },
     removeNotifications: function () {
-        jQuery(
-            '.acym__header__notification__one__delete, .acym__header__notification__toolbox__remove, .acym__dashboard__notification__delete, .acym__do__not__remindme')
-            .on('click', function () {
-                let isDashboardNotif = jQuery(this).hasClass('acym__dashboard__notification__delete') || jQuery(this).hasClass('acym__do__not__remindme');
+        jQuery(document)
+            .on('click', '.acym__header__notification__one__delete, .acym__header__notification__toolbox__remove, .acym__dashboard__notification__delete, .acym__do__not__remindme', function () {
+                const isDashboardNotif = jQuery(this).hasClass('acym__dashboard__notification__delete') || jQuery(this).hasClass('acym__do__not__remindme');
                 let id = jQuery(this).attr('data-id');
 
                 if (!id) {
                     id = jQuery(this).attr('title');
                 }
 
-                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=removeNotification&id=' + id;
+                const ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=removeNotification&id=' + id;
 
                 jQuery.post(ajaxUrl, function (res) {
                     res = acym_helper.parseJson(res);

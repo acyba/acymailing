@@ -92,7 +92,7 @@ class SendinblueCredentials extends SendinblueClass
                             acym_translation('ACYM_REPORT_SEE'),
                             '',
                             null,
-                            '',
+                            [],
                             [
                                 'class' => 'button',
                                 'data-ajax' => 'true',
@@ -108,8 +108,8 @@ class SendinblueCredentials extends SendinblueClass
                         plgAcymSendinblue::SENDING_METHOD_NAME,
                         $delayType->display(
                             'config['.plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency]',
-                            $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 604800), // one week
-                            4
+                            $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 604800),
+                            DelayType::TYPE_WEEKS_MONTHS
                         )
                     ); ?>
 				</div>

@@ -58,6 +58,8 @@ class acym_subscriptionform_widget extends WP_Widget
             'subtextlogged' => '',
             'termscontent' => '0',
             'privacypolicy' => '0',
+            'termscontentURL' => '',
+            'privacypolicyURL' => '',
             'articlepopup' => '1',
             'unsub' => '0',
             'unsubtext' => '',
@@ -67,7 +69,7 @@ class acym_subscriptionform_widget extends WP_Widget
             'redirect' => '',
             'introtext' => '',
             'posttext' => '',
-            'userinfo' => '1',
+            'userinfo' => true,
             'formclass' => '',
             'alignment' => 'none',
             'source' => 'widget __i__',
@@ -75,18 +77,18 @@ class acym_subscriptionform_widget extends WP_Widget
         ];
         foreach ($params as $oneParam => &$value) {
             if (!empty($instance)) {
-                if (isset($instance[$oneParam])) {
-                    $value = $instance[$oneParam];
-                } else {
-                    $value = '';
-                }
+                $value = $instance[$oneParam] ?? '';
             }
 
             if (is_array($value)) {
                 $value = implode(',', $value);
             }
 
-            $value = esc_attr($value);
+            if ($oneParam === 'userinfo') {
+                $value = (bool)$value;
+            } else {
+                $value = esc_attr($value);
+            }
         }
 
         if (!isset($instance['hiddenlists']) && !empty($params['displists'])) {
@@ -249,6 +251,30 @@ class acym_subscriptionform_widget extends WP_Widget
                 'text',
                 $this->get_field_id('privacypolicy')
             ).'</p>';
+
+        echo '<p>
+            <label class="acyWPconfig" for="'.$this->get_field_id('termscontentURL').'">
+                '.acym_translation('ACYM_TERMS_CONDITIONS_URL').'
+            </label>
+            <input 
+                type="text" class="widefat"
+                id="'.$this->get_field_id('termscontentURL').'" 
+                name="'.$this->get_field_name('termscontentURL').'" 
+                value="'.$params['termscontentURL'].'" 
+            />
+        </p>';
+
+        echo '<p>
+            <label class="acyWPconfig" for="'.$this->get_field_id('privacypolicyURL').'">
+                '.acym_translation('ACYM_PRIVACY_POLICY_URL').'
+            </label>
+            <input 
+                type="text" class="widefat"
+                id="'.$this->get_field_id('privacypolicyURL').'" 
+                name="'.$this->get_field_name('privacypolicyURL').'" 
+                value="'.$params['privacypolicyURL'].'" 
+            />
+        </p>';
 
         //echo '<p><label class="acyWPconfig">'.acym_translation('ACYM_DISPLAY_ARTICLE_POPUP').'</label>';
         //echo acym_boolean($this->get_field_name('articlepopup'), $params['articlepopup'], $this->get_field_id('articlepopup'), array()).'</p>';

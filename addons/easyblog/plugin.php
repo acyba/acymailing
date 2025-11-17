@@ -64,7 +64,7 @@ class plgAcymEasyblog extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') return null;
 

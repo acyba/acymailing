@@ -77,6 +77,9 @@ trait Campaign
         $segmentId = acym_getVar('int', 'segmentId', 0);
         $isExclude = acym_getVar('boolean', 'exclude', false);
         $listsIds = json_decode(acym_getVar('string', 'lists', '[]'), true);
+        if (empty($listsIds)) {
+            $listsIds = [];
+        }
 
         if (empty($segmentId)) {
             acym_sendAjaxResponse('', ['count' => $this->countSegmentByParams([], $listsIds, $isExclude)]);
@@ -99,7 +102,7 @@ trait Campaign
         $segment->filters = json_encode($filters['filters']);
 
         $segmentId = $segmentClass->save($segment);
-        if ($segmentId) {
+        if (!empty($segmentId)) {
             acym_sendAjaxResponse(acym_translation('ACYM_SEGMENT_WELL_SAVE'), ['segment_id' => $segmentId]);
         } else {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_SAVE_SEGMENT'), [], false);

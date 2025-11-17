@@ -35,12 +35,7 @@ abstract class AcymView extends AcymObject
         return acym_getVar('cmd', 'layout', acym_getVar('cmd', 'task', 'listing'));
     }
 
-    public function setLayout($value): void
-    {
-        acym_setVar('layout', $value);
-    }
-
-    public function display($controller, $data = [])
+    public function display(object $controller, array $data = []): void
     {
         $name = $this->getName();
         $view = $this->getLayout();
@@ -107,13 +102,13 @@ abstract class AcymView extends AcymObject
                         acym_display($message, 'info', false);
                     } else {
                         $remindme[] = 'multilingual';
-                        $this->config->save(['remindme' => json_encode($remindme)]);
+                        $this->config->saveConfig(['remindme' => json_encode($remindme)]);
                     }
                 }
 
                 $maliciousScan = $this->config->get('malicious_scan', 0);
                 if (!empty($maliciousScan)) {
-                    $this->config->save(['malicious_scan' => 0]);
+                    $this->config->saveConfig(['malicious_scan' => 0]);
                     acym_display(acym_translation('ACYM_NEW_SECURITY_TOOL'), 'info');
                 }
             }
@@ -145,7 +140,7 @@ abstract class AcymView extends AcymObject
         $remind = json_decode($this->config->get('remindme', '[]'));
         $installationDate = $this->config->get('install_date', time());
 
-        if (!in_array('reviews', $remind) && !in_array($controller->name, ['dashboard', 'language']) && $installationDate < time() - 7 * 86400 && !acym_isAjax()) {
+        if (!in_array('reviews', $remind) && !in_array($controller->name, ['dashboard', 'language', 'campaigns']) && $installationDate < time() - 7 * 86400 && !acym_isAjax()) {
             echo '<div id="acym__reviews__footer" style="margin: 0 0 30px 30px;">';
             echo acym_translationSprintf(
                 'ACYM_REVIEW_FOOTER',

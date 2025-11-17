@@ -2,214 +2,216 @@
 
 namespace AcyMailing\Helpers;
 
+use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\UrlClickClass;
 use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Core\AcymObject;
 
 class UserHelper extends AcymObject
 {
-    public function exportdata(int $id): void
+    public function getUserData(object $user): array
     {
-        if (empty($id)) {
-            die(acym_translation('ACYM_USER_NOT_FOUND'));
-        }
+        $userData = [];
+        $this->prepareProfileData($user, $userData);
+        $this->prepareSubscriptionData($user, $userData);
+        $this->prepareStatisticsData($user, $userData);
+        $this->prepareClickStatisticsData($user, $userData);
 
+        return $userData;
+    }
+
+    private function prepareProfileData(object $user, array &$exportedData): void
+    {
         $userClass = new UserClass();
-        $user = $userClass->getOneByIdWithCustomFields($id);
-        if (empty($user)) {
-            die(acym_translation('ACYM_USER_NOT_FOUND'));
-        }
+        $userClass->getAllUserFields($user);
 
-        //We display errors... it will be easier to fix if a client has an issue!
-        acym_enqueueMessage(acym_translation('ACYM_ERROR'), 'error');
+        $profileData = [];
 
-        $dateFields = ['creation_date', 'userstats_open_date', 'userstats_send_date', 'urlclick_date_click'];
-        $excludedFields = ['id', 'cms_id', 'key', 'source'];
+        $fieldsClass = new FieldClass();
+        $fields = $fieldsClass->getAll('namekey');
 
-        // It will contain the generated xml with all the collected user data, and the files he uploaded
-        $exportFiles = [];
+        $uploadFolder = acym_rootURI().trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
+        $coreFields = ['confirmation_date', 'confirmation_ip', 'language'];
 
-        $xml = new \SimpleXMLElement('<xml/>');
-        $userNode = $xml->addChild('user');
-
-        $fields = acym_loadObjectList('SELECT name, field.option as options, type, value FROM #__acym_field as field', 'name');
-        $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
-
-
-        // User fields and global statistics
         foreach ($user as $column => $value) {
-            if (in_array($column, $excludedFields) || is_null($value) || strlen($value) === 0) {
+            if (is_null($value) || strlen($value) === 0) {
                 continue;
             }
 
-            if (in_array($column, $dateFields)) {
+            if ($column === 'confirmation_date') {
                 if (empty($value)) {
                     continue;
                 }
                 $value = acym_getDate($value, '%Y-%m-%d %H:%M:%S');
             }
 
-            if (empty($fields[$column])) {
-                $userNode->addChild($column, acym_escape($value));
+            if (empty($fields[$column]) || $fields[$column]->core == 1) {
+                if (in_array($column, $coreFields)) {
+                    $profileData[] = [
+                        'name' => ucfirst(str_replace('_', ' ', $column)),
+                        'value' => $value,
+                    ];
+                }
                 continue;
             }
 
-            if ($fields[$column]->type == 'date') {
-                $valueTmp = is_array(json_decode($value)) ? json_decode($value) : $value;
+            if ($fields[$column]->type === 'date') {
+                $decodedValue = @json_decode($value, true);
+                $valueTmp = is_array($decodedValue) ? $decodedValue : $value;
+
                 $value = is_array($valueTmp) ? implode('/', $valueTmp) : $valueTmp;
             }
 
-            if (in_array($fields[$column]->type, ["multiple_dropdown", "single_dropdown", "radio", "checkbox"])) {
-                $selectedValues = [];
-                if (!empty($fields[$column]->value)) {
-                    $options = json_decode($fields[$column]->value);
-                }
-                $valueTmp = is_array(json_decode($value)) || is_object(json_decode($value)) ? json_decode($value) : $value;
-                if (!is_array($valueTmp) && !is_string($valueTmp)) {
-                    foreach ($valueTmp as $key => $one) {
-                        $selectedValues[] = $key;
-                    }
-                } else {
-                    foreach ($options as $key => $optionVal) {
-                        if (is_string($valueTmp) && $optionVal->value == $valueTmp) {
-                            $selectedValues[] = !empty($optionVal->title) ? $optionVal->title : $optionVal->value;
-                        } elseif (!is_string($valueTmp) && in_array($optionVal->value, $valueTmp)) {
-                            $selectedValues[] = !empty($optionVal->title) ? $optionVal->title : $optionVal->value;
-                        }
-                    }
-                }
+            if (in_array($fields[$column]->type, ['gravatar', 'file'])) {
+                $value = $uploadFolder.'userfiles'.DS.$value;
+            }
 
-                $value = implode(',', $selectedValues);
-            } elseif (in_array($fields[$column]->type, ['gravatar', 'file'])) {
-                $data = acym_fileGetContent(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$value);
-                $value = str_replace('_', ' ', substr($value, strpos($value, '_')));
-                $exportFiles[] = [
-                    'name' => $value,
-                    'data' => $data,
-                ];
+            $profileData[] = [
+                'name' => $fields[$column]->name,
+                'value' => $value,
+            ];
+        }
+
+        $exportedData[] = [
+            'group_id' => 'acyprofile',
+            'group_label' => 'Newsletter profile',
+            'item_id' => 'user-'.$user->id,
+            'data' => $profileData,
+        ];
+    }
+
+    private function prepareSubscriptionData(object $user, array &$exportedData): void
+    {
+        $userClass = new UserClass();
+        $subscription = $userClass->getUserSubscriptionById($user->id);
+
+        if (empty($subscription)) {
+            return;
+        }
+
+        $subscriptionData = [];
+
+        foreach ($subscription as $oneSubscription) {
+            $listName = empty($oneSubscription->display_name) ? $oneSubscription->name : $oneSubscription->display_name;
+
+            $value = acym_translation('ACYM_SUBSCRIPTION_DATE').' '.acym_getDate($oneSubscription->subscription_date, '%Y-%m-%d %H:%M:%S');
+
+            if (!empty($oneSubscription->unsubscribe_date) && $oneSubscription->status == 0) {
+                $value .= ' / '.acym_translation('ACYM_UNSUBSCRIPTION_DATE').' '.acym_getDate($oneSubscription->unsubscribe_date, '%Y-%m-%d %H:%M:%S');
+            }
+
+            $subscriptionData[] = [
+                'name' => $listName,
+                'value' => $value,
+            ];
+        }
+
+        $exportedData[] = [
+            'group_id' => 'acysubscription',
+            'group_label' => acym_translation('ACYM_LISTS'),
+            'item_id' => 'subscription-'.$user->id,
+            'data' => $subscriptionData,
+        ];
+    }
+
+    private function prepareStatisticsData(object $user, array &$exportedData): void
+    {
+        $mailClass = new MailClass();
+        $userStatClass = new UserStatClass();
+        $statistics = $userStatClass->getAllUserStatByUserId($user->id);
+        if (empty($statistics)) {
+            return;
+        }
+        $statistics = $mailClass->decode($statistics);
+
+        foreach ($statistics as $oneStatistics) {
+            if (empty($oneStatistics->sent)) {
                 continue;
             }
 
-            $userNode->addChild($column, acym_escape($value));
-        }
+            $statisticsData = [];
+            $statisticsData[] = [
+                'name' => acym_translation('ACYM_EMAIL_SUBJECT'),
+                'value' => strlen($oneStatistics->subject) > 50 ? substr($oneStatistics->subject, 0, 50).'...' : $oneStatistics->subject,
+            ];
 
-        // Subscription statuses
-        $subscription = acym_loadObjectList(
-            'SELECT list.name, list.id, user_list.subscription_date, user_list.unsubscribe_date, user_list.status FROM #__acym_user_has_list AS user_list JOIN #__acym_list AS list ON list.id = user_list.list_id WHERE user_list.user_id = '.intval(
-                $id
-            )
-        );
-        if (!empty($subscription)) {
-            $dateFields = ['subscription_date', 'unsubscribe_date'];
-            $subscriptionNode = $xml->addChild('subscription');
+            $statisticsData[] = [
+                'name' => acym_translation('ACYM_SEND_DATE'),
+                'value' => acym_getDate($oneStatistics->send_date, '%Y-%m-%d %H:%M:%S'),
+            ];
 
-            foreach ($subscription as $oneSubscription) {
-                $list = $subscriptionNode->addChild('list');
+            $statisticsData[] = [
+                'name' => acym_translation('ACYM_OPENED'),
+                'value' => acym_translation(empty($oneStatistics->open) ? 'ACYM_NO' : 'ACYM_YES'),
+            ];
 
-                $oneSubscription = get_object_vars($oneSubscription);
-                foreach ($oneSubscription as $column => $value) {
-                    if (is_null($value) || strlen($value) === 0) {
-                        continue;
-                    }
-                    if (in_array($column, $dateFields)) {
-                        if (empty($value)) {
-                            continue;
-                        }
-                        $value = acym_getDate($value, '%Y-%m-%d %H:%M:%S');
-                    }
-                    if ($column == 'status') {
-                        $value = str_replace(['-1', '1', '2'], ['Unsubscribed', 'Subscribed', 'Waiting for confirmation'], $value);
-                    }
-                    $list->addChild($column, acym_escape($value));
-                }
+            if (!empty($oneStatistics->open_date)) {
+                $statisticsData[] = [
+                    'name' => acym_translation('ACYM_OPEN_DATE'),
+                    'value' => acym_getDate($oneStatistics->open_date, '%Y-%m-%d %H:%M:%S'),
+                ];
             }
-        }
 
-        // Statistics
-        $mailClass = new MailClass();
-        $statistics = $mailClass->decode(
-            acym_loadObjectList(
-                'SELECT mail.subject, user_stats.* FROM #__acym_user_stat AS user_stats JOIN #__acym_mail AS mail ON mail.id = user_stats.mail_id WHERE user_stats.user_id = '.intval(
-                    $id
-                )
-            )
-        );
-        if (!empty($statistics)) {
-            $dateFields = ['send_date', 'open_date'];
-            $excludedFields = ['user_id'];
-            $statisticsNode = $xml->addChild('statistics');
-
-            foreach ($statistics as $oneStat) {
-                $detailedStat = $statisticsNode->addChild('email');
-
-                $oneStat = get_object_vars($oneStat);
-                foreach ($oneStat as $column => $value) {
-                    if (in_array($column, $excludedFields) || is_null($value) || strlen($value) === 0) {
-                        continue;
-                    }
-
-                    if (in_array($column, $dateFields)) {
-                        if (empty($value)) {
-                            continue;
-                        }
-                        $value = acym_getDate($value, '%Y-%m-%d %H:%M:%S');
-                    }
-
-                    $detailedStat->addChild($column, acym_escape($value));
-                }
+            if (!empty($oneStatistics->device)) {
+                $statisticsData[] = [
+                    'name' => acym_translation('ACYM_DEVICE_COLUMN_STAT'),
+                    'value' => $oneStatistics->device,
+                ];
             }
-        }
 
-        // Click statistics
-        $clickStats = acym_loadObjectList(
-            'SELECT url.url, url_click.date_click 
-            FROM #__acym_url_click AS url_click 
-            JOIN #__acym_url AS url ON url.id = url_click.url_id 
-            WHERE url_click.user_id = '.intval($id)
-        );
-        if (!empty($clickStats)) {
-            $dateFields = ['date_click'];
-            $clickStatsNode = $xml->addChild('click_statistics');
-
-            foreach ($clickStats as $oneClick) {
-                $click = $clickStatsNode->addChild('click');
-
-                $oneClick = get_object_vars($oneClick);
-                foreach ($oneClick as $column => $value) {
-                    if (is_null($value) || strlen($value) === 0) {
-                        continue;
-                    }
-
-                    if (in_array($column, $dateFields)) {
-                        if (empty($value)) {
-                            continue;
-                        }
-                        $value = acym_getDate($value, '%Y-%m-%d %H:%M:%S');
-                    }
-
-                    $click->addChild($column, acym_escape($value));
-                }
+            if (!empty($oneStatistics->opened_with)) {
+                $statisticsData[] = [
+                    'name' => acym_translation('ACYM_OPENED_WITH_COLUMN_STAT'),
+                    'value' => $oneStatistics->opened_with,
+                ];
             }
+
+            $exportedData[] = [
+                'group_id' => 'acystatistics',
+                'group_label' => acym_translation('ACYM_STATISTICS'),
+                'item_id' => 'statistics-'.$user->id.'-'.$oneStatistics->mail_id,
+                'data' => $statisticsData,
+            ];
+        }
+    }
+
+    private function prepareClickStatisticsData(object $user, array &$exportedData): void
+    {
+        $urlClickClass = new UrlClickClass();
+        $statistics = $urlClickClass->getClicksByUserId($user->id);
+        if (empty($statistics)) {
+            return;
         }
 
-        $exportFiles[] = [
-            'name' => 'user_data.xml',
-            'data' => $xml->asXML(),
-        ];
+        foreach ($statistics as $oneStatistics) {
+            if (empty($oneStatistics->click)) {
+                continue;
+            }
 
-        // Create the zip
-        $tempFolder = ACYM_MEDIA.'tmp'.DS;
-        acym_createArchive($tempFolder.'export_data_user_'.$id, $exportFiles);
+            $statisticsData = [];
+            $statisticsData[] = [
+                'name' => acym_translation('ACYM_URL'),
+                'value' => strlen($oneStatistics->url) > 200 ? substr($oneStatistics->url, 0, 197).'...' : $oneStatistics->url,
+            ];
 
-        // Export the zip
-        $exportHelper = new ExportHelper();
-        $exportHelper->setDownloadHeaders('export_data_user_'.$id, 'zip');
-        readfile($tempFolder.'export_data_user_'.$id.'.zip');
+            $statisticsData[] = [
+                'name' => acym_translation('ACYM_CLICK_DATE'),
+                'value' => acym_getDate($oneStatistics->date_click, '%Y-%m-%d %H:%M:%S'),
+            ];
 
-        // Avoid issue when user cancels the download
-        ignore_user_abort(true);
-        // Delete the temp zip file
-        unlink($tempFolder.'export_data_user_'.$id.'.zip');
-        exit;
+            $statisticsData[] = [
+                'name' => acym_translation('ACYM_TOTAL_CLICKS'),
+                'value' => $oneStatistics->click,
+            ];
+
+            $exportedData[] = [
+                'group_id' => 'acyclickstatistics',
+                'group_label' => acym_translation('ACYM_USER_CLICK_DETAILS'),
+                'item_id' => 'clickstatistics-'.$user->id.'-'.$oneStatistics->url_id,
+                'data' => $statisticsData,
+            ];
+        }
     }
 }

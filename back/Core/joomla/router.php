@@ -32,7 +32,7 @@ function acym_addScript(bool $raw, string $script, array $params = []): string
     return 'acym_script';
 }
 
-function acym_addStyle(bool $raw, string $style)
+function acym_addStyle(bool $raw, string $style): void
 {
     $acyDocument = acym_getGlobal('doc');
 
@@ -47,7 +47,7 @@ function acym_addStyle(bool $raw, string $style)
     }
 }
 
-function acym_loadCmsScripts()
+function acym_loadCmsScripts(): void
 {
     $toggleController = acym_isAdmin() ? 'toggle' : 'fronttoggle';
     if (acym_isAdmin()) {
@@ -74,7 +74,7 @@ function acym_loadCmsScripts()
     acym_addScript(false, ACYM_JS.'libraries/jquery-ui.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'jquery-ui.min.js'));
 }
 
-function acym_redirect($url, $msg = '', $msgType = 'message', $safe = false)
+function acym_redirect(string $url, string $msg = '', string $msgType = 'message', bool $safe = false): void
 {
     $msg = acym_translation($msg);
     $acyapp = acym_getGlobal('app');
@@ -89,13 +89,13 @@ function acym_redirect($url, $msg = '', $msgType = 'message', $safe = false)
             acym_enqueueMessage($msg, $msgType);
         }
 
-        return $acyapp->redirect($url);
+        $acyapp->redirect($url);
     } else {
-        return $acyapp->redirect($url, $msg, $msgType);
+        $acyapp->redirect($url, $msg, $msgType);
     }
 }
 
-function acym_checkRedirect($redirectUrl)
+function acym_checkRedirect(string $redirectUrl): bool
 {
     $config = acym_config();
     $allowedHosts = $config->get('allowed_hosts', '');

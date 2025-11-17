@@ -7,8 +7,8 @@ use AcyMailing\Core\AcymObject;
 
 class FailActionType extends AcymObject
 {
-    public $values = [];
-    public $lists = [];
+    private array $values = [];
+    private array $lists = [];
 
     public function __construct()
     {
@@ -33,7 +33,7 @@ class FailActionType extends AcymObject
         acym_addScript(true, $js);
     }
 
-    public function display($num, $value)
+    public function display(string $num, string $value): string
     {
         $js = 'jQuery(document).ready(function($){ updateSubAction("'.$num.'"); });';
         acym_addScript(true, $js);

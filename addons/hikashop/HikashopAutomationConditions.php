@@ -4,7 +4,7 @@ use AcyMailing\Types\DelayType;
 
 trait HikashopAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $categories = [
             'any' => acym_translation('ACYM_ANY_CATEGORY'),
@@ -112,7 +112,6 @@ trait HikashopAutomationConditions
             $paymentMethods[$oneMethod->payment_id] = $oneMethod->payment_name;
         }
 
-        $delayType = new DelayType();
         $conditions['user']['hikareminder'] = new stdClass();
         $conditions['user']['hikareminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_REMINDER'));
         $conditions['user']['hikareminder']->option = '<div class="cell">';
@@ -160,7 +159,7 @@ trait HikashopAutomationConditions
         $conditions['user']['hikawishlist']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }
@@ -440,7 +439,7 @@ trait HikashopAutomationConditions
             $paymentMethods = acym_loadObjectList('SELECT `payment_id`, `payment_name` FROM #__hikashop_payment', 'payment_id');
 
             $delayType = new DelayType();
-            $delay = $delayType->get((int)$automationCondition['hikareminder']['days'], 1);
+            $delay = $delayType->get((int)$automationCondition['hikareminder']['days'], DelayType::TYPE_MINUTES_HOURS_DAYS_WEEKS);
 
             $paymentName = @$paymentMethods[$automationCondition['hikareminder']['payment']]->payment_name;
             if (empty($paymentName)) $paymentName = 'ACYM_ANY_PAYMENT_METHOD';

@@ -35,7 +35,10 @@
 				<i class="acymicon-idea acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_HAVE_SUGGESTION'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_HAVE_SUGGESTION_DESC'); ?></p>
-				<a href="<?php echo ACYM_ACYMAILING_WEBSITE; ?>contact/" target="_blank" class="button button-secondary" id="acym__followup__suggest__button"><?php echo acym_translation('ACYM_SUGGEST_IDEA'); ?></a>
+				<a href="<?php echo ACYM_ACYMAILING_WEBSITE; ?>contact/"
+				   target="_blank"
+				   class="button button-secondary"
+				   id="acym__followup__suggest__button"><?php echo acym_translation('ACYM_SUGGEST_IDEA'); ?></a>
 			</div>
 		</div>
         <?php

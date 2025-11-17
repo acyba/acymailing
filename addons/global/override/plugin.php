@@ -6,7 +6,7 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'OverrideInsertion.php';
 
 class plgAcymOverride extends AcymPlugin
 {
-	use OverrideInsertion;
+    use OverrideInsertion;
 
     public function __construct()
     {

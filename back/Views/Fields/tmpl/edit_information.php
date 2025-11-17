@@ -61,7 +61,7 @@ if (!empty($data['translation_languages'])) {
         <?php echo acym_switch(
             'field[required]',
             $data['field']->required,
-            acym_translation('ACYM_REQUIRED').acym_info('ACYM_REQUIRED_DESC'),
+            acym_translation('ACYM_REQUIRED').acym_info(['textShownInTooltip' => 'ACYM_REQUIRED_DESC']),
             [],
             'auto',
             'shrink',

@@ -6,7 +6,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Mail\MailHelper;
 
-defined('JPATH_PLATFORM') or die;
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.mail.helper');
 
@@ -426,7 +426,7 @@ class jMail_acym extends PHPMailer
         if (is_array($replyTo)) {
             $numReplyTo = count($replyTo);
 
-            for ($i = 0 ; $i < $numReplyTo ; $i++) {
+            for ($i = 0; $i < $numReplyTo; $i++) {
                 if ($this->addReplyTo($replyTo[$i], $replyToName[$i]) === false) {
                     return false;
                 }

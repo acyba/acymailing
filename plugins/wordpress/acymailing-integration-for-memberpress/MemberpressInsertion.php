@@ -2,29 +2,29 @@
 
 trait MemberpressInsertion
 {
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         ?>
-        <script type="text/javascript">
+		<script type="text/javascript">
             function changeMemberPressTag(tagname, element) {
                 if (!tagname) return;
                 setTag('{<?php echo esc_attr($this->name); ?>:' + tagname + '}', element);
             }
-        </script>
+		</script>
 
         <?php
         $fields = $this->getMeprCustomFields();
 
         if (empty($fields)) {
             ?>
-            <h2 class="cell text-center acym__title__primary__color margin-top-2">
+			<h2 class="cell text-center acym__title__primary__color margin-top-2">
                 <?php echo esc_html(acym_translationSprintf('ACYM_YOU_DONT_HAVE_PLUGIN_CUSTOM_FIELD', 'MemberPress')); ?>
-            </h2>
+			</h2>
             <?php
             return;
         }
@@ -52,7 +52,7 @@ trait MemberpressInsertion
         );
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $extractedTags = $this->pluginHelper->extractTags($email, $this->name);
         $fields = $this->getMeprCustomFields();

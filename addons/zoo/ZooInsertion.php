@@ -23,7 +23,7 @@ trait ZooInsertion
         'linkpro',
     ];
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -40,7 +40,7 @@ trait ZooInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -51,7 +51,7 @@ trait ZooInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT element.*, category.name AS cattitle ';
         $query .= 'FROM `#__zoo_item` AS element ';
@@ -66,7 +66,7 @@ trait ZooInsertion
         $this->initTypes();
     }
 
-    protected function getFilteringZone($categoryFilter = true): string
+    protected function getFilteringZone(bool $categoryFilter = true): string
     {
         $result = '<div class="grid-x margin-y" id="plugin_listing_filters">
                     <div class="cell">
@@ -92,7 +92,7 @@ trait ZooInsertion
         return $result;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -265,7 +265,7 @@ trait ZooInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         acym_loadLanguageFile('com_zoo', JPATH_ADMINISTRATOR);
         acym_loadLanguageFile('com_zoo', JPATH_ROOT);
@@ -273,7 +273,7 @@ trait ZooInsertion
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email): stdClass
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
 
@@ -329,7 +329,7 @@ trait ZooInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag): string
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT `element`.*, `app`.`application_group` 
                     FROM #__zoo_item AS `element` 

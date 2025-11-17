@@ -148,7 +148,7 @@ trait Patchv8
                 }
             }
 
-            $config->save(['acl_'.$page => implode(',', $groupsAuthorized)]);
+            $config->saveConfig(['acl_'.$page => implode(',', $groupsAuthorized)]);
         }
 
         $queries = file_get_contents(ACYM_BACK.'tables.sql');
@@ -323,9 +323,7 @@ trait Patchv8
         if (empty($socialIcons['X'])) {
             $socialIcons['X'] = ACYM_IMAGES.'logo/x.png';
 
-            $newConfig = new \stdClass();
-            $newConfig->social_icons = json_encode($socialIcons);
-            $config->save($newConfig);
+            $config->saveConfig(['social_icons' => json_encode($socialIcons)]);
         }
     }
 
@@ -337,20 +335,16 @@ trait Patchv8
 
         $socialIcons = json_decode($config->get('social_icons', '{}'), true);
 
-        if (!empty($socialIcons['X'])) {
-            unset($socialIcons['X']);
+        if (!empty($socialIcons['X']) || empty($socialIcons['x'])) {
+            if (!empty($socialIcons['X'])) {
+                unset($socialIcons['X']);
+            }
 
-            $newConfig = new \stdClass();
-            $newConfig->social_icons = json_encode($socialIcons);
-            $config->save($newConfig);
-        }
+            if (empty($socialIcons['x'])) {
+                $socialIcons['x'] = ACYM_IMAGES.'logo/x.png';
+            }
 
-        if (empty($socialIcons['x'])) {
-            $socialIcons['x'] = ACYM_IMAGES.'logo/x.png';
-
-            $newConfig = new \stdClass();
-            $newConfig->social_icons = json_encode($socialIcons);
-            $config->save($newConfig);
+            $config->saveConfig(['social_icons' => json_encode($socialIcons)]);
         }
     }
 
@@ -360,7 +354,7 @@ trait Patchv8
             return;
         }
 
-        $config->save(['malicious_scan' => 1]);
+        $config->saveConfig(['malicious_scan' => 1]);
     }
 
     private function updateFor881(ConfigurationClass $config): void
@@ -373,7 +367,7 @@ trait Patchv8
         $uploadFolder = $config->get('uploadfolder');
         if (!empty($uploadFolder) && strpos($uploadFolder, '\\') !== false) {
             $uploadFolder = str_replace('\\', '/', $uploadFolder);
-            $config->save(['uploadfolder' => $uploadFolder]);
+            $config->saveConfig(['uploadfolder' => $uploadFolder]);
         }
     }
 }

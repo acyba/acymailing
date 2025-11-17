@@ -135,6 +135,7 @@ const acym_editorWysidVersions = {
 
         // Set the new current version
         this.currentVersion = this.selectedVersion;
+        jQuery('#current_version').val(this.currentVersion);
     },
     showEdition: function () {
         jQuery('#acym__wysid__edit .acym__content > div').removeClass('is-hidden');

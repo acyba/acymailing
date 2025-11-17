@@ -147,7 +147,7 @@ trait Mail
 
     public function logoutForOAuth2Bounce(): void
     {
-        $this->config->save(
+        $this->config->saveConfig(
             [
                 'bounce_refresh_token' => '',
                 'bounce_refresh_token_expiration' => '',

@@ -25,7 +25,7 @@ function acym_addScript(bool $raw, string $script, array $params = []): string
     return $handle;
 }
 
-function acym_addStyle(bool $raw, string $style)
+function acym_addStyle(bool $raw, string $style): void
 {
     if ($raw) {
         echo '<style>'.$style.'</style>';
@@ -34,7 +34,7 @@ function acym_addStyle(bool $raw, string $style)
     }
 }
 
-function acym_loadCmsScripts()
+function acym_loadCmsScripts(): void
 {
     $toggleController = acym_isAdmin() ? 'toggle' : 'fronttoggle';
     acym_addScript(
@@ -56,7 +56,7 @@ function acym_loadCmsScripts()
     wp_enqueue_script('jquery-effects-slide');
 }
 
-function acym_redirect($url, $msg = '', $msgType = 'message', $safe = false)
+function acym_redirect(string $url, string $msg = '', string $msgType = 'message', bool $safe = false): void
 {
     if (acym_isAdmin() && substr($url, 0, 4) != 'http' && substr($url, 0, 4) != 'www.') {
         $url = acym_addPageParam($url);

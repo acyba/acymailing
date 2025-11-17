@@ -1,6 +1,6 @@
 <?php
 
-function acym_sendAjaxResponse($message = '', $data = [], $success = true)
+function acym_sendAjaxResponse(string $message = '', array $data = [], bool $success = true): void
 {
     $response = [
         'message' => $message,

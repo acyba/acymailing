@@ -91,7 +91,7 @@ trait Rule
 
         $res = $ruleClass->save($ruleObject);
 
-        if (!$res) {
+        if (empty($res)) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
         } else {
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));

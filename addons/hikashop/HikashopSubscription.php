@@ -22,9 +22,12 @@ trait HikashopSubscription
 			<div id="acym__configuration__subscription__integration-hikashop" class="grid-x" style="display:none;">
 				<div class="cell grid-x grid-margin-x">
                     <?php
-                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', $this->pluginDescription->name).acym_info(
-                            'ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC'
-                        );
+                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', $this->pluginDescription->name);
+                    $subOptionTxt .= acym_info(
+                        [
+                            'textShownInTooltip' => acym_translation('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC'),
+                        ]
+                    );
                     echo acym_switch(
                         'config[hikashop_sub]',
                         $this->config->get('hikashop_sub'),
@@ -40,7 +43,7 @@ trait HikashopSubscription
 				<div class="cell grid-x margin-y" id="acym__config__hikashop_sub">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__hikashop-text">
-                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'); ?>
+                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info(['textShownInTooltip' => 'ACYM_SUBSCRIBE_CAPTION_OPT_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -52,7 +55,7 @@ trait HikashopSubscription
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__hikashop-lists">
-                            <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC'); ?>
+                            <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info(['textShownInTooltip' => 'ACYM_DISPLAYED_LISTS_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -71,7 +74,7 @@ trait HikashopSubscription
 
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__hikashop-checkedlists">
-                            <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC'); ?>
+                            <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info(['textShownInTooltip' => 'ACYM_LISTS_CHECKED_DEFAULT_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -89,7 +92,7 @@ trait HikashopSubscription
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__hikashop-autolists">
-                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'); ?>
+                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info(['textShownInTooltip' => 'ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -192,6 +195,6 @@ trait HikashopSubscription
         if (empty($user->id)) return;
 
         // Subscribe the user
-        $userClass->subscribe($user->id, $listsToSubscribe);
+        $userClass->subscribe([$user->id], $listsToSubscribe);
     }
 }

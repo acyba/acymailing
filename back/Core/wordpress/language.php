@@ -40,14 +40,9 @@ global $acymLanguages;
 /**
  * Display the translation based on a key
  *
- * @param string $key                  The translation key used in AcyMailing language files
- * @param bool   $jsSafe               Whether or not the result should be escaped
- * @param bool   $interpretBackSlashes Interpret or not the \ like \t \n etc...
- * @param string $textdomain           Text domain of the key
- *
- * @return string
+ * @param bool $interpretBackSlashes Deprecated Interpret or not the \ like \t \n etc...
  */
-function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $textdomain = 'acymailing')
+function acym_translation(string $key, bool $jsSafe = false, bool $interpretBackSlashes = true, string $textdomain = 'acymailing'): string
 {
     // Return the key passed by default as it may be a random text instead of a key
     $translation = $key;
@@ -101,7 +96,7 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $
     return $translation;
 }
 
-function acym_setLanguage($lang)
+function acym_setLanguage(string $lang): string
 {
     global $acymLanguages;
     $previousLanguage = $acymLanguages['currentLanguage'];
@@ -113,7 +108,7 @@ function acym_setLanguage($lang)
 /**
  * Display the according translation
  */
-function acym_translationSprintf()
+function acym_translationSprintf(): string
 {
     $args = func_get_args();
     $args[0] = acym_translation($args[0]);
@@ -121,7 +116,7 @@ function acym_translationSprintf()
     return call_user_func_array('sprintf', $args);
 }
 
-function acym_getLanguages($uppercaseLangCode = false, $published = false)
+function acym_getLanguages(bool $uppercaseLangCode = false, bool $published = false): array
 {
     global $acyWPLangCodes;
 
@@ -159,7 +154,7 @@ function acym_getLanguages($uppercaseLangCode = false, $published = false)
     return $result;
 }
 
-function acym_getLanguageTag($simple = false)
+function acym_getLanguageTag(bool $simple = false): string
 {
     if (acym_isAdmin()) {
         $currentLocale = get_user_locale(acym_currentUserId());
@@ -199,7 +194,7 @@ function acym_getCustomTranslation()
     }
 }
 
-function acym_loadLanguageFile($extension, $basePath = null, $lang = null, $reload = false, $default = true)
+function acym_loadLanguageFile(string $extension, string $basePath = null, ?string $lang = null, bool $reload = false, bool $default = true): void
 {
     global $acymLanguages;
     $currentLanguage = acym_getLanguageTag();
@@ -262,17 +257,17 @@ function acym_loadLanguageFile($extension, $basePath = null, $lang = null, $relo
     }
 }
 
-function acym_getLanguagePath($basePath, $language = null)
+function acym_getLanguagePath(string $basePath, ?string $language = null): string
 {
     return rtrim(ACYM_LANGUAGE, DS);
 }
 
-function acym_languageOption($emailLanguage, $name)
+function acym_languageOption(?string $emailLanguage, string $name): string
 {
     return '';
 }
 
-function convertWPLocaleToAcyLocale($locale)
+function convertWPLocaleToAcyLocale(string $locale): string
 {
     if (strpos($locale, '-') !== false) return $locale;
 
@@ -286,7 +281,7 @@ function convertWPLocaleToAcyLocale($locale)
     }
 }
 
-function acym_getCmsUserLanguage($userId = null)
+function acym_getCmsUserLanguage(?int $userId = null): ?string
 {
     if ($userId === null) $userId = acym_currentUserId();
     if (empty($userId)) return '';
@@ -294,7 +289,7 @@ function acym_getCmsUserLanguage($userId = null)
     return convertWPLocaleToAcyLocale(get_user_locale($userId));
 }
 
-function acym_getTranslationTools()
+function acym_getTranslationTools(): array
 {
     $options = [
         (object)['value' => 'no', 'text' => 'ACYM_NO'],

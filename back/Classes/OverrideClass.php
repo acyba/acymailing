@@ -68,23 +68,23 @@ class OverrideClass extends AcymClass
         ];
     }
 
-    public function cleanEmailsOverride()
+    public function cleanEmailsOverride(): void
     {
         $overrideId = acym_loadResultArray('SELECT id FROM #__acym_mail_override');
         $this->delete($overrideId);
     }
 
-    public function areOverrideMailsInstalled()
+    public function areOverrideMailsInstalled(): bool
     {
         return (bool)acym_loadResult('SELECT COUNT(id) FROM #__acym_mail_override');
     }
 
-    public function getAllSources()
+    public function getAllSources(): array
     {
         return acym_loadResultArray('SELECT DISTINCT `source` FROM #__acym_mail_override');
     }
 
-    public function getActiveOverrides($key = '')
+    public function getActiveOverrides(string $key = ''): array
     {
         $query = 'SELECT override.*, mail.name FROM #__acym_mail_override AS override JOIN #__acym_mail AS mail ON mail.id = override.mail_id WHERE `active` = 1';
 
@@ -93,14 +93,8 @@ class OverrideClass extends AcymClass
 
     /**
      * Returns the override email corresponding to the base email content provided
-     *
-     * @param string $subject The content of the email before the override
-     *
-     * @param string $body
-     *
-     * @return object|false
      */
-    public function getMailByBaseContent($subject, $body)
+    public function getMailByBaseContent(string $subject, string $body): ?object
     {
         $translatepressIsActive = acym_isExtensionActive('translatepress-multilingual/index.php');
         $activeOverrides = $this->getActiveOverrides('name');
@@ -190,18 +184,19 @@ class OverrideClass extends AcymClass
             // Include the found parameters
             $mail->parameters = $parameters;
 
-            if (empty($oneOverride->base_body)) $mail->body = $body;
+            if (empty($oneOverride->base_body)) {
+                $mail->body = $body;
+            }
 
             return $mail;
         }
 
-        return false;
+        return null;
     }
 
-    public function delete($elements)
+    public function delete(array $elements): int
     {
         if (empty($elements)) return 0;
-        if (!is_array($elements)) $elements = [$elements];
 
         acym_arrayToInteger($elements);
         $mailIds = acym_loadResultArray('SELECT `mail_id` FROM #__acym_mail_override WHERE `id` IN ('.implode(',', $elements).')');
@@ -214,12 +209,18 @@ class OverrideClass extends AcymClass
         return $result;
     }
 
-    public function getParamsByMailId($mailId)
+    public function getParamsByMailId(?int $mailId): array
     {
+        if (empty($mailId)) {
+            return [];
+        }
+
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($mailId);
 
-        if (empty($mail)) return [];
+        if (empty($mail)) {
+            return [];
+        }
 
         return acym_getOverrideParamsByName($mail->name);
     }

@@ -18,12 +18,12 @@ class plgAcymTableofcontents extends AcymPlugin
         $this->pluginDescription->description = '- Insert a dynamic table of contents in your emails based on their contents';
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -77,7 +77,7 @@ class plgAcymTableofcontents extends AcymPlugin
      * @param object $user
      * @param bool   $send
      */
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         if (isset($this->emailsWithNoAnchors[intval($email->id)])) return;
 

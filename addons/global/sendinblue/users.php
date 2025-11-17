@@ -155,7 +155,7 @@ class SendinblueUsers extends SendinblueClass
         $added = $this->addAttribute($existingAttributes, $contentAttributeName) || $added;
 
         if ($added) {
-            $this->config->save(['sendinblue_attributes' => json_encode($existingAttributes)]);
+            $this->config->saveConfig(['sendinblue_attributes' => json_encode($existingAttributes)]);
         }
     }
 
@@ -259,7 +259,7 @@ class SendinblueUsers extends SendinblueClass
         $removedAnAttribute = $this->removeAttribute($existingAttributes, $contentAttributeName) || $removedAnAttribute;
 
         if ($removedAnAttribute) {
-            $this->config->save(['sendinblue_attributes' => json_encode($existingAttributes)]);
+            $this->config->saveConfig(['sendinblue_attributes' => json_encode($existingAttributes)]);
         }
     }
 

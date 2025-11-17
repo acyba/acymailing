@@ -8,15 +8,15 @@ trait UserInsertion
     //Keep the sender information to not load them every time
     private $sendervalues = [];
 
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         ?>
-        <script type="text/javascript">
+		<script type="text/javascript">
             let selectedUserDText;
 
             function changeUserTag(tagname) {
@@ -40,7 +40,7 @@ trait UserInsertion
 
                 setTag(dText, jQuery('#' + tagname + 'option'));
             }
-        </script>
+		</script>
 
         <?php
         $isAutomation = acym_getVar('string', 'automation');
@@ -106,7 +106,7 @@ trait UserInsertion
         echo '</div>';
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $extractedTags = $this->pluginHelper->extractTags($email, 'usertag');
         if (empty($extractedTags)) {

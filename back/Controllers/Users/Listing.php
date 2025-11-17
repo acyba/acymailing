@@ -92,7 +92,7 @@ trait Listing
                 'action' => 'addToList',
             ]),
             null,
-            '',
+            [],
             [
                 'class' => 'button button-secondary disabled cell medium-6 large-shrink',
                 'id' => 'acym__users__listing__button--add-to-list',
@@ -238,15 +238,15 @@ trait Listing
 
     public function addToList(): void
     {
-        $listsSelected = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
-        $userSelected = acym_getVar('array', 'elements_checked', []);
+        $listsSelected = json_decode(acym_getVar('string', 'acym__entity_select__selected', '[]'), true);
+        if (empty($listsSelected)) {
+            $listsSelected = [];
+        }
+        $selectedUserIds = acym_getVar('array', 'elements_checked', []);
 
         $userClass = new UserClass();
-        $userClass->onlyManageableUsers($userSelected);
-
-        foreach ($userSelected as $user) {
-            $userClass->subscribe($user, $listsSelected);
-        }
+        $userClass->onlyManageableUsers($selectedUserIds);
+        $userClass->subscribe($selectedUserIds, $listsSelected);
 
         $this->listing();
     }

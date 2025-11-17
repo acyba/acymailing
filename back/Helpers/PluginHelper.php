@@ -1221,7 +1221,7 @@ class PluginHelper extends AcymObject
                     $formatOption .= '</div>';
 
                     if ($type === 'grouped') {
-                        $formatOption .= '<div class="cell large-3">'.acym_translation('ACYM_ALTERNATE').acym_info('ACYM_ALTERNATE_DESC').'</div>';
+                        $formatOption .= '<div class="cell large-3">'.acym_translation('ACYM_ALTERNATE').acym_info(['textShownInTooltip' => 'ACYM_ALTERNATE_DESC']).'</div>';
                         $formatOption .= '<div class="cell large-9">';
                         $formatOption .= acym_boolean(
                             'alternate'.$suffix,
@@ -1251,7 +1251,7 @@ class PluginHelper extends AcymObject
 
             $currentLabel = acym_translation($currentLabel);
             if (!empty($option['tooltip'])) {
-                $currentLabel .= '&nbsp;'.acym_info($option['tooltip'], 'acym_plugin_field_'.$option['name']);
+                $currentLabel .= '&nbsp;'.acym_info(['textShownInTooltip' => $option['tooltip'], 'classIcon' => 'acym_plugin_field_'.$option['name']]);
             }
             $currentLabel = '<label class="cell large-5 acym_plugin_field acym_plugin_field_'.$option['type'].'" for="'.acym_escape(
                     $option['name'].$suffix

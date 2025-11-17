@@ -2,6 +2,8 @@
 
 /**
  * To secure text echoed in HTML attributes or HTML content
+ *
+ * @param string|array|object $text
  */
 function acym_escape($text, bool $addSlashes = true): string
 {
@@ -112,16 +114,12 @@ function acym_escapeUrl(string $url): string
     return $url;
 }
 
-function acym_arrayToInteger(&$array)
+function acym_arrayToInteger(array &$array): void
 {
-    if (is_array($array)) {
-        $array = @array_map('intval', $array);
-    } else {
-        $array = [];
-    }
+    $array = @array_map('intval', $array);
 }
 
-function acym_getIP()
+function acym_getIP(): string
 {
     $map = [
         'HTTP_X_FORWARDED_IP',
@@ -152,16 +150,16 @@ function acym_getIP()
     return strip_tags($ipAddress);
 }
 
-function acym_generateKey($length)
+function acym_generateKey(int $length): string
 {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $randstring = '';
-    $max = strlen($characters) - 1;
+    $charactersPool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    $max = strlen($charactersPool) - 1;
     for ($i = 0; $i < $length; $i++) {
-        $randstring .= $characters[mt_rand(0, $max)];
+        $randomString .= $charactersPool[mt_rand(0, $max)];
     }
 
-    return $randstring;
+    return $randomString;
 }
 
 function acym_isRobot(): bool
@@ -181,13 +179,13 @@ function acym_isRobot(): bool
     return false;
 }
 
-function acym_displayErrors()
+function acym_displayErrors(): void
 {
     error_reporting(E_ALL);
     @ini_set('display_errors', 1);
 }
 
-function acym_checkRobots()
+function acym_checkRobots(): void
 {
     //Maybe add a check on the referer too? That may be really useful, if the referer is not in the list of allowed referers, we stop it
     if (preg_match('#(libwww-perl|python|googlebot)#i', @$_SERVER['HTTP_USER_AGENT'])) {
@@ -195,7 +193,7 @@ function acym_checkRobots()
     }
 }
 
-function acym_noCache()
+function acym_noCache(): void
 {
     acym_header('Cache-Control: no-store, no-cache, must-revalidate');
     acym_header('Cache-Control: post-check=0, pre-check=0', false);
@@ -203,7 +201,7 @@ function acym_noCache()
     acym_header('Expires: Wed, 17 Sep 1975 21:32:10 GMT');
 }
 
-function acym_isAllowed($controller, $task = ''): bool
+function acym_isAllowed(string $controller): bool
 {
     $config = acym_config();
     $globalAccess = $config->get('acl_'.$controller, 'all');
@@ -233,7 +231,7 @@ function acym_isAllowed($controller, $task = ''): bool
     return false;
 }
 
-function acym_raiseError($code, $message)
+function acym_raiseError(int $code, string $message): void
 {
     echo '<link type="text/css" rel="stylesheet" href="'.ACYM_CSS.'back_global.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'back_global.min.css').'">';
     echo '<div id="acym_wrapper">';
@@ -245,8 +243,6 @@ function acym_raiseError($code, $message)
 
 /**
  * Check if the license is valid, make this check weekly
- *
- * @return bool
  */
 function acym_isLicenseValidWeekly(): bool
 {

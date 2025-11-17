@@ -6,11 +6,12 @@ namespace Pelago\Emogrifier\HtmlProcessor;
 
 use Pelago\Emogrifier\CssInliner;
 use Pelago\Emogrifier\Utilities\ArrayIntersector;
+use Pelago\Emogrifier\Utilities\Preg;
 
 /**
  * This class can remove things from HTML.
  */
-class HtmlPruner extends AbstractHtmlProcessor
+final class HtmlPruner extends AbstractHtmlProcessor
 {
     /**
      * We need to look for display:none, but we need to do a case-insensitive search. Since DOMDocument only
@@ -18,7 +19,7 @@ class HtmlPruner extends AbstractHtmlProcessor
      * not attribute values. Consequently, we need to translate() the letters that would be in 'NONE' ("NOE")
      * to lowercase.
      *
-     * @var string
+     * @var non-empty-string
      */
     private const DISPLAY_NONE_MATCHER
         = '//*[@style and contains(translate(translate(@style," ",""),"NOE","noe"),"display:none")'
@@ -61,6 +62,7 @@ class HtmlPruner extends AbstractHtmlProcessor
      */
     public function removeRedundantClasses(array $classesToKeep = []): self
     {
+        /** @var \DOMNodeList<\DOMElement> $elementsWithClassAttribute */
         $elementsWithClassAttribute = $this->getXPath()->query('//*[@class]');
 
         if ($classesToKeep !== []) {
@@ -77,16 +79,16 @@ class HtmlPruner extends AbstractHtmlProcessor
      * Removes classes from the `class` attribute of each element in `$elements`, except any in `$classesToKeep`,
      * removing the `class` attribute itself if the resultant list is empty.
      *
-     * @param \DOMNodeList $elements
+     * @param \DOMNodeList<\DOMElement> $elements
      * @param array<array-key, string> $classesToKeep
      */
     private function removeClassesFromElements(\DOMNodeList $elements, array $classesToKeep): void
     {
         $classesToKeepIntersector = new ArrayIntersector($classesToKeep);
 
-        /** @var \DOMElement $element */
+        $preg = new Preg();
         foreach ($elements as $element) {
-            $elementClasses = \preg_split('/\\s++/', \trim($element->getAttribute('class')));
+            $elementClasses = $preg->split('/\\s++/', \trim($element->getAttribute('class')));
             $elementClassesToKeep = $classesToKeepIntersector->intersectWith($elementClasses);
             if ($elementClassesToKeep !== []) {
                 $element->setAttribute('class', \implode(' ', $elementClassesToKeep));
@@ -97,13 +99,10 @@ class HtmlPruner extends AbstractHtmlProcessor
     }
 
     /**
-     * Removes the `class` attribute from each element in `$elements`.
-     *
-     * @param \DOMNodeList $elements
+     * @param \DOMNodeList<\DOMElement> $elements
      */
     private function removeClassAttributeFromElements(\DOMNodeList $elements): void
     {
-        /** @var \DOMElement $element */
         foreach ($elements as $element) {
             $element->removeAttribute('class');
         }
@@ -124,9 +123,11 @@ class HtmlPruner extends AbstractHtmlProcessor
      */
     public function removeRedundantClassesAfterCssInlined(CssInliner $cssInliner): self
     {
+        $preg = new Preg();
+
         $classesToKeepAsKeys = [];
         foreach ($cssInliner->getMatchingUninlinableSelectors() as $selector) {
-            \preg_match_all('/\\.(-?+[_a-zA-Z][\\w\\-]*+)/', $selector, $matches);
+            $preg->matchAll('/\\.(-?+[_a-zA-Z][\\w\\-]*+)/', $selector, $matches);
             $classesToKeepAsKeys += \array_fill_keys($matches[1], true);
         }
 

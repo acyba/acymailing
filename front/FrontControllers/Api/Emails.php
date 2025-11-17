@@ -15,6 +15,11 @@ trait Emails
 
         $acyUserId = $decodedData['userId'] ?? '';
         $mailId = $decodedData['mailId'] ?? '';
+
+        if (empty($acyUserId) || empty($mailId)) {
+            $this->sendJsonResponse(['message' => 'User and mail fields are required.'], 422);
+        }
+
         $sendDate = $decodedData['sendDate'] ?? time();
         $sendEmailOnlyForSpecificUser = $decodedData['sendEmailOnlyForSpecificUser'] ?? true;
 

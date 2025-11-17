@@ -12,7 +12,7 @@ trait Automation
         $mailId = acym_getVar('int', 'id', 0);
 
         if (!empty($mailId)) {
-            $mailClass->delete($mailId);
+            $mailClass->delete([$mailId]);
         }
 
         exit;
@@ -25,7 +25,7 @@ trait Automation
         $prevMail = acym_getVar('int', 'previousId');
 
         if (!empty($prevMail)) {
-            $mailClass->delete($prevMail);
+            $mailClass->delete([$prevMail]);
         }
 
         if (empty($mailId)) {

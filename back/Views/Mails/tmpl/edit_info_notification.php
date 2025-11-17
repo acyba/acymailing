@@ -16,7 +16,7 @@
 		<label class="cell">
             <?php
             echo acym_translation('ACYM_EMAIL_LANGUAGE');
-            echo acym_info('ACYM_EMAIL_LANGUAGE_DESC');
+            echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_LANGUAGE_DESC']);
             echo $data['langChoice'];
             ?>
 		</label>

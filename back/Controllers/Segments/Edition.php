@@ -168,7 +168,7 @@ trait Edition
         $messages = acym_trigger('onAcymProcessFilterCount_'.$filterName, [&$automationHelper, &$options, &$and]);
         $messages = $messages[0];
 
-        if (!empty($listsIds)) $messages .= acym_info('ACYM_CONDITION_WITH_LISTS_COUNT', '', '', 'wysid_tooltip');
+        if (!empty($listsIds)) $messages .= acym_info(['textShownInTooltip' => 'ACYM_CONDITION_WITH_LISTS_COUNT', 'classText' => 'wysid_tooltip']);
 
         acym_sendAjaxResponse($messages);
     }

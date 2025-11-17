@@ -9,7 +9,7 @@
             <?php
             $maxupload = acym_bytes(ini_get('upload_max_filesize'));
             $maxpost = acym_bytes(ini_get('post_max_size'));
-            $maxupload = $maxupload > $maxpost ? $maxpost : $maxupload;
+            $maxupload = min($maxupload, $maxpost);
             ?>
 			<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo acym_escape($maxupload); ?>" />
 			<input type="file" name="import_file" class="show-for-sr" id="acym__users__import__from_file__import__input" accept=".csv">

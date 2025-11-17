@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait DpcalendarInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -21,7 +21,7 @@ trait DpcalendarInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -32,7 +32,7 @@ trait DpcalendarInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT event.*, category.title AS cattitle ';
         $query .= 'FROM `#__dpcalendar_events` AS event ';
@@ -44,7 +44,7 @@ trait DpcalendarInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -171,7 +171,7 @@ trait DpcalendarInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT event.* ';
         $this->query = 'FROM `#__dpcalendar_events` AS event ';
@@ -221,20 +221,20 @@ trait DpcalendarInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         acym_loadLanguageFile('com_dpcalendar', JPATH_ADMINISTRATOR.DS.'components'.DS.'com_dpcalendar');
 
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $time = time();
 
@@ -287,7 +287,7 @@ trait DpcalendarInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT event.*, category.title AS cattitle ';
         $query .= 'FROM `#__dpcalendar_events` AS event ';

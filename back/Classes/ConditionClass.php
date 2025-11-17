@@ -14,18 +14,17 @@ class ConditionClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function getOneByStepId($stepId)
+    public function getOneByStepId(int $stepId): ?object
     {
-        $query = 'SELECT * FROM #__acym_condition WHERE step_id = '.intval($stepId);
+        $condition = acym_loadObject('SELECT * FROM #__acym_condition WHERE step_id = '.intval($stepId));
 
-        return acym_loadObject($query);
+        return empty($condition) ? null : $condition;
     }
 
-    public function delete($elements)
+    public function delete(array $elements): int
     {
         if (empty($elements)) return 0;
 
-        if (!is_array($elements)) $elements = [$elements];
         acym_arrayToInteger($elements);
 
         $actionClass = new ActionClass();
@@ -35,24 +34,22 @@ class ConditionClass extends AcymClass
         return parent::delete($elements);
     }
 
-    public function save($condition)
+    public function save(object $element): ?int
     {
-        foreach ($condition as $oneAttribute => $value) {
+        foreach ($element as $oneAttribute => $value) {
             if (empty($value)) {
                 continue;
             }
 
-            if (is_array($value)) {
-                $value = json_encode($value);
+            if ($oneAttribute !== 'conditions') {
+                $element->$oneAttribute = is_array($value) ? json_encode($value) : strip_tags($value);
             }
-            if ($oneAttribute != 'conditions') $condition->$oneAttribute = strip_tags($value);
         }
 
-        return parent::save($condition);
+        return parent::save($element);
     }
 
-
-    public function getConditionsByStepId($id)
+    public function getConditionsByStepId(int $id): array
     {
         $query = 'SELECT acycondition.* FROM #__acym_condition as acycondition LEFT JOIN #__acym_step AS step ON step.id = acycondition.step_id WHERE step.id = '.intval($id);
 

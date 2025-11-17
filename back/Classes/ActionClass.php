@@ -12,45 +12,72 @@ class ActionClass extends AcymClass
 
         $this->table = 'action';
         $this->pkey = 'id';
+        $this->intColumns = [
+            'id',
+            'condition_id',
+            'order',
+        ];
     }
 
-    public function getActionsByStepId($stepId): array
+    public function getActionsByStepId(int $stepId): array
     {
-        return acym_loadObjectList(
+        $actions = acym_loadObjectList(
             'SELECT `action`.* 
             FROM #__acym_action AS `action` 
             LEFT JOIN #__acym_condition AS `conditionT` ON `action`.condition_id = `conditionT`.id 
             WHERE `conditionT`.step_id = '.intval($stepId).' 
             ORDER BY `action`.order'
         );
+
+        array_map([$this, 'fixTypes'], $actions);
+
+        return $actions;
     }
 
-    public function getActionsByConditionId($id): array
+    public function getActionsByConditionId(int $id): array
     {
-        return acym_loadObjectList(
+        $actions = acym_loadObjectList(
             'SELECT action.* 
             FROM #__acym_action as action 
             WHERE action.condition_id = '.intval($id)
         );
+
+        array_map([$this, 'fixTypes'], $actions);
+
+        return $actions;
     }
 
-    public function getOneByConditionId($id)
+    public function getOneByConditionId(int $id): ?object
     {
-        return acym_loadObject(
+        $action = acym_loadObject(
             'SELECT `action`.* 
             FROM #__acym_action AS `action` 
             WHERE `action`.`condition_id` = '.intval($id)
         );
+
+        if (empty($action)) {
+            return null;
+        }
+
+        $this->fixTypes($action);
+
+        return $action;
     }
 
-    public function getAllActionsIdByConditionsId($elements)
+    public function getAllActionsIdByConditionsId(array $elements): array
     {
-        acym_arrayToInteger($elements);
+        if (empty($elements)) {
+            return [];
+        }
 
-        return acym_loadResultArray('SELECT id FROM #__acym_action WHERE condition_id IN ('.implode(',', $elements).')');
+        acym_arrayToInteger($elements);
+        $ids = acym_loadResultArray('SELECT id FROM #__acym_action WHERE condition_id IN ('.implode(',', $elements).')');
+        acym_arrayToInteger($ids);
+
+        return $ids;
     }
 
-    public function delete($elements)
+    public function delete(array $elements): int
     {
         acym_arrayToInteger($elements);
         if (empty($elements)) return 0;
@@ -63,7 +90,7 @@ class ActionClass extends AcymClass
             $action->actions = json_decode($action->actions, true);
             if (!empty($action->actions)) {
                 foreach ($action->actions as $innerAction) {
-                    if (!empty($innerAction['acy_add_queue']) && !empty($innerAction['acy_add_queue']['mail_id'])) $mailClass->delete($innerAction['acy_add_queue']['mail_id']);
+                    if (!empty($innerAction['acy_add_queue']) && !empty($innerAction['acy_add_queue']['mail_id'])) $mailClass->delete([$innerAction['acy_add_queue']['mail_id']]);
                 }
             }
         }
@@ -71,9 +98,28 @@ class ActionClass extends AcymClass
         return parent::delete($elements);
     }
 
-    public function save($element)
+    public function save(object $element): ?int
     {
-        if (!isset($element->order)) $element->order = 1;
-        parent::save($element);
+        if (!isset($element->order)) {
+            $element->order = 1;
+        }
+
+        return parent::save($element);
+    }
+
+    public function getActionsByAutomationId(int $id): array
+    {
+        $actions = acym_loadObjectList(
+            'SELECT action.* 
+            FROM `#__acym_action` AS `action` 
+            JOIN `#__acym_condition` AS `condition` 
+                ON `action`.`condition_id` = `condition`.`id` 
+            JOIN `#__acym_step` AS `step` 
+                ON `condition`.`step_id` = `step`.`id` 
+            WHERE `step`.`automation_id` = '.$id
+        );
+        array_map([$this, 'fixTypes'], $actions);
+
+        return $actions;
     }
 }

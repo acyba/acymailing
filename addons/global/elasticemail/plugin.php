@@ -34,25 +34,25 @@ class plgAcymElasticemail extends AcymPlugin
     {
         ob_start();
         ?>
-        <div class="send_settings grid-x cell" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
-            <div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-                <label for="<?php echo self::SENDING_METHOD_ID; ?>_password" class="cell shrink margin-right-1">
+		<div class="send_settings grid-x cell" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
+			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+				<label for="<?php echo self::SENDING_METHOD_ID; ?>_password" class="cell shrink margin-right-1">
                     <?php echo acym_translation('ACYM_API_KEY'); ?>
-                </label>
+				</label>
                 <?php
                 echo $this->getLinks(
                     'https://elasticemail.com/referral-reward?r=7b884a0b-b979-4473-8803-06ae39d76599',
                     'https://elasticemail.com/email-api-pricing?r=7b884a0b-b979-4473-8803-06ae39d76599'
                 );
                 ?>
-                <input id="<?php echo self::SENDING_METHOD_ID; ?>_password"
-                       class="cell"
-                       type="text"
-                       name="config[<?php echo self::SENDING_METHOD_ID; ?>_password]"
-                       value="<?php echo str_repeat('*', strlen($this->config->get(self::SENDING_METHOD_ID.'_password'))); ?>">
+				<input id="<?php echo self::SENDING_METHOD_ID; ?>_password"
+					   class="cell"
+					   type="text"
+					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_password]"
+					   value="<?php echo str_repeat('*', strlen($this->config->get(self::SENDING_METHOD_ID.'_password'))); ?>">
                 <?php echo $this->getTestCredentialsSendingMethodButton(self::SENDING_METHOD_ID); ?>
-            </div>
-        </div>
+			</div>
+		</div>
         <?php
         $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }

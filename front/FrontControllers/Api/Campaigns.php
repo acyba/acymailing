@@ -182,7 +182,7 @@ trait Campaigns
 
     public function deleteCampaign(): void
     {
-        $campaignId = acym_getVar('string', 'campaignId', '');
+        $campaignId = acym_getVar('int', 'campaignId', 0);
 
         if (empty($campaignId)) {
             $this->sendJsonResponse(['message' => 'campaignId not provided'], 422);
@@ -196,9 +196,9 @@ trait Campaigns
             $this->sendJsonResponse(['message' => 'Campaign not found.'], 404);
         }
 
-        $isCampaignDeleted = $campaignClass->delete($campaignId);
+        $nbDeletedCampaigns = $campaignClass->delete([$campaignId]);
 
-        if (empty($isCampaignDeleted)) {
+        if (empty($nbDeletedCampaigns)) {
             $responseData = ['message' => 'Could not delete campaign'];
             if (!empty($campaignClass->errors)) {
                 $responseData['errors'] = $campaignClass->errors;

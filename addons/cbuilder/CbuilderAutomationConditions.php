@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorType;
 
 trait CbuilderAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         // Load CB language
         $languages = [];
@@ -59,7 +59,7 @@ trait CbuilderAutomationConditions
         $conditions['user']['cbfield']->option .= '<input class="intext_input_automation cell" type="text" name="acym_condition[conditions][__numor__][__numand__][cbfield][value]">';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

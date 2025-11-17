@@ -17,7 +17,7 @@ if (!empty($data['translation_languages'])) {
 	</div>
 	<div class="cell">
 		<label>
-            <?php echo acym_translation('ACYM_DISPLAY_NAME').acym_info('ACYM_LIST_DISPLAY_NAME_DESC'); ?>
+            <?php echo acym_translation('ACYM_DISPLAY_NAME').acym_info(['textShownInTooltip' => 'ACYM_LIST_DISPLAY_NAME_DESC']); ?>
 			<input name="list[display_name]" type="text" value="<?php echo acym_escape($data['listInformation']->display_name); ?>">
 		</label>
 	</div>
@@ -57,7 +57,7 @@ if (!empty($data['translation_languages'])) {
 		<div class="cell grid-x small-6">
             <?php
             $label = acym_translation('ACYM_TRACK_THIS_LIST');
-            $label .= acym_info('ACYM_TRACK_THIS_LIST_DESC');
+            $label .= acym_info(['textShownInTooltip' => 'ACYM_TRACK_THIS_LIST_DESC']);
             echo acym_switch('list[tracking]', $data['listInformation']->tracking, $label, [], 'small-6', 'shrink', 'margin-0'); ?>
 		</div>
 		<div class="cell small-6">
@@ -73,7 +73,7 @@ if (!empty($data['translation_languages'])) {
 			<label class="cell">
                 <?php
                 echo acym_translation('ACYM_LIST_ACCESS');
-                echo acym_info('ACYM_LIST_ACCESS_DESC');
+                echo acym_info(['textShownInTooltip' => 'ACYM_LIST_ACCESS_DESC']);
                 echo acym_selectMultiple(
                     acym_getGroups(),
                     'list[access]',

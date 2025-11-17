@@ -30,8 +30,8 @@ trait Subscription
             }
         }
 
-        $this->config->save(['notifications' => json_encode($notifications)]);
-        $this->config->save(['dashboard_notif' => json_encode($dashboardNotifications)], false);
+        $this->config->saveConfig(['notifications' => json_encode($notifications)]);
+        $this->config->saveConfig(['dashboard_notif' => json_encode($dashboardNotifications)], false);
 
         $helperHeader = new HeaderHelper();
         $dashboardController = new DashboardController();
@@ -71,7 +71,7 @@ trait Subscription
         }
 
 
-        $this->config->save(['notifications' => json_encode($notifications)]);
+        $this->config->saveConfig(['notifications' => json_encode($notifications)]);
 
         acym_sendAjaxResponse('', []);
     }

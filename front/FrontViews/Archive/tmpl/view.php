@@ -10,7 +10,7 @@
 	<div style="min-width:80%" id="archive_view__preview"><?php echo $data['mail']->body; ?></div>
 
     <?php
-    $attachments = json_decode(!empty($data['mail']->attachments) ? $data['mail']->attachments : '[]');
+    $attachments = json_decode(!empty($data['mail']->attachments) ? $data['mail']->attachments : '[]', true);
 
     if (!empty($attachments)) {
         ?>

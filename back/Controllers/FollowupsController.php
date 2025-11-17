@@ -19,7 +19,7 @@ class FollowupsController extends AcymController
         }
 
         $followupClass = new FollowupClass();
-        $emailIds = $followupClass->getEmailsByIds($id);
+        $emailIds = $followupClass->getEmailsByIds([$id]);
         if (empty($emailIds)) {
             acym_sendAjaxResponse(acym_translation('ACYM_NO_EMAIL_FOR_FOLLOWUP'), [], false);
         }

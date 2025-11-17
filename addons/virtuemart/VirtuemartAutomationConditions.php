@@ -5,7 +5,7 @@ use AcyMailing\Types\OperatorType;
 
 trait VirtuemartAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         acym_loadLanguageFile('com_virtuemart_orders', JPATH_SITE.'/components/com_virtuemart');
         acym_loadLanguageFile('com_virtuemart_shoppers', JPATH_SITE.'/components/com_virtuemart');
@@ -158,7 +158,7 @@ trait VirtuemartAutomationConditions
         $conditions['user']['vmpurchased']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

@@ -47,7 +47,9 @@ class plgAcymGoogle extends AcymPlugin
             }
             ?>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="google_username" class="cell"><?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info('ACYM_SMTP_USERNAME_DESC'); ?></label>
+				<label for="google_username" class="cell">
+                    <?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info(['textShownInTooltip' => 'ACYM_SMTP_USERNAME_DESC']); ?>
+				</label>
 				<input id="google_username"
 					   class="cell"
 					   type="text"
@@ -247,7 +249,7 @@ class plgAcymGoogle extends AcymPlugin
             ];
         }
 
-        $this->config->save($newConfig);
+        $this->config->saveConfig($newConfig);
         acym_config(true);
     }
 
@@ -257,7 +259,7 @@ class plgAcymGoogle extends AcymPlugin
             return;
         }
 
-        $this->config->save(
+        $this->config->saveConfig(
             [
                 'google_refresh_token' => '',
                 'google_refresh_token_expiration' => '',

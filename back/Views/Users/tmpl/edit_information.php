@@ -18,7 +18,7 @@
 	<div class="cell grid-x">
         <?php
         $label = acym_translation('ACYM_TRACK_THIS_SUBSCRIBER');
-        $label .= acym_info('ACYM_TRACK_THIS_SUBSCRIBER_DESC');
+        $label .= acym_info(['textShownInTooltip' => 'ACYM_TRACK_THIS_SUBSCRIBER_DESC']);
         echo acym_switch('user[tracking]', $data['user-information']->tracking, $label, []); ?>
 	</div>
     <?php if (!empty($data['user-information']->source)) { ?>

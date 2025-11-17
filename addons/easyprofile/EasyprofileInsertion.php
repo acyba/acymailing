@@ -4,12 +4,12 @@ use AcyMailing\Helpers\TabHelper;
 
 trait EasyprofileInsertion
 {
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         acym_loadLanguageFile('com_jsn', JPATH_ADMINISTRATOR);
 
@@ -27,7 +27,7 @@ trait EasyprofileInsertion
         echo $text;
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $extractedTags = $this->pluginHelper->extractTags($email, $this->name.'field');
         if (empty($extractedTags)) return;
@@ -67,7 +67,7 @@ trait EasyprofileInsertion
         $this->pluginHelper->replaceTags($email, $tags);
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -84,7 +84,7 @@ trait EasyprofileInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -92,7 +92,7 @@ trait EasyprofileInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT ';
         $fieldsToSelect = [];
@@ -126,7 +126,7 @@ trait EasyprofileInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -206,7 +206,7 @@ trait EasyprofileInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT user.id, user.username, user.email ';
         $this->query = 'FROM #__users AS user ';
@@ -237,13 +237,13 @@ trait EasyprofileInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT ';
         $fieldsToSelect = [];
@@ -393,7 +393,7 @@ trait EasyprofileInsertion
         return $value;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];

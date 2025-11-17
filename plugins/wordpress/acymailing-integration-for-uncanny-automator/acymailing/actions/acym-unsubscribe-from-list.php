@@ -65,7 +65,7 @@ class ACYM_UNSUBSCRIBE_FROM_LIST
             return;
         }
 
-        $userClass->unsubscribe($user->id, $listId);
+        $userClass->unsubscribe([$user->id], [$listId]);
 
         // complete this action successfully
         Automator()->complete->action($user_id, $action_data, $recipe_id);

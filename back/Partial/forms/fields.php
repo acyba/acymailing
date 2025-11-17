@@ -11,13 +11,12 @@
         echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->settings['message']['text']).'</p>';
     }
     foreach ($form->settings['fields']['displayed'] as $field) {
-        $size = empty($field->option->size) ? '' : 'width:'.$field->option->size.'px';
         echo '<div class="onefield fieldacy'.$field->id.' acyfield_'.$field->type.'" id="field_'.$field->id.'">';
-        echo $form->fieldClass->displayField($field, $field->default_value, $size, $field->valuesArray, $form->settings['fields']['display_mode'] === 'outside', true);
+        echo $form->fieldClass->displayField($field, $field->default_value, $field->valuesArray, $form->settings['fields']['display_mode'] === 'outside', true);
         echo '</div>';
 
         if ($field->id == 2 && $config->get('email_confirmation')) {
-            echo $form->fieldClass->setEmailConfirmationField($form->settings['fields']['display_mode'] === 'outside', $size);
+            echo $form->fieldClass->setEmailConfirmationField($form->settings['fields']['display_mode'] === 'outside', $field);
         }
     }
     if ($form->settings['lists']['display_position'] === 'after') {

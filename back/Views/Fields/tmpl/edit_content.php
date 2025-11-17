@@ -43,19 +43,21 @@
     <?php
     echo acym_translation('ACYM_FORMAT');
     echo acym_info(
-        acym_translationSprintf(
-            'ACYM_X_TO_ENTER_X',
-            '%d',
-            acym_translation('ACYM_DAY')
-        ).'<br>'.acym_translationSprintf(
-            'ACYM_X_TO_ENTER_X',
-            '%m',
-            acym_translation('ACYM_MONTH')
-        ).'<br>'.acym_translationSprintf(
-            'ACYM_X_TO_ENTER_X',
-            '%y',
-            acym_translation('ACYM_YEAR')
-        ).'<br>'.acym_translation('ACYM_EXEMPLE_FORMAT')
+        [
+            'textShownInTooltip' => acym_translationSprintf(
+                    'ACYM_X_TO_ENTER_X',
+                    '%d',
+                    acym_translation('ACYM_DAY')
+                ).'<br>'.acym_translationSprintf(
+                    'ACYM_X_TO_ENTER_X',
+                    '%m',
+                    acym_translation('ACYM_MONTH')
+                ).'<br>'.acym_translationSprintf(
+                    'ACYM_X_TO_ENTER_X',
+                    '%y',
+                    acym_translation('ACYM_YEAR')
+                ).'<br>'.acym_translation('ACYM_EXEMPLE_FORMAT'),
+        ]
     );
     ?>
 	<input type="text" name="field[option][format]"
@@ -66,7 +68,7 @@
 	<span class="cell">
 	<?php
     echo acym_translation('ACYM_MAXIMUM_CHARACTERS');
-    echo acym_info('ACYM_MAXIMUM_CHARACTERS_TOOLTIP');
+    echo acym_info(['textShownInTooltip' => 'ACYM_MAXIMUM_CHARACTERS_TOOLTIP']);
     ?>
 	</span>
 	<input type="number"

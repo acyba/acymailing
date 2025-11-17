@@ -12,7 +12,7 @@ $acymCmsUserVars->email = 'user_email';
 $acymCmsUserVars->registered = 'user_registered';
 $acymCmsUserVars->blocked = 'user_status';
 
-function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
+function acym_getGroupsByUser(?int $userid = null, ?bool $recursive = null, bool $names = false): array
 {
     if ($userid === null) {
         $user = wp_get_current_user();
@@ -27,7 +27,7 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
     return $user->roles;
 }
 
-function acym_getGroups()
+function acym_getGroups(): array
 {
     $roles = wp_roles();
     if (empty($roles->roles)) {
@@ -53,7 +53,7 @@ function acym_getGroups()
     return $groups;
 }
 
-function acym_punycode(string $email, string $method = 'emailToPunycode')
+function acym_punycode(string $email, string $method = 'emailToPunycode'): string
 {
     if (empty($email) || acym_isPunycode($email)) {
         return $email;
@@ -84,7 +84,7 @@ function acym_currentUserId(): int
     return intval(get_current_user_id());
 }
 
-function acym_currentUserName($userid = null)
+function acym_currentUserName(?int $userid = null): string
 {
     if (!empty($userid)) {
         $special = get_user_by('id', $userid);
@@ -104,7 +104,7 @@ function acym_currentUserEmail(int $userid = 0): string
     return empty($user->user_email) ? '' : $user->user_email;
 }
 
-function acym_replaceGroupTags($uploadFolder)
+function acym_replaceGroupTags(string $uploadFolder): string
 {
     if (strpos($uploadFolder, '{groupname}') === false) return $uploadFolder;
 
@@ -121,7 +121,7 @@ function acym_replaceGroupTags($uploadFolder)
     return $uploadFolder;
 }
 
-function acym_getCmsUserEdit($userId)
+function acym_getCmsUserEdit(int $userId): string
 {
     return 'user-edit.php?user_id='.intval($userId);
 }

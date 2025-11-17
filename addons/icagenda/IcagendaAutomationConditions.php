@@ -2,7 +2,7 @@
 
 trait IcagendaAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $conditions['user']['icagenda'] = new stdClass();
         $conditions['user']['icagenda']->name = 'iCagenda';
@@ -44,7 +44,7 @@ trait IcagendaAutomationConditions
         $conditions['user']['icagenda']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

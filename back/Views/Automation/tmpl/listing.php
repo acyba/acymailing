@@ -48,7 +48,7 @@
                                 'active' => ['ACYM_ACTIVE', $data["automationNumberPerStatus"]["active"]],
                                 'inactive' => ['ACYM_INACTIVE', $data["automationNumberPerStatus"]["inactive"]],
                             ];
-                            echo acym_filterStatus($options, $data["status"], 'automation_status');
+                            echo acym_filterStatus($options, $data['status'], 'automation_status');
                             ?>
 						</div>
 						<div class="cell large-shrink acym_listing_sort-by">
@@ -58,7 +58,7 @@
                                     'name' => acym_translation('ACYM_NAME'),
                                     'active' => acym_translation('ACYM_ACTIVE'),
                                 ],
-                                "automation",
+                                'automation',
                                 $data['ordering'],
                                 'asc'
                             ); ?>

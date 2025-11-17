@@ -136,11 +136,11 @@ trait Listing
     private function doDisplayBeginnerSteps(array $data): void
     {
         if ($this->config->get('install_date', time()) < strtotime('-14 days')) {
-            $this->config->save(['show_beginner_steps' => 0]);
+            $this->config->saveConfig(['show_beginner_steps' => 0]);
         } elseif (!$data['listCreated'] || $data['totalSubscribers'] <= 1 || !$data['campaignCreated'] || !$data['campaignSent'] || $data['mailStatsCheckedOnce'] != 1) {
-            $this->config->save(['show_beginner_steps' => 1]);
+            $this->config->saveConfig(['show_beginner_steps' => 1]);
         } else {
-            $this->config->save(['show_beginner_steps' => 0]);
+            $this->config->saveConfig(['show_beginner_steps' => 0]);
         }
     }
 

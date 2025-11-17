@@ -45,7 +45,14 @@ trait BirthdayFollowup
                 ]
             );
             $fieldsSelect = '<span class="cell large-2 medium-4 margin-left-1">'.$fieldsSelect.'</span>';
-            $additionalCondition['birthday_field'] = acym_translationSprintf('ACYM_BIRTHDAY_FIELD', acym_info('ACYM_BIRTHDAY_FIELD_CUSTOM_FIELD_TYPE_DATE').$fieldsSelect);
+            $additionalCondition['birthday_field'] = acym_translationSprintf(
+                'ACYM_BIRTHDAY_FIELD',
+                acym_info(
+                    [
+                        'textShownInTooltip' => 'ACYM_BIRTHDAY_FIELD_CUSTOM_FIELD_TYPE_DATE',
+                    ]
+                ).$fieldsSelect
+            );
         }
     }
 

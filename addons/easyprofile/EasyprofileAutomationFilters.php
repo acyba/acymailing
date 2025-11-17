@@ -2,9 +2,9 @@
 
 trait EasyprofileAutomationFilters
 {
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
-        return $this->filtersFromConditions($filters);
+        $this->filtersFromConditions($filters);
     }
 
     public function onAcymProcessFilterCount_epfield(&$query, $options, $num)

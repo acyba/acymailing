@@ -122,7 +122,7 @@ trait Statistics
             $this->sendJsonResponse(['message' => acym_translation('ACYM_FOLLOWUP_NOT_FOUND')], 404);
         }
 
-        $followupMailId = $followupClass->getEmailsByIds($followup->id);
+        $followupMailId = $followupClass->getEmailsByIds([$followup->id]);
 
         $mailStatClass = new MailStatClass();
 

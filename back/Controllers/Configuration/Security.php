@@ -605,10 +605,7 @@ trait Security
 
     public function redomigration(): void
     {
-        $newConfig = new \stdClass();
-        $newConfig->migration = 0;
-        $this->config->save($newConfig);
-
+        $this->config->saveConfig(['migration' => 0]);
         acym_redirect(acym_completeLink('dashboard', false, true));
     }
 

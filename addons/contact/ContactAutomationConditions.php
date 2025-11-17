@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorInType;
 
 trait ContactAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $categories = acym_loadObjectList('SELECT id AS value, title AS text FROM #__categories WHERE extension = "com_contact" ORDER BY lft ASC');
         if (empty($categories)) return;
@@ -33,7 +33,7 @@ trait ContactAutomationConditions
         $conditions['user']['contact']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

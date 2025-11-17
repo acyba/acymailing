@@ -13,11 +13,11 @@ $ajax = empty($redirection) ? '1' : '0';
 
 $confirmationMessage = '';
 if (!empty($form->settings['redirection']['confirmation_message'])) {
-	$confirmationMessage = $form->settings['redirection']['confirmation_message'];
+    $confirmationMessage = $form->settings['redirection']['confirmation_message'];
 }
 $currentLanguageTag = acym_getLanguageTag();
 if (acym_isMultilingual() && !empty($form->settings['redirection']['langConfirm'][$currentLanguageTag])) {
-	$confirmationMessage = $form->settings['redirection']['langConfirm'][$currentLanguageTag];
+    $confirmationMessage = $form->settings['redirection']['langConfirm'][$currentLanguageTag];
 }
 ?>
 <input type="hidden" name="redirect" value="<?php echo acym_escapeUrl($redirection); ?>">

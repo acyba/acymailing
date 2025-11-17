@@ -5,7 +5,7 @@ use AcyMailing\Helpers\AutomationHelper;
 
 trait SegmentAutomationFilters
 {
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
         $segmentClass = new SegmentClass();
         $segments = $segmentClass->getAll();

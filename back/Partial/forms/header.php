@@ -17,6 +17,7 @@
         0 => $form->settings['style']['position'] == 'button-right' ? 'fields' : 'button',
         1 => $form->settings['style']['position'] == 'button-right' ? 'button' : 'fields',
     ];
+
     include acym_getPartial('forms', $files[0]);
     include acym_getPartial('forms', $files[1]);
     include acym_getPartial('forms', 'hidden_params');
@@ -61,6 +62,7 @@
 	.acym__users__creation__fields__title{
 		margin: 0.5rem
 	}
+
 </style>
 <?php if (!$edition) { ?>
 	<script type="text/javascript">

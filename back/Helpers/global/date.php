@@ -103,8 +103,8 @@ function acym_dateField(string $name, $value = '', string $class = '', string $a
             '<input data-open="'.acym_escape($id).'" class="rs_date_field '.$class.'" '.$attributes.' type="text" value="'.acym_escape($shownValue).'" readonly>',
             $result,
             $id,
-            '',
-            '',
+            [],
+            [],
             false,
             false
         );
@@ -137,7 +137,7 @@ function acym_getDate($time = 0, string $format = '%d %B %Y %H:%M')
     }
 }
 
-function acym_replaceDate($mydate, $display = false)
+function acym_replaceDate(string $mydate, bool $display = false): string
 {
     if (strpos($mydate, '[time]') === false) {
         if (is_numeric($mydate) && $display) {
@@ -147,7 +147,9 @@ function acym_replaceDate($mydate, $display = false)
         return $mydate;
     }
 
-    if ($mydate == '[time]' && $display) return acym_translation('ACYM_NOW');
+    if ($mydate === '[time]' && $display) {
+        return acym_translation('ACYM_NOW');
+    }
 
     $mydate = str_replace('[time]', time(), $mydate);
     $operators = ['+', '-'];
@@ -287,7 +289,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
     }
 }
 
-function acym_getTimeFromUTCDate($date)
+function acym_getTimeFromUTCDate(string $date): int
 {
     return strtotime($date) + date('Z');
 }
@@ -309,7 +311,7 @@ function acym_date($time = 'now', $format = null, bool $useTz = true, bool $tran
     }
 
     if (is_numeric($time)) {
-        $time = acym_dateTimeCMS((int)$time);
+        $time = acym_dateTimeCMS($time);
     }
 
     if (!$format || (strpos($format, 'ACYM_DATE_FORMAT') !== false && acym_translation($format) == $format)) {

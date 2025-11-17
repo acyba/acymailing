@@ -5,12 +5,12 @@ use AcyMailing\Classes\FieldClass;
 
 trait SubscriberInsertion
 {
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         ?>
 		<script type="text/javascript">
@@ -111,7 +111,7 @@ trait SubscriberInsertion
         echo '</div>';
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $extractedTags = $this->pluginHelper->extractTags($email, $this->name);
         $backwardsTags = $this->pluginHelper->extractTags($email, 'subtag');
@@ -123,7 +123,7 @@ trait SubscriberInsertion
 
         $fieldClass = new FieldClass();
         $fields = $fieldClass->getFieldsByNameKey(array_column($extractedTags, 'id'));
-        $fieldsData = empty($user->id) ? [] : $fieldClass->getAllFieldsListingByUserIds($user->id, array_keys($fields));
+        $fieldsData = empty($user->id) ? [] : $fieldClass->getAllFieldsListingByUserIds([$user->id], array_keys($fields));
         $fieldsNameKeyIdMap = array_combine(array_column($fields, 'namekey'), array_column($fields, 'id'));
 
         $tags = [];

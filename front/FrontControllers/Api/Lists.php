@@ -60,7 +60,7 @@ trait Lists
             $this->sendJsonResponse(['message' => 'List not found.'], 404);
         }
 
-        if ($listClass->delete($listId, true)) {
+        if ($listClass->delete([$listId], true)) {
             $this->sendJsonResponse(['message' => 'List deleted.']);
         }
 

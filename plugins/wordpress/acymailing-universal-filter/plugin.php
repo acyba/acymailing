@@ -77,7 +77,7 @@ class plgAcymUniversalfilter extends AcymPlugin
         exit;
     }
 
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $operator = new OperatorType();
 
@@ -140,7 +140,7 @@ class plgAcymUniversalfilter extends AcymPlugin
 
         $conditions['classic']['universalfilter']->option .= '<div class="cell grid-x">';
         $conditions['classic']['universalfilter']->option .= '<div class="cell medium-3 large-2 acym_vcenter margin-right-1">';
-        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_IDENTIFIER').acym_info('ACYM_IDENTIFIER_DESC');
+        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_IDENTIFIER').acym_info(['textShownInTooltip' => 'ACYM_IDENTIFIER_DESC']);
         $conditions['classic']['universalfilter']->option .= '</div>';
         $conditions['classic']['universalfilter']->option .= '<div class="cell intext_select_automation" id="universalfilter_column_tochange___numor_____numand__">';
         $conditions['classic']['universalfilter']->option .= '<input 
@@ -153,7 +153,7 @@ class plgAcymUniversalfilter extends AcymPlugin
 
         $conditions['classic']['universalfilter']->option .= '<div class="cell grid-x">';
         $conditions['classic']['universalfilter']->option .= '<div class="cell medium-3 large-2 acym_vcenter margin-right-1">';
-        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_CONDITION').acym_info('ACYM_CONDITION_DESC');
+        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_CONDITION').acym_info(['textShownInTooltip' => 'ACYM_CONDITION_DESC']);
         $conditions['classic']['universalfilter']->option .= '</div>';
         $conditions['classic']['universalfilter']->option .= '<div class="cell grid-margin-x medium-auto grid-x margin-y">';
         $conditions['classic']['universalfilter']->option .= '<div class="intext_select_automation cell" id="universalfilter_where_tochange___numor_____numand__" style="vertical-align: top;">';
@@ -406,7 +406,7 @@ class plgAcymUniversalfilter extends AcymPlugin
         }
     }
 
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
         $this->filtersFromConditions($filters);
 

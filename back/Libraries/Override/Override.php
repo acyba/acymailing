@@ -24,7 +24,9 @@ if (!class_exists('PHPMailer') && class_exists('PHPMailer\PHPMailer\PHPMailer'))
 
 $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'Mail'.DIRECTORY_SEPARATOR.'MainOverride.php';
-if (!class_exists('jMail_acym')) return;
+if (!class_exists('jMail_acym')) {
+    return;
+}
 
 
 // Handle the new Joomla mail structure

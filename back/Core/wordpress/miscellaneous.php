@@ -1,36 +1,32 @@
 <?php
 
 // Front-end breadcrumb for Joomla
-function acym_addBreadcrumb($title, $link = '')
+function acym_addBreadcrumb(string $title, string $link = ''): void
 {
 }
 
 // Page title modification for Joomla
-function acym_setPageTitle($title)
+function acym_setPageTitle(string $title): void
 {
 }
 
-function acym_isLeftMenuNecessary()
+function acym_isLeftMenuNecessary(): bool
 {
     // Already one in WP
     return false;
 }
 
-function acym_getLeftMenu($name)
+function acym_getLeftMenu(string $name): string
 {
     return '';
 }
 
-function acym_isPluginActive($plugin, $family = 'system')
+function acym_isPluginActive(string $plugin, string $family = 'system'): bool
 {
     return true;
 }
 
-function acym_menuOnly($link)
-{
-}
-
-function acym_disableCmsEditor()
+function acym_disableCmsEditor(): void
 {
     add_filter(
         'user_can_richedit',
@@ -41,7 +37,7 @@ function acym_disableCmsEditor()
     );
 }
 
-function acym_isElementorEdition()
+function acym_isElementorEdition(): bool
 {
     global $post;
 

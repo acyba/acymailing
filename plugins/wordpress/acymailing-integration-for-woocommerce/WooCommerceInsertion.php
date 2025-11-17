@@ -10,24 +10,24 @@ trait WooCommerceInsertion
     private int $minProductDisplayLastPurchased = 1;
     private int $maxProductDisplayLastPurchased = 3;
 
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         $followupId = acym_getVar('int', 'followup_id');
         if (empty($followupId)) {
-            return '';
+            return null;
         }
 
         if ($this->isWooCommerceFollowup($followupId)) {
             return $this->pluginDescription;
         }
 
-        return '';
+        return null;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         ?>
-        <script type="text/javascript">
+		<script type="text/javascript">
             let selectedWooTag = '';
 
             function applyWooTag(tagname, element) {
@@ -39,7 +39,7 @@ trait WooCommerceInsertion
                 let string = '{wootag:' + tagname + '}';
                 setTag(string, jQuery(element));
             }
-        </script>
+		</script>
         <?php
         $text = '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_ORDER').'</h1>';
 
@@ -177,7 +177,7 @@ trait WooCommerceInsertion
         return $tags;
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -194,7 +194,7 @@ trait WooCommerceInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -202,7 +202,7 @@ trait WooCommerceInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT product.*
                     FROM #__posts AS product
@@ -215,7 +215,7 @@ trait WooCommerceInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         if (empty($defaultValues)) {
             $defaultValues = new stdClass();
@@ -570,57 +570,57 @@ trait WooCommerceInsertion
         }
         ob_start();
         ?>
-        <div class="cell grid-x margin-bottom-1">
-            <label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
+		<div class="cell grid-x margin-bottom-1">
+			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
                 <?php
                 echo wp_kses(
-                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'),
+                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MIN_NUMBER_OF_PRODUCTS_DESC']),
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
                     ]
                 );
                 ?>
-            </label>
-            <input type="number"
-                   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>"
-                   class="cell medium-6"
-                   value="<?php echo esc_attr($this->defaultValues->min); ?>"
-                   name="min"
-                   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
-        </div>
-        <div class="cell grid-x margin-bottom-1">
-            <label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
+			</label>
+			<input type="number"
+				   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>"
+				   class="cell medium-6"
+				   value="<?php echo esc_attr($this->defaultValues->min); ?>"
+				   name="min"
+				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
+		</div>
+		<div class="cell grid-x margin-bottom-1">
+			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
                 <?php
                 echo wp_kses(
-                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'),
+                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MAX_NUMBER_OF_PRODUCTS_DESC']),
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
                     ]
                 );
                 ?>
-            </label>
-            <input type="number"
-                   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>"
-                   class="cell medium-6"
-                   value="<?php echo esc_attr($this->defaultValues->max); ?>"
-                   name="max"
-                   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
-        </div>
-        <div class="cell grid-x margin-bottom-1">
-            <label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
+			</label>
+			<input type="number"
+				   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>"
+				   class="cell medium-6"
+				   value="<?php echo esc_attr($this->defaultValues->max); ?>"
+				   name="max"
+				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
+		</div>
+		<div class="cell grid-x margin-bottom-1">
+			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
                 <?php
                 echo wp_kses(
-                    acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'),
+                    acym_translation('ACYM_CATEGORY_FILTER').acym_info(['textShownInTooltip' => 'ACYM_CATEGORY_FILTER_DESC']),
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
                     ]
                 );
                 ?>
-            </label>
-            <div class="cell medium-6 acym__woocommerce__<?php echo esc_attr($partId); ?>__cat__container">
+			</label>
+			<div class="cell medium-6 acym__woocommerce__<?php echo esc_attr($partId); ?>__cat__container">
                 <?php
                 echo wp_kses(
                     acym_selectMultiple(
@@ -643,30 +643,30 @@ trait WooCommerceInsertion
                     ]
                 );
                 ?>
-            </div>
-        </div>
-        <script type="text/javascript">
+			</div>
+		</div>
+		<script type="text/javascript">
             const _additionalInfo<?php echo esc_html($identifier); ?> = {};
             <?php
             echo esc_html('_additionalInfo'.$identifier.'.min = '.$this->defaultValues->min.';');
             echo esc_html('_additionalInfo'.$identifier.'.max = '.$this->defaultValues->max.';');
             ?>
-        </script>
+		</script>
         <?php
         if ($type === 'last') {
             ?>
-            <div class="cell grid-x">
-                <label class="cell medium-6">
+			<div class="cell grid-x">
+				<label class="cell medium-6">
                     <?php
                     echo wp_kses(
-                        acym_translation('ACYM_START_DATE').acym_info('ACYM_START_DATE_PURCHASED_PRODUCT_DESC'),
+                        acym_translation('ACYM_START_DATE').acym_info(['textShownInTooltip' => 'ACYM_START_DATE_PURCHASED_PRODUCT_DESC']),
                         [
                             'span' => ['class' => []],
                             'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
                         ]
                     );
                     ?>
-                </label>
+				</label>
                 <?php
                 echo wp_kses(
                     acym_dateField(
@@ -710,14 +710,14 @@ trait WooCommerceInsertion
                     ]
                 );
                 ?>
-            </div>
+			</div>
             <?php
         }
 
         return ob_get_clean();
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT product.ID, product.post_title, product.post_date ';
         $this->query = 'FROM #__posts AS product LEFT JOIN #__postmeta AS product_sku ON product.ID = product_sku.post_id AND product_sku.meta_key = "_sku" ';
@@ -760,7 +760,7 @@ trait WooCommerceInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email, $send)
+    public function replaceContent(object &$email, bool $send = true): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
@@ -782,7 +782,7 @@ trait WooCommerceInsertion
         $this->pluginHelper->replaceTags($email, $this->tags, true);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $tags = array_merge($tags, $this->pluginHelper->extractTags($email, $this->name.'_tags'));
@@ -827,7 +827,7 @@ trait WooCommerceInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT product.*
                     FROM #__posts AS product
@@ -914,9 +914,12 @@ trait WooCommerceInsertion
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): array
     {
-        if (empty($user)) return;
+        if (empty($user)) {
+            return [];
+        }
+
         $this->replaceCoupons($email, $user, $send);
         $this->replaceOrderInformation($email, $user, $send);
         $this->replaceOrderedProducts($email, $user);
@@ -938,7 +941,11 @@ trait WooCommerceInsertion
             ];
         }
 
-        if ($generated == 1 || $generatedCart == 1) return ['send' => true, 'emogrifier' => true];
+        if ($generated == 1 || $generatedCart == 1) {
+            return ['send' => true, 'emogrifier' => true];
+        }
+
+        return [];
     }
 
     private function replaceLastPurchased(&$email, $user, $send)

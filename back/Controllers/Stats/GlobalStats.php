@@ -715,7 +715,7 @@ trait GlobalStats
         $mailClass = new MailClass();
 
         $data['mailStat'] = $mailStatClass->getByMailIds($this->selectedMailIds);
-        $data['lists'] = $mailClass->getAllListsByMailId($this->selectedMailIds);
+        $data['lists'] = $mailClass->getAllListsByMailId($this->selectedMailIds[0]);
     }
 
     private function exportGlobalFormatted(): void
@@ -829,13 +829,13 @@ trait GlobalStats
                 array_shift($history);
             }
 
-            $this->config->save([$key => json_encode($history)]);
+            $this->config->saveConfig([$key => json_encode($history)]);
 
             $evolutionKey = $this->getEvolutionKey($key);
             $oldEvolutionData[$evolutionKey] = $this->calculateEvolution($history, $isPercentage);
         }
 
-        $this->config->save(['statsEvolution' => json_encode($oldEvolutionData)]);
+        $this->config->saveConfig(['statsEvolution' => json_encode($oldEvolutionData)]);
 
         if (!empty($data)) {
             $this->updateDashboardData($data);

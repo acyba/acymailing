@@ -128,7 +128,8 @@ trait AutoCampaigns
             $successMsg = acym_translation('ACYM_CAMPAIGN_HAS_BEEN_ENABLED');
         }
 
-        if ($campaignClass->save($campaign)) {
+        $savedCampaignId = $campaignClass->save($campaign);
+        if (!empty($savedCampaignId)) {
             acym_enqueueMessage($successMsg);
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');

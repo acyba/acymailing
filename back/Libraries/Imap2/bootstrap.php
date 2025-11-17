@@ -663,38 +663,6 @@ if (!function_exists('imap2_deletemailbox')) {
 }
 
 /**
- * imap2_renamemailbox
- */
-if (!function_exists('imap_renamemailbox')) {
-    function imap_renamemailbox($imap, $from, $to)
-    {
-        return imap2_renamemailbox($imap, $from, $to);
-    }
-}
-if (!function_exists('imap2_renamemailbox')) {
-    function imap2_renamemailbox($imap, $from, $to)
-    {
-        return Mailbox::renameMailbox($imap, $from, $to);
-    }
-}
-
-/**
- * imap2_rename
- */
-if (!function_exists('imap_rename')) {
-    function imap_rename($imap, $from, $to)
-    {
-        return imap2_rename($imap, $from, $to);
-    }
-}
-if (!function_exists('imap2_rename')) {
-    function imap2_rename($imap, $from, $to)
-    {
-        return Mailbox::renameMailbox($imap, $from, $to);
-    }
-}
-
-/**
  * imap2_mailboxmsginfo
  */
 if (!function_exists('imap_mailboxmsginfo')) {
@@ -932,26 +900,6 @@ if (!function_exists('imap2_fetchbody')) {
 }
 
 /**
- * imap2_bodystruct
- */
-if (!function_exists('imap_bodystruct')) {
-    function imap_bodystruct($imap, $messageNum, $section)
-    {
-        return imap2_bodystruct($imap, $messageNum, $section);
-    }
-}
-if (!function_exists('imap2_bodystruct')) {
-    function imap2_bodystruct($imap, $messageNum, $section)
-    {
-        if (IMAP2_RETROFIT_MODE && Functions::isRetrofitResource($imap)) {
-            return imap_bodystruct($imap, $messageNum, $section);
-        }
-
-        return Message::bodyStruct($imap, $messageNum, $section);
-    }
-}
-
-/**
  * imap2_savebody
  */
 if (!function_exists('imap_savebody')) {
@@ -1184,26 +1132,6 @@ if (!function_exists('imap2_mail_move')) {
         }
 
         return Mail::move($imap, $messageNums, $mailbox, $flags);
-    }
-}
-
-/**
- * imap2_mail
- */
-if (!function_exists('imap_mail')) {
-    function imap_mail($to, $subject, $message, $additionalHeaders = null, $cc = null, $bcc = null, $returnPath = null)
-    {
-        return imap2_mail($to, $subject, $message, $additionalHeaders, $cc, $bcc, $returnPath);
-    }
-}
-if (!function_exists('imap2_mail')) {
-    function imap2_mail($to, $subject, $message, $additionalHeaders = null, $cc = null, $bcc = null, $returnPath = null)
-    {
-        if (IMAP2_RETROFIT_MODE) {
-            return imap_mail($to, $subject, $message, $additionalHeaders, $cc, $bcc, $returnPath);
-        }
-
-        return Mail::send($to, $subject, $message, $additionalHeaders, $cc, $bcc, $returnPath);
     }
 }
 

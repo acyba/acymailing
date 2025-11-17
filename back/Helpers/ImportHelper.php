@@ -143,7 +143,7 @@ class ImportHelper extends AcymObject
         if (!empty($deletedSubid)) {
             $userClass = new UserClass();
             $deletedUsers = $userClass->delete($deletedSubid);
-            acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_DELETE', $deletedUsers), 'success');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_DELETE', $deletedUsers));
         }
 
         //Step 3 : insert the new ones
@@ -159,7 +159,7 @@ class ImportHelper extends AcymObject
             $queryWhere[] = '`meta`.`meta_key`=\'#__capabilities\'';
         }
         $groups = acym_getVar('array', 'groups', []);
-        $this->config->save(['import_groups' => implode(',', $groups)]);
+        $this->config->saveConfig(['import_groups' => implode(',', $groups)]);
         if (!empty($groups)) {
             if (ACYM_CMS === 'joomla') {
                 acym_arrayToInteger($groups);
@@ -235,7 +235,7 @@ class ImportHelper extends AcymObject
         $time = time();
         $sourceImport = acym_translationSprintf('ACYM_IMPORT_FROM_CONTACT_X', acym_date($time, 'Y-m-d H:i:s'));
         $categories = acym_getVar('array', 'contact_categories', []);
-        $this->config->save(['import_contact_categories' => implode(',', $categories)]);
+        $this->config->saveConfig(['import_contact_categories' => implode(',', $categories)]);
         acym_arrayToInteger($categories);
 
         $query = 'SELECT `contact`.`name`, `contact`.`email_to`, `contact`.`created`, `contact`.`published` 
@@ -531,11 +531,13 @@ class ImportHelper extends AcymObject
         $this->overwrite = acym_getVar('bool', 'import_overwrite_generic', true);
 
         // Remember user's choices
-        $newConfig = new \stdClass();
-        $newConfig->import_confirmed = $this->forceConfirm;
-        $newConfig->import_generate = $this->generateName;
-        $newConfig->import_overwrite = $this->overwrite;
-        $this->config->save($newConfig);
+        $this->config->saveConfig(
+            [
+                'import_confirmed' => $this->forceConfirm,
+                'import_generate' => $this->generateName,
+                'import_overwrite' => $this->overwrite,
+            ]
+        );
 
         $filename = str_replace(['.', ' '], '_', substr($filename, 0, strpos($filename, $extension))).$extension;
         $uploadPath = ACYM_MEDIA.'import'.DS.$filename;
@@ -598,7 +600,7 @@ class ImportHelper extends AcymObject
     public function getImportedLists(): array
     {
         $listClass = new ListClass();
-        $listsId = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
+        $listsId = json_decode(acym_getVar('string', 'acym__entity_select__selected'), true);
         $newListName = acym_getVar('string', 'new_list');
 
         if (empty($listsId) && empty($newListName)) {

@@ -2,7 +2,7 @@
 
 trait JeventsAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         if (!file_exists(JPATH_SITE.DS.'components'.DS.'com_rsvppro')) return;
         acym_loadLanguageFile('com_rsvppro', JPATH_ADMINISTRATOR);
@@ -55,7 +55,7 @@ trait JeventsAutomationConditions
         $conditions['user']['jeventsregistration']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

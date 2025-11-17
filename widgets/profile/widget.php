@@ -36,7 +36,7 @@ class acym_profile_widget extends WP_Widget
             'title' => 'Your profile',
             'lists' => 'All',
             'listschecked' => 'None',
-            'dropdown' => '0',
+            'dropdown' => false,
             'hiddenlists' => 'None',
             'fields' => '1',
             'introtext' => '',
@@ -46,18 +46,18 @@ class acym_profile_widget extends WP_Widget
 
         foreach ($params as $oneParam => &$value) {
             if (!empty($instance)) {
-                if (isset($instance[$oneParam])) {
-                    $value = $instance[$oneParam];
-                } else {
-                    $value = '';
-                }
+                $value = $instance[$oneParam] ?? '';
             }
 
             if (is_array($value)) {
                 $value = implode(',', $value);
             }
 
-            $value = esc_attr($value);
+            if (in_array($oneParam, ['dropdown'])) {
+                $value = (bool)$value;
+            } else {
+                $value = esc_attr($value);
+            }
         }
 
         if (!isset($instance['hiddenlists']) && !empty($params['lists'])) {

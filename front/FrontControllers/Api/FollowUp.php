@@ -132,7 +132,7 @@ trait FollowUp
         $mailClass = new MailClass();
         if (!empty($decodedData['mail']['id'])) {
             $mail = $mailClass->getOneById($decodedData['mail']['id']);
-            $mailIds = $followUpClass->getEmailsByIds($decodedData['followUpId']);
+            $mailIds = $followUpClass->getEmailsByIds([$decodedData['followUpId']]);
 
             if (empty($mail) || !in_array($decodedData['mail']['id'], $mailIds)) {
                 $this->sendJsonResponse(['message' => 'Mail not found.'], 404);
@@ -220,7 +220,7 @@ trait FollowUp
             $this->sendJsonResponse(['message' => 'Mail ID missing.'], 422);
         }
 
-        $mailIds = $followUpClass->getEmailsByIds($followUpId);
+        $mailIds = $followUpClass->getEmailsByIds([$followUpId]);
 
         if (!in_array($mailId, $mailIds)) {
             $this->sendJsonResponse(['message' => 'Mail not found.'], 404);
@@ -248,7 +248,7 @@ trait FollowUp
             $this->sendJsonResponse(['message' => 'Follow-up not found.'], 404);
         }
 
-        $mails = $followUpClass->getFollowupsWithMailsInfoByIds($followUpId);
+        $mails = $followUpClass->getFollowupsWithMailsInfoByIds([$followUpId]);
         $followUp->mails = [];
 
         if (!empty($mails[$followUpId])) {
@@ -273,7 +273,7 @@ trait FollowUp
             $this->sendJsonResponse(['message' => 'Follow-up not found.'], 404);
         }
 
-        if ($followUpClass->delete($followUpId)) {
+        if ($followUpClass->delete([$followUpId])) {
             $this->sendJsonResponse(['message' => 'Follow-up deleted.']);
         } else {
             $this->sendJsonResponse(['message' => 'Error deleting follow-up.'], 500);

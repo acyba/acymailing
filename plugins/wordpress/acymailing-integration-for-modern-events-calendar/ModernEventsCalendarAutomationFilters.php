@@ -2,7 +2,7 @@
 
 trait ModernEventsCalendarAutomationFilters
 {
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
         if (!$this->fullInstalled) return;
 

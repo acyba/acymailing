@@ -18,16 +18,21 @@ echo acym_modalInclude(
     'acym__template__choose__modal',
     $data,
     '',
-    '',
-    'class="cell large-shrink medium-6 margin-bottom-0"'
+    ['class' => 'cell large-shrink medium-6 margin-bottom-0']
 );
 
-$attributeSave = empty($data['multilingual']) || $data['editor']->editor === 'html' ? '' : 'acym-data-before="acym_editorWysidVersions.storeCurrentValues(true);"';
-$attributeBeforeSave = $data['mail']->editor === 'acyEditor' ? 'acym-data-before="acym_editorWysidFormAction.cleanMceInput();"' : '';
+$beforeSave = '';
+if ($data['mail']->editor === 'acyEditor') {
+    $beforeSave .= 'acym_editorWysidFormAction.cleanMceInput();';
+    if (!empty($data['multilingual'])) {
+        $beforeSave .= 'acym_editorWysidVersions.storeCurrentValues(true);';
+    }
+}
+
+$attributeBeforeSave = empty($beforeSave) ? '' : 'acym-data-before="'.acym_escape($beforeSave).'"';
 ?>
 <button id="apply"
     <?php echo $attributeBeforeSave; ?>
-    <?php echo $attributeSave; ?>
 		type="button"
 		data-task="apply"
 		class="cell large-shrink button-secondary medium-6 button acym__template__save acy_button_submit">
@@ -37,7 +42,6 @@ $attributeBeforeSave = $data['mail']->editor === 'acyEditor' ? 'acym-data-before
     <?php echo $attributeBeforeSave; ?> data-task="apply" class="acy_button_submit" id="data_apply"></button>
 <button id="save"
     <?php echo $attributeBeforeSave; ?>
-    <?php echo $attributeSave; ?>
 		type="button"
 		data-task="save"
 		class="cell large-shrink medium-6 button acy_button_submit">

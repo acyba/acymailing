@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait K2Insertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -40,7 +40,7 @@ trait K2Insertion
         }
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -49,7 +49,7 @@ trait K2Insertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT item.* FROM #__k2_items AS item WHERE item.published = 1 AND item.trash = 0';
         $element = acym_loadObject($query);
@@ -59,7 +59,7 @@ trait K2Insertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -173,7 +173,7 @@ trait K2Insertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         //we load all elements with the categories
         $this->querySelect = 'SELECT item.id, item.title, item.publish_up ';
@@ -221,20 +221,20 @@ trait K2Insertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         require_once JPATH_SITE.DS.'components'.DS.'com_k2'.DS.'helpers'.DS.'route.php';
 
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -280,7 +280,7 @@ trait K2Insertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT item.* FROM #__k2_items AS item WHERE item.published = 1 AND item.trash = 0 AND item.id = '.intval($tag->id);
 

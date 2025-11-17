@@ -14,36 +14,39 @@ class StepClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function save($step)
+    public function save(object $step): ?int
     {
         foreach ($step as $oneAttribute => $value) {
             if (empty($value)) continue;
-            if (is_array($value)) $value = json_encode($value);
 
-            $step->$oneAttribute = strip_tags($value);
+            $step->$oneAttribute = is_array($value) ? json_encode($value) : strip_tags($value);
         }
 
         //Some of the database need a name for the column name, they add an index and the name need to be unique
-        if (empty($step->name)) $step->name = 'step_'.time();
+        if (empty($step->name)) {
+            $step->name = 'step_'.time();
+        }
 
         return parent::save($step);
     }
 
-    public function getOneStepByAutomationId($automationId)
+    public function getOneStepByAutomationId(int $automationId): ?object
     {
-        return acym_loadObject('SELECT * FROM #__acym_step WHERE automation_id = '.intval($automationId));
+        $step = acym_loadObject('SELECT * FROM #__acym_step WHERE automation_id = '.intval($automationId));
+
+        return empty($step) ? null : $step;
     }
 
-    public function getStepsByAutomationId($automationId)
+    public function getStepsByAutomationId(int $automationId): array
     {
         return acym_loadObjectList('SELECT * FROM #__acym_step WHERE automation_id = '.intval($automationId));
     }
 
-    public function getActiveStepByTrigger($triggers)
+    public function getActiveStepByTrigger(array $triggers): array
     {
-        if (empty($triggers)) return [];
-
-        if (!is_array($triggers)) $triggers = [$triggers];
+        if (empty($triggers)) {
+            return [];
+        }
 
         $query = 'SELECT step.* 
             FROM #__acym_step AS step 
@@ -64,16 +67,15 @@ class StepClass extends AcymClass
         return $steps;
     }
 
-    public function delete($elements)
+    public function delete(array $elements): int
     {
         if (empty($elements)) return 0;
 
-        if (!is_array($elements)) $elements = [$elements];
         acym_arrayToInteger($elements);
 
         $conditions = acym_loadResultArray('SELECT id FROM #__acym_condition WHERE step_id IN ('.implode(',', $elements).')');
         $conditionClass = new ConditionClass();
-        $conditionsDeleted = $conditionClass->delete($conditions);
+        $conditionClass->delete($conditions);
 
         return parent::delete($elements);
     }

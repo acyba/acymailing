@@ -21,10 +21,13 @@
                 );
                 ?>
 			</div>
-			<button type="button"
-					class="cell shrink button primary acym__stats__export__button acym__stats__export__global__charts"
-					data-task="exportGlobal"><?php echo acym_translation('ACYM_EXPORT'); ?></button>
-        <?php } ?>
+            <?php
+            echo acym_tooltip([
+                'hoveredText' => '<button type="button" class="cell shrink button primary acym__stats__export__button acym__stats__export__global__charts " data-task="exportGlobal">'
+                    .acym_translation('ACYM_EXPORT').'</button>',
+                'textShownInTooltip' => acym_translation('ACYM_STATS_EXPORT_SETTINGS_TOOLTIP'),
+            ]);
+        } ?>
 	</div>
     <?php if (!empty($data['selectedMailid']) && !empty($data['lists'])) { ?>
 		<div class="cell grid-x margin-bottom-1">
@@ -156,7 +159,7 @@
 		</div>
 		<div class="cell acym__content grid-x">
 			<h2 class="cell shrink acym__title acym__title__secondary">
-                <?php echo acym_translation('ACYM_OPEN_TIME_CHART').acym_info('ACYM_OPEN_TIME_CHART_DESC'); ?>
+                <?php echo acym_translation('ACYM_OPEN_TIME_CHART').acym_info(['textShownInTooltip' => 'ACYM_OPEN_TIME_CHART_DESC']); ?>
 			</h2>
             <?php if ($data['empty_open']) { ?>
 				<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_EMAIL_NOT_OPEN_EXAMPLE_STATS'); ?></b></h4>

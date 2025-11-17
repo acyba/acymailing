@@ -12,7 +12,7 @@ class FormClass extends AcymClass
     const SUB_FORM_TYPE_HEADER = 'header';
     const SUB_FORM_TYPE_FOOTER = 'footer';
 
-    private $settings;
+    private array $settings;
 
     public function __construct()
     {
@@ -121,15 +121,49 @@ class FormClass extends AcymClass
                     ],
                 ],
                 'termspolicy' => [
+                    'terms_type' => [
+                        'label' => 'ACYM_TERMS_TYPE',
+                        'type' => 'select',
+                        'options' => [
+                            'article' => acym_translation('ACYM_ARTICLE'),
+                            'url' => acym_translation('ACYM_LINK'),
+                        ],
+                        'default' => 'article',
+                    ],
                     'termscond' => [
                         'label' => 'ACYM_TERMS_CONDITIONS',
                         'type' => 'article',
                         'default' => 0,
+                        'conditional' => ['terms_type' => 'article'],
+                    ],
+                    'terms_url' => [
+                        'label' => 'ACYM_TERMS_CONDITIONS_URL',
+                        'description' => 'ACYM_TERMS_CONDITIONS_URL_DESC',
+                        'type' => 'text',
+                        'default' => '',
+                        'conditional' => ['terms_type' => 'url'],
+                    ],
+                    'privacy_type' => [
+                        'label' => 'ACYM_PRIVACY_TYPE',
+                        'type' => 'select',
+                        'options' => [
+                            'article' => acym_translation('ACYM_ARTICLE'),
+                            'url' => acym_translation('ACYM_LINK'),
+                        ],
+                        'default' => 'article',
                     ],
                     'privacy' => [
                         'label' => 'ACYM_PRIVACY_POLICY',
                         'type' => 'article',
                         'default' => 0,
+                        'conditional' => ['privacy_type' => 'article'],
+                    ],
+                    'privacy_url' => [
+                        'label' => 'ACYM_PRIVACY_POLICY_URL',
+                        'description' => 'ACYM_PRIVACY_POLICY_URL_DESC',
+                        'type' => 'text',
+                        'default' => '',
+                        'conditional' => ['privacy_type' => 'url'],
                     ],
                 ],
                 'message' => [
@@ -377,6 +411,7 @@ class FormClass extends AcymClass
             'image' => 'ACYM_IMAGE',
             'button' => 'ACYM_BUTTON',
             'style' => 'ACYM_STYLE',
+            'links' => 'ACYM_LINKS',
         ];
     }
 
@@ -430,12 +465,12 @@ class FormClass extends AcymClass
         ];
     }
 
-    public function getOneById($id)
+    public function getOneById(int $id): ?object
     {
-        $form = acym_loadObject('SELECT * FROM #__acym_form WHERE id = '.intval($id));
+        $form = parent::getOneById($id);
 
         if (empty($form)) {
-            return $form;
+            return null;
         }
 
         $form->pages = json_decode($form->pages, true);
@@ -445,7 +480,7 @@ class FormClass extends AcymClass
         return $form;
     }
 
-    public function getAllFormsToDisplay()
+    public function getAllFormsToDisplay(): array
     {
         $forms = acym_loadObjectList('SELECT * FROM #__acym_form WHERE active = 1 AND type != '.acym_escapeDB(self::SUB_FORM_TYPE_SHORTCODE));
         foreach ($forms as $form) {
@@ -457,7 +492,7 @@ class FormClass extends AcymClass
         return $forms;
     }
 
-    public function initEmptyForm($type)
+    public function initEmptyForm(string $type): object
     {
         $newForm = new \stdClass();
         $newForm->id = 0;
@@ -491,12 +526,8 @@ class FormClass extends AcymClass
         return $newForm;
     }
 
-    public function getFormWithMissingParams($formArray): \stdClass
+    public function getFormWithMissingParams(array $formArray): object
     {
-        if (!is_array($formArray)) {
-            $formArray = get_object_vars($formArray);
-        }
-
         $form = new \stdClass();
         $formEmpty = $this->initEmptyForm($formArray['type']);
 
@@ -526,7 +557,7 @@ class FormClass extends AcymClass
         return $form;
     }
 
-    public function prepareMenuHtml($form, $type): array
+    public function prepareMenuHtml(object $form, string $type): array
     {
         $sections = $this->getSectionTranslations();
         $htmlMenu = [];
@@ -544,7 +575,7 @@ class FormClass extends AcymClass
 
                 $label = '<label class="cell" for="'.$id.'">'.acym_translation($option['label']);
                 if (!empty($option['description'])) {
-                    $label .= acym_info($option['description']);
+                    $label .= acym_info(['textShownInTooltip' => $option['description']]);
                 }
                 $label .= '</label>';
 
@@ -564,7 +595,7 @@ class FormClass extends AcymClass
         return $htmlMenu;
     }
 
-    public function renderForm($form, $edition = false, $isShortcode = false)
+    public function renderForm(object $form, bool $edition = false, bool $isShortcode = false): string
     {
         if (!empty($form->display_languages) && !in_array('all', $form->display_languages) && !$edition) {
             if (!in_array(acym_getLanguageTag(), $form->display_languages)) {
@@ -579,7 +610,7 @@ class FormClass extends AcymClass
         $fieldClass = new FieldClass();
         $listClass = new ListClass();
 
-        $form = $this->getFormWithMissingParams($form);
+        $form = $this->getFormWithMissingParams(get_object_vars($form));
 
         $form->settings['fields']['displayed'][] = 2;
         $form->settings['fields']['displayed'] = $fieldClass->getFieldsByID($form->settings['fields']['displayed']);

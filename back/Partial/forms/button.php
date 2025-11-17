@@ -14,12 +14,9 @@
             $form->settings['button']['text'] = $form->settings['button']['lang'][$defaultLanguage];
         }
     }
-
-    $onclick = $edition ? ''
-        : 'onclick="try{ return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\'); }catch(err){alert(\'The form could not be submitted \'+err);return false;}"';
     ?>
-	<button type="button" <?php echo $onclick; ?>>
-        <?php echo $button_value = acym_translation($form->settings['button']['text']); ?>
+	<button type="submit">
+        <?php echo acym_escape(acym_translation($form->settings['button']['text'])); ?>
 	</button>
 	<style>
 		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__button{

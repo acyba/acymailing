@@ -72,7 +72,7 @@ trait Walkthrough
             return;
         }
 
-        $this->config->save($newConfiguration);
+        $this->config->saveConfig($newConfiguration);
 
         $this->saveWalkthrough(['step' => 'stepLicense']);
         $this->stepLicense();
@@ -99,13 +99,13 @@ trait Walkthrough
             acym_sendAjaxResponse(acym_translation('ACYM_LICENSE_NOT_FOUND'), [], false);
         }
 
-        $this->config->save(['license_key' => $licenseKey]);
+        $this->config->saveConfig(['license_key' => $licenseKey]);
 
         $configurationController = new ConfigurationController();
         $return = $configurationController->attachLicenseOnUpdateMe($licenseKey);
 
         if (empty($return['success'])) {
-            $this->config->save(['license_key' => '']);
+            $this->config->saveConfig(['license_key' => '']);
         }
 
         $originalMessage = $return['message'];
@@ -138,7 +138,7 @@ trait Walkthrough
         $success = !empty($result['success']);
 
         if ($success) {
-            $this->config->save(['active_cron' => 1]);
+            $this->config->saveConfig(['active_cron' => 1]);
         }
 
         acym_sendAjaxResponse($result['message']['message'], [], $success);
@@ -169,7 +169,7 @@ trait Walkthrough
 
     public function startUsing(bool $campaigns = false): void
     {
-        $this->config->save(['walk_through' => 0]);
+        $this->config->saveConfig(['walk_through' => 0]);
         $redirectUrl = $campaigns ? 'campaigns' : 'dashboard';
 
         acym_redirect(acym_completeLink($redirectUrl, false, true));
@@ -235,6 +235,6 @@ trait Walkthrough
         foreach ($params as $key => $value) {
             $newParams[$key] = $value;
         }
-        $this->config->save(['walkthrough_params' => json_encode($newParams)]);
+        $this->config->saveConfig(['walkthrough_params' => json_encode($newParams)]);
     }
 }

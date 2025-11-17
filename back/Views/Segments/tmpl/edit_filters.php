@@ -37,7 +37,6 @@
             'ctrl' => 'segments',
             'task' => 'usersSummary',
         ],
-        '',
         'acym__modal__users__summary__container'
     ); ?>
 </div>

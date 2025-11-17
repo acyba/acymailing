@@ -9,14 +9,15 @@ if (empty($data['mailInformation'])) {
 $isAbTest = !empty($data['abtest']);
 
 ?>
-<input type="hidden" name="version_type" value="<?php echo $isAbTest ? 'abtest' : 'multilingual'; ?>">
+<input type="hidden" name="current_version" id="current_version" value="main" />
+<input type="hidden" name="version_type" value="<?php echo $isAbTest ? 'abtest' : 'multilingual'; ?>" />
 <div class="cell acym__wysid__edit__versions-<?php echo $isAbTest ? 'abtest' : 'multilingual'; ?>" id="acym__wysid__edit__versions">
 	<div class="acym__title acym__title__secondary">
         <?php
         if ($isAbTest) {
             echo acym_translation('ACYM_VERSIONS');
         } else {
-            echo acym_translation('ACYM_CONFIGURATION_LANGUAGES').acym_info('ACYM_MULTILINGUAL_DESC');
+            echo acym_translation('ACYM_CONFIGURATION_LANGUAGES').acym_info(['textShownInTooltip' => 'ACYM_MULTILINGUAL_DESC']);
         } ?>
 	</div>
 
@@ -121,12 +122,11 @@ $isAbTest = !empty($data['abtest']);
 	</button>
     <?php
     $dataForTemplate = ['allTags' => $data['tagClass']->getAllTagsByType(TagClass::TYPE_MAIL)];
-    echo acym_modal_include(
+    echo acym_modalInclude(
         '',
         ACYM_VIEW.'Mails'.DS.'tmpl'.DS.'choose_template_ajax.php',
         'acym__template__choose__modal',
         $dataForTemplate,
-        '',
         'acym__template__choose__modal__listing'
     );
     ?>

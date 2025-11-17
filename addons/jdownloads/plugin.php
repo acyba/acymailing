@@ -26,8 +26,8 @@ class plgAcymJdownloads extends AcymPlugin
 
             if (!empty($manifest)) {
                 try {
-                    $decoded = json_decode($manifest);
-                    if (!empty($decoded->version) && version_compare($decoded->version, '3.9.0', '<')) {
+                    $decoded = json_decode($manifest, true);
+                    if (!empty($decoded['version']) && version_compare($decoded['version'], '3.9.0', '<')) {
                         $this->installed = false;
                     }
                 } catch (Exception $exception) {
@@ -79,7 +79,7 @@ class plgAcymJdownloads extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') return null;
 

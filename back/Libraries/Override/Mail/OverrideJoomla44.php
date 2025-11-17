@@ -10,7 +10,7 @@ use Joomla\CMS\Mail\Exception\MailDisabledException;
 use PHPMailer\PHPMailer\Exception as phpmailerException;
 use PHPMailer\PHPMailer\PHPMailer;
 
-defined('JPATH_PLATFORM') or die;
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.mail.helper');
 
@@ -425,7 +425,7 @@ class Mail extends PHPMailer implements MailerInterface
         if (is_array($replyTo)) {
             $numReplyTo = count($replyTo);
 
-            for ($i = 0 ; $i < $numReplyTo ; $i++) {
+            for ($i = 0; $i < $numReplyTo; $i++) {
                 if ($this->addReplyTo($replyTo[$i], $replyToName[$i]) === false) {
                     return false;
                 }

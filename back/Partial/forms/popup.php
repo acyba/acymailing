@@ -5,10 +5,10 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 }
 ?>
 <div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>"
-     class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
+	 class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
     <?php echo $hideForScroll; ?>>
-    <div class="acym__subscription__form__popup">
-        <div class="acym__subscription__form__popup__close acymicon-close"></div>
+	<div class="acym__subscription__form__popup">
+		<div class="acym__subscription__form__popup__close acymicon-close"></div>
         <?php
         if ($edition) {
             echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
@@ -43,8 +43,8 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
         }
         include acym_getPartial('forms', 'hidden_params');
         ?>
-        </form>
-    </div>
+		</form>
+	</div>
 </div>
 <style>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__popup__overlay{
@@ -141,7 +141,7 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 
 </style>
 <?php if (!$edition) { ?>
-    <script type="text/javascript">
+	<script type="text/javascript">
         const acymBackupFormTimeout<?php echo $form->form_tag_name; ?> = setTimeout(() => {
             acym_initPopupDisplay<?php echo $form->form_tag_name; ?>(true);
         }, 1000);
@@ -254,7 +254,7 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                 }
             }
         }
-    </script>
+	</script>
     <?php
     include acym_getPartial('forms', 'cookie');
 }

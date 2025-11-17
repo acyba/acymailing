@@ -70,7 +70,7 @@
 			<label class="cell medium-7 large-4">
                 <?php
                 echo acym_translation('ACYM_EMAIL_LANGUAGE');
-                echo acym_info('ACYM_EMAIL_LANGUAGE_DESC');
+                echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_LANGUAGE_DESC']);
                 ?>
 			</label>
 			<div class="cell medium-5 large-3">
@@ -81,7 +81,7 @@
 	<div class="cell grid-x medium-10 large-7 xlarge-5">
         <?php
         $label = acym_translation('ACYM_TRACK_THIS_CAMPAIGN');
-        $label .= acym_info('ACYM_TRACK_THIS_CAMPAIGN_DESC');
+        $label .= acym_info(['textShownInTooltip' => 'ACYM_TRACK_THIS_CAMPAIGN_DESC']);
         echo acym_switch(
             'senderInformation[tracking]',
             isset($data['currentCampaign']->tracking) ? $data['currentCampaign']->tracking : 1,

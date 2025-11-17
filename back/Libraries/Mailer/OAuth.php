@@ -124,7 +124,7 @@ class OAuth implements OAuthTokenProvider
 
         if (!empty($response['token_type']) && !empty($response['access_token'])) {
             $config = acym_config();
-            $config->save(
+            $config->saveConfig(
                 [
                     $this->sendingMethod.'_access_token' => $response['access_token'],
                     $this->sendingMethod.'_access_token_expiration' => time() + (int)$response['expires_in'],

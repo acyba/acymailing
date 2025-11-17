@@ -4,12 +4,12 @@ use AcyMailing\Classes\FieldClass;
 
 trait OnlineInsertion
 {
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         $links = [
             'readonline' => [
@@ -108,19 +108,26 @@ trait OnlineInsertion
 
             function setOnlineTag() {
                 setTimeout(function () {
-                    let themeOption = '';
-                    if (selectedOnlineDText === 'readonline') {
-                        let themeInput = document.querySelector('input[name="acym__popup__online__theme"]');
-                        themeOption = '|theme:' + (themeInput && themeInput.value === '1' ? '1' : '0');
+                    let tag = '{';
+
+                    if (selectedOnlineDText === 'info') {
+                        tag += 'info:' + selectedInfoKey;
+                    } else {
+                        tag += selectedOnlineDText;
                     }
-                    let tag = '{'
-                              + (selectedOnlineDText === 'info' ? 'info:' + selectedInfoKey : selectedOnlineDText)
-                              + themeOption
-                              + '}'
-                              + getTagText()
-                              + '{/'
-                              + selectedOnlineDText
-                              + '}';
+
+                    if (selectedOnlineDText === 'readonline') {
+                        const themeInput = document.querySelector('input[name="acym__popup__online__theme"]');
+                        tag += '|theme:';
+                        if (themeInput && themeInput.value === '1') {
+                            tag += '1';
+                        } else {
+                            tag += '0';
+                        }
+                    }
+
+                    tag += `}${getTagText()}{/${selectedOnlineDText}}`;
+
                     setTag(tag, jQuery('#tr_' + selectedOnlineDText));
                 }, 50);
             }
@@ -130,7 +137,7 @@ trait OnlineInsertion
         include acym_getPartial('editor', 'website_content');
     }
 
-    public function replaceContent(&$email, $send = true)
+    public function replaceContent(object &$email): void
     {
         if (empty($email->body)) return;
 

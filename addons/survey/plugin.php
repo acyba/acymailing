@@ -54,12 +54,12 @@ class plgAcymSurvey extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -96,7 +96,7 @@ class plgAcymSurvey extends AcymPlugin
         $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -110,7 +110,7 @@ class plgAcymSurvey extends AcymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT element.id, element.title, element.publish_up ';
         $this->query = 'FROM #__survey_surveys AS element ';
@@ -151,12 +151,12 @@ class plgAcymSurvey extends AcymPlugin
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         require_once JPATH_ROOT.'/components/com_cjlib/framework.php';
         require_once JPATH_ROOT.'/components/com_cjlib/framework/api.php';
@@ -169,7 +169,7 @@ class plgAcymSurvey extends AcymPlugin
         return true;
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $this->elementOptions = [];
         $element = acym_loadObject('SELECT * FROM #__survey_surveys LIMIT 1');
@@ -181,7 +181,7 @@ class plgAcymSurvey extends AcymPlugin
         }
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -189,7 +189,7 @@ class plgAcymSurvey extends AcymPlugin
         ];
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT element.*
                     FROM #__survey_surveys AS element
@@ -250,7 +250,7 @@ class plgAcymSurvey extends AcymPlugin
      *
      * @since 1.0.0
      */
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         if (!$send) {
             return;

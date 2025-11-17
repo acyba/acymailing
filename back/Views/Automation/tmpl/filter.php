@@ -38,7 +38,6 @@
                     'ctrl' => 'segments',
                     'task' => 'usersSummary',
                 ],
-                '',
                 'acym__modal__users__summary__container'
             ); ?>
 		</div>
@@ -127,10 +126,10 @@
             <?php if (empty($data['id'])) { ?>
 				<div class="auto cell"></div>
 				<button type="button" class="button button-secondary acy_button_submit medium-shrink cell" data-task="listing">
-					<?php echo acym_translation('ACYM_CANCEL'); ?>
+                    <?php echo acym_translation('ACYM_CANCEL'); ?>
 				</button>
 				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="setFilterMassAction">
-					<?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?>
+                    <?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?>
 				</button>
             <?php } else { ?>
 				<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">

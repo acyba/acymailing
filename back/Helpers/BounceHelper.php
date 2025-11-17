@@ -359,7 +359,10 @@ class BounceHelper extends AcymObject
     {
         $this->_message->headerinfo = $this->mailbox->getParsedHeaders($this->_message->messageNB);
         if (empty($this->_message->headerinfo['subject'])) {
-            return false;
+            if (empty($this->_message->headerinfo['Subject'])) {
+                return false;
+            }
+            $this->_message->headerinfo['subject'] = $this->_message->headerinfo['Subject'];
         }
         $this->_message->text = '';
         $this->_message->html = $this->mailbox->getBody($this->_message->messageNB);
@@ -1107,7 +1110,7 @@ class BounceHelper extends AcymObject
                     $message .= acym_translation('ACYM_USER_ALREADY_UNSUBSCRIBED');
                 }
             } else {
-                $this->userClass->subscribe($this->_message->userid, $listId);
+                $this->userClass->subscribe([$this->_message->userid], [$listId]);
                 $message .= acym_translationSprintf('ACYM_USER_X_SUBSCRIBED_TO', $this->_message->subemail, $listName);
             }
         }
@@ -1124,7 +1127,7 @@ class BounceHelper extends AcymObject
                     }
                 }
                 $message .= ' | '.acym_translationSprintf('ACYM_USER_X_REMOVED_FROM', $this->_message->subemail, implode(', ', $listNames));
-                $this->userClass->removeSubscription($this->_message->userid, $removeLists);
+                $this->userClass->removeSubscription([$this->_message->userid], $removeLists);
             } else {
                 $message .= ' | '.acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);
             }
@@ -1141,7 +1144,7 @@ class BounceHelper extends AcymObject
                         $listNames[] = $oneListId;
                     }
                 }
-                $this->userClass->unsubscribe($this->_message->userid, $unsubLists);
+                $this->userClass->unsubscribe([$this->_message->userid], $unsubLists);
                 $message .= ' | '.acym_translationSprintf('ACYM_USER_X_UNSUBSCRIBED_FROM', $this->_message->subemail, implode(', ', $listNames));
             } else {
                 $message .= ' | '.acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);

@@ -2,7 +2,7 @@
 
 trait ModernEventsCalendarAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         if (!$this->fullInstalled) return;
 
@@ -44,7 +44,7 @@ trait ModernEventsCalendarAutomationConditions
         $conditions['user']['moderneventscalendar']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

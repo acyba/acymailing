@@ -30,7 +30,9 @@ trait WooCommerceSubscription
 			<div id="acym__configuration__subscription__integration-woocommerce" class="grid-x margin-y" style="display:none;">
 				<div class="cell grid-x grid-margin-x">
                     <?php
-                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce').acym_info('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC');
+                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce');
+                    $subOptionTxt .= acym_info(['textShownInTooltip' => 'ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC']);
+
                     echo wp_kses(
                         acym_switch(
                             'config[woocommerce_sub]',
@@ -69,7 +71,7 @@ trait WooCommerceSubscription
 						<label for="acym__config__woocommerce-text">
                             <?php
                             echo wp_kses(
-                                acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'),
+                                acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info(['textShownInTooltip' => 'ACYM_SUBSCRIBE_CAPTION_OPT_DESC']),
                                 [
                                     'span' => ['class' => []],
                                     'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -89,7 +91,7 @@ trait WooCommerceSubscription
 						<label for="acym__config__woocommerce-autolists">
                             <?php
                             echo wp_kses(
-                                acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'),
+                                acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info(['textShownInTooltip' => 'ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC']),
                                 [
                                     'span' => ['class' => []],
                                     'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -196,7 +198,7 @@ trait WooCommerceSubscription
         $listsToSubscribe = $config->get('woocommerce_autolists', '');
         if (empty($listsToSubscribe)) return;
         $hiddenLists = explode(',', $listsToSubscribe);
-        $userClass->subscribe($user->id, $hiddenLists);
+        $userClass->subscribe([$user->id], $hiddenLists);
     }
 
     /**

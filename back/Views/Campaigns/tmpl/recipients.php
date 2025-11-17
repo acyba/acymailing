@@ -40,9 +40,16 @@
 					</div>
                     <?php if (acym_isAllowed('segments')) { ?>
 						<div class="cell grid-x acym_vcenter">
-							<p class="cell shrink margin-right-1"><?php echo acym_translation('ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS').acym_info(
-                                        'ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS_DESC'
-                                    ); ?></p>
+							<p class="cell shrink margin-right-1">
+                                <?php
+                                echo acym_translation('ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS');
+                                echo acym_info(
+                                    [
+                                        'textShownInTooltip' => acym_translation('ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS_DESC'),
+                                    ]
+                                );
+                                ?>
+							</p>
                             <?php echo acym_radio(
                                 [1 => acym_translation('ACYM_YES'), 0 => acym_translation('ACYM_NO')],
                                 'add_segment_step',

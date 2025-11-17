@@ -29,7 +29,7 @@
 					<div class="cell large-10 xlarge-8 xxlarge-6 grid-x grid-margin-y text-left">
 						<div class="cell grid-x grid-margin-x">
 							<label class="cell large-3" for="acym__walkthrough__license__key">
-                                <?php echo acym_translation('ACYM_YOUR_LICENSE_KEY').acym_info('ACYM_LICENSE_DESC'); ?>
+                                <?php echo acym_translation('ACYM_YOUR_LICENSE_KEY').acym_info(['textShownInTooltip' => 'ACYM_LICENSE_DESC']); ?>
 							</label>
 							<div class="cell large-9 grid-x grid-margin-x">
 								<input class="cell small-6 margin-left-0"
@@ -61,7 +61,7 @@
                         <?php if (acym_level(ACYM_ESSENTIAL)) { ?>
 							<div class="cell grid-x grid-margin-x">
 								<label class="cell large-3">
-                                    <?php echo acym_translation('ACYM_AUTOMATED_TASKS').acym_info('ACYM_AUTOMATED_TASKS_DESC'); ?>
+                                    <?php echo acym_translation('ACYM_AUTOMATED_TASKS').acym_info(['textShownInTooltip' => 'ACYM_AUTOMATED_TASKS_DESC']); ?>
 								</label>
 								<div class="cell large-9 grid-x grid-margin-x">
 									<div class="cell small-6 margin-left-0 acym__color__red" id="acym__walk_through_license__cron_label">

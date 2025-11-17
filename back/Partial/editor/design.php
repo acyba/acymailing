@@ -2,7 +2,7 @@
 	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
         <?php echo acym_translation('ACYM_ZONES'); ?>
 		<i class="acymicon-keyboard-arrow-up"></i>
-        <?php echo acym_info('ACYM_INTRO_DRAG_ZONE'); ?>
+        <?php echo acym_info(['textShownInTooltip' => 'ACYM_INTRO_DRAG_ZONE']); ?>
 	</p>
 	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__zones">
 		<div class="cell acym__wysid__zone__element--new acym__wysid__zone__element--new--1 ui-draggable ui-draggable-handle">
@@ -48,7 +48,7 @@
 	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
         <?php echo acym_translation('ACYM_BLOCKS'); ?>
 		<i class="acymicon-keyboard-arrow-up"></i>
-        <?php echo acym_info('ACYM_INTRO_DRAG_BLOCK'); ?>
+        <?php echo acym_info(['textShownInTooltip' => 'ACYM_INTRO_DRAG_BLOCK']); ?>
 	</p>
 	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__blocks">
 		<div class="grid-x cell acym__wysid__block__element--new acym__wysid__block__element--new--title ui-draggable ui-draggable-handle">
@@ -115,7 +115,7 @@
 	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
         <?php echo acym_translation('ACYM_SAVED_ZONES'); ?>
 		<i class="acymicon-keyboard-arrow-up"></i>
-        <?php echo acym_info('ACYM_SAVED_ZONES_DESC'); ?>
+        <?php echo acym_info(['textShownInTooltip' => 'ACYM_SAVED_ZONES_DESC']); ?>
 	</p>
 	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__saved_zones margin-bottom-2">
         <?php

@@ -61,7 +61,7 @@ trait Edition
             $this->breadcrumb[acym_translation('ACYM_NEW_FORM')] = acym_completeLink('forms&task=edit&id=0&type='.$type);
         } else {
             $form = $formClass->getOneById($id);
-            $form = $formClass->getFormWithMissingParams($form);
+            $form = $formClass->getFormWithMissingParams(get_object_vars($form));
             $this->breadcrumb[$form->name] = acym_completeLink('forms&task=edit&id='.$id);
         }
 

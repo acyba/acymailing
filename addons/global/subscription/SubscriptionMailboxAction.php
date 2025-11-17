@@ -78,7 +78,7 @@ trait SubscriptionMailboxAction
             $user->id = $userDatabase->id;
         }
 
-        $subscribed = $userClass->subscribe($user->id, $action['list_id']);
+        $subscribed = $userClass->subscribe([$user->id], [$action['list_id']]);
 
         if (!$subscribed) {
             $report[] = [
@@ -114,7 +114,7 @@ trait SubscriptionMailboxAction
 
             return;
         }
-        $affected = $userClass->unsubscribe($userDatabase->id, $action['list_id']);
+        $affected = $userClass->unsubscribe([$userDatabase->id], [$action['list_id']]);
         $message = $affected
             ? acym_translationSprintf('ACYM_UNSUB_USER_X_FROM_X', $userDatabase->email, $action['list_id'])
             : acym_translationSprintf('ACYM_COULD_NOT_UNSUB_USER_X_FROM_X', $userDatabase->email, $action['list_id']);

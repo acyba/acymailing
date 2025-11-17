@@ -22,13 +22,13 @@
 					<div class="cell xxlarge-4 xlarge-5 large-6 medium-8 grid-x margin-y text-left">
 						<div class="cell">
 							<label>
-                                <?php echo acym_translation('ACYM_FROM_NAME').acym_info('ACYM_FROM_NAME_INFO'); ?>
+                                <?php echo acym_translation('ACYM_FROM_NAME').acym_info(['textShownInTooltip' => 'ACYM_FROM_NAME_INFO']); ?>
 								<input type="text" name="from_name" value="<?php echo acym_escape($data['siteName']); ?>" required>
 							</label>
 						</div>
 						<div class="cell">
 							<label>
-                                <?php echo acym_translation('ACYM_FROM_MAIL_ADDRESS').acym_info('ACYM_FROM_ADDRESS_INFO'); ?>
+                                <?php echo acym_translation('ACYM_FROM_MAIL_ADDRESS').acym_info(['textShownInTooltip' => 'ACYM_FROM_ADDRESS_INFO']); ?>
 								<input type="email" name="from_email" value="<?php echo acym_escape($data['userEmail']); ?>" required>
 							</label>
 						</div>

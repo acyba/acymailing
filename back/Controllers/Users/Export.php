@@ -92,8 +92,9 @@ trait Export
 
         // Get passed data and check if we have everything we need
         $usersToExport = acym_getVar('string', 'export_users-to-export', 'all');
-        $listsToExport = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
-        if ($usersToExport == 'list' && empty($listsToExport)) {
+        $selectedLists = acym_getVar('string', 'acym__entity_select__selected', '[]');
+        $listsToExport = json_decode(empty($selectedLists) ? '[]' : $selectedLists, true);
+        if ($usersToExport === 'list' && empty($listsToExport)) {
             acym_enqueueMessage(acym_translation('ACYM_EXPORT_SELECT_LIST'), 'error');
 
             $this->exportError(acym_translation('ACYM_EXPORT_SELECT_LIST'));
@@ -153,15 +154,16 @@ trait Export
         }
 
         // Save the selected options for the next time
-        $newConfig = new \stdClass();
-        $newConfig->export_separator = $separator;
-        $newConfig->export_charset = $charset;
-        $newConfig->export_excelsecurity = $excelSecurity;
-        $newConfig->export_fields = implode(',', array_merge($fieldsToExport, array_keys($customFieldsToExport)));
+        $newConfig = [
+            'export_separator' => $separator,
+            'export_charset' => $charset,
+            'export_excelsecurity' => $excelSecurity,
+            'export_fields' => implode(',', array_merge($fieldsToExport, array_keys($customFieldsToExport))),
+        ];
         if (empty($selectedUsers)) {
-            $newConfig->export_lists = implode(',', $listsToExport);
+            $newConfig['export_lists'] = implode(',', $listsToExport);
         }
-        $this->config->save($newConfig);
+        $this->config->saveConfig($newConfig);
 
         // Prepare the export query
         foreach ($fieldsToExport as $oneField) {

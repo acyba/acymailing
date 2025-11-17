@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 10.5.2
+ * Version: 10.6.0
  * Text Domain: acymailing
  * Domain Path: /language
  * Requires at least: 5.0
@@ -15,12 +15,13 @@
 use AcyMailing\WpInit\Activation;
 use AcyMailing\WpInit\Addons;
 use AcyMailing\WpInit\Beaver;
-use AcyMailing\WpInit\Menu;
 use AcyMailing\WpInit\Cron;
+use AcyMailing\WpInit\Data;
 use AcyMailing\WpInit\Deactivate;
 use AcyMailing\WpInit\Elementor;
 use AcyMailing\WpInit\Forms;
 use AcyMailing\WpInit\Gutenberg;
+use AcyMailing\WpInit\Menu;
 use AcyMailing\WpInit\Message;
 use AcyMailing\WpInit\Oauth;
 use AcyMailing\WpInit\OverrideEmail;
@@ -140,6 +141,7 @@ class acymailingLoader
         new Security();
         new Deactivate();
         new Oauth();
+        new Data();
     }
 
     private function isCurrentlyOnAcyPage(): bool

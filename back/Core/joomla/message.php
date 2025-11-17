@@ -3,10 +3,10 @@
 use AcyMailing\Helpers\HeaderHelper;
 
 /**
- * @param string $message The message to display
- * @param string $type    The type (success, error, warning, info, message, notice)
+ * @param array|string $message The message to display
+ * @param string       $type    The type (success, error, warning, info, message, notice)
  */
-function acym_enqueueMessage($message, string $type = 'success', bool $addNotification = true, array $addDashboardNotification = [], bool $addHeaderNotification = true)
+function acym_enqueueMessage($message, string $type = 'success', bool $addNotification = true, array $addDashboardNotification = [], bool $addHeaderNotification = true): void
 {
     $type = str_replace(['notice', 'message'], ['info', 'success'], $type);
     $message = is_array($message) ? implode('<br/>', $message) : $message;
@@ -52,7 +52,7 @@ function acym_enqueueMessage($message, string $type = 'success', bool $addNotifi
             }
         }
 
-        $config->save(['dashboard_notif' => json_encode($existingNotifications)], false);
+        $config->saveConfig(['dashboard_notif' => json_encode($existingNotifications)], false);
     }
 
     if (in_array($type, $handledTypes) && $addHeaderNotification) {
@@ -69,11 +69,9 @@ function acym_enqueueMessage($message, string $type = 'success', bool $addNotifi
 
         $acyapp->enqueueMessage($message, $type);
     }
-
-    return true;
 }
 
-function acym_displayMessages()
+function acym_displayMessages(): void
 {
     $acyapp = acym_getGlobal('app');
     $messages = $acyapp->getMessageQueue(true);

@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait PhocaInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -21,7 +21,7 @@ trait PhocaInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $element = acym_loadObject('SELECT * FROM #__phocadownload WHERE published = 1');
         if (empty($element)) {
@@ -33,7 +33,7 @@ trait PhocaInsertion
         }
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -43,7 +43,7 @@ trait PhocaInsertion
         ];
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
         $this->categories = acym_loadObjectList('SELECT id, parent_id, title FROM `#__phocadownload_categories`');
@@ -126,7 +126,7 @@ trait PhocaInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT item.id, item.title, item.publish_up ';
         $this->query = 'FROM #__phocadownload AS item ';
@@ -167,13 +167,13 @@ trait PhocaInsertion
         );
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT * FROM #__phocadownload WHERE `published` = 1 AND `id` = '.intval($tag->id);
         $element = $this->initIndividualContent($tag, $query);
@@ -260,7 +260,7 @@ trait PhocaInsertion
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];

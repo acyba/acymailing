@@ -1,6 +1,9 @@
 <?php
 
-function acym_fileGetContent($url, $timeout = 10)
+/**
+ * @return bool|null|string
+ */
+function acym_fileGetContent(string $url, int $timeout = 10)
 {
     if (strpos($url, '_custom.ini') !== false && !file_exists($url)) {
         return '';
@@ -44,7 +47,7 @@ function acym_fileGetContent($url, $timeout = 10)
     return $data;
 }
 
-function acym_extractArchive($archive, $destination)
+function acym_extractArchive(string $archive, string $destination): bool
 {
     if (substr($archive, strlen($archive) - 4) !== '.zip') {
         return false;

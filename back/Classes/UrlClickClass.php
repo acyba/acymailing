@@ -15,15 +15,13 @@ class UrlClickClass extends AcymClass
         $this->table = 'url_click';
     }
 
-    public function save($urlClick)
+    public function save(object $element): ?int
     {
+        $urlClick = get_object_vars($element);
+
         $column = [];
         $valueColumn = [];
-        $columnName = acym_getColumns("url_click");
-
-        if (!is_array($urlClick)) {
-            $urlClick = (array)$urlClick;
-        }
+        $columnName = acym_getColumns($this->table);
 
         foreach ($urlClick as $key => $value) {
             if (in_array($key, $columnName)) {
@@ -32,12 +30,12 @@ class UrlClickClass extends AcymClass
             }
         }
 
-        $query = "#__acym_url_click (".implode(',', $column).") VALUES (".implode(',', $valueColumn).")";
+        $query = '#__acym_url_click ('.implode(',', $column).') VALUES ('.implode(',', $valueColumn).')';
 
         $onDuplicate = [];
 
         if (!empty($urlClick['click'])) {
-            $onDuplicate[] = "click = click + 1";
+            $onDuplicate[] = 'click = click + 1';
             $automationClass = new AutomationClass();
             $automationClass->trigger('user_click', ['userId' => $urlClick['user_id'], 'mailId' => $urlClick['mail_id']]);
 
@@ -46,39 +44,41 @@ class UrlClickClass extends AcymClass
         }
 
         if (!empty($onDuplicate)) {
-            $query .= " ON DUPLICATE KEY UPDATE ";
+            $query .= ' ON DUPLICATE KEY UPDATE ';
             $query .= implode(',', $onDuplicate);
-            $query = "INSERT INTO ".$query;
+            $query = 'INSERT INTO '.$query;
         } else {
-            $query = "INSERT IGNORE INTO ".$query;
+            $query = 'INSERT IGNORE INTO '.$query;
         }
 
-        acym_query($query);
+        return (int)acym_query($query);
     }
 
-    public function getNumberUsersClicked($mailIds = [], $isAbTest = false)
+    public function getNumberUsersClicked(array $mailIds = [], bool $isAbTest = false): int
     {
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
-
         acym_arrayToInteger($mailIds);
 
         $query = 'SELECT COUNT(DISTINCT user_id) FROM #__acym_url_click AS url_click';
         $isMultilingual = acym_isMultilingual();
-        if (($isMultilingual || $isAbTest) && !empty($mailIds)) {
+
+        if (!empty($mailIds) && ($isMultilingual || $isAbTest)) {
             $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` IN ('.implode(
                     ',',
                     $mailIds
                 ).') OR  `mail`.`parent_id` IN ('.implode(',', $mailIds).')';
         }
-        if (!$isMultilingual && !$isAbTest && !empty($mailIds)) $query .= ' WHERE `url_click`.`mail_id` IN ('.implode(',', $mailIds).')';
+
+        if (!$isMultilingual && !$isAbTest && !empty($mailIds)) {
+            $query .= ' WHERE `url_click`.`mail_id` IN ('.implode(',', $mailIds).')';
+        }
+
         $clickNb = acym_loadResult($query);
 
-        return empty($clickNb) ? 0 : $clickNb;
+        return empty($clickNb) ? 0 : (int)$clickNb;
     }
 
-    public function getAllClickByMailMonth($mailIds = [], $start = '', $end = '')
+    public function getAllClickByMailMonth(array $mailIds = [], string $start = '', string $end = ''): array
     {
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
         acym_arrayToInteger($mailIds);
 
         $query = 'SELECT COUNT(*) as click, DATE_FORMAT(date_click, \'%Y-%m\') as date_click FROM #__acym_url_click WHERE click > 0';
@@ -90,20 +90,8 @@ class UrlClickClass extends AcymClass
         return acym_loadObjectList($query);
     }
 
-    public function getAllClickByMailWeek($mailid = '', $start = '', $end = '')
+    public function getAllClickByMailDay(array $mailIds = [], string $start = '', string $end = ''): array
     {
-        $query = 'SELECT COUNT(*) as click, DATE_FORMAT(date_click, \'%Y-%m-%d\') as date_click FROM #__acym_url_click WHERE click > 0';
-        $query .= empty($mailid) ? '' : ' AND `mail_id` = '.intval($mailid);
-        $query .= empty($start) ? '' : ' AND date_click >= '.acym_escapeDB($start);
-        $query .= empty($end) ? '' : ' AND date_click <= '.acym_escapeDB($end);
-        $query .= ' GROUP BY WEEK(date_click), YEAR(date_click) ORDER BY date_click';
-
-        return acym_loadObjectList($query);
-    }
-
-    public function getAllClickByMailDay($mailIds = [], $start = '', $end = '')
-    {
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
         acym_arrayToInteger($mailIds);
 
         $query = 'SELECT COUNT(*) as click, DATE_FORMAT(date_click, \'%Y-%m-%d\') as date_click FROM #__acym_url_click WHERE click > 0';
@@ -115,9 +103,8 @@ class UrlClickClass extends AcymClass
         return acym_loadObjectList($query);
     }
 
-    public function getAllClickByMailHour($mailIds = [], $start = '', $end = '')
+    public function getAllClickByMailHour(array $mailIds = [], string $start = '', string $end = ''): array
     {
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
         acym_arrayToInteger($mailIds);
 
         $query = 'SELECT COUNT(*) as click, DATE_FORMAT(date_click, \'%Y-%m-%d %H:00:00\') as date_click FROM #__acym_url_click WHERE click > 0';
@@ -129,7 +116,7 @@ class UrlClickClass extends AcymClass
         return acym_loadObjectList($query);
     }
 
-    public function getAllLinkFromEmail($id)
+    public function getAllLinkFromEmail(int $id): array
     {
         $queryClickUrl = 'SELECT url.name, SUM(urlclick.click) as click FROM #__acym_url_click AS urlclick 
                           LEFT JOIN #__acym_url AS url ON urlclick.url_id = url.id 
@@ -143,7 +130,7 @@ class UrlClickClass extends AcymClass
         ];
     }
 
-    public function getClickRateByMailIds($mailsIds = [])
+    public function getClickRateByMailIds(array $mailsIds = []): int
     {
         $conditionMailId = '';
         if (!empty($mailsIds)) {
@@ -152,7 +139,9 @@ class UrlClickClass extends AcymClass
         }
         $query = 'SELECT COUNT(groupStat.user_id) AS nbClick FROM (SELECT user_id FROM #__acym_url_click '.$conditionMailId.' GROUP BY mail_id, user_id) AS groupStat';
 
-        return acym_loadResult($query);
+        $nbClicks = acym_loadResult($query);
+
+        return empty($nbClicks) ? 0 : (int)$nbClicks;
     }
 
     public function getUrlsFromMailsWithDetails(array $params): array
@@ -249,7 +238,7 @@ class UrlClickClass extends AcymClass
         ];
     }
 
-    public function getTotalClicksPerMail(array $mailIds = [])
+    public function getTotalClicksPerMail(array $mailIds = []): array
     {
         acym_arrayToInteger($mailIds);
 
@@ -260,9 +249,11 @@ class UrlClickClass extends AcymClass
         return acym_loadObjectList($query, 'mail_id');
     }
 
-    public function getOneByMailIdAndUserId(int $mailId, int $userId)
+    public function getOneByMailIdAndUserId(int $mailId, int $userId): ?object
     {
-        return acym_loadObject('SELECT * FROM #__acym_url_click WHERE mail_id = '.intval($mailId).' AND user_id = '.intval($userId));
+        $urlClick = acym_loadObject('SELECT * FROM #__acym_url_click WHERE mail_id = '.intval($mailId).' AND user_id = '.intval($userId));
+
+        return empty($urlClick) ? null : $urlClick;
     }
 
     public function getUserMailsClicked(int $userId): array
@@ -286,6 +277,16 @@ class UrlClickClass extends AcymClass
             LEFT JOIN #__acym_user AS `user` ON url_click.user_id = `user`.id
             JOIN #__acym_url AS url ON url_click.url_id = url.id
             WHERE url_click.mail_id = '.intval($mailId)
+        );
+    }
+
+    public function getClicksByUserId(int $userId): array
+    {
+        return acym_loadObjectList(
+            'SELECT url.url, url_click.*
+            FROM #__acym_url_click AS url_click 
+            JOIN #__acym_url AS url ON url.id = url_click.url_id 
+            WHERE url_click.user_id = '.intval($userId)
         );
     }
 }

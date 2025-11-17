@@ -35,7 +35,7 @@
         echo acym_switch(
             'mailbox[senderfrom]',
             $data['mailboxActions']->senderfrom,
-            acym_translation('ACYM_SENDER_AS_FROM').acym_info('ACYM_SENDER_AS_FROM_DESC'),
+            acym_translation('ACYM_SENDER_AS_FROM').acym_info(['textShownInTooltip' => 'ACYM_SENDER_AS_FROM_DESC']),
             [],
             'medium-4 small-9'
         );
@@ -46,7 +46,7 @@
         echo acym_switch(
             'mailbox[senderto]',
             $data['mailboxActions']->senderto,
-            acym_translation('ACYM_SENDER_AS_REPLY_TO').acym_info('ACYM_SENDER_AS_REPLY_TO_DESC'),
+            acym_translation('ACYM_SENDER_AS_REPLY_TO').acym_info(['textShownInTooltip' => 'ACYM_SENDER_AS_REPLY_TO_DESC']),
             [],
             'medium-4 small-9'
         );

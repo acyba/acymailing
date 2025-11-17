@@ -59,11 +59,11 @@
 					<div class="cell medium-auto"></div>
 				</div>
 				<div class="grid-x" id="userField_excel">
-					<label class="cell"><?php echo acym_translation('ACYM_EXCEL_SECURITY').acym_info('ACYM_EXCEL_SECURITY_DESC'); ?></label>
+					<label class="cell"><?php echo acym_translation('ACYM_EXCEL_SECURITY').acym_info(['textShownInTooltip' => 'ACYM_EXCEL_SECURITY_DESC']); ?></label>
                     <?php
                     echo acym_boolean(
                         'export_excelsecurity',
-                        $this->config->get('export_excelsecurity', 0)
+                        (bool)$this->config->get('export_excelsecurity', 0)
                     );
                     ?>
 					<div class="cell medium-auto"></div>

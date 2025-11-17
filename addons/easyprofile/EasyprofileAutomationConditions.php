@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorType;
 
 trait EasyprofileAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $fields = [];
 
@@ -32,7 +32,7 @@ trait EasyprofileAutomationConditions
         $conditions['user']['epfield']->option .= '<input class="intext_input_automation cell" type="text" name="acym_condition[conditions][__numor__][__numand__][epfield][value]">';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

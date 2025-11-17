@@ -65,7 +65,7 @@ class ACYM_SUBSCRIBE_TO_LIST
             return;
         }
 
-        $userClass->subscribe($user->id, $listId);
+        $userClass->subscribe([$user->id], [$listId]);
 
         // complete this action successfully
         Automator()->complete->action($user_id, $action_data, $recipe_id);

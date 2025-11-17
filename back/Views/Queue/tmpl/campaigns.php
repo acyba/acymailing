@@ -160,8 +160,12 @@
                                                 '<i class="acymicon-paper-plane" data-acy-elementid="'.$row->id.'"></i> '.acym_translation('ACYM_SEND_NOW'),
                                                 '',
                                                 null,
-                                                'data-reveal-larger',
-                                                'data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id='.$row->id.'&totalsend='.$row->nbqueued.'"'
+                                                ['data-reveal-larger' => true],
+                                                [
+                                                    'data-reload' => 'true',
+                                                    'data-ajax' => 'true',
+                                                    'data-iframe' => '&ctrl=queue&task=continuesend&id='.$row->id.'&totalsend='.$row->nbqueued,
+                                                ]
                                             );
                                             ?>
 										</div>

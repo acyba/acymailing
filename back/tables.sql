@@ -633,6 +633,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_scenario_process` (
 	`user_id` INT NOT NULL,
 	`start_at` DATETIME NOT NULL,
 	`end_at` DATETIME NULL,
+	`unsubscribed` TINYINT(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `#__fk_acym_scenario_process1`
     		FOREIGN KEY (`scenario_id`)

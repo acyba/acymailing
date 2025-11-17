@@ -22,12 +22,14 @@ trait WooCommerceTracking
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
 
         if (!in_array('woocommerce_tracking', $remindme)) {
-            if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php') && acym_isAdmin() && ACYM_CMS == 'wordpress') {
+            if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php') && acym_isAdmin()) {
                 $message = acym_translation('ACYM_WOOCOMMERCE_TRACKING_INFO');
-                $message .= ' <a target="_blank" href="https://docs.acymailing.com/addons/wordpress-add-ons/woocommerce#tracking">'.acym_translation('ACYM_READ_MORE').'</a>';
-                $message .= ' <a href="#" class="acym__do__not__remindme acym__do__not__remindme__info" title="woocommerce_tracking">'.acym_translation(
-                        'ACYM_DO_NOT_REMIND_ME'
-                    ).'</a>';
+                $message .= ' <a target="_blank" href="https://docs.acymailing.com/addons/wordpress-add-ons/woocommerce#tracking">';
+                $message .= acym_translation('ACYM_READ_MORE');
+                $message .= '</a>';
+                $message .= ' <a href="#" class="acym__do__not__remindme acym__do__not__remindme__info" title="woocommerce_tracking">';
+                $message .= acym_translation('ACYM_DO_NOT_REMIND_ME');
+                $message .= '</a>';
                 acym_display($message, 'info', false);
             } else {
                 $remindme[] = 'woocommerce_tracking';
@@ -100,11 +102,10 @@ trait WooCommerceTracking
 
         if (empty($mailStat)) return;
 
-        $newMailStat = [
-            'mail_id' => $mailStat->mail_id,
-            'tracking_sale' => empty($mailStat->tracking_sale) ? $total : $mailStat->tracking_sale + $total,
-            'currency' => $currency,
-        ];
+        $newMailStat = new stdClass();
+        $newMailStat->mail_id = $mailStat->mail_id;
+        $newMailStat->tracking_sale = empty($mailStat->tracking_sale) ? $total : $mailStat->tracking_sale + $total;
+        $newMailStat->currency = $currency;
 
         $mailStatClass->save($newMailStat);
     }

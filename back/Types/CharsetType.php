@@ -49,7 +49,7 @@ class CharsetType extends AcymObject
         }
     }
 
-    public function display($map, $value)
+    public function display(string $map, string $value): string
     {
         return acym_select(
             $this->values,

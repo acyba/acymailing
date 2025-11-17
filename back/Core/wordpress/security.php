@@ -2,7 +2,12 @@
 
 use AcyMailing\Helpers\UpdatemeHelper;
 
-function acym_getVar($type, $name, $default = null, $source = 'REQUEST', $mask = 0)
+/**
+ * @param mixed $default
+ *
+ * @return mixed
+ */
+function acym_getVar(string $type, string $name, $default = null, string $source = 'REQUEST', int $mask = 0)
 {
     $source = strtoupper($source);
 
@@ -119,7 +124,7 @@ function acym_cleanVar($var, $type, $mask)
     return $var;
 }
 
-function acym_setVar($name, $value = null, $hash = 'REQUEST', $overwrite = true)
+function acym_setVar(string $name, $value = null, string $hash = 'REQUEST', bool $overwrite = true): void
 {
     $hash = strtoupper($hash);
 
@@ -152,7 +157,7 @@ function acym_setVar($name, $value = null, $hash = 'REQUEST', $overwrite = true)
     }
 }
 
-function acym_isAdmin()
+function acym_isAdmin(): bool
 {
     $page = acym_getVar('string', 'page', '');
 
@@ -163,17 +168,17 @@ function acym_isAdmin()
     }
 }
 
-function acym_cmsLoaded()
+function acym_cmsLoaded(): void
 {
     defined('ABSPATH') || die('Restricted access');
 }
 
-function acym_isDebug()
+function acym_isDebug(): bool
 {
     return defined('WP_DEBUG') && WP_DEBUG;
 }
 
-function acym_askLog($current = true, $message = 'ACYM_NOTALLOWED', $type = 'error')
+function acym_askLog(bool $current = true, string $message = 'ACYM_NOTALLOWED', string $type = 'error'): void
 {
     //If the user is not logged in, we just redirect him to the login page....
     $url = acym_rootURI().'wp-login.php';
@@ -184,7 +189,7 @@ function acym_askLog($current = true, $message = 'ACYM_NOTALLOWED', $type = 'err
     acym_redirect($url, $message, $type);
 }
 
-function acym_getDefaultConfigValues()
+function acym_getDefaultConfigValues(): array
 {
     $allPref = [];
 
@@ -204,7 +209,7 @@ function acym_getDefaultConfigValues()
     return $allPref;
 }
 
-function acym_cmsPermission()
+function acym_cmsPermission(): string
 {
     if (!current_user_can('manage_options')) return '';
 
@@ -222,7 +227,7 @@ function acym_cmsPermission()
 
     $option = '
 		<div class="cell grid-x">
-			<label class="cell large-3 medium-5 small-9">'.acym_translation('ACYM_ACCESS').' '.acym_info('ACYM_ACCESS_DESC').'</label>
+			<label class="cell large-3 medium-5 small-9">'.acym_translation('ACYM_ACCESS').' '.acym_info(['textShownInTooltip' => 'ACYM_ACCESS_DESC']).'</label>
 			<div class="cell auto">';
 
     $option .= acym_selectMultiple(
@@ -238,20 +243,20 @@ function acym_cmsPermission()
     return $option;
 }
 
-function acym_checkVersion($ajax = false)
+function acym_checkVersion(bool $ajax = false): ?int
 {
 
-    return false;
+    return null;
 }
 
-function acym_triggerCmsHook($action, $args = [], $isAction = true)
+function acym_triggerCmsHook(string $action, array $args = [], bool $isAction = true)
 {
     array_unshift($args, $action);
 
     return call_user_func_array($isAction ? 'do_action' : 'apply_filters', $args);
 }
 
-function acym_getCmsCaptcha()
+function acym_getCmsCaptcha(): array
 {
     return [];
 }

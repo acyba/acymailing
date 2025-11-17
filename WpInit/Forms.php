@@ -65,7 +65,7 @@ class Forms
         $formClass = new FormClass();
         $form = $formClass->getOneById($params['id']);
 
-        if (empty($form) || empty($form->active)) return;
+        if (empty($form->active)) return;
 
         return $formClass->renderForm($form, false, true);
     }

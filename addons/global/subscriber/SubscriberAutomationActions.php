@@ -49,7 +49,7 @@ trait SubscriberAutomationActions
         exit;
     }
 
-    public function onAcymDeclareActions(&$actions)
+    public function onAcymDeclareActions(array &$actions): void
     {
         $userActions = [
             'confirm' => acym_translation('ACYM_CONFIRM_USER'),
@@ -160,7 +160,7 @@ trait SubscriberAutomationActions
         }
     }
 
-    public function onAcymDeclareActionsScenario(&$actions)
+    public function onAcymDeclareActionsScenario(array &$actions): void
     {
         $this->onAcymDeclareActions($actions);
 

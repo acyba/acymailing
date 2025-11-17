@@ -68,7 +68,7 @@ class plgAcymQuiz extends AcymPlugin
         }
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -83,7 +83,7 @@ class plgAcymQuiz extends AcymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -92,7 +92,7 @@ class plgAcymQuiz extends AcymPlugin
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $element = acym_getColumns('quiz_quizzes', false);
         if (empty($element)) return;
@@ -101,14 +101,14 @@ class plgAcymQuiz extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') return null;
 
         return $this->pluginDescription;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -200,7 +200,7 @@ class plgAcymQuiz extends AcymPlugin
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT element.id, element.title, element.publish_up ';
         $this->query = 'FROM #__quiz_quizzes AS element ';
@@ -245,13 +245,13 @@ class plgAcymQuiz extends AcymPlugin
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         require_once JPATH_ROOT.'/components/com_cjlib/framework.php';
         require_once JPATH_ROOT.'/components/com_cjlib/framework/api.php';
@@ -263,7 +263,7 @@ class plgAcymQuiz extends AcymPlugin
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -306,7 +306,7 @@ class plgAcymQuiz extends AcymPlugin
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT element.*
                     FROM #__quiz_quizzes AS element

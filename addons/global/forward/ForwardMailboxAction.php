@@ -36,7 +36,7 @@ trait ForwardMailboxAction
                 'name'
             ).'</div>'
         );
-        $actions['forward_specific']->option .= acym_info('ACYM_INCLUDE_IN_TEMPLATE_DESC');
+        $actions['forward_specific']->option .= acym_info(['textShownInTooltip' => 'ACYM_INCLUDE_IN_TEMPLATE_DESC']);
 
         $actions['forward_list'] = new stdClass();
         $actions['forward_list']->name = acym_translation('ACYM_FORWARD_TO_A_LIST');
@@ -59,7 +59,7 @@ trait ForwardMailboxAction
                 'name'
             ).'</div>'
         );
-        $actions['forward_list']->option .= acym_info('ACYM_INCLUDE_IN_TEMPLATE_DESC');
+        $actions['forward_list']->option .= acym_info(['textShownInTooltip' => 'ACYM_INCLUDE_IN_TEMPLATE_DESC']);
     }
 
     public function onAcymMailboxActionSummaryListing(&$action, &$result)
@@ -119,7 +119,7 @@ trait ForwardMailboxAction
         }
 
         $mailClass = new MailClass();
-        $mailClass->delete($newMail->id);
+        $mailClass->delete([$newMail->id]);
     }
 
     public function onAcymMailboxAction_forward_list(&$action, &$report, &$executedActions, $mailboxHelper)

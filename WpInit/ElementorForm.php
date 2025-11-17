@@ -116,7 +116,10 @@ class ElementorForm extends \ElementorPro\Modules\Forms\Classes\Action_Base
         $userId = $userClass->save($newUser);
 
         if (!empty($settings['acym_selectLists'])) {
-            $userClass->subscribe($userId, $settings['acym_selectLists'], true, true);
+            if (!is_array($settings['acym_selectLists'])) {
+                $settings['acym_selectLists'] = [$settings['acym_selectLists']];
+            }
+            $userClass->subscribe([$userId], $settings['acym_selectLists'], true, true);
         }
     }
 }

@@ -5,7 +5,7 @@ use AcyMailing\Helpers\ImageHelper;
 /**
  * Function to return the number of bytes of a val like 2M
  */
-function acym_bytes($val)
+function acym_bytes(string $val): int
 {
     $val = trim($val);
     if (empty($val)) {
@@ -28,9 +28,11 @@ function acym_bytes($val)
 }
 
 //Create a dir and an index.html file inside
-function acym_createDir($dir, $report = true, $secured = false)
+function acym_createDir(string $dir, bool $report = true, bool $secured = false): bool
 {
-    if (is_dir($dir)) return true;
+    if (is_dir($dir)) {
+        return true;
+    }
 
     $indexhtml = '<html><body bgcolor="#FFFFFF"></body></html>';
 
@@ -55,10 +57,8 @@ function acym_createDir($dir, $report = true, $secured = false)
         $status = false;
     }
 
-    if (!$status) {
-        if ($report) {
-            acym_display('Could not create the file '.$dir.DS.'index.html', 'error');
-        }
+    if (!$status && $report) {
+        acym_display('Could not create the file '.$dir.DS.'index.html', 'error');
     }
 
     if ($secured) {
@@ -69,17 +69,15 @@ function acym_createDir($dir, $report = true, $secured = false)
             $status = false;
         }
 
-        if (!$status) {
-            if ($report) {
-                acym_display('Could not create the file '.$dir.DS.'.htaccess', 'error');
-            }
+        if (!$status && $report) {
+            acym_display('Could not create the file '.$dir.DS.'.htaccess', 'error');
         }
     }
 
     return $status;
 }
 
-function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
+function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?string
 {
     // Check the token... no import without token!
     acym_checkToken();
@@ -106,7 +104,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
 
         acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_UPLOADING_FILE_X', $phpFileUploadErrors[$file['error']]), 'error');
 
-        return false;
+        return null;
     }
 
     acym_createDir($uploadPath, true);
@@ -116,7 +114,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
         if (!is_writable($uploadPath)) {
             acym_display(acym_translationSprintf('ACYM_WRITABLE_FOLDER', $uploadPath), 'error');
 
-            return false;
+            return null;
         }
     }
 
@@ -138,7 +136,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
             'error'
         );
 
-        return false;
+        return null;
     }
 
     // We will never allow some files to be uploaded...
@@ -149,7 +147,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
             'error'
         );
 
-        return false;
+        return null;
     }
 
     // We remove all dots or space from the file name to avoid the double extension security issue and the fact some mail clients don't like spaces
@@ -165,7 +163,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
         if (empty($imageSize)) {
             acym_display(acym_translation('ACYM_INVALID_IMAGE'), 'error');
 
-            return false;
+            return null;
         }
     }
 
@@ -197,19 +195,15 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
                 'error'
             );
 
-            return false;
+            return null;
         }
     }
 
-    if (!empty($maxwidth) || ($onlyPict && $imageSize[0] > 1000)) {
+    if ($onlyPict && $imageSize[0] > 1000) {
         $imageHelper = new ImageHelper();
         if ($imageHelper->available()) {
             $imageHelper->maxHeight = 9999;
-            if (empty($maxwidth)) {
-                $imageHelper->maxWidth = 700;
-            } else {
-                $imageHelper->maxWidth = $maxwidth;
-            }
+            $imageHelper->maxWidth = 700;
             $message = 'ACYM_IMAGE_RESIZED';
             $imageHelper->destination = $uploadPath;
             $thumb = $imageHelper->generateThumbnail(rtrim($uploadPath, DS).DS.$file['name']);
@@ -224,27 +218,30 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
     return $file['name'];
 }
 
-function acym_inputFile($name, $value = '', $id = '', $class = '', $attributes = '')
+function acym_inputFile(string $name, string $value = '', string $class = '', string $attributes = ''): string
 {
-    $return = '<div class="cell '.$class.' grid-x"><input '.$attributes.' style="display: none" id="'.$id.'" type="file" name="'.$name.'"><button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation(
-            'ACYM_CHOOSE_FILE'
-        ).'</button><span class="cell shrink margin-left-2">';
-    $return .= empty($value) ? acym_translation('ACYM_NO_FILE_CHOSEN') : $value;
+    $return = '<div class="cell '.acym_escape($class).' grid-x"><input '.$attributes.' style="display: none" type="file" name="'.acym_escape($name).'">
+        <button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation('ACYM_CHOOSE_FILE').'</button>
+        <span class="cell shrink margin-left-2">';
+    $return .= acym_escape(empty($value) ? acym_translation('ACYM_NO_FILE_CHOSEN') : $value);
     $return .= '</span></div>';
 
     return $return;
 }
 
-function acym_getFilesFolder($ignoreVariables = false)
+function acym_getFilesFolder(bool $ignoreVariables = false): string
 {
     $config = acym_config();
     $uploadFolder = $config->get('uploadfolder', ACYM_UPLOAD_FOLDER);
-    if ($ignoreVariables) $uploadFolder = str_replace(['{userid}', '{groupname}'], '', $uploadFolder);
+    if ($ignoreVariables) {
+        $uploadFolder = str_replace(['{userid}', '{groupname}', '{year}', '{month}', '{day}'], '', $uploadFolder);
+    }
     $uploadFolder = trim($uploadFolder, '/');
 
-    if (strpos($uploadFolder, '{userid}') !== false) {
-        $uploadFolder = str_replace('{userid}', acym_currentUserId(), $uploadFolder);
-    }
+    $uploadFolder = str_replace('{userid}', acym_currentUserId(), $uploadFolder);
+    $uploadFolder = str_replace('{year}', date('Y'), $uploadFolder);
+    $uploadFolder = str_replace('{month}', date('m'), $uploadFolder);
+    $uploadFolder = str_replace('{day}', date('d'), $uploadFolder);
 
     return acym_replaceGroupTags($uploadFolder);
 }
@@ -253,7 +250,7 @@ function acym_getFilesFolder($ignoreVariables = false)
  * Find all sub folders...
  * Return an array of all folders ordered properly
  */
-function acym_generateArborescence($folders)
+function acym_generateArborescence(array $folders): array
 {
     //Recursive algorythm to catch subfolders
     $folderList = [];
@@ -275,7 +272,7 @@ function acym_generateArborescence($folders)
     return $folderList;
 }
 
-function acym_makeSafeFile($file)
+function acym_makeSafeFile(string $file): string
 {
     $file = rtrim($file, '.');
     $regex = ['#(\.){2,}#', '#[^A-Za-z0-9\.\_\- ]#', '#^\.#'];
@@ -283,7 +280,7 @@ function acym_makeSafeFile($file)
     return trim(preg_replace($regex, '', $file));
 }
 
-function acym_deleteFolder($path, $report = true)
+function acym_deleteFolder(string $path, bool $report = true): bool
 {
     $path = acym_cleanPath($path);
     if (!is_dir($path)) {
@@ -311,16 +308,15 @@ function acym_deleteFolder($path, $report = true)
     }
 
     if (@rmdir($path)) {
-        $ret = true;
+        return true;
     } else {
         if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_DELETE_FOLDER', $path), 'error');
-        $ret = false;
-    }
 
-    return $ret;
+        return false;
+    }
 }
 
-function acym_createFolder($path = '', $mode = 0755)
+function acym_createFolder(string $path = '', int $mode = 0755): bool
 {
     $path = acym_cleanPath($path);
     if (file_exists($path)) {
@@ -334,8 +330,14 @@ function acym_createFolder($path = '', $mode = 0755)
     return $ret;
 }
 
-function acym_getFolders($path, $filter = '.', $recurse = false, $full = false, $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'], $excludefilter = ['^\..*'])
-{
+function acym_getFolders(
+    string $path,
+    string $filter = '.',
+    bool   $recurse = false,
+    bool   $full = false,
+    array  $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'],
+    array  $excludefilter = ['^\..*']
+): array {
     $path = acym_cleanPath($path);
 
     if (!is_dir($path)) {
@@ -356,37 +358,24 @@ function acym_getFolders($path, $filter = '.', $recurse = false, $full = false, 
     return array_values($arr);
 }
 
-/**
- * Returns an array of the file names contained in the passed folder. Doesn't return the folder names
- *
- * @param string   $path
- * @param string   $filter  A regex for the file name
- * @param bool     $recurse Should it get the file names in the contained folders?
- * @param bool     $full    Returns the full file paths if true
- * @param string[] $exclude
- * @param string[] $excludefilter
- * @param bool     $naturalSort
- *
- * @return array|false
- */
 function acym_getFiles(
-    $path,
-    $filter = '.',
-    $recurse = false,
-    $full = false,
-    $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'],
-    $excludefilter = [
+    string $path,
+    string $filter = '.',
+    bool   $recurse = false,
+    bool   $full = false,
+    array  $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'],
+    array  $excludefilter = [
         '^\..*',
         '.*~',
     ],
-    $naturalSort = false
-) {
+    bool   $naturalSort = false
+): array {
     $path = acym_cleanPath($path);
 
     if (!is_dir($path)) {
         acym_enqueueMessage(acym_translationSprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
 
-        return false;
+        return [];
     }
 
     if (count($excludefilter)) {
@@ -406,8 +395,15 @@ function acym_getFiles(
     return array_values($arr);
 }
 
-function acym_getItems($path, $filter, $recurse, $full, $exclude, $excludefilter_string, $findfiles)
-{
+function acym_getItems(
+    string $path,
+    string $filter,
+    bool   $recurse,
+    bool   $full,
+    array  $exclude,
+    string $excludefilter_string,
+    bool   $findfiles
+): array {
     $arr = [];
 
     if (!($handle = @opendir($path))) {
@@ -436,33 +432,18 @@ function acym_getItems($path, $filter, $recurse, $full, $exclude, $excludefilter
         }
 
         if ($isDir && $recurse) {
-            if (is_int($recurse)) {
-                $arr = array_merge(
-                    $arr,
-                    acym_getItems(
-                        $fullpath,
-                        $filter,
-                        $recurse - 1,
-                        $full,
-                        $exclude,
-                        $excludefilter_string,
-                        $findfiles
-                    )
-                );
-            } else {
-                $arr = array_merge(
-                    $arr,
-                    acym_getItems(
-                        $fullpath,
-                        $filter,
-                        $recurse,
-                        $full,
-                        $exclude,
-                        $excludefilter_string,
-                        $findfiles
-                    )
-                );
-            }
+            $arr = array_merge(
+                $arr,
+                acym_getItems(
+                    $fullpath,
+                    $filter,
+                    true,
+                    $full,
+                    $exclude,
+                    $excludefilter_string,
+                    $findfiles
+                )
+            );
         }
     }
 
@@ -471,10 +452,9 @@ function acym_getItems($path, $filter, $recurse, $full, $exclude, $excludefilter
     return $arr;
 }
 
-function acym_copyFolder($src, $dest, $path = '', $force = false, $use_streams = false)
+function acym_copyFolder(string $src, string $dest, ?string $path = null, bool $force = false, bool $use_streams = false): bool
 {
-
-    if ($path) {
+    if (!empty($path)) {
         $src = acym_cleanPath($path.'/'.$src);
         $dest = acym_cleanPath($path.'/'.$dest);
     }
@@ -534,11 +514,11 @@ function acym_copyFolder($src, $dest, $path = '', $force = false, $use_streams =
     return true;
 }
 
-function acym_listFolderTree($path, $filter, $maxLevel = 3, $level = 0, $parent = 0)
+function acym_listFolderTree(string $path, string $filter, int $maxLevel = 3, int $level = 0, int $parent = 0): array
 {
     $dirs = [];
 
-    if ($level == 0) {
+    if ($level === 0) {
         $GLOBALS['acym_folder_tree_index'] = 0;
     }
 
@@ -563,7 +543,7 @@ function acym_listFolderTree($path, $filter, $maxLevel = 3, $level = 0, $parent 
     return $dirs;
 }
 
-function acym_deleteFile($file, $report = true)
+function acym_deleteFile(string $file, bool $report = true): bool
 {
     $file = acym_cleanPath($file);
     if (!is_file($file)) {
@@ -584,17 +564,21 @@ function acym_deleteFile($file, $report = true)
     return true;
 }
 
-function acym_writeFile($file, $buffer, $flags = 0)
+/**
+ * @param mixed $buffer
+ */
+function acym_writeFile(string $file, $buffer, int $flags = 0): bool
 {
-    if (!file_exists(dirname($file)) && acym_createFolder(dirname($file)) == false) {
+    if (!file_exists(dirname($file)) && !acym_createFolder(dirname($file))) {
         return false;
     }
+
     $file = acym_cleanPath($file);
 
     return is_int(file_put_contents($file, $buffer, $flags));
 }
 
-function acym_moveFile($src, $dest, $path = '', $use_streams = false)
+function acym_moveFile(string $src, string $dest, string $path = ''): bool
 {
     if (!empty($path)) {
         $src = acym_cleanPath($path.'/'.$src);
@@ -616,7 +600,7 @@ function acym_moveFile($src, $dest, $path = '', $use_streams = false)
     return true;
 }
 
-function acym_uploadFile($src, $dest)
+function acym_uploadFile(string $src, string $dest): bool
 {
     $dest = acym_cleanPath($dest);
 
@@ -639,9 +623,9 @@ function acym_uploadFile($src, $dest)
     return false;
 }
 
-function acym_copyFile($src, $dest, $path = null, $use_streams = false)
+function acym_copyFile(string $src, string $dest, string $path = ''): bool
 {
-    if ($path) {
+    if (!empty($path)) {
         $src = acym_cleanPath($path.DS.$src);
         $dest = acym_cleanPath($path.DS.$dest);
     }
@@ -661,20 +645,20 @@ function acym_copyFile($src, $dest, $path = null, $use_streams = false)
     return true;
 }
 
-function acym_fileGetExt($file)
+function acym_fileGetExt(string $file): string
 {
     $pathInfo = pathinfo($file);
 
     return empty($pathInfo['extension']) ? '' : strtolower($pathInfo['extension']);
 }
 
-function acym_cleanPath($path, $ds = DIRECTORY_SEPARATOR)
+function acym_cleanPath(string $path, string $ds = DIRECTORY_SEPARATOR): string
 {
     $path = trim($path);
 
     if (empty($path)) {
         $path = ACYM_ROOT;
-    } elseif (($ds == '\\') && substr($path, 0, 2) == '\\\\') {
+    } elseif (($ds === '\\') && substr($path, 0, 2) == '\\\\') {
         $path = "\\".preg_replace('#[/\\\\]+#', $ds, $path);
     } else {
         $path = preg_replace('#[/\\\\]+#', $ds, $path);
@@ -683,7 +667,7 @@ function acym_cleanPath($path, $ds = DIRECTORY_SEPARATOR)
     return $path;
 }
 
-function acym_createArchive($name, $files)
+function acym_createArchive(string $name, array $files): bool
 {
     $contents = [];
     $ctrldir = [];
@@ -752,7 +736,7 @@ function acym_loaderLogo(bool $wrap = true): string
     return $loader;
 }
 
-function acym_fileNameValid($filename)
+function acym_fileNameValid(string $filename): bool
 {
     if (empty($filename)) return false;
 
@@ -761,7 +745,7 @@ function acym_fileNameValid($filename)
     return true;
 }
 
-function acym_getImageFileExtensions()
+function acym_getImageFileExtensions(): array
 {
     return ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp', 'svg'];
 }

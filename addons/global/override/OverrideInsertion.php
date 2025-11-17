@@ -4,16 +4,18 @@ use AcyMailing\Classes\OverrideClass;
 
 trait OverrideInsertion
 {
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         $overridesClass = new OverrideClass();
         $overrideParams = $overridesClass->getParamsByMailId($mailId);
         if (!empty($overrideParams)) {
             return $this->pluginDescription;
         }
+
+        return null;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         $mailId = acym_getVar('int', 'mail_id', 0);
         if (empty($mailId)) return;

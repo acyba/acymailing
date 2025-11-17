@@ -54,7 +54,7 @@
 <div class="cell xlarge-3 medium-6">
 	<label>
         <?php
-        echo acym_translation('ACYM_BCC').' '.acym_info('ACYM_BCC_DESC');
+        echo acym_translation('ACYM_BCC').' '.acym_info(['textShownInTooltip' => 'ACYM_BCC_DESC']);
         $bccEmail = acym_escape(empty($data['mail']->bcc) ? '' : $data['mail']->bcc);
         ?>
 		<input name="mail[bcc]" type="text" placeholder="bcc@example.com" value="<?php echo acym_escape($bccEmail); ?>">
@@ -66,7 +66,7 @@
 		<label class="cell">
             <?php
             echo acym_translation('ACYM_EMAIL_LANGUAGE');
-            echo acym_info('ACYM_EMAIL_LANGUAGE_DESC');
+            echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_LANGUAGE_DESC']);
             echo $data['langChoice'];
             ?>
 		</label>

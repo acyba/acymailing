@@ -148,13 +148,13 @@ trait Patchv10
             }
 
             if (!empty($newConfig)) {
-                $config->save($newConfig);
+                $config->saveConfig($newConfig);
             }
         }
 
         $bounceHost = strtolower($config->get('bounce_server'));
         if (in_array($bounceHost, BounceHelper::HOSTS_NEEDING_OAUTH)) {
-            $config->save(
+            $config->saveConfig(
                 [
                     'bounce_server' => $bounceHost,
                     'bounce_access_token' => str_replace('Bearer ', '', $config->get('bounce_token')),
@@ -177,5 +177,10 @@ trait Patchv10
     private function updateFor1050(): void
     {
         $this->updateQuery('ALTER TABLE #__acym_automation CHANGE `active` `active` TINYINT(3) NOT NULL DEFAULT 0');
+    }
+
+    private function updateFor1060(): void
+    {
+        $this->updateQuery('ALTER TABLE #__acym_scenario_process ADD COLUMN `unsubscribed` TINYINT(1) NOT NULL DEFAULT 0');
     }
 }

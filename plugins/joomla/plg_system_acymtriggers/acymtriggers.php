@@ -133,7 +133,7 @@ class plgSystemAcymtriggers extends CMSPlugin
         }
 
         if (!empty($listsToSubscribe)) {
-            $userClass->subscribe($id, $listsToSubscribe);
+            $userClass->subscribe([$id], $listsToSubscribe);
         }
 
         $confirmationRequired = $config->get('require_confirmation', 1);
@@ -167,7 +167,7 @@ class plgSystemAcymtriggers extends CMSPlugin
 
         $acyUser = $userClass->getOneByEmail($contactEmail);
         if (!empty($acyUser)) {
-            $userClass->delete($acyUser->id);
+            $userClass->delete([$acyUser->id]);
         }
     }
 

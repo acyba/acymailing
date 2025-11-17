@@ -15,7 +15,7 @@
 	<label>
         <?php
         echo acym_translation('ACYM_EMAIL_PREHEADER');
-        echo acym_info('ACYM_EMAIL_PREHEADER_DESC');
+        echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_PREHEADER_DESC']);
         ?>
 		<input id="acym_preheader_field" name="mail[preheader]" type="text" maxlength="255" value="<?php echo acym_escape($data['mailInformation']->preheader); ?>">
 	</label>

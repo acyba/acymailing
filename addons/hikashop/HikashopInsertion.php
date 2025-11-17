@@ -14,21 +14,21 @@ trait HikashopInsertion
     private $translationHelper;
     private $followupTrigger;
 
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         $followupId = acym_getVar('int', 'followup_id');
         if (empty($followupId)) {
-            return '';
+            return null;
         }
 
         if ($this->isHikaFollowup($followupId)) {
             return $this->pluginDescription;
         }
 
-        return '';
+        return null;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         ?>
 		<script type="text/javascript">
@@ -161,7 +161,7 @@ trait HikashopInsertion
         return rtrim($addressString, ', ');
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -178,7 +178,7 @@ trait HikashopInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -187,7 +187,7 @@ trait HikashopInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $this->elementOptions = [];
         $query = 'SELECT b.*, a.*
@@ -200,7 +200,7 @@ trait HikashopInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -501,7 +501,7 @@ trait HikashopInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT a.* ';
         $this->query = 'FROM #__hikashop_product AS a ';
@@ -566,24 +566,28 @@ trait HikashopInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
-        if (!include_once(rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return;
+        if (!include_once(rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) {
+            return false;
+        }
 
         $this->hikaConfig = hikashop_config();
         $this->productClass = hikashop_get('class.product');
         $this->imageHelper = hikashop_get('helper.image');
         $this->currencyClass = hikashop_get('class.currency');
         $this->translationHelper = hikashop_get('helper.translation');
+
+        return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -644,7 +648,7 @@ trait HikashopInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         // Get product data
         $query = 'SELECT b.*, a.*
@@ -824,7 +828,7 @@ trait HikashopInsertion
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         if (!include_once(rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return;
 

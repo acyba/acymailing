@@ -14,9 +14,11 @@ class UrlClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function save($url)
+    public function save(object $url): ?int
     {
-        if (empty($url)) return false;
+        if (empty($url)) {
+            return null;
+        }
 
         foreach ($url as $oneAttribute => $value) {
             if (empty($value)) {
@@ -29,36 +31,18 @@ class UrlClass extends AcymClass
         return parent::save($url);
     }
 
-    public function getOneUrlById($id)
+    public function getOneUrlById(int $id): ?object
     {
-        return acym_loadObject('SELECT * FROM #__acym_url WHERE `id` = '.intval($id));
+        $url = acym_loadObject('SELECT * FROM #__acym_url WHERE `id` = '.intval($id));
+
+        return empty($url) ? null : $url;
     }
 
-    public function getOneByUrl($url)
+    public function getUrl(string $url, int $mailid, int $userid): string
     {
-        return acym_loadObject('SELECT * FROM #__acym_url WHERE `url` = '.acym_escapeDB($url));
-    }
-
-    public function getAdd($url)
-    {
-        $currentUrl = $this->getOneByUrl($url);
-        if (empty($currentUrl->id)) {
-            $currentUrl = new \stdClass();
-            $currentUrl->name = $url;
-            $currentUrl->url = $url;
-            $currentUrl->id = $this->save($currentUrl);
-
-            if (empty($currentUrl->id)) {
-                return null;
-            }
+        if (empty($url) || empty($mailid) || empty($userid)) {
+            return '';
         }
-
-        return $currentUrl;
-    }
-
-    public function getUrl($url, $mailid, $userid)
-    {
-        if (empty($url) || empty($mailid) || empty($userid)) return '';
 
         static $allurls;
 
@@ -76,7 +60,7 @@ class UrlClass extends AcymClass
     }
 
     // Used in checkDB to address a bug before the 12/04/19
-    public function getDuplicatedUrls()
+    public function getDuplicatedUrls(): array
     {
         return acym_loadResultArray(
             'SELECT DISTINCT duplicates.id
@@ -96,5 +80,29 @@ class UrlClass extends AcymClass
 
         If an email is currently being sent, exclude its urls from the delete query
          */
+    }
+
+    private function getAdd(string $url): ?object
+    {
+        $currentUrl = $this->getOneByUrl($url);
+        if (empty($currentUrl->id)) {
+            $currentUrl = new \stdClass();
+            $currentUrl->name = $url;
+            $currentUrl->url = $url;
+            $currentUrl->id = $this->save($currentUrl);
+
+            if (empty($currentUrl->id)) {
+                return null;
+            }
+        }
+
+        return $currentUrl;
+    }
+
+    private function getOneByUrl(string $url): ?object
+    {
+        $url = acym_loadObject('SELECT * FROM #__acym_url WHERE `url` = '.acym_escapeDB($url));
+
+        return empty($url) ? null : $url;
     }
 }

@@ -19,7 +19,7 @@ trait Users
         if ($connector) {
             $connectorName = empty($options['filters']['confirmed']) ? 'connector_trigger_getUsers' : 'connector_trigger_getConfirmedUsers';
             $lastTriggerDate = $this->config->get($connectorName);
-            $this->config->save([$connectorName => date('Y-m-d H:i:s')]);
+            $this->config->saveConfig([$connectorName => date('Y-m-d H:i:s')]);
 
             // If this is the first time zapier calls, or if the trigger has been halted for more than 1 day, we don't send the users to "init" the trigger
             if (empty($lastTriggerDate) || $lastTriggerDate < date('Y-m-d H:i:s', strtotime('-1 day'))) {
@@ -74,7 +74,7 @@ trait Users
             $this->sendJsonResponse(['message' => 'User not found.'], 404);
         }
 
-        $affectedRows = $userClass->delete($user->id);
+        $affectedRows = $userClass->delete([$user->id]);
 
         if (empty($affectedRows)) {
             $this->sendJsonResponse(['message' => 'Error deleting user.', 'errors' => $userClass->errors], 500);

@@ -18,7 +18,7 @@ class SendinblueList extends SendinblueClass
         $listId = $this->createList('list_for_acym_mail_'.$mailId);
 
         $brevoLists[$mailId] = $listId;
-        $this->config->save(['list_sendinblue' => json_encode($brevoLists)]);
+        $this->config->saveConfig(['list_sendinblue' => json_encode($brevoLists)]);
     }
 
     public function createList($name)
@@ -32,7 +32,7 @@ class SendinblueList extends SendinblueClass
 
         // The folder Id is saved in the config but the user removed it from Sendinblue, recreate a folder
         if (!empty($response['message']) && $response['message'] === 'Folder ID does not exist') {
-            $this->config->save(['sendinblue_folder_id' => 0]);
+            $this->config->saveConfig(['sendinblue_folder_id' => 0]);
 
             return $this->createList($name);
         }
@@ -54,7 +54,7 @@ class SendinblueList extends SendinblueClass
         // The API key may be wrong
         if (empty($response['id'])) return 0;
 
-        $this->config->save(['sendinblue_folder_id' => $response['id']]);
+        $this->config->saveConfig(['sendinblue_folder_id' => $response['id']]);
 
         return $response['id'];
     }

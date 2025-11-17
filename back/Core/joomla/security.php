@@ -6,7 +6,12 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 
-function acym_getVar($type, $name, $default = null, $source = 'default', $mask = 0)
+/**
+ * @param mixed $default
+ *
+ * @return mixed
+ */
+function acym_getVar(string $type, string $name, $default = null, string $source = 'default', int $mask = 0)
 {
     if (ACYM_J40) {
         if ($mask & ACYM_ALLOWRAW) {
@@ -37,7 +42,7 @@ function acym_getVar($type, $name, $default = null, $source = 'default', $mask =
     return $result;
 }
 
-function acym_setVar($name, $value = null, $hash = 'method', $overwrite = true)
+function acym_setVar(string $name, $value = null, string $hash = 'method', bool $overwrite = true): void
 {
     if (ACYM_J40) {
         if (empty($hash) || $hash === 'method') {
@@ -52,7 +57,7 @@ function acym_setVar($name, $value = null, $hash = 'method', $overwrite = true)
     }
 }
 
-function acym_isAdmin()
+function acym_isAdmin(): bool
 {
     $acyapp = acym_getGlobal('app');
 
@@ -63,17 +68,17 @@ function acym_isAdmin()
     }
 }
 
-function acym_cmsLoaded()
+function acym_cmsLoaded(): void
 {
     defined('_JEXEC') || die('Restricted access');
 }
 
-function acym_isDebug()
+function acym_isDebug(): bool
 {
     return defined('JDEBUG') && JDEBUG;
 }
 
-function acym_askLog($current = true, $message = 'ACYM_NOTALLOWED', $type = 'error')
+function acym_askLog(bool $current = true, string $message = 'ACYM_NOTALLOWED', string $type = 'error'): void
 {
     //If the user is not logged in, we just redirect him to the login page....
     $url = 'index.php?option=com_users&view=login';
@@ -83,7 +88,7 @@ function acym_askLog($current = true, $message = 'ACYM_NOTALLOWED', $type = 'err
     acym_redirect($url, $message, $type);
 }
 
-function acym_getDefaultConfigValues()
+function acym_getDefaultConfigValues(): array
 {
     $allPref = [];
 
@@ -110,7 +115,7 @@ function acym_getDefaultConfigValues()
     return $allPref;
 }
 
-function acym_cmsPermission()
+function acym_cmsPermission(): string
 {
     $user = Factory::getUser();
     if (!$user->authorise('core.admin', ACYM_COMPONENT)) return '';
@@ -126,17 +131,17 @@ function acym_cmsPermission()
 		</div>';
 }
 
-function acym_checkVersion($ajax = false)
+function acym_checkVersion(bool $ajax = false): ?int
 {
     return UpdatemeHelper::getLicenseInfo($ajax);
 }
 
-function acym_loadJoomlaPlugin($family, $name = null)
+function acym_loadJoomlaPlugin(string $family, ?string $name = null): void
 {
     PluginHelper::importPlugin($family, $name);
 }
 
-function acym_triggerCmsHook($method, $args = [], $isAction = true)
+function acym_triggerCmsHook(string $method, array $args = [], bool $isAction = true)
 {
     if (ACYM_J40) {
         $result = Factory::getApplication()->triggerEvent($method, $args);
@@ -156,7 +161,7 @@ function acym_triggerCmsHook($method, $args = [], $isAction = true)
     }
 }
 
-function acym_getCmsCaptcha()
+function acym_getCmsCaptcha(): array
 {
     $captchaPlugins = acym_loadObjectList(
         'SELECT `element`, `name` 

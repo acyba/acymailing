@@ -1,5 +1,5 @@
 <div id="spam_test_zone" class="cell">
-	<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SAFE_CHECK').acym_info('ACYM_INTRO_SAFE_CHECK'); ?></h6>
+	<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SAFE_CHECK').acym_info(['textShownInTooltip' => 'ACYM_INTRO_SAFE_CHECK']); ?></h6>
 	<p class="margin-bottom-1"><?php echo acym_translation('ACYM_SAFE_CHECK_DESC'); ?></p>
     <?php
     if (count($data['emails_to_test']) > 1) { ?>
@@ -83,8 +83,8 @@
                 $spamTestRow,
                 $dataModal,
                 'spamtestpopup',
-                'data-reveal-larger',
-                '',
+                ['data-reveal-larger' => true],
+                [],
                 false
             );
             ?>

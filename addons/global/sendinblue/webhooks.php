@@ -13,7 +13,7 @@ class SendinblueWebhooks extends SendinblueClass
         $securityKey = $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_webhooks_seckey');
         if (empty($securityKey)) {
             $securityKey = acym_generateKey(40);
-            $this->config->save([plgAcymSendinblue::SENDING_METHOD_ID.'_webhooks_seckey' => $securityKey]);
+            $this->config->saveConfig([plgAcymSendinblue::SENDING_METHOD_ID.'_webhooks_seckey' => $securityKey]);
         }
 
         $types = ['transactional', 'marketing'];
@@ -37,6 +37,6 @@ class SendinblueWebhooks extends SendinblueClass
             }
         }
 
-        $this->config->save([plgAcymSendinblue::SENDING_METHOD_ID.'_webhooks_added' => json_encode($webhooks)]);
+        $this->config->saveConfig([plgAcymSendinblue::SENDING_METHOD_ID.'_webhooks_added' => json_encode($webhooks)]);
     }
 }

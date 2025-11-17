@@ -38,7 +38,7 @@
                             <?php echo acym_translation('ACYM_DELETE'); ?>
 						</div>
 					</div>
-                    <?php foreach ($data["allElements"] as $row) { ?>
+                    <?php foreach ($data['allElements'] as $row) { ?>
 						<div data-acy-elementid="<?php echo acym_escape($row->id.'_'.$row->user_id); ?>" class="cell grid-x acym__listing__row">
 							<div class="cell large-2 medium-3">
                                 <?php echo acym_date($row->sending_date, acym_getDateTimeFormat()); ?>
@@ -64,7 +64,6 @@
 							<div class="cell medium-1 text-center">
 								<i class="acymicon-delete js-acym_toggle_delete acym_delete_queue"
 								   data-acy-table="queue"
-								   data-acy-method="deleteOne"
 								   data-acy-elementid="<?php echo acym_escape($row->id.'_'.$row->user_id); ?>"
 								   confirmation="1"></i>
 							</div>

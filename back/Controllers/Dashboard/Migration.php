@@ -40,9 +40,7 @@ trait Migration
 
     public function migrationDone(): void
     {
-        $newConfig = new \stdClass();
-        $newConfig->migration = '1';
-        $this->config->save($newConfig);
+        $this->config->saveConfig(['migration' => 1]);
 
         $updateHelper = new UpdateHelper();
         $updateHelper->installNotifications();
@@ -80,9 +78,7 @@ trait Migration
             return true;
         }
 
-        $newConfig = new \stdClass();
-        $newConfig->migration = '1';
-        $this->config->save($newConfig);
+        $this->config->saveConfig(['migration' => 1]);
 
         return false;
     }

@@ -106,7 +106,7 @@ class plgAcymSendingmethodlist extends AcymPlugin
      */
     private function saveSendingMethodsConfig($sendingMethods): void
     {
-        $this->config->save(['sending_method_list' => json_encode($sendingMethods)]);
+        $this->config->saveConfig(['sending_method_list' => json_encode($sendingMethods)]);
     }
 
     /**
@@ -116,7 +116,7 @@ class plgAcymSendingmethodlist extends AcymPlugin
      */
     private function saveSendingMethodByListConfig($sendingMethodByList): void
     {
-        $this->config->save(['sending_method_list_by_list' => json_encode($sendingMethodByList)]);
+        $this->config->saveConfig(['sending_method_list_by_list' => json_encode($sendingMethodByList)]);
     }
 
     /**

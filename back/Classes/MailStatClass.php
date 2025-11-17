@@ -14,8 +14,10 @@ class MailStatClass extends AcymClass
         $this->pkey = 'mail_id';
     }
 
-    public function save($mailStat)
+    public function save($element): ?int
     {
+        $mailStat = is_object($element) ? get_object_vars($element) : $element;
+
         $column = [];
         $valueColumn = [];
         $columnName = acym_getColumns('mail_stat');
@@ -77,37 +79,37 @@ class MailStatClass extends AcymClass
             $query = 'INSERT IGNORE INTO '.$query;
         }
 
-        return acym_query($query);
+        return (int)acym_query($query);
     }
 
-    public function getTotalSubscribersByMailId($mailId)
+    public function getTotalSubscribersByMailId(int $mailId): int
     {
         $result = acym_loadResult('SELECT total_subscribers FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId));
 
-        return $result === null ? 0 : $result;
+        return empty($result) ? 0 : $result;
     }
 
-    public function getTotalSubscribersByMailIdWithChild($mailId)
+    public function getTotalSubscribersByMailIdWithChild(int $mailId): int
     {
         $result = acym_loadResult(
             'SELECT SUM(total_subscribers) FROM #__acym_mail_stat WHERE mail_id IN (SELECT id FROM #__acym_mail WHERE id = '.intval($mailId).' OR parent_id = '.intval($mailId).')'
         );
 
-        return $result === null ? 0 : $result;
+        return empty($result) ? 0 : $result;
     }
 
-    public function getOneByMailId($id = '')
+    public function getOneByMailId(int $id): ?object
     {
         $query = 'SELECT SUM(sent) AS sent, SUM(fail) AS fail FROM #__acym_mail_stat';
         $query .= empty($id) ? '' : ' WHERE `mail_id` = '.intval($id);
 
-        return acym_loadObject($query);
+        $stats = acym_loadObject($query);
+
+        return empty($stats) ? null : $stats;
     }
 
-    public function getSentFailByMailIds($mailIds = [])
+    public function getSentFailByMailIds(array $mailIds = []): object
     {
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
-
         acym_arrayToInteger($mailIds);
 
         $query = 'SELECT SUM(sent) AS sent, SUM(fail) AS fail FROM #__acym_mail_stat';
@@ -116,12 +118,14 @@ class MailStatClass extends AcymClass
         return acym_loadObject($query);
     }
 
-    public function getOneRowByMailId($mailId)
+    public function getOneRowByMailId(int $mailId): ?object
     {
-        return acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId));
+        $stats = acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId));
+
+        return empty($stats) ? null : $stats;
     }
 
-    public function getAllMailsForStats($search = '')
+    public function getAllMailsForStats(string $search = ''): array
     {
         $mailClass = new MailClass();
 
@@ -142,7 +146,6 @@ class MailStatClass extends AcymClass
         }
 
         $query .= ' WHERE mail.parent_id IS NULL '.$querySearch;
-
         $query .= ' ORDER BY mail_stat.send_date DESC LIMIT 20';
 
         $mails = acym_loadObjectList($query);
@@ -151,7 +154,7 @@ class MailStatClass extends AcymClass
         return $mailClass->decode(array_merge($mails, $mailsAuto));
     }
 
-    public function getCumulatedStatsByMailIds($mailsIds = [])
+    public function getCumulatedStatsByMailIds(array $mailsIds = []): object
     {
         acym_arrayToInteger($mailsIds);
         $condMailIds = '';
@@ -164,16 +167,14 @@ class MailStatClass extends AcymClass
         return acym_loadObject($query);
     }
 
-    public function getByMailIds($mailIds)
+    public function getByMailIds(array $mailIds): object
     {
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
-
         acym_arrayToInteger($mailIds);
 
         return acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $mailIds).')');
     }
 
-    public function migrateTrackingSale()
+    public function migrateTrackingSale(): void
     {
         $query = 'SELECT tracking_sale, currency, mail_id FROM #__acym_user_stat WHERE currency IS NOT NULL';
 
@@ -185,13 +186,12 @@ class MailStatClass extends AcymClass
 
         foreach ($trackingSales as $sale) {
             if (empty($mailStats[$sale->mail_id])) {
-                $mailStats[$sale->mail_id] = [
-                    'mail_id' => $sale->mail_id,
-                    'tracking_sale' => $sale->tracking_sale,
-                    'currency' => $sale->currency,
-                ];
+                $mailStats[$sale->mail_id] = new \stdClass();
+                $mailStats[$sale->mail_id]->mail_id = $sale->mail_id;
+                $mailStats[$sale->mail_id]->tracking_sale = $sale->tracking_sale;
+                $mailStats[$sale->mail_id]->currency = $sale->currency;
             } else {
-                $mailStats[$sale->mail_id]['tracking_sale'] += $sale->tracking_sale;
+                $mailStats[$sale->mail_id]->tracking_sale += $sale->tracking_sale;
             }
         }
 
@@ -211,9 +211,9 @@ class MailStatClass extends AcymClass
             'mail_id'
         );
 
-        foreach ($mailStats as $key => $mailStat) {
-            $mailStats[$key]->click_rate = $mailStat->open_total > 0 ? $mailStat->click_total / $mailStat->open_total : 0;
-            $mailStats[$key]->open_rate = $mailStat->total_subscribers > 0 ? $mailStat->open_total / $mailStat->total_subscribers : 0;
+        foreach ($mailStats as $mailStat) {
+            $mailStat->click_rate = $mailStat->open_total > 0 ? $mailStat->click_total / $mailStat->open_total : 0;
+            $mailStat->open_rate = $mailStat->total_subscribers > 0 ? $mailStat->open_total / $mailStat->total_subscribers : 0;
         }
 
         if ($statsType === 'click_rate') {
@@ -228,7 +228,7 @@ class MailStatClass extends AcymClass
         }
     }
 
-    private function getBestMailByRate($mailStats, $type)
+    private function getBestMailByRate(array $mailStats, string $type): int
     {
         uasort(
             $mailStats,
@@ -244,7 +244,7 @@ class MailStatClass extends AcymClass
         return array_keys($mailStats)[0];
     }
 
-    public function incrementClicks(int $mailId, bool $isFirst)
+    public function incrementClicks(int $mailId, bool $isFirst): void
     {
         acym_query(
             'UPDATE #__acym_mail_stat 

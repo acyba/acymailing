@@ -5,7 +5,7 @@ use AcyMailing\Types\OperatorType;
 
 trait UserAutomationFilters
 {
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
         $allGroups = acym_getGroups();
         $groups = ['' => acym_translation('ACYM_NO_GROUP')];

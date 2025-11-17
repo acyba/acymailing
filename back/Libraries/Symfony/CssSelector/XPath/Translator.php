@@ -48,7 +48,7 @@ class Translator implements TranslatorInterface
     private $pseudoClassTranslators = [];
     private $attributeMatchingTranslators = [];
 
-    public function __construct(ParserInterface $parser = null)
+    public function __construct(?ParserInterface $parser = null)
     {
         $this->mainParser = $parser ?? new Parser();
 
@@ -63,11 +63,11 @@ class Translator implements TranslatorInterface
 
     public static function getXpathLiteral(string $element): string
     {
-        if (strpos($element, "'") === false) {
+        if (false === strpos($element, "'")) {
             return "'".$element."'";
         }
 
-        if (strpos($element, '"') === false) {
+        if (false === strpos($element, '"')) {
             return '"'.$element.'"';
         }
 
@@ -117,7 +117,7 @@ class Translator implements TranslatorInterface
     /**
      * @return $this
      */
-    public function registerExtension(Extension\ExtensionInterface $extension)
+    public function registerExtension(Extension\ExtensionInterface $extension): self
     {
         $this->extensions[$extension->getName()] = $extension;
 
@@ -145,7 +145,7 @@ class Translator implements TranslatorInterface
     /**
      * @return $this
      */
-    public function registerParserShortcut(ParserInterface $shortcut)
+    public function registerParserShortcut(ParserInterface $shortcut): self
     {
         $this->shortcutParsers[] = $shortcut;
 
@@ -203,7 +203,7 @@ class Translator implements TranslatorInterface
     /**
      * @throws ExpressionErrorException
      */
-    public function addAttributeMatching(XPathExpr $xpath, string $operator, string $attribute, ?string $value): XPathExpr
+    public function addAttributeMatching(XPathExpr $xpath, string $operator, string $attribute, $value): XPathExpr
     {
         if (!isset($this->attributeMatchingTranslators[$operator])) {
             throw new ExpressionErrorException(sprintf('Attribute matcher operator "%s" not supported.', $operator));

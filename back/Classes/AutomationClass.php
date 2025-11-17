@@ -19,6 +19,11 @@ class AutomationClass extends AcymClass
 
         $this->table = 'automation';
         $this->pkey = 'id';
+        $this->intColumns = [
+            'id',
+            'active',
+            'admin',
+        ];
     }
 
     public function getMatchingElements(array $settings = []): array
@@ -38,7 +43,7 @@ class AutomationClass extends AcymClass
 
         if (!empty($settings['status'])) {
             $query .= empty($filters) ? ' WHERE ' : ' AND ';
-            $query .= 'active = '.($settings['status'] == 'active' ? '1' : '0');
+            $query .= 'active = '.($settings['status'] === 'active' ? '1' : '0');
         }
 
         if (!empty($settings['ordering']) && !empty($settings['ordering_sort_order'])) {
@@ -56,39 +61,37 @@ class AutomationClass extends AcymClass
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
+        $elements = acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']);
+        array_map([$this, 'fixTypes'], $elements);
+
         return [
-            'elements' => acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']),
+            'elements' => $elements,
             'total' => acym_loadObject($queryCount),
         ];
     }
 
-    public function save($automation)
+    public function save(object $element): ?int
     {
-        foreach ($automation as $oneAttribute => $value) {
+        foreach ($element as $oneAttribute => $value) {
             if (empty($value)) {
                 continue;
             }
 
-            if (is_array($value)) {
-                $value = json_encode($value);
-            }
-
-            $automation->$oneAttribute = strip_tags($value);
+            $element->$oneAttribute = is_array($value) ? json_encode($value) : strip_tags($value);
         }
 
-        return parent::save($automation);
+        return parent::save($element);
     }
 
-    public function delete($elements)
+    public function delete(array $elements): int
     {
         if (empty($elements)) return 0;
 
-        if (!is_array($elements)) $elements = [$elements];
         acym_arrayToInteger($elements);
 
         $steps = acym_loadResultArray('SELECT id FROM #__acym_step WHERE automation_id IN ('.implode(',', $elements).')');
         $stepClass = new StepClass();
-        $stepsDeleted = $stepClass->delete($steps);
+        $stepClass->delete($steps);
 
         return parent::delete($elements);
     }
@@ -97,16 +100,21 @@ class AutomationClass extends AcymClass
      * @param mixed $trigger The identifier of the trigger
      * @param array $data    An array with data for user-type triggers (user id, order, event...)
      */
-    public function trigger($trigger, $data = [])
+    public function trigger($triggers, array $data = []): void
     {
-        if (!acym_level(ACYM_ENTERPRISE) || empty($trigger)) {
+        if (!acym_level(ACYM_ENTERPRISE) || empty($triggers)) {
             return;
+        }
+
+        if (!is_array($triggers)) {
+            $triggers = [$triggers];
         }
 
         $stepClass = new StepClass();
         $actionClass = new ActionClass();
         $conditionClass = new ConditionClass();
-        $steps = $stepClass->getActiveStepByTrigger($trigger);
+
+        $steps = $stepClass->getActiveStepByTrigger($triggers);
 
         $data['time'] = time();
         foreach ($steps as $step) {
@@ -145,7 +153,7 @@ class AutomationClass extends AcymClass
         }
     }
 
-    public function execute($action, $data = [])
+    public function execute(object $action, array $data = []): bool
     {
         $usersTriggeringAction = empty($data['userIds']) ? [] : $data['userIds'];
         $userTriggeringAction = empty($data['userId']) ? 0 : $data['userId'];
@@ -231,7 +239,7 @@ class AutomationClass extends AcymClass
         return $this->didAnAction;
     }
 
-    private function verifyCondition($conditions, $data = [])
+    private function verifyCondition($conditions, array $data = []): bool
     {
         if (empty($conditions)) return true;
         $userTriggeringAction = empty($data['userId']) ? 0 : $data['userId'];
@@ -276,7 +284,7 @@ class AutomationClass extends AcymClass
         return false;
     }
 
-    public function getAutomationsAdmin($ids = [])
+    public function getAutomationsAdmin(array $ids = []): array
     {
         acym_arrayToInteger($ids);
 
@@ -285,19 +293,9 @@ class AutomationClass extends AcymClass
             $query .= ' AND `id` IN ('.implode(', ', $ids).')';
         }
 
-        return acym_loadObjectList($query, 'name');
-    }
+        $automations = acym_loadObjectList($query, 'name');
+        array_map([$this, 'fixTypes'], $automations);
 
-    public function getActionsByAutomationId($id)
-    {
-        return acym_loadObjectList(
-            'SELECT action.* 
-            FROM `#__acym_action` AS `action` 
-            JOIN `#__acym_condition` AS `condition` 
-                ON `action`.`condition_id` = `condition`.`id` 
-            JOIN `#__acym_step` AS `step` 
-                ON `condition`.`step_id` = `step`.`id` 
-            WHERE `step`.`automation_id` = '.intval($id)
-        );
+        return $automations;
     }
 }

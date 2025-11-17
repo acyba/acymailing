@@ -19,8 +19,13 @@ if (acym_getVar('boolean', 'runBounce')) {
                 acym_translation('ACYM_CLICK_BOUNCE'),
                 '',
                 null,
-                '',
-                'data-ajax="true" data-iframe="&ctrl=bounces&task=process" class="acym__color__light-blue cursor-pointer" style="margin: 0"'
+                [],
+                [
+                    'data-ajax' => 'true',
+                    'data-iframe' => '&ctrl=bounces&task=process',
+                    'class' => 'acym__color__light-blue cursor-pointer',
+                    'style' => 'margin: 0',
+                ]
             );
         }
 
@@ -89,10 +94,18 @@ $finalRule = RuleClass::FINAL_RULE_ID;
 					<div class="cell small-10 medium-4 acym__listing__title">
 						<a href="<?php echo acym_completeLink('bounces&task=rule&ruleId='.$oneRule->id); ?>"
 						   class="shrink">
-							<h6 class="acym__listing__title__important"><?php echo acym_escape(acym_translation($oneRule->name));
+							<h6 class="acym__listing__title__important">
+                                <?php
+                                echo acym_escape(acym_translation($oneRule->name));
                                 if (!empty($oneRule->description)) {
-                                    echo acym_info(acym_escape(acym_translation($oneRule->description)));
-                                } ?></h6>
+                                    echo acym_info(
+                                        [
+                                            'textShownInTooltip' => acym_translation($oneRule->description),
+                                        ]
+                                    );
+                                }
+                                ?>
+							</h6>
 						</a>
 					</div>
 					<div class="cell hide-for-small-only medium-3 acym__listing__text">

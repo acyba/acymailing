@@ -21,7 +21,7 @@ $acymCmsUserVars->blocked = 'block';
  *
  * @return array
  */
-function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
+function acym_getGroupsByUser(?int $userid = null, ?bool $recursive = null, bool $names = false): array
 {
     if ($userid === null) {
         $userid = acym_currentUserId();
@@ -45,7 +45,7 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
     return $groups;
 }
 
-function acym_getGroups()
+function acym_getGroups(): array
 {
     return acym_loadObjectList(
         'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value` 
@@ -54,7 +54,7 @@ function acym_getGroups()
     );
 }
 
-function acym_punycode(string $email, string $method = 'emailToPunycode')
+function acym_punycode(string $email, string $method = 'emailToPunycode'): string
 {
     if (empty($email) || acym_isPunycode($email) || version_compare(ACYM_CMSV, '3.1.2', '<')) {
         return $email;
@@ -70,7 +70,7 @@ function acym_currentUserId(): int
     return intval($acymy->id);
 }
 
-function acym_currentUserName($userid = null)
+function acym_currentUserName(?int $userid = null): string
 {
     if (!empty($userid)) {
         $special = Factory::getUser($userid);
@@ -90,7 +90,7 @@ function acym_currentUserEmail(int $userid = 0): string
     return empty($user->email) ? '' : $user->email;
 }
 
-function acym_replaceGroupTags($uploadFolder)
+function acym_replaceGroupTags(string $uploadFolder): string
 {
     if (strpos($uploadFolder, '{groupname}') === false) return $uploadFolder;
 
@@ -116,7 +116,7 @@ function acym_replaceGroupTags($uploadFolder)
     return $uploadFolder;
 }
 
-function acym_getCmsUserEdit($userId)
+function acym_getCmsUserEdit(int $userId): string
 {
     return 'index.php?option=com_users&task=user.edit&id='.intval($userId);
 }

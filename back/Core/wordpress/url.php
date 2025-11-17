@@ -1,11 +1,11 @@
 <?php
 
-function acym_route($url, $xhtml = true, $ssl = null)
+function acym_route(string $url, bool $xhtml = true): string
 {
     return acym_baseURI().$url;
 }
 
-function acym_addPageParam($url, $ajax = false, $front = false)
+function acym_addPageParam(string $url, bool $ajax = false, bool $front = false): string
 {
     preg_match('#^([a-z]+)(?:[^a-z]|$)#Uis', $url, $ctrl);
 
@@ -22,7 +22,7 @@ function acym_addPageParam($url, $ajax = false, $front = false)
     return $link;
 }
 
-function acym_baseURI($pathonly = false)
+function acym_baseURI(bool $pathonly = false): string
 {
     if (acym_isAdmin()) {
         return admin_url();
@@ -31,7 +31,7 @@ function acym_baseURI($pathonly = false)
     return acym_rootURI();
 }
 
-function acym_rootURI($pathonly = false, $path = 'siteurl')
+function acym_rootURI(bool $pathonly = false, ?string $path = 'siteurl'): string
 {
     $rootURI = rtrim(site_url(), '/').'/';
 
@@ -51,7 +51,7 @@ function acym_rootURI($pathonly = false, $path = 'siteurl')
     return $rootURI;
 }
 
-function acym_completeLink($link, $popup = false, $redirect = false, $forceNoPopup = false)
+function acym_completeLink(string $link, bool $popup = false, bool $redirect = false, bool $forceNoPopup = false): string
 {
     if (($popup || acym_isNoTemplate()) && $forceNoPopup == false) {
         $link .= '&'.acym_noTemplate();
@@ -65,12 +65,12 @@ function acym_completeLink($link, $popup = false, $redirect = false, $forceNoPop
 /**
  * If you use it to prepare a POST ajax, make sure you add the action and page parameters to the data passed, it's not taken into account if it's only in the URL
  */
-function acym_prepareAjaxURL($url)
+function acym_prepareAjaxURL(string $url): string
 {
     return htmlspecialchars_decode(acym_route(acym_addPageParam($url, true)));
 }
 
-function acym_frontendLink($link, $complete = true, $sef = true)
+function acym_frontendLink(string $link, bool $complete = true, bool $sef = true): string
 {
     return acym_rootURI().acym_addPageParam($link, true, true);
 }

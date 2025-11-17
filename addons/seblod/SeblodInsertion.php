@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait SeblodInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -55,7 +55,7 @@ trait SeblodInsertion
         }
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -64,7 +64,7 @@ trait SeblodInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $this->elementOptions = [];
         $query = 'SELECT a.*,b.alias AS catalias,c.name AS username FROM #__content AS a ';
@@ -77,7 +77,7 @@ trait SeblodInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -171,7 +171,7 @@ trait SeblodInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT a.*,b.*,c.*,a.id AS gID, a.title AS gtitle ';
         $this->query = 'FROM `#__content` AS a 
@@ -229,13 +229,13 @@ trait SeblodInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         require_once JPATH_SITE.DS.'plugins'.DS.'content'.DS.'cck'.DS.'cck.php';
         require_once __DIR__.DS.'acyseblodfield.php';
@@ -251,7 +251,7 @@ trait SeblodInsertion
         return true;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT a.*, b.alias AS catalias, c.name AS username FROM #__content AS a ';
         $query .= 'JOIN #__categories AS b ON a.catid = b.id ';
@@ -392,7 +392,7 @@ trait SeblodInsertion
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         //load the tags
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);

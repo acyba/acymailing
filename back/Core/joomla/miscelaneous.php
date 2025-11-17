@@ -4,7 +4,7 @@ use AcyMailing\Classes\PluginClass;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 
-function acym_getGlobal(string $type)
+function acym_getGlobal(string $type): object
 {
     $variables = [
         'db' => ['acydb', 'getDbo'],
@@ -21,14 +21,14 @@ function acym_getGlobal(string $type)
     return ${$variables[$type][0]};
 }
 
-function acym_addBreadcrumb($title, $link = '')
+function acym_addBreadcrumb(string $title, string $link = ''): void
 {
     $acyapp = acym_getGlobal('app');
     $pathway = $acyapp->getPathway();
     $pathway->addItem($title, $link);
 }
 
-function acym_setPageTitle($title)
+function acym_setPageTitle(string $title): void
 {
     if (empty($title)) {
         $title = acym_getCMSConfig('sitename');
@@ -41,12 +41,12 @@ function acym_setPageTitle($title)
     $document->setTitle($title);
 }
 
-function acym_isLeftMenuNecessary()
+function acym_isLeftMenuNecessary(): bool
 {
-    return (!ACYM_J40 && acym_isAdmin() && !acym_isNoTemplate());
+    return !ACYM_J40 && acym_isAdmin() && !acym_isNoTemplate();
 }
 
-function acym_getLeftMenu($name)
+function acym_getLeftMenu(string $name): string
 {
     $pluginClass = new PluginClass();
     $nbPluginNotUptodate = count($pluginClass->getNotUptoDatePlugins());
@@ -93,31 +93,13 @@ function acym_getLeftMenu($name)
     return $leftMenu;
 }
 
-function acym_isPluginActive($plugin, $family = 'system')
+function acym_isPluginActive(string $plugin, string $family = 'system'): bool
 {
     $plugin = PluginHelper::getPlugin($family, $plugin);
 
     return !empty($plugin);
 }
 
-function acym_menuOnly($links)
-{
-    $menu = Factory::getApplication('site')->getMenu()->getActive();
-    $menuFound = false;
-    if (!empty($menu)) {
-        foreach ($links as $link) {
-            if ($menu->link == $link) {
-                $menuFound = true;
-                break;
-            }
-        }
-    }
-
-    if (!$menuFound) {
-        acym_redirect(acym_rootURI(), 'ACYM_UNAUTHORIZED_ACCESS', 'error');
-    }
-}
-
-function acym_disableCmsEditor()
+function acym_disableCmsEditor(): void
 {
 }

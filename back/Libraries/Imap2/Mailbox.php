@@ -242,17 +242,6 @@ class Mailbox
         return $success;
     }
 
-    public static function renameMailbox($imap, $from, $to)
-    {
-        if (is_a($imap, Connection::class)) {
-            $client = $imap->getClient();
-
-            return $client->createFolder($mailbox);
-        }
-
-        return imap_createmailbox($imap, $mailbox);
-    }
-
     public static function deleteMailbox($imap, $mailbox)
     {
         if (!is_a($imap, Connection::class)) {

@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait IcagendaInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -21,7 +21,7 @@ trait IcagendaInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -30,7 +30,7 @@ trait IcagendaInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT event.*, category.title AS cattitle ';
         $query .= 'FROM `#__icagenda_events` AS event ';
@@ -54,7 +54,7 @@ trait IcagendaInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -176,7 +176,7 @@ trait IcagendaInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT event.* ';
         $this->query = 'FROM `#__icagenda_events` AS event ';
@@ -227,13 +227,13 @@ trait IcagendaInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $time = time();
 
@@ -289,7 +289,7 @@ trait IcagendaInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT event.*, category.title AS cattitle ';
         $query .= 'FROM `#__icagenda_events` AS event ';

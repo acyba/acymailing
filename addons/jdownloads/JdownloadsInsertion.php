@@ -8,7 +8,7 @@ trait JdownloadsInsertion
     private $symbolWidth;
     private $symbolHeight;
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -25,7 +25,7 @@ trait JdownloadsInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -34,7 +34,7 @@ trait JdownloadsInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT element.*
                     FROM #__jdownloads_files AS element
@@ -46,7 +46,7 @@ trait JdownloadsInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -146,7 +146,7 @@ trait JdownloadsInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         //we load all elements with the categories
         $this->querySelect = 'SELECT element.id, element.title, element.publish_up ';
@@ -193,13 +193,13 @@ trait JdownloadsInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -244,7 +244,7 @@ trait JdownloadsInsertion
         return $this->generateCampaignResult;
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         $params = ComponentHelper::getParams('com_jdownloads');
 
@@ -256,7 +256,7 @@ trait JdownloadsInsertion
         return true;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT element.*
                     FROM #__jdownloads_files AS element

@@ -5,7 +5,7 @@ use AcyMailing\Types\OperatorType;
 
 trait EasysocialAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         acym_loadLanguageFile('com_easysocial', JPATH_SITE);
         $operatorIn = new OperatorInType();
@@ -236,7 +236,7 @@ trait EasysocialAutomationConditions
         $conditions['user']['easysocialevent']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

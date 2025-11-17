@@ -49,7 +49,9 @@ class plgAcymOutlook extends AcymPlugin
             }
             ?>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="outlook_username" class="cell"><?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info('ACYM_SMTP_USERNAME_DESC'); ?></label>
+				<label for="outlook_username" class="cell">
+					<?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info(['textShownInTooltip' => 'ACYM_SMTP_USERNAME_DESC']); ?>
+				</label>
 				<input id="outlook_username"
 					   class="cell"
 					   type="text"
@@ -281,7 +283,7 @@ class plgAcymOutlook extends AcymPlugin
             ];
         }
 
-        $this->config->save($newConfig);
+        $this->config->saveConfig($newConfig);
         acym_config(true);
     }
 
@@ -291,7 +293,7 @@ class plgAcymOutlook extends AcymPlugin
             return;
         }
 
-        $this->config->save(
+        $this->config->saveConfig(
             [
                 'outlook_refresh_token' => '',
                 'outlook_refresh_token_expiration' => '',

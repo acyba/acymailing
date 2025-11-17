@@ -14,29 +14,21 @@ class ScenarioStepClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function save($element)
+    public function save(object $element): ?int
     {
         if (!empty($element->params) && !is_string($element->params)) {
             $element->params = json_encode($element->params);
         }
 
-        $test = $this->getOneById($element->id);
-        $this->forceInsert = empty($test);
+        // The id is a string
+        $scenarioStep = acym_loadObject('SELECT * FROM #__acym_scenario_step WHERE `id` = '.acym_escapeDB($element->id));
+
+        $previousForce = $this->forceInsert;
+        $this->forceInsert = empty($scenarioStep);
         $id = parent::save($element);
-        $this->forceInsert = false;
+        $this->forceInsert = $previousForce;
 
-        return $id;
-    }
-
-    public function getOneById($id)
-    {
-        $scenarioStep = acym_loadObject('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` = '.acym_escapeDB($id));
-
-        if (!empty($scenarioStep->params)) {
-            $scenarioStep->params = json_decode($scenarioStep->params);
-        }
-
-        return $scenarioStep;
+        return (int)$id;
     }
 
     public function getAllByScenarioId(int $scenarioId): array
@@ -59,14 +51,24 @@ class ScenarioStepClass extends AcymClass
         return $steps;
     }
 
-    public function getFirstStepByScenarioId(int $scenarioId)
+    public function getFirstStepByScenarioId(int $scenarioId): ?object
     {
-        return $this->formatStep(acym_loadObject('SELECT * FROM #__acym_scenario_step WHERE previous_id IS NULL AND  scenario_id = '.$scenarioId));
+        $step = acym_loadObject('SELECT * FROM #__acym_scenario_step WHERE previous_id IS NULL AND  scenario_id = '.$scenarioId);
+        if (empty($step)) {
+            return null;
+        }
+
+        return $this->formatStep($step);
     }
 
-    public function getStepByPreviousStepId(string $parentId)
+    public function getStepByPreviousStepId(string $parentId): ?object
     {
-        return $this->formatStep(acym_loadObject('SELECT * FROM #__acym_scenario_step WHERE previous_id = '.acym_escapeDB($parentId)));
+        $step = acym_loadObject('SELECT * FROM #__acym_scenario_step WHERE previous_id = '.acym_escapeDB($parentId));
+        if (empty($step)) {
+            return null;
+        }
+
+        return $this->formatStep($step);
     }
 
     public function getAllStepsToDelete(int $scenarioId, array $stepIdsToKeep): array
@@ -85,24 +87,16 @@ class ScenarioStepClass extends AcymClass
         return acym_loadResultArray($query);
     }
 
-    private function formatStep($step)
+    public function getStepByPreviousConditionId(string $parentId, bool $conditionValid): ?object
     {
+        $conditionValidValue = $conditionValid ? 1 : 0;
+
+        $step = acym_loadObject('SELECT * FROM #__acym_scenario_step WHERE condition_valid = '.$conditionValidValue.' AND previous_id = '.acym_escapeDB($parentId));
         if (empty($step)) {
             return null;
         }
 
-        $step->params = json_decode($step->params, true);
-
-        return $step;
-    }
-
-    public function getStepByPreviousConditionId(string $parentId, bool $conditionValid)
-    {
-        $conditionValidValue = $conditionValid ? 1 : 0;
-
-        $query = 'SELECT * FROM #__acym_scenario_step WHERE condition_valid = '.$conditionValidValue.' AND previous_id = '.acym_escapeDB($parentId);
-
-        return $this->formatStep(acym_loadObject($query));
+        return $this->formatStep($step);
     }
 
     public function getAvailableStepsByDate(string $date): array
@@ -115,7 +109,7 @@ class ScenarioStepClass extends AcymClass
         return array_map([$this, 'formatStep'], acym_loadObjectList($query));
     }
 
-    public function getNumberOfProcessByStepByScenarioId(int $scenarioId)
+    public function getNumberOfProcessByStepByScenarioId(int $scenarioId): array
     {
         $query = 'SELECT scenario_history.scenario_step_id , COUNT(scenario_history.id) AS count
                   FROM #__acym_scenario_step AS scenario_step 
@@ -151,5 +145,12 @@ class ScenarioStepClass extends AcymClass
         }
 
         return $randomString;
+    }
+
+    private function formatStep(object $step): object
+    {
+        $step->params = json_decode($step->params, true);
+
+        return $step;
     }
 }

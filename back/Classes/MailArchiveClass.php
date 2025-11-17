@@ -14,9 +14,9 @@ class MailArchiveClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function save($mailArchiveToSave)
+    public function save(object $element): ?int
     {
-        $mailArchive = clone $mailArchiveToSave;
+        $mailArchive = clone $element;
 
         foreach ($mailArchive as $oneAttribute => $value) {
             if (empty($value) || $oneAttribute === 'settings') {
@@ -31,9 +31,11 @@ class MailArchiveClass extends AcymClass
         return parent::save($mailArchive);
     }
 
-    public function getOneByMailId($mailId)
+    public function getOneByMailId(int $mailId): ?object
     {
-        return acym_loadObject('SELECT * FROM #__acym_mail_archive WHERE `mail_id` = '.intval($mailId));
+        $mailArchive = acym_loadObject('SELECT * FROM #__acym_mail_archive WHERE `mail_id` = '.intval($mailId));
+
+        return empty($mailArchive) ? null : $mailArchive;
     }
 
     public function deleteArchivePeriod(): array

@@ -2,14 +2,14 @@
 
 trait WooCommerceAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $this->declareReminderFilter($conditions);
         $this->declarePurchaseFilter($conditions);
         $this->declareSubscriptionFilter($conditions);
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

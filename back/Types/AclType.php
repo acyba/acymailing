@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymObject;
 
 class AclType extends AcymObject
 {
-    private $groups;
+    private array $groups;
 
     public function __construct()
     {
@@ -26,7 +26,7 @@ class AclType extends AcymObject
         array_unshift($this->groups, $allGroups);
     }
 
-    public function display($page)
+    public function display(string $page): string
     {
         $name = 'acl_'.$page;
 

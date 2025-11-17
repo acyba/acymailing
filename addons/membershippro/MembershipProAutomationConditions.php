@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorInType;
 
 trait MembershipProAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         if (!$this->installed) {
             return;
@@ -85,7 +85,7 @@ trait MembershipProAutomationConditions
         $conditions['user']['membershippro']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

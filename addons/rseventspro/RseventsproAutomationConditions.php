@@ -2,7 +2,7 @@
 
 trait RseventsproAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         acym_loadLanguageFile('com_rseventspro', JPATH_SITE);
 
@@ -68,7 +68,7 @@ trait RseventsproAutomationConditions
         $conditions['user']['rseventspro']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

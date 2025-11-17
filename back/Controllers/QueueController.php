@@ -41,11 +41,9 @@ class QueueController extends AcymController
         }
 
         //we move the next cron task so that we won't have problem with double send process
-        $newcrontime = time() + 120;
-        if ($this->config->get('cron_next') < $newcrontime) {
-            $newValue = new \stdClass();
-            $newValue->cron_next = $newcrontime;
-            $this->config->save($newValue);
+        $newCronTime = time() + 120;
+        if ($this->config->get('cron_next') < $newCronTime) {
+            $this->config->saveConfig(['cron_next' => $newCronTime]);
         }
 
         $mailid = acym_getCID('id');

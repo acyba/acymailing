@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait TheEventsCalendarInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -21,7 +21,7 @@ trait TheEventsCalendarInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -33,7 +33,7 @@ trait TheEventsCalendarInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT post.*, occurrence.start_date, occurrence.start_date_utc, occurrence.end_date, occurrence.end_date_utc 
                 FROM #__tec_occurrences AS occurrence 
@@ -47,7 +47,7 @@ trait TheEventsCalendarInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
         $this->prepareWPCategories('tribe_events_cat');
@@ -141,7 +141,7 @@ trait TheEventsCalendarInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT occurrence.occurrence_id, post.ID, post.post_title, occurrence.start_date, occurrence.start_date_utc ';
         $this->query = 'FROM #__posts AS post ';
@@ -190,13 +190,13 @@ trait TheEventsCalendarInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -255,7 +255,7 @@ trait TheEventsCalendarInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $columnId = empty($tag->version) ? 'post.ID' : 'occurrence.occurrence_id';
         $query = 'SELECT post.*, occurrence.* 

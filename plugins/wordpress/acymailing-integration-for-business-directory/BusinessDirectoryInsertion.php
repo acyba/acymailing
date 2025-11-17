@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait BusinessDirectoryInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -21,7 +21,7 @@ trait BusinessDirectoryInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -29,7 +29,7 @@ trait BusinessDirectoryInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT post.*
                     FROM #__posts AS post
@@ -50,7 +50,7 @@ trait BusinessDirectoryInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
         $this->prepareWPCategories($this->wpCategoryType);
@@ -174,7 +174,7 @@ trait BusinessDirectoryInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT post.ID, post.post_title, post.post_date ';
         $this->query = 'FROM #__posts AS post ';
@@ -217,7 +217,7 @@ trait BusinessDirectoryInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email, $send)
+    public function replaceContent(object &$email): void
     {
         $this->wpbdpFields = acym_loadObjectList('SELECT * FROM #__wpbdp_form_fields WHERE association = "meta" ORDER BY weight DESC');
         foreach ($this->wpbdpFields as $key => $oneField) {
@@ -228,7 +228,7 @@ trait BusinessDirectoryInsertion
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
 
@@ -272,7 +272,7 @@ trait BusinessDirectoryInsertion
         return $this->generateCampaignResult;
     }
 
-    protected function handleOrderBy(&$query, $parameter, $table = null)
+    protected function handleOrderBy(&$query, $parameter, $table = null): void
     {
         if (empty($parameter->order)) return;
 
@@ -294,7 +294,7 @@ trait BusinessDirectoryInsertion
         }
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT post.*
                     FROM #__posts AS post

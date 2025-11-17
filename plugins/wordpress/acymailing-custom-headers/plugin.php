@@ -23,7 +23,7 @@ class plgAcymCustomheaders extends AcymPlugin
         ];
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         if (!method_exists($email, 'addCustomHeader')) return;
 

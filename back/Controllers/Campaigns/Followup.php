@@ -39,8 +39,8 @@ trait Followup
         foreach ($data['allCampaigns'] as $key => $oneFollowup) {
             if (!empty($triggers[$oneFollowup->trigger])) {
                 $oneFollowup->condition = json_decode($oneFollowup->condition, true);
-                $data['allCampaigns'][$key]->condition = $followupClass->getConditionSummary($oneFollowup->condition, $oneFollowup->trigger);
-                $data['allCampaigns'][$key]->mail_ids = $followupClass->getEmailsByIds($oneFollowup->id);
+                $data['allCampaigns'][$key]->condition = $followupClass->getConditionSummary($oneFollowup);
+                $data['allCampaigns'][$key]->mail_ids = $followupClass->getEmailsByIds([$oneFollowup->id]);
             }
         }
     }
@@ -362,7 +362,7 @@ trait Followup
         $data = [
             'workflowHelper' => new WorkflowHelper(),
             'followup' => $followup,
-            'condition' => $followupClass->getConditionSummary($followup->condition, $followup->trigger),
+            'condition' => $followupClass->getConditionSummary($followup),
         ];
 
         $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(

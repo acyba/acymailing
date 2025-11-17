@@ -2,7 +2,7 @@
 
 trait EventsManagerAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $conditions['user']['eventsmanager'] = new stdClass();
         $conditions['user']['eventsmanager']->name = 'Events Manager - Booking';
@@ -78,7 +78,7 @@ trait EventsManagerAutomationConditions
         $conditions['user']['eventsmanager']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

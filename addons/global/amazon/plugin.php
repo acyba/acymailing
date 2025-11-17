@@ -31,7 +31,14 @@ class plgAcymAmazon extends AcymPlugin
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<label for="amazon_host" class="cell shrink">
-                        <?php echo acym_translation('ACYM_AMAZON_SES_SERVER').acym_info(acym_translation('ACYM_AMAZON_SES_SERVER_DESC')); ?>
+                        <?php
+                        echo acym_translation('ACYM_AMAZON_SES_SERVER');
+                        echo acym_info(
+                            [
+                                'textShownInTooltip' => acym_translation('ACYM_AMAZON_SES_SERVER_DESC'),
+                            ]
+                        );
+                        ?>
 					</label>
                     <?php echo $this->getLinks(
                         'https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fportal.aws.amazon.com%2Fbilling%2Fsignup%2Fresume&client_id=signup',

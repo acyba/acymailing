@@ -10,7 +10,7 @@ function acym_getTables(bool $reload = false): array
     return $tables;
 }
 
-function acym_getColumns(string $table, bool $acyTable = true, bool $addPrefix = true)
+function acym_getColumns(string $table, bool $acyTable = true, bool $addPrefix = true): array
 {
     if ($addPrefix) {
         $prefix = $acyTable ? '#__acym_' : '#__';
@@ -22,19 +22,19 @@ function acym_getColumns(string $table, bool $acyTable = true, bool $addPrefix =
         $columns[$table] = acym_loadResultArray('SHOW COLUMNS FROM '.acym_secureDBColumn($table));
     }
 
-    return $columns[$table];
+    return $columns[$table] ?? [];
 }
 
-function acym_secureDBColumn($fieldName)
+function acym_secureDBColumn(string $fieldName): string
 {
-    if (!is_string($fieldName) || preg_match('|[^a-z0-9#_.-]|i', $fieldName) !== 0) {
+    if (preg_match('|[^a-z0-9#_.-]|i', $fieldName) !== 0) {
         die('field, table or database "'.acym_escape($fieldName).'" not secured');
     }
 
     return $fieldName;
 }
 
-function acym_getDatabases()
+function acym_getDatabases(): array
 {
     try {
         $allDatabases = acym_loadResultArray('SHOW DATABASES');
@@ -51,7 +51,7 @@ function acym_getDatabases()
     return $databases;
 }
 
-function acym_addLimit(string &$query, int $limit = 1, ?int $offset = null)
+function acym_addLimit(string &$query, int $limit = 1, ?int $offset = null): void
 {
     if (strpos($query, 'LIMIT ') !== false) {
         return;

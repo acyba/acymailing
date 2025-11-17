@@ -83,7 +83,11 @@ trait Listing
     // When one of the raw of the listing is moved we set the ordering
     public function ajaxSetOrdering(): void
     {
-        $order = json_decode(acym_getVar('string', 'order'));
+        $order = json_decode(acym_getVar('string', 'order'), true);
+        if (empty($order)) {
+            $order = [];
+        }
+
         $i = 1;
         $error = false;
         foreach ($order as $rule) {
@@ -209,7 +213,7 @@ trait Listing
 
     public function delete(): void
     {
-        $rulesSelected = acym_getVar('array', 'elements_checked');
+        $rulesSelected = acym_getVar('array', 'elements_checked', []);
 
         if (in_array(RuleClass::FINAL_RULE_ID, $rulesSelected)) {
             acym_enqueueMessage(acym_translation('ACYM_CANNOT_DELETE_FINAL_RULE'), 'error');
@@ -228,7 +232,7 @@ trait Listing
 
     public function setInactive(): void
     {
-        $rulesSelected = acym_getVar('array', 'elements_checked');
+        $rulesSelected = acym_getVar('array', 'elements_checked', []);
         $ruleClass = new RuleClass();
         $ruleClass->setInactive($rulesSelected);
 
@@ -237,7 +241,7 @@ trait Listing
 
     public function setActive(): void
     {
-        $rulesSelected = acym_getVar('array', 'elements_checked');
+        $rulesSelected = acym_getVar('array', 'elements_checked', []);
         $ruleClass = new RuleClass();
         $ruleClass->setActive($rulesSelected);
 

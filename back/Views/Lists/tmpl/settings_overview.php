@@ -9,41 +9,88 @@
 		<div class="cell small-10 align-center acym_vcenter acym__list__settings__subscriber__nb__display grid-x">
 			<div class="cell grid-x">
                 <?php
-                $linkType = acym_isAdmin() ? 'a' : 'span';
                 $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub');
                 ?>
 				<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
-					<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['sendable_users']; ?>&nbsp;</<?php echo $linkType; ?>>
+                    <?php
+                    if (acym_isAdmin()) {
+                        echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['sendable_users'].'</a>';
+                    } else {
+                        echo '<span class="acym__color__blue">'.$data['listInformation']->subscribers['sendable_users'].'</span>';
+                    }
+                    ?>
 				</div>
 				<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
-					<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_SUBSCRIBED'); ?></<?php echo $linkType; ?>>
+                    <?php
+                    if (acym_isAdmin()) {
+                        echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_SUBSCRIBED').'</a>';
+                    } else {
+                        echo '<span>'.acym_translation('ACYM_SUBSCRIBED').'</span>';
+                    }
+                    ?>
 				</div>
                 <?php
                 if ($this->config->get('require_confirmation', 1) == 1) {
                     $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=unconfirmed');
                     ?>
 					<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
-						<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['unconfirmed_users']; ?>&nbsp;</<?php echo $linkType; ?>>
+                        <?php
+                        if (acym_isAdmin()) {
+                            echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['unconfirmed_users'].'</a>';
+                        } else {
+                            echo '<span class="acym__color__blue">'.$data['listInformation']->subscribers['unconfirmed_users'].'</span>';
+                        }
+                        ?>
 					</div>
 					<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
-						<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_NOT_CONFIRMED'); ?></<?php echo $linkType; ?>>
+                        <?php
+                        if (acym_isAdmin()) {
+                            echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_NOT_CONFIRMED').'</a>';
+                        } else {
+                            echo '<span>'.acym_translation('ACYM_NOT_CONFIRMED').'</span>';
+                        }
+                        ?>
 					</div>
                     <?php
                 }
                 $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=inactive');
                 ?>
 				<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
-					<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['inactive_users']; ?>&nbsp;</<?php echo $linkType; ?>>
+                    <?php
+                    if (acym_isAdmin()) {
+                        echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['inactive_users'].'</a>';
+                    } else {
+                        echo '<span class="acym__color__blue">'.$data['listInformation']->subscribers['inactive_users'].'</span>';
+                    }
+                    ?>
 				</div>
 				<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
-					<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_INACTIVE'); ?></<?php echo $linkType; ?>>
+                    <?php
+                    if (acym_isAdmin()) {
+                        echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_INACTIVE').'</a>';
+                    } else {
+                        echo '<span>'.acym_translation('ACYM_INACTIVE').'</span>';
+                    }
+                    ?>
 				</div>
                 <?php $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=unsub'); ?>
 				<div class="cell small-4 text-right">
-					<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['unsubscribed_users']; ?>&nbsp;</<?php echo $linkType; ?>>
+                    <?php
+                    if (acym_isAdmin()) {
+                        echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['unsubscribed_users'].'</a>';
+                    } else {
+                        echo '<span class="acym__color__blue">'.$data['listInformation']->subscribers['unsubscribed_users'].'</span>';
+                    }
+                    ?>
 				</div>
 				<div class="cell small-8 text-left">
-					<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_UNSUBSCRIBED'); ?></<?php echo $linkType; ?>>
+                    <?php
+                    if (acym_isAdmin()) {
+                        echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_UNSUBSCRIBED').'</a>';
+                    } else {
+                        echo '<span>'.acym_translation('ACYM_UNSUBSCRIBED').'</span>';
+                    }
+                    ?>
 				</div>
 			</div>
 		</div>
@@ -51,13 +98,13 @@
 	<div class="cell grid-y medium-4 acym__list__settings__tmpls__welcome">
 		<div class="cell small-2 acym__list__settings__tmpls__title align-center acym_vcenter">
             <?php
-			echo acym_tooltip(
+            echo acym_tooltip(
                 [
-					'hoveredText' => '<label>'.acym_translation('ACYM_WELCOME_MAIL').'</label>',
-                	'textShownInTooltip' => '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_WELCOME_MAIL_DESC')
-				]
+                    'hoveredText' => '<label>'.acym_translation('ACYM_WELCOME_MAIL').'</label>',
+                    'textShownInTooltip' => '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_WELCOME_MAIL_DESC'),
+                ]
             );
-			?>
+            ?>
 			<i class="acymicon-email margin-left-1"></i>
 		</div>
 		<div class="cell grid-x acym__template__block align-center acym_vcenter small-10 acym__list__button__add__mail">
@@ -65,16 +112,16 @@
             if (!acym_isAllowed('mails')) {
                 echo acym_tooltip(
                     [
-						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                    	'textShownInTooltip' => acym_translation('ACYM_UNAUTHORIZED_ACCESS')
-					]
+                        'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                        'textShownInTooltip' => acym_translation('ACYM_UNAUTHORIZED_ACCESS'),
+                    ]
                 );
             } elseif (empty($data['listInformation']->id)) {
                 echo acym_tooltip(
                     [
-						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                	    'textShownInTooltip' => acym_translation('ACYM_SAVE_LIST_FIRST')
-					]
+                        'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                        'textShownInTooltip' => acym_translation('ACYM_SAVE_LIST_FIRST'),
+                    ]
                 );
             } elseif (empty($data['listInformation']->welcome_id)) { ?>
 				<a class="acym_vcenter text-center align-center acym__color__white acym__list__button__add__mail__welcome__unsub"
@@ -94,7 +141,7 @@
 							</div>
 							<div class="acym__listing__block__delete__action">
 								<div class="acym__icon acym__listing__block__delete__submit acy_button_submit"
-								 	data-task="unsetWelcome">
+									 data-task="unsetWelcome">
 									<i class="acymicon-delete"></i>
 								</div>
 								<div class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
@@ -108,7 +155,7 @@
 					<a href="<?php echo $data['tmpls']['welcomeTmplUrl']; ?>">
 						<div class="cell grid-x text-center">
 							<div class="cell acym__templates__pic text-center">
-								<img src="<?php echo acym_getMailThumbnail($data['tmpls']['welcome']->thumbnail); ?>"
+								<img src="<?php echo acym_escapeUrl(acym_getMailThumbnail($data['tmpls']['welcome']->thumbnail)); ?>"
 									 alt="<?php echo acym_escape($data['tmpls']['welcome']->name); ?>" />
 							</div>
 							<div class="cell grid-x text-center acym__templates__footer">
@@ -124,9 +171,9 @@
 		<div class="cell small-2 acym__list__settings__tmpls__title align-center acym_vcenter">
             <?php echo acym_tooltip(
                 [
-					'hoveredText' => '<label>'.acym_translation('ACYM_UNSUBSCRIBE_MAIL').'</label>',
-                	'textShownInTooltip' => '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_UNSUBSCRIBE_MAIL_DESC')
-				]
+                    'hoveredText' => '<label>'.acym_translation('ACYM_UNSUBSCRIBE_MAIL').'</label>',
+                    'textShownInTooltip' => '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_UNSUBSCRIBE_MAIL_DESC'),
+                ]
             ); ?>
 			<i class="acymicon-email margin-left-1"></i>
 		</div>
@@ -135,16 +182,16 @@
             if (!acym_isAllowed('mails')) {
                 echo acym_tooltip(
                     [
-						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                    	'textShownInTooltip' => acym_translation('ACYM_UNAUTHORIZED_ACCESS')
-					]
+                        'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                        'textShownInTooltip' => acym_translation('ACYM_UNAUTHORIZED_ACCESS'),
+                    ]
                 );
             } elseif (empty($data['listInformation']->id)) {
                 echo acym_tooltip(
                     [
-						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                    	'textShownInTooltip' => acym_translation('ACYM_SAVE_LIST_FIRST')
-					]
+                        'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                        'textShownInTooltip' => acym_translation('ACYM_SAVE_LIST_FIRST'),
+                    ]
                 );
             } elseif (empty($data['listInformation']->unsubscribe_id)) { ?>
 				<a class="acym_vcenter text-center align-center acym__color__white acym__list__button__add__mail__welcome__unsub"
@@ -163,7 +210,7 @@
 							</div>
 							<div class="acym__listing__block__delete__action">
 								<div class="acym__icon acym__listing__block__delete__submit acy_button_submit"
-								 	data-task="unsetUnsubscribe">
+									 data-task="unsetUnsubscribe">
 									<i class="acymicon-delete"></i>
 								</div>
 								<div class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
@@ -177,7 +224,7 @@
 					<a href="<?php echo $data['tmpls']['unsubTmplUrl']; ?>">
 						<div class="cell grid-x text-center">
 							<div class="cell acym__templates__pic text-center">
-								<img src="<?php echo acym_getMailThumbnail($data['tmpls']['unsubscribe']->thumbnail); ?>"
+								<img src="<?php echo acym_escapeUrl(acym_getMailThumbnail($data['tmpls']['unsubscribe']->thumbnail)); ?>"
 									 alt="<?php echo acym_escape($data['tmpls']['unsubscribe']->name); ?>" />
 							</div>
 							<div class="cell grid-x text-center acym__templates__footer">

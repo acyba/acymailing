@@ -9,7 +9,8 @@ use AcyMailing\Core\AcymClass;
 
 class UserClass extends AcymClass
 {
-    const RESTRICTED_FIELDS = [
+    public const STATUS_SUBSCRIBED = 1;
+    private const RESTRICTED_FIELDS = [
         'id',
         'key',
         'confirmed',
@@ -71,11 +72,13 @@ class UserClass extends AcymClass
         $this->handleSegmentFilter($settings, $filters, $query, $queryCount, $queryStatus);
         $this->handleSubscriptionFilter($settings, $filters, $query, $queryCount, $queryStatus);
         $this->handleFrontend($settings, $query, $queryCount, $queryStatus);
-        $this->handleSearchFilter($settings, $query, $queryCount, $queryStatus, $filters);
-        $results['status'] = $this->handleUserStatusFilter($settings, $queryStatus, $filters);
+        $this->handleSearchFilter($settings, $filters, $query, $queryCount, $queryStatus);
+        $results['status'] = $this->handleUserStatusFilter($settings, $filters, $queryStatus);
         $entityResult = $this->handleEntitySelect($settings, $filters);
 
-        if (!empty($entityResult)) return $entityResult;
+        if (!empty($entityResult)) {
+            return $entityResult;
+        }
 
         if (!empty($filters)) {
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
@@ -130,9 +133,11 @@ class UserClass extends AcymClass
         return $results;
     }
 
-    private function handleSubscriptionFilter($settings, &$filters, &$query, &$queryCount, &$queryStatus)
+    private function handleSubscriptionFilter(array $settings, array &$filters, string &$query, string &$queryCount, string &$queryStatus): void
     {
-        if (empty($settings['list'])) return;
+        if (empty($settings['list'])) {
+            return;
+        }
 
         $listJoin = ' JOIN #__acym_user_has_list AS list ON user.id = list.user_id AND list.list_id = '.intval($settings['list']).' ';
 
@@ -148,11 +153,13 @@ class UserClass extends AcymClass
         $queryStatus .= $listJoin;
     }
 
-    private function handleFrontend($settings, &$query, &$queryCount, &$queryStatus)
+    private function handleFrontend(array $settings, string &$query, string &$queryCount, string &$queryStatus): void
     {
         if (!acym_isAdmin()) {
             $settings['creator_id'] = acym_currentUserId();
-            if (empty($settings['creator_id'])) $settings['creator_id'] = '-1';
+            if (empty($settings['creator_id'])) {
+                $settings['creator_id'] = '-1';
+            }
         }
 
         if (!empty($settings['creator_id'])) {
@@ -168,7 +175,7 @@ class UserClass extends AcymClass
         }
     }
 
-    private function handleSearchFilter($settings, &$query, &$queryCount, &$queryStatus, &$filters)
+    private function handleSearchFilter(array $settings, array &$filters, string &$query, string &$queryCount, string &$queryStatus): void
     {
         if (empty($settings['search'])) return;
 
@@ -211,7 +218,7 @@ class UserClass extends AcymClass
         $filters[] = $searchFilter;
     }
 
-    private function handleUserStatusFilter($settings, $queryStatus, &$filters)
+    private function handleUserStatusFilter(array $settings, array &$filters, string $queryStatus): array
     {
         if (!empty($filters)) {
             $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';
@@ -246,7 +253,7 @@ class UserClass extends AcymClass
         ];
     }
 
-    private function handleEntitySelect($settings, &$filters)
+    private function handleEntitySelect(array $settings, array &$filters): ?array
     {
         if (isset($settings['hiddenElements'])) {
             if (empty($settings['hiddenElements'])) {
@@ -279,7 +286,7 @@ class UserClass extends AcymClass
         return null;
     }
 
-    private function handleSegmentFilter($settings, &$filters, &$query, &$queryCount, &$queryStatus)
+    private function handleSegmentFilter(array $settings, array &$filters, string &$query, string &$queryCount, string &$queryStatus): void
     {
         if (!array_key_exists('segment', $settings)) return;
         if ($settings['segment'] == 0) return;
@@ -318,7 +325,7 @@ class UserClass extends AcymClass
         $queryStatus .= $join;
     }
 
-    public function getJoinForQuery($joinType)
+    public function getJoinForQuery(string $joinType): string
     {
         if (strpos($joinType, 'join_list') !== false) {
             $listId = explode('-', $joinType);
@@ -329,37 +336,43 @@ class UserClass extends AcymClass
         return '';
     }
 
-    /**
-     * @param ?int $id
-     *
-     * @return object
-     */
-    public function getOneByCMSId(?int $id)
+    public function getOneByCMSId(?int $id): ?object
     {
-        $query = 'SELECT * FROM #__acym_user WHERE cms_id = '.intval($id);
+        if (empty($id)) {
+            return null;
+        }
 
-        return acym_loadObject($query);
+        $user = acym_loadObject('SELECT * FROM #__acym_user WHERE cms_id = '.intval($id));
+
+        return empty($user) ? null : $user;
     }
 
-    /**
-     * @param ?string $email
-     *
-     * @return object
-     */
-    public function getOneByEmail(?string $email)
+    public function getOneByEmail(?string $email, bool $autoAdd = false): ?object
     {
-        $query = 'SELECT * FROM #__acym_user WHERE email = '.acym_escapeDB($email);
+        if (!acym_isValidEmail($email)) {
+            return null;
+        }
 
-        return acym_loadObject($query);
+        $user = acym_loadObject('SELECT * FROM #__acym_user WHERE email = '.acym_escapeDB($email));
+
+        if (empty($user) && $autoAdd) {
+            $newUser = new \stdClass();
+            $newUser->email = $email;
+            $this->sendConf = false;
+            $this->checkVisitor = false;
+
+            $userId = $this->save($newUser);
+            if (empty($userId)) {
+                return null;
+            }
+
+            $user = $this->getOneById($userId);
+        }
+
+        return empty($user) ? null : $user;
     }
 
-    /**
-     * @param string $column
-     * @param string $value
-     *
-     * @return array
-     */
-    public function getByColumnValue($column, $value)
+    public function getByColumnValue(string $column, string $value): array
     {
         $userColumns = acym_getColumns('user');
         if (!in_array($column, $userColumns)) return [];
@@ -369,31 +382,19 @@ class UserClass extends AcymClass
         return acym_loadObjectList($query, $this->pkey);
     }
 
-    /**
-     * Get the subscription of one user
-     *
-     * @param int     $userId
-     * @param string  $key
-     * @param boolean $includeManagement
-     * @param boolean $visible
-     * @param boolean $needTranslation
-     * @param boolean $sortBySubscription
-     *
-     * @return array
-     */
     public function getUserSubscriptionById(
-        $userId,
-        $key = 'id',
-        $includeManagement = false,
-        $visible = false,
-        $needTranslation = false,
-        $sortBySubscription = false,
-        $mailId = 0,
-        $campaignOnly = false
-    ) {
+        int    $userId,
+        string $key = 'id',
+        bool   $includeManagement = false,
+        bool   $visible = false,
+        bool   $needTranslation = false,
+        bool   $sortBySubscription = false,
+        int    $mailId = 0,
+        bool   $campaignOnly = false
+    ): array {
         $mailType = null;
         if (!empty($mailId)) {
-            $mailType = acym_loadResult('SELECT type FROM #__acym_mail WHERE id = '.intval($mailId));
+            $mailType = (new MailClass())->getMailType(intval($mailId));
         }
 
         $query = 'SELECT list.id, list.translation, list.name, list.display_name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
@@ -433,7 +434,7 @@ class UserClass extends AcymClass
         return $lists;
     }
 
-    public function getUserStandardListIdById(int $userId)
+    public function getUserStandardListIdById(int $userId): array
     {
         $query = 'SELECT list.id FROM #__acym_list AS list 
 	              JOIN #__acym_user_has_list AS user_list ON list.id = user_list.list_id AND user_list.status = 1 AND user_list.user_id = '.$userId.' 
@@ -442,16 +443,7 @@ class UserClass extends AcymClass
         return acym_loadResultArray($query);
     }
 
-    /**
-     * Get the subscription of one user
-     *
-     * @param int     $userId
-     * @param string  $key
-     * @param boolean $needTranslation
-     *
-     * @return array
-     */
-    public function getAllListsUserSubscriptionById($userId, $key = 'id', $needTranslation = false)
+    public function getAllListsUserSubscriptionById(int $userId, string $key = 'id', bool $needTranslation = false): array
     {
         $query = 'SELECT list.id, list.translation, list.name, list.color, list.active, list.visible, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
@@ -469,21 +461,13 @@ class UserClass extends AcymClass
         return $lists;
     }
 
-    /**
-     * Get the subscriptions of users by user id
-     *
-     * @param $usersId
-     * @param $creatorId
-     *
-     * @return array
-     */
-    public function getUsersSubscriptionsByIds($usersId, $creatorId = 0)
+    public function getUsersSubscriptionsByIds(array $userIds, int $creatorId = 0): array
     {
         $query = 'SELECT `list`.`id`, `list`.`color`, `list`.`name`, `userlist`.`user_id`, `userlist`.`status`
                 FROM #__acym_list AS `list`
                 JOIN #__acym_user_has_list AS `userlist` 
                     ON `list`.`id` = `userlist`.`list_id`
-                WHERE `userlist`.`user_id` IN ('.implode(',', $usersId).')
+                WHERE `userlist`.`user_id` IN ('.implode(',', $userIds).')
                     AND `list`.`type` = '.acym_escapeDB(ListClass::LIST_TYPE_STANDARD);
 
         if (!empty($creatorId)) {
@@ -503,7 +487,7 @@ class UserClass extends AcymClass
         return empty($numberOfUsers) ? 0 : $numberOfUsers;
     }
 
-    public function getSubscriptionStatus($userId, $listIds = [], $wantedStatus = null)
+    public function getSubscriptionStatus(int $userId, array $listIds = [], ?int $wantedStatus = null): array
     {
         $query = 'SELECT status, list_id
                     FROM #__acym_user_has_list  
@@ -525,9 +509,9 @@ class UserClass extends AcymClass
      *
      * @param bool $onlyValue only return the user, don't display errors
      *
-     * @return mixed the identified user or false
+     * @return ?object the identified user or null if not found
      */
-    public function identify(bool $onlyValue = false, $idName = null, $keyName = null)
+    public function identify(bool $onlyValue = false, ?string $idName = null, ?string $keyName = null): ?object
     {
         $id = acym_getVar('int', empty($idName) ? 'id' : $idName, 0);
         $key = acym_getVar('string', empty($keyName) ? 'key' : $keyName, '');
@@ -548,7 +532,7 @@ class UserClass extends AcymClass
                 acym_enqueueMessage(acym_translation('ACYM_LOGIN'), 'error');
             }
 
-            return false;
+            return null;
         }
 
         $userIdentified = acym_loadObject('SELECT * FROM #__acym_user WHERE `id` = '.intval($id).' AND `key` = '.acym_escapeDB($key));
@@ -561,21 +545,18 @@ class UserClass extends AcymClass
             acym_enqueueMessage(acym_translation('ACYM_USER_NOT_FOUND'), 'error');
         }
 
-        return false;
+        return null;
     }
 
-    public function subscribe($userIds, $addLists, bool $trigger = true, bool $forceFront = false): bool
+    public function subscribe(array $userIds, array $addLists, bool $trigger = true, bool $forceFront = false): bool
     {
         if (empty($addLists)) {
             return false;
         }
 
+        //TODO was previously shown as an int in the dev documentation, hence not adding the type yet
         if (!is_array($userIds)) {
             $userIds = [$userIds];
-        }
-
-        if (!is_array($addLists)) {
-            $addLists = [$addLists];
         }
 
         $listClass = new ListClass();
@@ -651,7 +632,7 @@ class UserClass extends AcymClass
         return $subscribedToLists;
     }
 
-    private function registerUnsubUser($userIds)
+    private function registerUnsubUser(array $userIds): void
     {
         $mailId = acym_getVar('int', 'mail_id', 0);
         if (empty($mailId)) return;
@@ -666,33 +647,35 @@ class UserClass extends AcymClass
             // We didn't send this email to this user, something is wrong
             if (empty($userStat)) continue;
 
-            $newUserStat = [
-                'mail_id' => $mailId,
-                'user_id' => $id,
-                'unsubscribe' => empty($userStat->unsubscribe) ? 1 : $userStat->unsubscribe + 1,
-            ];
+            $newUserStat = new \stdClass();
+            $newUserStat->mail_id = $mailId;
+            $newUserStat->user_id = $id;
+            $newUserStat->unsubscribe = empty($userStat->unsubscribe) ? 1 : $userStat->unsubscribe + 1;
 
-            if (empty($userStat->unsubscribe)) $countUnsubscribe++;
+            if (empty($userStat->unsubscribe)) {
+                $countUnsubscribe++;
+            }
 
             $userStatClass->save($newUserStat);
         }
 
-        $mailStat = [
-            'mail_id' => $mailId,
-            'unsubscribe_total' => $countUnsubscribe,
-        ];
+        $mailStat = new \stdClass();
+        $mailStat->mail_id = $mailId;
+        $mailStat->unsubscribe_total = $countUnsubscribe;
 
         $mailStatClass->save($mailStat);
     }
 
-    public function unsubscribe($userIds, $lists): bool
+    public function unsubscribe($userIds, array $lists): bool
     {
         if (empty($lists)) {
             return false;
         }
 
-        if (!is_array($userIds)) $userIds = [$userIds];
-        if (!is_array($lists)) $lists = [$lists];
+        //TODO was previously shown as an int in the dev documentation, hence not adding the type yet
+        if (!is_array($userIds)) {
+            $userIds = [$userIds];
+        }
 
         $listClass = new ListClass();
         $unsubscribedFromLists = false;
@@ -790,44 +773,37 @@ class UserClass extends AcymClass
         return $unsubscribedFromLists;
     }
 
-    public function unsubscribeOnSubscriptions($userId, $listIds): bool
+    public function unsubscribeOnSubscriptions(int $userId, array $listIds): bool
     {
         if (empty($listIds)) {
             return false;
         }
 
-        if (!is_array($listIds)) {
-            $listIds = [$listIds];
-        }
         acym_arrayToInteger($listIds);
 
         $subscribedLists = acym_loadResultArray('SELECT list_id FROM #__acym_user_has_list WHERE user_id = '.intval($userId).' AND list_id IN ('.implode(',', $listIds).')');
 
-        if (!empty($subscribedLists)) $this->unsubscribe($userId, $subscribedLists);
+        if (!empty($subscribedLists)) $this->unsubscribe([$userId], $subscribedLists);
 
         return true;
     }
 
-    public function removeSubscription($userIds, $listIds = [])
+    public function removeSubscription(array $userIds, array $listIds = []): void
     {
-        if (!is_array($userIds)) {
-            $userIds = [$userIds];
-        }
-
-        if (!is_array($listIds) || empty($listIds) || empty($userIds)) {
-            return false;
+        if (empty($listIds) || empty($userIds)) {
+            return;
         }
 
         acym_arrayToInteger($listIds);
 
-        return acym_query(
+        acym_query(
             'DELETE FROM #__acym_user_has_list 
             WHERE user_id IN ('.implode(',', $userIds).') 
                 AND list_id IN ('.implode(',', $listIds).')'
         );
     }
 
-    public function onlyManageableUsers(&$elements)
+    public function onlyManageableUsers(array &$elements): void
     {
         if (acym_isAdmin()) {
             return;
@@ -856,12 +832,8 @@ class UserClass extends AcymClass
         }
     }
 
-    public function delete($elements, $forceDelete = false)
+    public function delete(array $elements, bool $forceDelete = false): int
     {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-
         acym_arrayToInteger($elements);
         $this->onlyManageableUsers($elements);
 
@@ -905,10 +877,10 @@ class UserClass extends AcymClass
         }
     }
 
-    public function save($user, $customFields = [], $ajax = false)
+    public function save(object $user, array $customFields = [], bool $ajax = false): ?int
     {
         if (empty($user->email) && empty($user->id)) {
-            return false;
+            return null;
         }
 
         if (isset($user->email)) {
@@ -916,7 +888,7 @@ class UserClass extends AcymClass
             if (!acym_isValidEmail($user->email)) {
                 $this->errors[] = acym_translation('ACYM_VALID_EMAIL');
 
-                return false;
+                return null;
             }
         }
 
@@ -947,7 +919,7 @@ class UserClass extends AcymClass
                 //We don't accept the subscription as either the user is not logged in or it's not the good one
                 $this->errors[] = acym_translation('ACYM_ONLY_LOGGED');
 
-                return false;
+                return null;
             }
 
             if (empty($user->name) && $this->config->get('generate_name', 1)) {
@@ -1022,7 +994,7 @@ class UserClass extends AcymClass
                         }
                     }
 
-                    return false;
+                    return null;
                 }
             }
         } else {
@@ -1077,7 +1049,7 @@ class UserClass extends AcymClass
         return $userID;
     }
 
-    public function saveForm($ajax = false)
+    public function saveForm(bool $ajax = false): bool
     {
         $allowUserModifications = (bool)($this->config->get('allow_modif', 'data') == 'all') || $this->allowModif;
         $allowSubscriptionModifications = (bool)($this->config->get('allow_modif', 'data') != 'none') || $this->allowModif;
@@ -1210,7 +1182,7 @@ class UserClass extends AcymClass
             }
         }
 
-        $this->subscribed = $this->subscribe($id, $addLists);
+        $this->subscribed = $this->subscribe([$id], $addLists);
 
         if (!$fromProfile) $this->sendNotification($id, 'acy_notification_subform');
 
@@ -1219,12 +1191,12 @@ class UserClass extends AcymClass
             $this->newUser ? 'acy_notification_create' : 'acy_notification_profile'
         );
 
-        if (!$this->newUser) $this->unsubscribe($id, $unsubLists);
+        if (!$this->newUser) $this->unsubscribe([$id], $unsubLists);
 
         return true;
     }
 
-    public function sendConfirmation($userID)
+    public function sendConfirmation(int $userID): void
     {
         if (!$this->forceConf && !$this->sendConf) {
             return;
@@ -1246,16 +1218,16 @@ class UserClass extends AcymClass
         //TODO $mailerHelper->addParam('user:subscription', implode('<br/>', $subscription));
         $mailClass = new MailClass();
         $confirmationEmail = $mailClass->getOneByName('acy_confirm');
-        $this->confirmationSentSuccess = !empty($confirmationEmail) && $mailerHelper->sendOne($confirmationEmail->id, $myUser);
+        $this->confirmationSentSuccess = !empty($confirmationEmail) && $mailerHelper->sendOne($confirmationEmail->id, $myUser->id);
         $this->confirmationSentError = $mailerHelper->reportMessage;
     }
 
-    public function deactivate($userId)
+    public function deactivate(int $userId): void
     {
         acym_query('UPDATE `#__acym_user` SET `active` = 0 WHERE `id` = '.intval($userId));
     }
 
-    public function confirm($userId)
+    public function confirm(int $userId): void
     {
         $user = $this->getOneById($userId);
         if (empty($user)) return;
@@ -1296,7 +1268,7 @@ class UserClass extends AcymClass
         $listClass->sendWelcome($userId, $listIDs);
     }
 
-    public function getOneByIdWithCustomFields($id): array
+    public function getOneByIdWithCustomFields(int $id): array
     {
         $user = $this->getOneById($id);
         if (empty($user)) {
@@ -1320,49 +1292,7 @@ class UserClass extends AcymClass
         return array_merge($user, $fieldsValue);
     }
 
-    /**
-     * @param $column
-     * @param $value
-     *
-     * @return array
-     */
-    public function getOneWithCustomFields($column, $value): array
-    {
-        switch ($column) {
-            case 'id':
-                $user = $this->getOneById($value);
-                break;
-            case 'email':
-                $user = $this->getOneByEmail($value);
-                break;
-            case 'cms_id':
-                $user = $this->getOneByCMSId($value);
-                break;
-            default:
-                return [];
-        }
-
-        if (empty($user)) {
-            return [];
-        }
-        $user = get_object_vars($user);
-
-        $fieldsValue = acym_loadObjectList(
-            'SELECT user_field.`value`, field.`name` 
-            FROM #__acym_user_has_field AS `user_field` 
-            LEFT JOIN #__acym_field AS `field` ON user_field.`field_id` = field.`id` 
-            WHERE user_field.`user_id` = '.intval($user['id']),
-            'name'
-        );
-
-        foreach ($fieldsValue as $key => $value) {
-            $fieldsValue[$key] = $value->value;
-        }
-
-        return array_merge($user, $fieldsValue);
-    }
-
-    public function getCustomFieldValueById($id)
+    public function getCustomFieldValueById(int $id): array
     {
         $fieldsValue = acym_loadObjectList(
             'SELECT user_field.value AS value, field.name AS name, field.type AS type, field.value AS field_params, field.id AS id
@@ -1392,7 +1322,7 @@ class UserClass extends AcymClass
         return $fieldReturn;
     }
 
-    public function getAllColumnsUserAndCustomField($inAction = false, $withSubInfos = false): array
+    public function getAllColumnsUserAndCustomField(bool $inAction = false, bool $withSubInfos = false): array
     {
         $return = [];
 
@@ -1432,9 +1362,12 @@ class UserClass extends AcymClass
         return $return;
     }
 
-    public function getAllUserFields($user)
+    public function getAllUserFields(object $user): object
     {
-        if (empty($user->id)) return $user;
+        if (empty($user->id)) {
+            return $user;
+        }
+
         $query = 'SELECT field.*, field.value AS field_value, userfield.* 
                     FROM #__acym_field AS field 
                     LEFT JOIN #__acym_user_has_field AS userfield ON field.id = userfield.field_id AND userfield.user_id = '.intval($user->id).' 
@@ -1480,12 +1413,12 @@ class UserClass extends AcymClass
         return $user;
     }
 
-    public function getAllSimpleData()
+    public function getAllSimpleData(): array
     {
         return acym_loadObjectList('SELECT email, name FROM #__acym_user');
     }
 
-    public function synchSaveCmsUser($user, $isnew, $oldUser = null)
+    public function synchSaveCmsUser(array $user, bool $isnew, ?array $oldUser = null): void
     {
         // If the source is not already defined, we define it here
         $source = acym_getVar('string', 'acy_source', '');
@@ -1528,7 +1461,7 @@ class UserClass extends AcymClass
                 $cmsUser->id = $acyUser->id;
             } elseif ($cmsUser->id != $acyUser->id) {
                 // And has a different id, delete it
-                $this->delete($acyUser->id);
+                $this->delete([$acyUser->id]);
             }
         } else {
             $cmsUser->source = $source;
@@ -1574,7 +1507,7 @@ class UserClass extends AcymClass
                 if ($oneSubscription->status == 1) $currentlySubscribedLists[] = $oneSubscription->list_id;
             }
             $unsubscribeLists = array_intersect($currentlySubscribedLists, array_diff($visibleLists, $visibleListsChecked));
-            $this->unsubscribe($id, $unsubscribeLists);
+            $this->unsubscribe([$id], $unsubscribeLists);
         }
 
         // Handle the subscription
@@ -1594,7 +1527,7 @@ class UserClass extends AcymClass
             }
         }
 
-        if (!empty($listsToSubscribe)) $this->subscribe($id, $listsToSubscribe);
+        if (!empty($listsToSubscribe)) $this->subscribe([$id], $listsToSubscribe);
 
         if ($isnew) $this->sendNotification($id, 'acy_notification_create');
 
@@ -1618,14 +1551,14 @@ class UserClass extends AcymClass
         }
     }
 
-    public function synchDeleteCmsUser($userEmail)
+    public function synchDeleteCmsUser(string $userEmail): void
     {
         $acyUser = $this->getOneByEmail($userEmail);
 
         if (empty($acyUser)) return;
 
         if ($this->config->get('regacy', '0') == 1 && $this->config->get('regacy_delete', '0') == 1) {
-            $this->delete($acyUser->id);
+            $this->delete([$acyUser->id]);
         } else {
             acym_query('UPDATE #__acym_user SET `cms_id` = 0 WHERE `id` = '.intval($acyUser->id));
         }
@@ -1633,19 +1566,15 @@ class UserClass extends AcymClass
 
     /**
      * Search users via partial email address
-     *
-     * @param $pattern String part of the email
-     *
-     * @return array|mixed
      */
-    public function getUsersLikeEmail($pattern)
+    public function getUsersLikeEmail(string $search): array
     {
-        $query = 'SELECT id, email FROM #__acym_user WHERE email LIKE '.acym_escapeDB('%'.$pattern.'%');
+        $query = 'SELECT id, email FROM #__acym_user WHERE email LIKE '.acym_escapeDB('%'.$search.'%');
 
         return acym_loadObjectList($query);
     }
 
-    public function sendNotification($userId, string $notification, array $params = [])
+    public function sendNotification(int $userId, string $notification, array $params = []): void
     {
         if (empty($userId) || $this->blockNotifications) return;
 
@@ -1657,7 +1586,7 @@ class UserClass extends AcymClass
         $mailerHelper->autoAddUser = true;
 
         $user = $this->getOneById($userId);
-        $userField = $this->getAllUserFields($user);
+        $userField = empty($user) ? null : $this->getAllUserFields($user);
         if (!empty($userField)) {
             foreach ($userField as $map => $value) {
                 $mailerHelper->addParam('user:'.$map, $value);
@@ -1692,12 +1621,13 @@ class UserClass extends AcymClass
 
             $notificationEmail = $mailClass->getOneByName($notification);
             if (!empty($notificationEmail)) {
+                //TODO pass user id instead of email
                 $mailerHelper->sendOne($notificationEmail->id, $oneUser);
             }
         }
     }
 
-    public function getMailHistory($userId)
+    public function getMailHistory(int $userId)
     {
         $query = 'SELECT user_stat.*, mail.id, mail.subject, SUM(url_click.click) as click FROM #__acym_user_stat AS user_stat
                   JOIN #__acym_mail AS mail ON mail.id = user_stat.mail_id
@@ -1710,11 +1640,11 @@ class UserClass extends AcymClass
         return $mailClass->decode($mailHistory);
     }
 
-    public function deleteHistoryPeriod()
+    public function deleteHistoryPeriod(): array
     {
-        if (empty($this->config->get('delete_user_history_enabled', 0))) return;
+        if (empty($this->config->get('delete_user_history_enabled', 0))) return [];
         $deleteOverSecond = $this->config->get('delete_user_history', 0);
-        if (empty($deleteOverSecond)) return;
+        if (empty($deleteOverSecond)) return [];
         $date = time() - $deleteOverSecond;
 
         $query = 'DELETE FROM #__acym_history WHERE date < '.intval($date);
@@ -1730,12 +1660,9 @@ class UserClass extends AcymClass
         return ['status' => $status !== false, 'message' => $message];
     }
 
-    public function resetSubscription($userIds, $lists)
+    public function resetSubscription(array $userIds, array $lists): bool
     {
         if (empty($lists)) return false;
-
-        if (!is_array($userIds)) $userIds = [$userIds];
-        if (!is_array($lists)) $lists = [$lists];
 
         acym_arrayToInteger($userIds);
         acym_arrayToInteger($lists);
@@ -1762,7 +1689,7 @@ class UserClass extends AcymClass
         return true;
     }
 
-    public function addMissingKeys()
+    public function addMissingKeys(): int
     {
         $usersMissingKey = acym_loadResultArray('SELECT `id` FROM #__acym_user WHERE `key` IS NULL OR `key` = ""');
         foreach ($usersMissingKey as $oneUserId) {
@@ -1772,7 +1699,7 @@ class UserClass extends AcymClass
         return count($usersMissingKey);
     }
 
-    public function hasUserAccess($subscriberId): bool
+    public function hasUserAccess(int $subscriberId): bool
     {
         $userId = acym_currentUserId();
         if (empty($userId)) {
@@ -1803,7 +1730,7 @@ class UserClass extends AcymClass
         return acym_loadResult($query) > 0;
     }
 
-    public function getXUsers(array $options = [])
+    public function getXUsers(array $options = []): array
     {
         $limit = $options['limit'] ?? 10;
         $offset = $options['offset'] ?? 0;
@@ -1811,16 +1738,10 @@ class UserClass extends AcymClass
 
         $conditions = [];
         foreach ($filters as $column => $filter) {
-            switch ($column) {
-                case 'id':
-                case 'cms_id':
-                case 'active':
-                case 'confirmed':
-                case 'tracking':
-                    $conditions[] = acym_secureDBColumn($column).' = '.intval($filter);
-                    break;
-                default:
-                    $conditions[] = acym_secureDBColumn($column).' LIKE '.acym_escapeDB('%'.$filter.'%');
+            if (in_array($column, ['id', 'cms_id', 'active', 'confirmed', 'tracking'])) {
+                $conditions[] = acym_secureDBColumn($column).' = '.intval($filter);
+            } else {
+                $conditions[] = acym_secureDBColumn($column).' LIKE '.acym_escapeDB('%'.$filter.'%');
             }
         }
 

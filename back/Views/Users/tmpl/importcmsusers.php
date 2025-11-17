@@ -17,7 +17,9 @@
 		</div>
 
 		<div class="margin-top-1 grid-x">
-			<div class="cell medium-5 acym_vcenter"><?php echo acym_translation('ACYM_IMPORT_CMS_GROUPS').acym_info('ACYM_IMPORT_CMS_GROUPS_DESC'); ?></div>
+			<div class="cell medium-5 acym_vcenter">
+                <?php echo acym_translation('ACYM_IMPORT_CMS_GROUPS').acym_info(['textShownInTooltip' => 'ACYM_IMPORT_CMS_GROUPS_DESC']); ?>
+			</div>
 			<div class="cell medium-7">
                 <?php
                 echo acym_selectMultiple(

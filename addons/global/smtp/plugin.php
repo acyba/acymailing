@@ -32,7 +32,7 @@ class plgAcymSmtp extends AcymPlugin
 				<input id="smtp_host" class="cell" type="text" name="config[smtp_host]" value="<?php echo acym_escape($this->config->get('smtp_host')); ?>">
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="smtp_port" class="cell"><?php echo acym_translation('ACYM_SMTP_PORT').acym_info('ACYM_SMTP_PORT_DESC'); ?></label>
+				<label for="smtp_port" class="cell"><?php echo acym_translation('ACYM_SMTP_PORT').acym_info(['textShownInTooltip' => 'ACYM_SMTP_PORT_DESC']); ?></label>
 				<input
 						id="smtp_port"
 						class="cell medium-6"
@@ -45,7 +45,7 @@ class plgAcymSmtp extends AcymPlugin
                 <?php echo $this->getCopySettingsButton($data, self::SENDING_METHOD_ID, 'wp_mail_smtp'); ?>
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="smtp_secured" class="cell"><?php echo acym_translation('ACYM_SMTP_SECURE').acym_info('ACYM_SMTP_SECURE_DESC'); ?></label>
+				<label for="smtp_secured" class="cell"><?php echo acym_translation('ACYM_SMTP_SECURE').acym_info(['textShownInTooltip' => 'ACYM_SMTP_SECURE_DESC']); ?></label>
 				<div class="cell medium-6">
                     <?php
                     echo acym_select(
@@ -72,7 +72,7 @@ class plgAcymSmtp extends AcymPlugin
                 echo acym_switch(
                     'config[smtp_keepalive]',
                     $this->config->get('smtp_keepalive'),
-                    acym_translation('ACYM_SMTP_ALIVE').acym_info('ACYM_SMTP_ALIVE_DESC'),
+                    acym_translation('ACYM_SMTP_ALIVE').acym_info(['textShownInTooltip' => 'ACYM_SMTP_ALIVE_DESC']),
                     [],
                     'medium-5 small-9'
                 );
@@ -83,14 +83,16 @@ class plgAcymSmtp extends AcymPlugin
                 echo acym_switch(
                     'config[smtp_auth]',
                     $this->config->get('smtp_auth', 1),
-                    acym_translation('ACYM_SMTP_AUTHENTICATION').acym_info('ACYM_SMTP_AUTHENTICATION_DESC'),
+                    acym_translation('ACYM_SMTP_AUTHENTICATION').acym_info(['textShownInTooltip' => 'ACYM_SMTP_AUTHENTICATION_DESC']),
                     [],
                     'medium-5 small-9'
                 );
                 ?>
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="smtp_method" class="cell"><?php echo acym_translation('ACYM_AUTHENTICATION_METHOD').acym_info('ACYM_AUTHENTICATION_METHOD_DESC'); ?></label>
+				<label for="smtp_method" class="cell">
+					<?php echo acym_translation('ACYM_AUTHENTICATION_METHOD').acym_info(['textShownInTooltip' => 'ACYM_AUTHENTICATION_METHOD_DESC']); ?>
+				</label>
 				<div class="cell medium-6">
                     <?php
                     echo acym_select(
@@ -114,7 +116,7 @@ class plgAcymSmtp extends AcymPlugin
 				</div>
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="smtp_username" class="cell"><?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info('ACYM_SMTP_USERNAME_DESC'); ?></label>
+				<label for="smtp_username" class="cell"><?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info(['textShownInTooltip' => 'ACYM_SMTP_USERNAME_DESC']); ?></label>
 				<input id="smtp_username"
 					   class="cell"
 					   type="text"
@@ -123,7 +125,9 @@ class plgAcymSmtp extends AcymPlugin
 			</div>
 			<div class="acym__default_auth_sending_params cell">
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings" id="oauthParams">
-					<label for="smtp_password" class="cell"><?php echo acym_translation('ACYM_SMTP_PASSWORD').acym_info('ACYM_SMTP_PASSWORD_DESC'); ?></label>
+					<label for="smtp_password" class="cell">
+						<?php echo acym_translation('ACYM_SMTP_PASSWORD').acym_info(['textShownInTooltip' => 'ACYM_SMTP_PASSWORD_DESC']); ?>
+					</label>
 					<input id="smtp_password"
 						   class="cell"
 						   type="text"

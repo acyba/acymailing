@@ -2,6 +2,8 @@
 
 namespace AcyMailing\Helpers\Update;
 
+use AcyMailing\Helpers\CronHelper;
+
 trait Configuration
 {
     public function addPref(): bool
@@ -32,8 +34,6 @@ trait Configuration
         $allPref['add_names'] = '1';
         $allPref['encoding_format'] = '8bit';
         $allPref['charset'] = 'UTF-8';
-        $allPref['word_wrapping'] = '150';
-        $allPref['hostname'] = '';
         $allPref['embed_images'] = '0';
         $allPref['embed_files'] = '0';
         $allPref['editor'] = 'codemirror';
@@ -67,14 +67,13 @@ trait Configuration
         $allPref['queue_nbmail_auto'] = '70';
         $allPref['queue_type'] = 'auto';
         $allPref['queue_try'] = '3';
-        $allPref['queue_pause'] = '120';
+        $allPref['queue_pause'] = '30';
         $allPref['allow_visitor'] = '1';
         $allPref['require_confirmation'] = '1';
         $allPref['priority_newsletter'] = '3';
         $allPref['allowed_files'] = 'zip,doc,docx,pdf,xls,txt,gzip,rar,jpg,jpeg,gif,xlsx,pps,csv,bmp,ico,odg,odp,ods,odt,png,ppt,swf,xcf,mp3,wma';
         $allPref['confirm_redirect'] = '';
         $allPref['subscription_message'] = '1';
-        $allPref['notification_unsuball'] = '';
         $allPref['cron_next'] = '1251990901';
         $allPref['confirmation_message'] = '1';
         $allPref['welcome_message'] = '1';
@@ -83,33 +82,20 @@ trait Configuration
         $allPref['cron_fromip'] = '';
         $allPref['cron_report'] = '';
         $allPref['cron_frequency'] = '900';
-        $allPref['cron_sendreport'] = '2';
-        $allPref['cron_fullreport'] = '1';
-        $allPref['cron_savereport'] = '2';
+        $allPref['cron_sendreport'] = CronHelper::SEND_REPORT_ONLY_ON_ERROR;
+        $allPref['cron_savereport'] = CronHelper::SEND_REPORT_ONLY_ON_ACTION;
+        $allPref['direct_queue_statistics'] = 0;
         $allPref['uploadfolder'] = str_replace('\\', '/', ACYM_UPLOAD_FOLDER);
-        $allPref['notification_created'] = '';
-        $allPref['notification_accept'] = '';
-        $allPref['notification_refuse'] = '';
-        $allPref['forward'] = '0';
-        $allPref['priority_followup'] = '2';
-        $allPref['unsub_redirect'] = '';
-        $allPref['use_sef'] = '0';
-        $allPref['css_frontend'] = '';
-        $allPref['css_backend'] = '';
         $allPref['last_import'] = '';
-        $allPref['unsub_reasons'] = serialize(['UNSUB_SURVEY_FREQUENT', 'UNSUB_SURVEY_RELEVANT']);
         $allPref['security_key'] = acym_generateKey(30);
         $allPref['export_excelsecurity'] = 1;
         $allPref['gdpr_export'] = 0;
         $allPref['gdpr_delete'] = 0;
-        $allPref['anonymous_tracking'] = '0';
-        $allPref['anonymizeold'] = '0';
         $allPref['trackingsystem'] = 'acymailing';
         $allPref['trackingsystemexternalwebsite'] = 1;
         $allPref['generate_name'] = 1;
         $allPref['allow_modif'] = 'data';
         $allPref['from_as_replyto'] = '1';
-        $allPref['templates_installed'] = '0';
         $allPref['bounceVersion'] = self::BOUNCE_VERSION;
         $allPref['numberThumbnail'] = 2;
         $allPref['daily_hour'] = '12';

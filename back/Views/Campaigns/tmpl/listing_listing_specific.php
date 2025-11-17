@@ -78,7 +78,15 @@
                 <?php } ?>
                 <?php if (acym_isAdmin()) { ?>
 					<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                        <?php echo acym_translation('ACYM_VISIBLE').acym_info('ACYM_VISIBLE_CAMPAIGN_DESC', 'acym__tooltip__in__listing__header'); ?>
+                        <?php
+                        echo acym_translation('ACYM_VISIBLE');
+                        echo acym_info(
+                            [
+                                'textShownInTooltip' => 'ACYM_VISIBLE_CAMPAIGN_DESC',
+                                'classIcon' => 'acym__tooltip__in__listing__header',
+                            ]
+                        );
+                        ?>
 					</div>
                 <?php } ?>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">

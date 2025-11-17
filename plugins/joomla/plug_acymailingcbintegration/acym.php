@@ -125,7 +125,7 @@ class getAcymTab extends cbTabHandler
         if (!empty($currentUser)) {
             // The user may have changed its email address from CB, delete the previous AcyMailing user if we found two. It's like a merge of two Acy users
             if (!empty($acyUser->id) && $acyUser->id != $currentUser->id) {
-                $userClass->delete($acyUser->id);
+                $userClass->delete([$acyUser->id]);
             }
             $acyUser = $currentUser;
         }
@@ -187,7 +187,7 @@ class getAcymTab extends cbTabHandler
             }
         }
 
-        $userClass->subscribe($acyUser->id, $addlists);
+        $userClass->subscribe([$acyUser->id], $addlists);
 
         // We should remove the user subscription if he unchecked some lists and already exists
         $updateRegister = $this->getParam('updateonregister', 0);
@@ -210,7 +210,7 @@ class getAcymTab extends cbTabHandler
             }
         }
 
-        $userClass->unsubscribe($acyUser->id, $unsubLists);
+        $userClass->unsubscribe([$acyUser->id], $unsubLists);
     }
 
     public function userDelete($cbUser, $success)
@@ -221,7 +221,7 @@ class getAcymTab extends cbTabHandler
         $userClass = new UserClass();
         $user = $userClass->getOneByEmail($cbUser->email);
         if (!empty($user->id)) {
-            $userClass->delete($user->id);
+            $userClass->delete([$user->id]);
         }
 
         return '';
@@ -367,8 +367,8 @@ class getAcymTab extends cbTabHandler
                 }
             }
 
-            $userClass->subscribe($acyUser->id, $addLists);
-            $userClass->unsubscribe($acyUser->id, $unsubLists);
+            $userClass->subscribe([$acyUser->id], $addLists);
+            $userClass->unsubscribe([$acyUser->id], $unsubLists);
         }
     }
 

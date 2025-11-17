@@ -4,18 +4,16 @@ namespace AcyMailing\Core;
 
 abstract class AcymClass extends AcymObject
 {
-    protected string $table;
-
-    // Name of the Primary Key
-    protected string $pkey = '';
-
     // Handle errors
     public array $errors = [];
-
     // Information messages, mainly for the cron report
     public array $messages = [];
 
+    protected string $table;
+    protected string $pkey = '';
     protected bool $forceInsert = false;
+    protected array $intColumns = [];
+    protected array $jsonColumns = [];
 
     /**
      * Returns an array containing "elements[]" which are all the requested elements and "total" which is the number of elements.
@@ -39,36 +37,39 @@ abstract class AcymClass extends AcymObject
             $total->total = 0;
         }
 
+        array_map([$this, 'fixTypes'], $elements);
+
         return [
             'elements' => $elements,
             'total' => $total,
         ];
     }
 
-    /**
-     * @param $id "id of element"
-     *
-     * @return mixed
-     */
-    public function getOneById($id)
+    public function getOneById(int $id): ?object
     {
-        return acym_loadObject('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` = '.intval($id));
+        $element = acym_loadObject('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` = '.intval($id));
+
+        if (empty($element)) {
+            return null;
+        }
+
+        $this->fixTypes($element);
+
+        return $element;
     }
 
-    /**
-     * @param mixed $ids Ids of elements
-     *
-     * @return mixed
-     */
-    public function getByIds($ids)
+    public function getByIds(array $ids): array
     {
-        if (empty($ids)) return [];
-
-        if (!is_array($ids)) $ids = [$ids];
+        if (empty($ids)) {
+            return [];
+        }
 
         acym_arrayToInteger($ids);
 
-        return acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` IN ("'.implode('","', $ids).'")');
+        $elements = acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` IN ("'.implode('","', $ids).'")');
+        array_map([$this, 'fixTypes'], $elements);
+
+        return $elements;
     }
 
     public function getAll(?string $key = null): array
@@ -77,10 +78,13 @@ abstract class AcymClass extends AcymObject
             $key = $this->pkey;
         }
 
-        return acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table), $key);
+        $elements = acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table), $key);
+        array_map([$this, 'fixTypes'], $elements);
+
+        return $elements;
     }
 
-    public function save($element)
+    public function save(object $element): ?int
     {
         $tableColumns = acym_getColumns($this->table);
         // We clone the element because we don't want to modify it for later in the code
@@ -100,13 +104,13 @@ abstract class AcymClass extends AcymObject
             if (empty($cloneElement->$pkey) || $this->forceInsert) {
                 $status = acym_insertObject('#__acym_'.$this->table, $cloneElement);
             } else {
-                $status = acym_updateObject('#__acym_'.$this->table, $cloneElement, $pkey);
+                $status = acym_updateObject('#__acym_'.$this->table, $cloneElement, [$pkey]);
             }
         } catch (\Exception $e) {
             $status = false;
         }
 
-        if (!$status) {
+        if (empty($status)) {
             $dbError = strip_tags(isset($e) ? $e->getMessage() : acym_getDBError());
             if (!empty($dbError)) {
                 if (strlen($dbError) > 203) $dbError = substr($dbError, 0, 200).'...';
@@ -116,27 +120,19 @@ abstract class AcymClass extends AcymObject
             return false;
         }
 
-        //We return the element not modify if we want it later in the code
-        return empty($cloneElement->$pkey) ? $status : $cloneElement->$pkey;
+        return (int)(empty($cloneElement->$pkey) ? $status : $cloneElement->$pkey);
     }
 
-    public function delete($elements)
+    public function delete(array $elements): int
     {
         if (empty($elements)) {
             return 0;
         }
 
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-
-        $escapedElements = [];
-        foreach ($elements as $key => $val) {
-            $escapedElements[$key] = acym_escapeDB($val);
-        }
+        $escapedElements = array_map('acym_escapeDB', $elements);
 
         if (empty($this->pkey) || empty($this->table) || empty($escapedElements)) {
-            return false;
+            return 0;
         }
 
         acym_trigger('onAcymBefore'.ucfirst($this->table).'Delete', [&$elements]);
@@ -144,19 +140,17 @@ abstract class AcymClass extends AcymObject
         $query = 'DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE '.acym_secureDBColumn($this->pkey).' IN ('.implode(',', $escapedElements).')';
         $result = acym_query($query);
 
-        if (!$result) return false;
+        if (!$result) {
+            return 0;
+        }
 
         acym_trigger('onAcymAfter'.ucfirst($this->table).'Delete', [&$elements]);
 
-        return $result;
+        return (int)$result;
     }
 
-    public function setActive($elements)
+    public function setActive(array $elements): void
     {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-
         if (empty($elements)) {
             return;
         }
@@ -165,17 +159,37 @@ abstract class AcymClass extends AcymObject
         acym_query('UPDATE '.acym_secureDBColumn('#__acym_'.$this->table).' SET active = 1 WHERE `'.acym_secureDBColumn($this->pkey).'` IN ('.implode(',', $elements).')');
     }
 
-    public function setInactive($elements)
+    public function setInactive(array $elements): void
     {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-
         if (empty($elements)) {
-            return 0;
+            return;
         }
 
         acym_arrayToInteger($elements);
         acym_query('UPDATE '.acym_secureDBColumn('#__acym_'.$this->table).' SET active = 0 WHERE `'.acym_secureDBColumn($this->pkey).'` IN ('.implode(',', $elements).')');
+    }
+
+    /**
+     * Joomla/WordPress can return ints as strings or ints depending on their versions
+     */
+    protected function fixTypes(object $element): void
+    {
+        foreach ($this->intColumns as $intColumn) {
+            if (isset($element->$intColumn)) {
+                $element->$intColumn = (int)$element->$intColumn;
+            }
+        }
+
+        foreach ($this->jsonColumns as $oneColumn) {
+            if (!isset($element->$oneColumn)) {
+                continue;
+            }
+
+            if (empty($element->$oneColumn)) {
+                $element->$oneColumn = [];
+            } elseif (is_string($element->$oneColumn)) {
+                $element->$oneColumn = [];
+            }
+        }
     }
 }

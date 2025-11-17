@@ -104,7 +104,8 @@ class FrontlistsController extends ListsController
                 $listInfoSave = clone $data['listInformation'];
                 unset($listInfoSave->subscribers);
                 $listClass = new ListClass();
-                if (!$listClass->save($listInfoSave)) {
+                $savedListId = $listClass->save($listInfoSave);
+                if (empty($savedListId)) {
                     acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
                 }
             }

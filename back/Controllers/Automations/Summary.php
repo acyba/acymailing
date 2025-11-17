@@ -23,13 +23,12 @@ trait Summary
         $automationClass = new AutomationClass();
         $automation = $automationClass->getOneById(acym_getVar('int', 'id'));
         $automation->active = 1;
-        $saved = $automationClass->save($automation);
-        if (!empty($saved)) {
+        $automationId = $automationClass->save($automation);
+        if (!empty($automationId)) {
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
-            $this->listing();
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
-            $this->listing();
         }
+        $this->listing();
     }
 }

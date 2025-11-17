@@ -2,7 +2,11 @@
 
 use AcyMailing\Helpers\HeaderHelper;
 
-function acym_enqueueMessage($message, string $type = 'success', bool $addNotification = true, array $addDashboardNotification = [], bool $addHeaderNotification = true)
+/**
+ * @param array|string $message The message to display
+ * @param string       $type    The type (success, error, warning, info, message, notice)
+ */
+function acym_enqueueMessage($message, string $type = 'success', bool $addNotification = true, array $addDashboardNotification = [], bool $addHeaderNotification = true): void
 {
     $type = str_replace(['notice', 'message'], ['info', 'success'], $type);
     $message = is_array($message) ? implode('<br/>', $message) : $message;
@@ -59,13 +63,11 @@ function acym_enqueueMessage($message, string $type = 'success', bool $addNotifi
             }
         }
 
-        $config->save(['dashboard_notif' => json_encode($existingNotifications)], false);
+        $config->saveConfig(['dashboard_notif' => json_encode($existingNotifications)], false);
     }
-
-    return true;
 }
 
-function acym_displayMessages()
+function acym_displayMessages(): void
 {
     $types = ['success', 'info', 'warning', 'error'];
     acym_session();

@@ -44,7 +44,7 @@ trait Subscription
 
         if ($connector) {
             $lastTriggerDate = $this->config->get('connector_trigger_getUnsubscribedUsersFromLists');
-            $this->config->save(['connector_trigger_getUnsubscribedUsersFromLists' => date('Y-m-d H:i:s')]);
+            $this->config->saveConfig(['connector_trigger_getUnsubscribedUsersFromLists' => date('Y-m-d H:i:s')]);
 
             // If this is the first time zapier calls, or if the trigger has been halted for more than 1 day, we don't send the users to "init" the trigger
             if (empty($lastTriggerDate) || $lastTriggerDate < date('Y-m-d H:i:s', strtotime('-1 day'))) {
@@ -89,7 +89,7 @@ trait Subscription
 
         if ($connector) {
             $lastTriggerDate = $this->config->get('zapier_trigger_getSubscribersFromLists');
-            $this->config->save(['zapier_trigger_getSubscribersFromLists' => date('Y-m-d H:i:s')]);
+            $this->config->saveConfig(['zapier_trigger_getSubscribersFromLists' => date('Y-m-d H:i:s')]);
 
             // If this is the first time zapier calls, or if the trigger has been halted for more than 1 day, we don't send the users to "init" the trigger
             if (empty($lastTriggerDate) || $lastTriggerDate < date('Y-m-d H:i:s', strtotime('-1 day'))) {
@@ -139,7 +139,7 @@ trait Subscription
                 continue;
             }
 
-            $userClass->subscribe($user->id, $listIds, $decodedData['trigger'] ?? true);
+            $userClass->subscribe([$user->id], $listIds, $decodedData['trigger'] ?? true);
         }
         $errorMsg = [];
         if (count($errors) === count($decodedData['emails'])) {
@@ -193,7 +193,7 @@ trait Subscription
             }
 
             $userClass->triggers = $decodedData['trigger'] ?? true;
-            $userClass->unsubscribe($user->id, $listIds);
+            $userClass->unsubscribe([$user->id], $listIds);
         }
 
         $errorMsg = [];

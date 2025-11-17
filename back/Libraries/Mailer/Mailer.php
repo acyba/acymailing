@@ -1851,7 +1851,7 @@ class Mailer
 
         $length = strlen($string);
 
-        for ($i = 0 ; $i < $length ; ++$i) {
+        for ($i = 0; $i < $length; ++$i) {
             $c = $string[$i];
 
             //All other characters have a special meaning in at least one common shell, including = and +.
@@ -3672,7 +3672,7 @@ class Mailer
         $avgLength = floor($length * $ratio * .75);
 
         $offset = 0;
-        for ($i = 0 ; $i < $mb_length ; $i += $offset) {
+        for ($i = 0; $i < $mb_length; $i += $offset) {
             $lookBack = 0;
             do {
                 $offset = $avgLength - $lookBack;
@@ -4873,7 +4873,7 @@ class Mailer
     {
         $line = '';
         $len = strlen($txt);
-        for ($i = 0 ; $i < $len ; ++$i) {
+        for ($i = 0; $i < $len; ++$i) {
             $ord = ord($txt[$i]);
             if (((0x21 <= $ord) && ($ord <= 0x3A)) || $ord === 0x3C || ((0x3E <= $ord) && ($ord <= 0x7E))) {
                 $line .= $txt[$i];

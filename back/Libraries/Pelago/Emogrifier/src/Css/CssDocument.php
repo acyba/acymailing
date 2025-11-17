@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pelago\Emogrifier\Css;
 
+use Pelago\Emogrifier\Utilities\Preg;
 use Sabberworm\CSS\CSSList\AtRuleBlockList as CssAtRuleBlockList;
 use Sabberworm\CSS\CSSList\Document as SabberwormCssDocument;
 use Sabberworm\CSS\Parser as CssParser;
@@ -21,7 +22,7 @@ use Sabberworm\CSS\Settings as ParserSettings;
  *
  * @internal
  */
-class CssDocument
+final class CssDocument
 {
     /**
      * @var SabberwormCssDocument
@@ -37,7 +38,6 @@ class CssDocument
     private $isImportRuleAllowed = true;
 
     /**
-     * @param string $css
      * @param bool $debug
      *        If this is `true`, an exception will be thrown if invalid CSS is encountered.
      *        Otherwise the parser will try to do the best it can.
@@ -61,25 +61,24 @@ class CssDocument
      */
     private function hasNestedAtRule(string $css): bool
     {
-        return \preg_match('/@(?:media|supports|(?:-webkit-|-moz-|-ms-|-o-)?+(keyframes|document))\\b/', $css) === 1;
+        return (new Preg())
+                ->match('/@(?:media|supports|(?:-webkit-|-moz-|-ms-|-o-)?+(keyframes|document))\\b/', $css) !== 0;
     }
 
     /**
      * Collates the media query, selectors and declarations for individual rules from the parsed CSS, in order.
      *
-     * @param array<array-key, string> $allowedMediaTypes
+     * @param list<non-empty-string> $allowedMediaTypes
      *
      * @return list<StyleRule>
      */
     public function getStyleRulesData(array $allowedMediaTypes): array
     {
         $ruleMatches = [];
-        /** @var CssRenderable $rule */
         foreach ($this->sabberwormCssDocument->getContents() as $rule) {
             if ($rule instanceof CssAtRuleBlockList) {
                 $containingAtRule = $this->getFilteredAtIdentifierAndRule($rule, $allowedMediaTypes);
                 if (\is_string($containingAtRule)) {
-                    /** @var CssRenderable $nestedRule */
                     foreach ($rule->getContents() as $nestedRule) {
                         if ($nestedRule instanceof CssDeclarationBlock) {
                             $ruleMatches[] = new StyleRule($nestedRule, $containingAtRule);
@@ -98,8 +97,6 @@ class CssDocument
      * Renders at-rules from the parsed CSS that are valid and not conditional group rules (i.e. not rules such as
      * `@media` which contain style rules whose data is returned by {@see getStyleRulesData}).  Also does not render
      * `@charset` rules; these are discarded (only UTF-8 is supported).
-     *
-     * @return string
      */
     public function renderNonConditionalAtRules(): string
     {
@@ -118,39 +115,35 @@ class CssDocument
     }
 
     /**
-     * @param CssAtRuleBlockList $rule
-     * @param array<array-key, string> $allowedMediaTypes
+     * @param list<non-empty-string> $allowedMediaTypes
      *
-     * @return ?string
+     * @return string|null
      *         If the nested at-rule is supported, it's opening declaration (e.g. "@media (max-width: 768px)") is
      *         returned; otherwise the return value is null.
      */
     private function getFilteredAtIdentifierAndRule(CssAtRuleBlockList $rule, array $allowedMediaTypes): ?string
     {
-        $result = null;
-
-        if ($rule->atRuleName() === 'media') {
-            $mediaQueryList = $rule->atRuleArgs();
-            [$mediaType] = \explode('(', $mediaQueryList, 2);
-            if (\trim($mediaType) !== '') {
-                $escapedAllowedMediaTypes = \array_map(
-                    static function (string $allowedMediaType): string {
-                        return \preg_quote($allowedMediaType, '/');
-                    },
-                    $allowedMediaTypes
-                );
-                $mediaTypesMatcher = \implode('|', $escapedAllowedMediaTypes);
-                $isAllowed = \preg_match('/^\\s*+(?:only\\s++)?+(?:' . $mediaTypesMatcher . ')/i', $mediaType) > 0;
-            } else {
-                $isAllowed = true;
-            }
-
-            if ($isAllowed) {
-                $result = '@media ' . $mediaQueryList;
-            }
+        if ($rule->atRuleName() !== 'media') {
+            return null;
         }
 
-        return $result;
+        $mediaQueryList = $rule->atRuleArgs();
+        [$mediaType] = \explode('(', $mediaQueryList, 2);
+        if (\trim($mediaType) !== '') {
+            $escapedAllowedMediaTypes = \array_map(
+                static function (string $allowedMediaType): string {
+                    return \preg_quote($allowedMediaType, '/');
+                },
+                $allowedMediaTypes
+            );
+            $mediaTypesMatcher = \implode('|', $escapedAllowedMediaTypes);
+            $isAllowed
+                = (new Preg())->match('/^\\s*+(?:only\\s++)?+(?:' . $mediaTypesMatcher . ')/i', $mediaType) !== 0;
+        } else {
+            $isAllowed = true;
+        }
+
+        return $isAllowed ? '@media ' . $mediaQueryList : null;
     }
 
     /**
@@ -162,10 +155,6 @@ class CssDocument
      * - `@media` rules are processed separately to see if their nested rules apply - `false` is returned;
      * - `@font-face` rules are checked for validity - they must contain both a `src` and `font-family` property;
      * - other at-rules are assumed to be valid and treated as a black box - `true` is returned.
-     *
-     * @param CssRenderable $rule
-     *
-     * @return bool
      */
     private function isValidAtRuleToRender(CssRenderable $rule): bool
     {

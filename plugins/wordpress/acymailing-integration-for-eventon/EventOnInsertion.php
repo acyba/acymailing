@@ -7,7 +7,7 @@ trait EventOnInsertion
     private $eventOnMeta;
     private $recurringEvents;
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -24,7 +24,7 @@ trait EventOnInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -36,7 +36,7 @@ trait EventOnInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT post.*
                     FROM #__posts AS post
@@ -49,7 +49,7 @@ trait EventOnInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
         $this->prepareWPCategories('event_type');
@@ -150,7 +150,7 @@ trait EventOnInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT post.ID, post.post_title, post.post_date, meta.meta_value ';
         $this->query = 'FROM #__posts AS post ';
@@ -264,7 +264,7 @@ trait EventOnInsertion
         );
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->recurringEvents = [];
         $this->replaceMultiple($email);
@@ -272,7 +272,7 @@ trait EventOnInsertion
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $this->tags = [];
         $time = time();
@@ -417,13 +417,8 @@ trait EventOnInsertion
 
     /**
      * For this plugin this method will change a bit to include the dates of the recurring event entries in addition to the event ID
-     *
-     * @param $elements
-     * @param $parameter
-     *
-     * @return array
      */
-    protected function buildIndividualTags($elements, $parameter): array
+    protected function buildIndividualTags(array $elements, object $parameter): array
     {
         $arrayElements = [];
         unset($parameter->id);
@@ -453,7 +448,7 @@ trait EventOnInsertion
         return $arrayElements;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $dashPos = strpos($tag->id, '-');
         $startDate = substr($tag->id, $dashPos + 1);

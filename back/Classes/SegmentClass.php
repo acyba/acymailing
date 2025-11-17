@@ -55,7 +55,7 @@ class SegmentClass extends AcymClass
         return $results;
     }
 
-    public function getOneById($id)
+    public function getOneById(int $id): ?object
     {
         $segment = parent::getOneById($id);
 
@@ -66,20 +66,22 @@ class SegmentClass extends AcymClass
         return $segment;
     }
 
-    public function getByIds($ids)
+    public function getByIds(array $ids): array
     {
         $segments = parent::getByIds($ids);
 
-        if (empty($segments)) return [];
+        if (empty($segments)) {
+            return [];
+        }
 
-        foreach ($segments as $key => $segment) {
-            $segments[$key]->filters = empty($segment->filters) ? [] : json_decode($segment->filters, true);
+        foreach ($segments as $segment) {
+            $segment->filters = empty($segment->filters) ? [] : json_decode($segment->filters, true);
         }
 
         return $segments;
     }
 
-    public function getAllForSelect($firstEmpty = true)
+    public function getAllForSelect(bool $firstEmpty = true): array
     {
         $segments = acym_loadObjectList('SELECT * FROM #__acym_segment WHERE active = 1');
 
@@ -98,7 +100,7 @@ class SegmentClass extends AcymClass
         return $return;
     }
 
-    public function updateSegments()
+    public function updateSegments(): void
     {
         $segments = $this->getAll();
 

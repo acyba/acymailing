@@ -1,6 +1,6 @@
 <?php
 
-function acym_getTimeOffsetCMS()
+function acym_getTimeOffsetCMS(): int
 {
     static $timeoffset = null;
     if ($timeoffset === null) {
@@ -16,12 +16,12 @@ function acym_getTimeOffsetCMS()
     return $timeoffset;
 }
 
-function acym_dateTimeCMS($time)
+function acym_dateTimeCMS(int $time)
 {
     return date('Y-m-d H:i:s', $time);
 }
 
-function acym_getDateTimeFormat($default = '')
+function acym_getDateTimeFormat(string $default = ''): string
 {
     $noTimeDate = [
         'ACYM_DATE_FORMAT_LC1',

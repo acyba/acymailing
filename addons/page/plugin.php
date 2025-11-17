@@ -33,7 +33,7 @@ class plgAcymPage extends AcymPlugin
         }
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -50,7 +50,7 @@ class plgAcymPage extends AcymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -59,7 +59,7 @@ class plgAcymPage extends AcymPlugin
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT page.*
                     FROM #__posts AS page
@@ -72,12 +72,12 @@ class plgAcymPage extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -126,7 +126,7 @@ class plgAcymPage extends AcymPlugin
         $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $this->defaultValues);
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT page.ID, page.post_title, page.post_date, page.post_content ';
         $this->query = 'FROM #__posts AS page ';
@@ -176,12 +176,12 @@ class plgAcymPage extends AcymPlugin
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceOne($email);
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT page.*
                     FROM #__posts AS page
@@ -247,9 +247,8 @@ class plgAcymPage extends AcymPlugin
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    protected function getTranslationId($elementId, $translationTool, $defaultLanguage = false)
+    protected function getTranslationId(int $elementId, string $translationTool, bool $defaultLanguage = false): int
     {
-        $elementId = intval($elementId);
         $languageCode = $this->emailLanguage;
 
         if ($defaultLanguage) {

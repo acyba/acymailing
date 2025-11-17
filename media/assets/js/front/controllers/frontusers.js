@@ -54,8 +54,8 @@ function initUser() {
 }
 
 function acym_checkChangeForm() {
-    let varform = document[acyformName];
-    let validation = {errors: 0};
+    const varform = document.getElementById(window.acyFormName);
+    const validation = {errors: 0};
 
     acym_resetInvalidClass();
 
@@ -72,29 +72,28 @@ function acym_checkChangeForm() {
         return false;
     }
 
-    let formData = new FormData(varform);
+    const formData = new FormData(varform);
     // Change the acyba form's opacity to show we are doing stuff
     varform.className += ' acym_module_loading';
     varform.style.filter = 'alpha(opacity=50)';
     varform.style.opacity = '0.5';
 
-    let message = document.querySelector('.message_' + acyformName);
-    if (message) message.parentNode.removeChild(message);
+    const message = document.querySelector('.message_' + window.acyFormName);
+    if (message) {
+        message.parentNode.removeChild(message);
+    }
 
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', varform.getAttribute('action'));
-    xhr.onload = function () {
-        let message = ACYM_JS_TXT.ACYM_ERROR;
-        let type = 'error';
-
-        if (xhr.status === 200) {
-            let response = JSON.parse(xhr.responseText);
-            message = response.message;
-            type = response.type;
-        }
-        acymDisplayAjaxResponse(decodeURIComponent(message), type, acyformName, false);
-    };
-    xhr.send(formData);
+    fetch(varform.getAttribute('action'), {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            acymDisplayAjaxResponse(decodeURIComponent(data.message), data.type, false);
+        })
+        .catch(() => {
+            acymDisplayAjaxResponse(ACYM_JS_TXT.ACYM_ERROR, 'error', false);
+        });
 
     return false;
 }

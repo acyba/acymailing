@@ -2,12 +2,12 @@
 
 trait CbuilderInsertion
 {
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         ?>
 		<script type="text/javascript">
@@ -55,7 +55,7 @@ trait CbuilderInsertion
         echo $text;
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
         $extractedTags = $this->pluginHelper->extractTags($email, 'cbtag');
         if (empty($extractedTags)) return;

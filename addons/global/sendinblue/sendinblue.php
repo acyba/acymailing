@@ -14,7 +14,7 @@ class SendinblueClass extends AcymPlugin
         $this->headers = $headers;
     }
 
-    protected function callApiSendingMethod($url, $data = [], $headers = [], $type = 'GET', $authentication = [], $dataDecoded = false)
+    protected function callApiSendingMethod(string $url, array $data = [], array $headers = [], string $type = 'GET', array $authentication = [], bool $dataDecoded = false): array
     {
         $response = parent::callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.$url, $data, $headers, $type, $authentication, $dataDecoded);
 
@@ -36,7 +36,7 @@ class SendinblueClass extends AcymPlugin
             }
 
             if (strpos($response['message'], 'Your account is under validation.') !== false) {
-                $this->config->save(['sendinblue_validation' => 1]);
+                $this->config->saveConfig(['sendinblue_validation' => 1]);
             }
             /*
              * Any API call

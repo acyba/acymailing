@@ -59,7 +59,7 @@
 						<h6 :class="sub.confirmed==1 || requireConfirmation==0?'':'acym__color__dark-gray'">
 							{{ sub.email }}
 							<span class="acym__hover__user_info" :data-id="sub.id">
-								<?php echo acym_info('<i class="acymicon-circle-o-notch acymicon-spin"></i>'); ?>
+								<?php echo acym_info(['textShownInTooltip' => '<i class="acymicon-circle-o-notch acymicon-spin"></i>']); ?>
 							</span>
 						</h6>
 					</div>

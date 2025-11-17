@@ -23,7 +23,7 @@
         }
         if (!empty($data['followup_trigger'])) {
             echo '<input type="hidden" id="acym__followup__trigger" value="'.acym_escape($data['followup_trigger']).'"/>';
-		}
+        }
 
         if ($data['mail']->type == $data['mailClass']::TYPE_NOTIFICATION) {
             include acym_getView('mails', 'edit_info_notification');

@@ -3,7 +3,7 @@
 	<div class="cell large-6 grid-x margin-y">
 		<label class="cell medium-4" for="acym__users__import__from_database__field--tablename"><?php echo acym_translation('ACYM_TABLE_NAME'); ?></label>
         <?php
-		echo '<div class="cell medium-8">';
+        echo '<div class="cell medium-8">';
         array_unshift($data['tables'], acym_translation('ACYM_SELECT_TABLE'));
         echo acym_select(
             $data['tables'],

@@ -39,6 +39,7 @@
 						<div class="acym__unsubscribe__lists__container cell margin-bottom-1">
                             <?php if (empty($data['subscriptions'])) { ?>
 								<p><?php echo acym_translation('ACYM_NO_DATA_TO_DISPLAY'); ?></p>
+								<p><?php echo acym_translation('ACYM_NO_LIST_FOUND_CAN_UNSUB'); ?></p>
                             <?php } else { ?>
 								<div class="acym__unsubscribe__lists__listing margin-bottom-1">
 									<ul class="acym__unsubscribe__lists">
@@ -80,20 +81,29 @@
                                 <?php } ?>
 							</div>
 							<div class="acym__unsubscribe__actions grid-x align-center">
-                                <?php if (count($data['subscriptions']) > 1) { ?>
+                                <?php if (count($data['subscriptions']) > 1 || empty($data['subscriptions'])) { ?>
 									<button type="button"
 											class="button button-secondary cell margin-bottom-1"
 											id="acym__unsub__all"
 											onclick="return acymSubmitForm('unsubscribeAll', this);">
                                         <?php echo acym_translation('ACYM_UNSUBSCRIBE_ALL'); ?>
 									</button>
+                                <?php }
+                                if (empty($data['subscriptions'])) { ?>
+									<button type="button"
+											class="button button-primary cell margin-bottom-1"
+											id="acym__unsub__direct"
+											onclick="return acymSubmitForm('unsubscribe', this);">
+                                        <?php echo acym_translation('ACYM_UNSUBSCRIBE'); ?>
+									</button>
+                                <?php } else { ?>
+									<button type="button"
+											class="button button-primary cell margin-bottom-1"
+											id="acym__save"
+											onclick="return acymSubmitForm('saveSubscriptions', this);">
+                                        <?php echo acym_translation('ACYM_UPDATE_PREFERENCES'); ?>
+									</button>
                                 <?php } ?>
-								<button type="button"
-										class="button button-primary cell margin-bottom-1"
-										id="acym__save"
-										onclick="return acymSubmitForm('saveSubscriptions', this);">
-                                    <?php echo acym_translation('ACYM_UPDATE_PREFERENCES'); ?>
-								</button>
 							</div>
 						</div>
 					</div>

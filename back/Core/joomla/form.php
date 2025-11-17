@@ -3,7 +3,7 @@
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Session\Session;
 
-function acym_formToken()
+function acym_formToken(): string
 {
     return HTMLHelper::_('form.token');
 }
@@ -11,12 +11,12 @@ function acym_formToken()
 /**
  * Check token with all the possibilities
  */
-function acym_checkToken()
+function acym_checkToken(): void
 {
     Session::checkToken() || Session::checkToken('get') || die('Invalid Token');
 }
 
-function acym_getFormToken()
+function acym_getFormToken(): string
 {
     return Session::getFormToken().'=1';
 }
@@ -33,7 +33,7 @@ function acym_isNoTemplate(): bool
     return in_array($tmpl, ['component', 'raw']);
 }
 
-function acym_setNoTemplate($status = true)
+function acym_setNoTemplate(bool $status = true): void
 {
     if ($status) {
         acym_setVar('tmpl', 'component');
@@ -42,39 +42,32 @@ function acym_setNoTemplate($status = true)
     }
 }
 
-/**
- * @param bool   $token
- * @param string $task
- * @param string $currentStep
- * @param string $currentCtrl
- * @param bool   $addPage
- */
-function acym_formOptions(bool $token = true, string $task = '', string $currentStep = '', string $currentCtrl = '', bool $addPage = true)
+function acym_formOptions(bool $token = true, string $task = '', string $currentStep = '', string $currentCtrl = '', bool $addPage = true): void
 {
     if (!empty($currentStep)) {
         echo '<input type="hidden" name="step" value="'.acym_escape($currentStep).'"/>';
     }
     echo '<input type="hidden" name="nextstep" value=""/>';
-    echo '<input type="hidden" name="option" value="'.ACYM_COMPONENT.'"/>';
+    echo '<input type="hidden" name="option" value="'.acym_escape(ACYM_COMPONENT).'"/>';
     echo '<input type="hidden" name="task" value="'.acym_escape($task).'"/>';
-    echo '<input type="hidden" name="ctrl" value="'.(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
+    echo '<input type="hidden" name="ctrl" value="'.acym_escape(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
     if ($token) {
         echo acym_formToken();
     }
     echo '<button type="submit" class="is-hidden" id="formSubmit"></button>';
 }
 
-function acym_addMetadata($meta, $data, $name = 'name')
+function acym_addMetadata(string $meta, string $data, string $name = 'name'): void
 {
     $acyDocument = acym_getGlobal('doc');
     $acyDocument->setMetaData($meta, $data, $name);
 }
 
-function acym_includeHeaders()
+function acym_includeHeaders(): void
 {
 }
 
-function acym_getOptionRegacyPosition()
+function acym_getOptionRegacyPosition(): array
 {
     return [
         acym_selectOption('email', 'ACYM_EMAIL'),

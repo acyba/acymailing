@@ -10,7 +10,7 @@
             <?php if ($data['form']->type != 'shortcode') { ?>
 				<div class="cell medium-6 grid-x acym_vcenter">
 					<label for="acym__forms__information__page" class="cell medium-6 large-4">
-                        <?php echo acym_translation('ACYM_PAGE_SELECTION').acym_info('ACYM_PAGE_SELECTION_DESC'); ?>
+                        <?php echo acym_translation('ACYM_PAGE_SELECTION').acym_info(['textShownInTooltip' => 'ACYM_PAGE_SELECTION_DESC']); ?>
 					</label>
 					<div class="cell medium-6">
 						<select2multiple v-model="form.pages"
@@ -38,7 +38,7 @@
 			</div>
 			<div class="cell medium-6 grid-x acym_vcenter">
 				<label for="acym__forms__available__language" class="cell medium-6 large-4">
-                    <?php echo acym_translation('ACYM_LANGUAGE_AVAILABLE').acym_info('ACYM_LANGUAGE_AVAILABLE_INFO'); ?>
+                    <?php echo acym_translation('ACYM_LANGUAGE_AVAILABLE').acym_info(['textShownInTooltip' => 'ACYM_LANGUAGE_AVAILABLE_INFO']); ?>
 				</label>
 
 				<div class="cell medium-6">

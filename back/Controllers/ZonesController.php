@@ -38,7 +38,8 @@ class ZonesController extends AcymController
 
             if (in_array($extension['extension'], acym_getImageFileExtensions()) && acym_uploadFile($_FILES['image']['tmp_name'], ACYM_ROOT.$newPath)) {
                 $zone->image = $newPath;
-                if ($zoneClass->save($zone)) {
+                $savedZoneId = $zoneClass->save($zone);
+                if (!empty($savedZoneId)) {
                     $dataResponse['image'] = acym_rootURI().$newPath;
                 }
             }
@@ -78,7 +79,7 @@ class ZonesController extends AcymController
     public function delete(): void
     {
         $zoneData = $this->getZoneData();
-        $zoneData['zoneClass']->delete($zoneData['zoneId']);
+        $zoneData['zoneClass']->delete([$zoneData['zoneId']]);
 
         acym_sendAjaxResponse();
     }

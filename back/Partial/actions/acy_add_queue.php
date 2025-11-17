@@ -16,7 +16,7 @@
 		class="cell medium-shrink button-secondary auto button ">
     <?php echo acym_translation('ACYM_CHOOSE_EXISTING'); ?>
 </button>
-<?php echo acym_info('ACYM_CHOOSE_EXISTING_DESC', '', 'margin-left-0'); ?>
+<?php echo acym_info(['textShownInTooltip' => 'ACYM_CHOOSE_EXISTING_DESC', 'classContainer' => 'margin-left-0']); ?>
 <div class="medium-4 grid-x cell">
     <?php echo acym_dateField('acym_action[actions][__and__][acy_add_queue][time]', '[time]', '', '', '+'); ?>
 </div>

@@ -44,14 +44,13 @@ $formName = acym_getModuleFormName();
                             $valuesArray[$value->value] = $value->title;
                         }
                     }
-                    $size = empty($field->option->size) ? '' : 'width:'.$field->option->size.'px';
                     echo '<span class="onefield fieldacy'.$field->id.'" id="field_'.$field->id.'">';
 
-                    echo $data['fieldClass']->displayField($field, $field->default_value, $size, $valuesArray, true, true, $data['user']);
+                    echo $data['fieldClass']->displayField($field, $field->default_value, $valuesArray, true, true, $data['user']);
                     echo '</span>';
 
                     if ($field->id == 2 && $this->config->get('email_confirmation')) {
-                        echo $data['fieldClass']->setEmailConfirmationField(true, $size, 'span', false);
+                        echo $data['fieldClass']->setEmailConfirmationField(true, $field, 'span', false);
                     }
                 }
                 ?>
@@ -71,7 +70,7 @@ $formName = acym_getModuleFormName();
 								<td id="acybutton_subscriber_download_data" <?php if ($deleteButton == 1) {
                                     echo 'style="padding-right: 10px;"';
                                 } ?>>
-									<button class="btn button" onclick="this.form.task.value='exportdata'; this.form.submit(); return false;">
+									<button class="btn btn-secondary button" onclick="this.form.task.value='exportdata'; this.form.submit(); return false;">
                                         <?php echo acym_translation('ACYM_EXPORT_MY_DATA'); ?>
 									</button>
 								</td>
@@ -80,7 +79,7 @@ $formName = acym_getModuleFormName();
                             if ($deleteButton == 1) {
                                 ?>
 								<td id="acybutton_subscriber_delete_data">
-									<button class="btn button"
+									<button class="btn btn-secondary button"
 											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'gdprDelete'; this.form.submit(); } return false;">
                                         <?php echo acym_translation('ACYM_DELETE_MY_DATA'); ?>
 									</button>
@@ -149,7 +148,7 @@ $formName = acym_getModuleFormName();
                             $k++;
                         }
 
-                        echo acym_select($dropdownOpts, 'data[listsubdropdown]', $selectedIndex, null, 'value', 'text');
+                        echo acym_select($dropdownOpts, 'data[listsubdropdown]', $selectedIndex);
                     }
                     ?>
 				</div>
@@ -180,7 +179,7 @@ $formName = acym_getModuleFormName();
         acym_formOptions(true, 'savechanges', '', 'frontusers');
 
         if (isset($data['disableButtons']) && $data['disableButtons']) {
-            $actionClick = 'return true';
+            $actionClick = 'return false;';
         } else {
             $actionClick = 'return submitAcymForm(\'savechanges\',\''.$formName.'\', \'acym_checkChangeForm\');';
         }
@@ -194,10 +193,11 @@ $formName = acym_getModuleFormName();
 		<input type="hidden" name="acyprofile" value="1" />
 
 		<p class="acymodifybutton">
-			<input class="btn btn-primary"
-				   type="submit"
-				   onclick="<?php echo $actionClick; ?>"
-				   value="<?php echo acym_escape(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>" />
+			<button class="btn btn-primary"
+					type="submit"
+					onclick="<?php echo $actionClick; ?>">
+                <?php echo acym_escape(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>
+			</button>
 		</p>
 	</form>
     <?php if (!empty($data['posttext'])) {

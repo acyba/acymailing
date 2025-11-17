@@ -14,7 +14,7 @@ trait FlexicontentInsertion
         }
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT content.*, user.name AS creator, user_bis.name AS modifier, types.name AS doctype, f.title AS cattitle ';
         $query .= 'FROM #__content AS content JOIN #__flexicontent_items_ext AS items ON items.item_id = content.id ';
@@ -27,7 +27,7 @@ trait FlexicontentInsertion
         }
     }
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -44,7 +44,7 @@ trait FlexicontentInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -53,7 +53,7 @@ trait FlexicontentInsertion
         ];
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -152,7 +152,7 @@ trait FlexicontentInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         //we load all elements with the categories
         $this->querySelect = 'SELECT element.id, element.title, element.publish_up ';
@@ -200,13 +200,13 @@ trait FlexicontentInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         $JoomlaRouter = JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
         if (file_exists($JoomlaRouter)) {
@@ -221,7 +221,7 @@ trait FlexicontentInsertion
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -268,7 +268,7 @@ trait FlexicontentInsertion
         return $this->generateCampaignResult;
     }
 
-    public function initIndividualContent(&$tag, $query)
+    public function initIndividualContent(object &$tag, string $query): ?object
     {
         $itemsParts = acym_loadObjectList($query);
 
@@ -277,7 +277,7 @@ trait FlexicontentInsertion
                 acym_enqueueMessage(acym_translationSprintf('ACYM_CONTENT_NOT_FOUND', $tag->id), 'notice');
             }
 
-            return false;
+            return null;
         }
 
         $item = new stdClass();
@@ -295,7 +295,7 @@ trait FlexicontentInsertion
         return $item;
     }
 
-    public function replaceIndividualContent(&$tag)
+    public function replaceIndividualContent(object $tag): string
     {
         if (empty($tag->display)) return '';
         $tag->display = explode(',', $tag->display);

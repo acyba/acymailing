@@ -28,9 +28,12 @@ trait VirtuemartSubscription
 			<div id="acym__configuration__subscription__integration-virtuemart" class="grid-x" style="display:none;">
 				<div class="cell grid-x grid-margin-x">
                     <?php
-                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', $this->pluginDescription->name).acym_info(
-                            'ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC'
-                        );
+                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', $this->pluginDescription->name);
+                    $subOptionTxt .= acym_info(
+                        [
+                            'textShownInTooltip' => acym_translation('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC'),
+                        ]
+                    );
                     echo acym_switch(
                         'config[virtuemart_sub]',
                         $this->config->get('virtuemart_sub'),
@@ -46,7 +49,7 @@ trait VirtuemartSubscription
 				<div class="cell grid-x margin-y" id="acym__config__virtuemart_sub">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__virtuemart-text">
-                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'); ?>
+                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info(['textShownInTooltip' => 'ACYM_SUBSCRIBE_CAPTION_OPT_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -58,7 +61,7 @@ trait VirtuemartSubscription
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__virtuemart-lists">
-                            <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC'); ?>
+                            <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info(['textShownInTooltip' => 'ACYM_DISPLAYED_LISTS_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -77,7 +80,7 @@ trait VirtuemartSubscription
 
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__virtuemart-checkedlists">
-                            <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC'); ?>
+                            <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info(['textShownInTooltip' => 'ACYM_LISTS_CHECKED_DEFAULT_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -95,7 +98,7 @@ trait VirtuemartSubscription
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__virtuemart-autolists">
-                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'); ?>
+                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info(['textShownInTooltip' => 'ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC']); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -358,7 +361,7 @@ trait VirtuemartSubscription
                 if ($oneSubscription->status == 1) $currentlySubscribedLists[] = $oneSubscription->list_id;
             }
             $unsubscribeLists = array_intersect($currentlySubscribedLists, array_diff($visibleLists, $visibleListsChecked));
-            $userClass->unsubscribe($user->id, $unsubscribeLists);
+            $userClass->unsubscribe([$user->id], $unsubscribeLists);
         }
 
         // Handle the subscription
@@ -379,7 +382,7 @@ trait VirtuemartSubscription
             }
         }
 
-        if (!empty($listsToSubscribe)) $userClass->subscribe($user->id, $listsToSubscribe);
+        if (!empty($listsToSubscribe)) $userClass->subscribe([$user->id], $listsToSubscribe);
         unset($_SESSION['acym_virtuemart_user_email']);
     }
 }

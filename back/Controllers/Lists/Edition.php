@@ -65,11 +65,14 @@ trait Edition
             $listInformation->description = '';
             $listInformation->active = 1;
             $listInformation->visible = 1;
-            $randColor = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
-            $listInformation->color = '#'.$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(
-                    0,
-                    15
-                )];
+            $listInformation->color = '#'.implode('', [
+                    ListClass::COLOR_PARTS[rand(0, 15)],
+                    ListClass::COLOR_PARTS[rand(0, 15)],
+                    ListClass::COLOR_PARTS[rand(0, 15)],
+                    ListClass::COLOR_PARTS[rand(0, 15)],
+                    ListClass::COLOR_PARTS[rand(0, 15)],
+                    ListClass::COLOR_PARTS[rand(0, 15)],
+                ]);
             $listInformation->welcome_id = '';
             $listInformation->unsubscribe_id = '';
             $listInformation->access = [];
@@ -89,7 +92,7 @@ trait Edition
             }
 
 
-            $subscribersCount = $listClass->getSubscribersCountPerStatusByListId([$listId]);
+            $subscribersCount = $listClass->getSubscribersCountPerStatusByListIds([$listId]);
 
             $this->breadcrumb[acym_escape($listInformation->name)] = acym_completeLink('lists&task=settings&listId='.$listId);
 
@@ -190,8 +193,8 @@ trait Edition
                 'subscriber'
             ),
             'acym__lists__settings__subscribers__entity__modal',
-            '',
-            'class="cell medium-6 large-shrink button button-secondary"'
+            [],
+            ['class' => 'cell medium-6 large-shrink button button-secondary']
         );
     }
 
@@ -270,7 +273,10 @@ trait Edition
                 $data['listInformation']->{$full.'_id'} = $mailId;
                 $listInfoSave = clone $data['listInformation'];
                 unset($listInfoSave->subscribers);
-                if (!$listClass->save($listInfoSave)) acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
+                $savedListId = $listClass->save($listInfoSave);
+                if (empty($savedListId)) {
+                    acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
+                }
             }
 
             $returnLink = acym_completeLink('lists&task=settings&listId='.$data['listInformation']->id.'&edition=1&'.$short.'mailid={mailid}');
@@ -314,7 +320,8 @@ trait Edition
 
         $list->$type = null;
 
-        if ($listClass->save($list)) {
+        $savedListId = $listClass->save($list);
+        if (!empty($savedListId)) {
             acym_setVar('listId', $id);
             $this->settings();
         } else {
@@ -394,8 +401,10 @@ trait Edition
 
     private function saveSubscribersTolist(): bool
     {
-        $usersIds = json_decode(acym_getVar('string', 'acym__entity_select__selected', '[]'));
-        $usersIdsUnselected = json_decode(acym_getVar('string', 'acym__entity_select__unselected', '[]'));
+        $selected = acym_getVar('string', 'acym__entity_select__selected', '[]');
+        $unselected = acym_getVar('string', 'acym__entity_select__unselected', '[]');
+        $usersIds = json_decode(empty($selected) ? '[]' : $selected, true);
+        $usersIdsUnselected = json_decode(empty($unselected) ? '[]' : $unselected, true);
         $listId = acym_getVar('int', 'listId', 0);
 
         $listClass = new ListClass();

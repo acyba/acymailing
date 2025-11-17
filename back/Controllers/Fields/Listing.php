@@ -28,7 +28,11 @@ trait Listing
 
     public function ajaxSetOrdering(): void
     {
-        $order = json_decode(acym_getVar('string', 'order'));
+        $order = json_decode(acym_getVar('string', 'order'), true);
+        if (empty($order)) {
+            $order = [];
+        }
+
         $i = 1;
         $error = false;
         foreach ($order as $field) {

@@ -5,19 +5,27 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Filter\OutputFilter;
 use Joomla\Component\Content\Site\Helper\RouteHelper;
 
-function acym_getPageLink($menu)
+function acym_getPageLink(string $menu): string
 {
     $menuDB = acym_loadObject(
         'SELECT menu.link, menu.id FROM #__menu AS menu
-                JOIN #__menu_types AS menu_types ON menu_types.menutype = menu.menutype
-                WHERE menu.published = 1 AND menu.link LIKE '.acym_escapeDB('%'.$menu.'%')
+        JOIN #__menu_types AS menu_types ON menu_types.menutype = menu.menutype
+        WHERE menu.published = 1 AND menu.link LIKE '.acym_escapeDB('%'.$menu.'%')
     );
 
     return empty($menuDB) ? '' : acym_frontendLink($menuDB->link.'&Itemid='.$menuDB->id, false);
 }
 
-function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $modalTitle, $identifier = null, $width = '800', $height = '400')
-{
+function acym_cmsModal(
+    bool    $isIframe,
+    string  $content,
+    string  $buttonText,
+    bool    $isButton,
+    string  $modalTitle,
+    ?string $identifier = null,
+    int     $width = 800,
+    int     $height = 400
+): string {
     if (empty($identifier)) {
         $identifier = 'identifier_'.rand(1000, 9000);
     }
@@ -68,14 +76,18 @@ function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $modalTitle,
     return $html;
 }
 
-function acym_CMSArticleTitle($id)
+function acym_CMSArticleTitle(int $id): string
 {
-    return acym_loadResult('SELECT title FROM #__content WHERE id = '.intval($id));
+    $title = acym_loadResult('SELECT title FROM #__content WHERE id = '.intval($id));
+
+    return empty($title) ? '' : $title;
 }
 
-function acym_getArticleURL($id, $popup, $text)
+function acym_getArticleURL(int $id, bool $popup, string $text): string
 {
-    if (empty($id)) return '';
+    if (empty($id)) {
+        return '';
+    }
 
     $query = 'SELECT article.id, article.alias, article.catid, cat.alias AS catalias, article.language
         FROM #__content AS article 
@@ -98,7 +110,7 @@ function acym_getArticleURL($id, $popup, $text)
         $url = ContentHelperRoute::getArticleRoute($articleid, $category, $article->language);
     }
 
-    if ($popup == 1) {
+    if ($popup) {
         $url .= (strpos($url, '?') ? '&' : '?').acym_noTemplate();
         $url = acym_frontModal(acym_route($url), $text, false);
     } else {
@@ -108,7 +120,7 @@ function acym_getArticleURL($id, $popup, $text)
     return $url;
 }
 
-function acym_articleSelectionPage()
+function acym_articleSelectionPage(): string
 {
     return 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;object=content&amp;'.acym_getFormToken();
 }
@@ -129,17 +141,17 @@ function acym_getPageOverride(string &$ctrl, string $view, bool $forceBackend = 
     return $folder.DS.'templates'.DS.$app->getTemplate().DS.'html'.DS.ACYM_COMPONENT.DS.$ctrl.DS.$view.'.php';
 }
 
-function acym_cmsCleanHtml($html)
+function acym_cmsCleanHtml(string $html): string
 {
     return $html;
 }
 
-function acym_getAlias($name)
+function acym_getAlias(string $name): string
 {
     return OutputFilter::stringURLSafe($name);
 }
 
-function acym_getAllPages()
+function acym_getAllPages(): array
 {
     $menuType = acym_loadResultArray('SELECT menutype FROM #__menu_types');
     if (empty($menuType)) $menuType = [];
@@ -152,7 +164,7 @@ function acym_getAllPages()
     return $pages;
 }
 
-function acym_getArticles($search)
+function acym_getArticles(string $search): array
 {
     $articles = acym_loadObjectList('SELECT id, title FROM #__content WHERE state = 1 AND title LIKE '.acym_escapeDB('%'.$search.'%'));
 
@@ -167,7 +179,7 @@ function acym_getArticles($search)
     return $return;
 }
 
-function acym_getArticleById($id)
+function acym_getArticleById(int $id): array
 {
     $article = acym_loadObject('SELECT id, title FROM #__content WHERE state = 1 AND id = '.intval($id));
 

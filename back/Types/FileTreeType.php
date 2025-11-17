@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymObject;
 
 class FileTreeType extends AcymObject
 {
-    public function display($folders, $currentFolder, $nameInput)
+    public function display(array $folders, string $currentFolder, string $nameInput): string
     {
         $tree = [];
         foreach ($folders as $root => $children) {
@@ -20,7 +20,7 @@ class FileTreeType extends AcymObject
         return $treeView;
     }
 
-    private function searchChildren($folders, $root)
+    private function searchChildren(array $folders, string $root): array
     {
         $tree = [];
         $tree[$root] = [];
@@ -44,9 +44,12 @@ class FileTreeType extends AcymObject
         return $tree;
     }
 
-    private function displayTree($tree, $pathValue, $path = '')
+    private function displayTree(array $tree, string $pathValue, string $path = ''): string
     {
-        if (empty($tree)) return '';
+        if (empty($tree)) {
+            return '';
+        }
+
         $results = '<ul>';
         foreach ($tree as $key => $treeItem) {
             if (empty($path)) {
@@ -65,7 +68,9 @@ class FileTreeType extends AcymObject
                 $icon .= '-open';
             }
 
-            if (empty($treeItem)) $extraClass .= ' tree-empty';
+            if (empty($treeItem)) {
+                $extraClass .= ' tree-empty';
+            }
 
             $subTree = $this->displayTree($treeItem, $pathValue, $currentPath);
             $results .= '<li class="tree-child-item '.acym_escape($extraClass).'" data-path="'.acym_escape($currentPath).'">

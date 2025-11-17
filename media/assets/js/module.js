@@ -1,18 +1,20 @@
 if (typeof submitAcymForm !== 'function') {
-    var acytask, acyformName, acysubmitting;
+    let currentlySubmittingForm = '';
+    let currentAction = '';
+    window.acyFormName = '';
 
     blockPasteEvent();
 
-    function submitAcymForm(newtask, newformName, submitFunction) {
-        if (typeof acysubmitting !== 'undefined' && acysubmitting !== undefined && acysubmitting === newformName) {
-            return;
+    function submitAcymForm(task, formName, submitFunction) {
+        if (currentlySubmittingForm === formName) {
+            return false;
         }
 
-        acytask = newtask;
-        acyformName = newformName;
+        currentAction = task;
+        window.acyFormName = formName;
         submitFunction = submitFunction === undefined ? 'acymSubmitSubForm' : submitFunction;
 
-        const recaptchaid = newformName ? newformName + '-captcha' : 'acym-captcha';
+        const recaptchaid = formName ? formName + '-captcha' : 'acym-captcha';
         const initRecaptcha = document.querySelector('#' + recaptchaid + '[class="acyg-recaptcha"][data-size="invisible"]');
 
         if (!initRecaptcha || typeof grecaptcha !== 'object') {
@@ -23,7 +25,9 @@ if (typeof submitAcymForm !== 'function') {
             initRecaptcha.className = 'g-recaptcha';
             let invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
 
-            if (!invisibleRecaptcha) return window[submitFunction]();
+            if (!invisibleRecaptcha) {
+                return window[submitFunction]();
+            }
 
             let grcID = invisibleRecaptcha.getAttribute('grcID');
 
@@ -47,23 +51,28 @@ if (typeof submitAcymForm !== 'function') {
             }
         } else {
             let captcha = document.getElementById(recaptchaid);
-            if (!captcha) return window[submitFunction]();
+            if (!captcha) {
+                return window[submitFunction]();
+            }
+
             grecaptcha.ready(function () {
                 grecaptcha.execute(captcha.getAttribute('data-sitekey'), {action: 'submit'}).then(function (token) {
-                    var input = document.createElement('input');
+                    const input = document.createElement('input');
                     input.setAttribute('type', 'hidden');
                     input.setAttribute('name', 'g-recaptcha-response');
                     input.setAttribute('value', token);
-                    document.getElementById(newformName).appendChild(input);
+                    document.getElementById(window.acyFormName).appendChild(input);
                     return window[submitFunction]();
                 });
             });
+
+            return false;
         }
     }
 
     function resetRecaptcha() {
         let recaptchaid = 'acym-captcha';
-        if (acyformName) recaptchaid = acyformName + '-captcha';
+        if (window.acyFormName) recaptchaid = window.acyFormName + '-captcha';
 
         let invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
         if (!invisibleRecaptcha) return;
@@ -73,27 +82,27 @@ if (typeof submitAcymForm !== 'function') {
     }
 
     function acym_resetInvalidClass() {
-        let invalidFields = document.querySelectorAll('#' + acyformName + ' .acym_invalid_field');
+        let invalidFields = document.querySelectorAll('#' + window.acyFormName + ' .acym_invalid_field');
         if (invalidFields.length !== 0) {
             for (let i = 0 ; i < invalidFields.length ; i++) {
                 invalidFields[i].classList.remove('acym_invalid_field');
             }
         }
 
-        let errorZones = document.querySelectorAll('#' + acyformName + ' .acym__field__error__block');
+        let errorZones = document.querySelectorAll('#' + window.acyFormName + ' .acym__field__error__block');
         if (errorZones.length !== 0) {
             for (let i = 0 ; i < errorZones.length ; i++) {
                 errorZones[i].classList.remove('acym__field__error__block__active');
             }
         }
 
-        let displayedMessages = document.querySelectorAll('#' + acyformName + ' .acym__message__invalid__field');
+        let displayedMessages = document.querySelectorAll('#' + window.acyFormName + ' .acym__message__invalid__field');
         if (displayedMessages.length !== 0) {
             for (let i = 0 ; i < displayedMessages.length ; i++) {
                 displayedMessages[i].classList.remove('acym__message__invalid__field__active');
             }
         }
-        let displayedCross = document.querySelectorAll('#' + acyformName + ' .acym__cross__invalid');
+        let displayedCross = document.querySelectorAll('#' + window.acyFormName + ' .acym__cross__invalid');
         if (displayedCross.length !== 0) {
             for (let i = 0 ; i < displayedCross.length ; i++) {
                 displayedCross[i].classList.remove('acym__cross__invalid__active');
@@ -108,7 +117,7 @@ if (typeof submitAcymForm !== 'function') {
                 emailField.value = emailField.value.replace(/ /g, '');
             }
 
-            let filter = acymModule['emailRegex'];
+            const filter = acymModule['emailRegex'];
             if (emailField.value === acymModule['EMAILCAPTION'] || !filter.test(emailField.value)) {
                 acymAddInvalidClass(emailField.name, validation, acymModule['VALID_EMAIL']);
             }
@@ -126,7 +135,7 @@ if (typeof submitAcymForm !== 'function') {
     }
 
     function acym_handleRequiredRadio(validation) {
-        let requiredRadio = document.querySelectorAll('#' + acyformName + ' [type="radio"][data-required]');
+        let requiredRadio = document.querySelectorAll('#' + window.acyFormName + ' [type="radio"][data-required]');
         if (requiredRadio.length === 0) return;
 
         let lastName = '';
@@ -156,7 +165,7 @@ if (typeof submitAcymForm !== 'function') {
     }
 
     function acym_handleRequiredCheckbox(validation) {
-        let requiredCheckbox = document.querySelectorAll('#' + acyformName + ' [type="checkbox"][data-required]');
+        let requiredCheckbox = document.querySelectorAll('#' + window.acyFormName + ' [type="checkbox"][data-required]');
         if (requiredCheckbox.length === 0) return;
 
         let lastName = '';
@@ -187,7 +196,7 @@ if (typeof submitAcymForm !== 'function') {
     }
 
     function acym_handleRequiredDate(validation) {
-        let requiredDate = document.querySelectorAll('#' + acyformName + ' [acym-field-type="date"][data-required]');
+        let requiredDate = document.querySelectorAll('#' + window.acyFormName + ' [acym-field-type="date"][data-required]');
         if (requiredDate.length === 0) return;
 
         let lastName = '';
@@ -218,7 +227,7 @@ if (typeof submitAcymForm !== 'function') {
 
     function acym_handleOtherRequiredFields(validation) {
         let requiredFields = document.querySelectorAll('#'
-                                                       + acyformName
+                                                       + window.acyFormName
                                                        + ' [data-required]:not([type="checkbox"]):not([type="radio"]):not([acym-field-type="date"]):not([name="captcha_code"])');
         if (requiredFields.length === 0) return;
 
@@ -241,7 +250,7 @@ if (typeof submitAcymForm !== 'function') {
     }
 
     function acym_handleAuthorizedContent(validation) {
-        let authorizeContent = document.querySelectorAll('#' + acyformName + ' [data-authorized-content]');
+        let authorizeContent = document.querySelectorAll('#' + window.acyFormName + ' [data-authorized-content]');
         if (authorizeContent.length === 0) return;
 
         for (let i = 0 ; i < authorizeContent.length ; i++) {
@@ -288,19 +297,8 @@ if (typeof submitAcymForm !== 'function') {
     }
 
     function acymSubmitSubForm() {
-        let varform = document[acyformName];
-        let validation = {errors: 0};
-        let filterEmail = acymModule['emailRegex'];
-
-        // I don't understand this code, I guess it's useful
-        if (!varform.elements) {
-            //Try to get the right form as we may have several ones on the same page with the same ID... :(
-            if (varform[0].elements['user[email]'] && varform[0].elements['user[email]'].value && filterEmail.test(varform[0].elements['user[email]'].value)) {
-                varform = varform[0];
-            } else {
-                varform = varform[varform.length - 1];
-            }
-        }
+        const varform = document.getElementById(window.acyFormName);
+        const validation = {errors: 0};
 
         acym_resetInvalidClass();
         acym_checkEmailField(varform, 'user[email]', validation);
@@ -328,7 +326,7 @@ if (typeof submitAcymForm !== 'function') {
             }
 
             if (!listschecked) {
-                if (acytask !== 'unsubscribe') {
+                if (currentAction !== 'unsubscribe') {
                     alert(acymModule['NO_LIST_SELECTED']);
                 } else {
                     alert(acymModule['NO_LIST_SELECTED_UNSUB']);
@@ -337,7 +335,7 @@ if (typeof submitAcymForm !== 'function') {
             }
         }
 
-        if (acytask !== 'unsubscribe') {
+        if (currentAction !== 'unsubscribe') {
             let termsandconditions = varform.elements['terms'];
             if (termsandconditions && !termsandconditions.checked) {
                 if (typeof acymModule != 'undefined') {
@@ -346,11 +344,10 @@ if (typeof submitAcymForm !== 'function') {
                 return false;
             }
 
-            if (typeof acymModule != 'undefined' && typeof acymModule['excludeValues' + acyformName] != 'undefined') {
-                for (let fieldName in acymModule['excludeValues' + acyformName]) {
-                    if (!acymModule['excludeValues' + acyformName].hasOwnProperty(fieldName)) continue;
-                    if (!varform.elements['user[' + fieldName + ']'] || varform.elements['user[' + fieldName + ']'].value != acymModule['excludeValues'
-                                                                                                                                        + acyformName][fieldName]) {
+            if (typeof acymModule != 'undefined' && typeof acymModule['excludeValues' + window.acyFormName] != 'undefined') {
+                for (let fieldName in acymModule['excludeValues' + window.acyFormName]) {
+                    if (!acymModule['excludeValues' + window.acyFormName].hasOwnProperty(fieldName)) continue;
+                    if (!varform.elements[`user[${fieldName}]`] || varform.elements[`user[${fieldName}]`].value != acymModule[`excludeValues${window.acyFormName}`][fieldName]) {
                         continue;
                     }
 
@@ -361,13 +358,13 @@ if (typeof submitAcymForm !== 'function') {
 
         // Handle google analytics
         if (typeof ga != 'undefined') {
-            let gaType = acytask === 'unsubscribe' ? 'unsubscribe' : 'subscribe';
+            let gaType = currentAction === 'unsubscribe' ? 'unsubscribe' : 'subscribe';
             ga('send', 'pageview', gaType);
         }
 
         // Set the form's task field to subscribe / unsubscribe
-        let taskField = varform.task;
-        taskField.value = acytask;
+        const taskField = varform.task;
+        taskField.value = currentAction;
 
         let formType = '';
         if (undefined != varform.elements['acymformtype']) {
@@ -380,66 +377,59 @@ if (typeof submitAcymForm !== 'function') {
         }
 
         // If no ajax, submit the form
-        if (!varform.elements['ajax']
+        if (
+            !varform.elements['ajax']
             || !varform.elements['ajax'].value
-            || varform.elements['ajax'].value
-            === '0'
-            || varform.elements['ajax'].value
-            === 0) {
+            || varform.elements['ajax'].value === '0'
+            || varform.elements['ajax'].value === 0
+        ) {
             if ('shortcode' == formType && '' == redirect) {
                 varform.elements['redirect'].value = window.location.href;
             }
-            acymApplyCookie(acyformName);
+            acymApplyCookie();
 
-            varform.submit();
-            return false;
+            return true;
         }
 
-        const form = document.getElementById(acyformName);
+        const form = document.getElementById(window.acyFormName);
         const formData = new FormData(form);
 
         // Change the acyba form's opacity to show we are doing stuff
         form.className += ' acym_module_loading';
         form.style.filter = 'alpha(opacity=50)';
         form.style.opacity = '0.5';
-        acysubmitting = acyformName;
+        currentlySubmittingForm = window.acyFormName;
 
         // Delete the previous error messages if the user re-submits the form
-        let previousErrorMessages = document.querySelectorAll('.responseContainer.acym_module_error.message_' + acyformName);
+        const previousErrorMessages = document.querySelectorAll('.responseContainer.acym_module_error.message_' + window.acyFormName);
         Array.prototype.forEach.call(previousErrorMessages, function (node) {
             node.parentNode.removeChild(node);
         });
 
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', form.getAttribute('action'));
-        xhr.onload = function () {
-            let message = 'Ajax Request Failure';
-            let type = 'error';
-            if (acysubmitting === acyformName) {
-                acysubmitting = '';
-            }
-
-            if (xhr.status === 200) {
-                try {
-                    let response = JSON.parse(xhr.responseText);
-                    message = response.message;
-                    type = response.type;
-                } catch {
-                    message = xhr.responseText;
+        fetch(form.getAttribute('action'), {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                acymDisplayAjaxResponse(data.message, data.type);
+            })
+            .catch(err => {
+                console.error(err);
+                acymDisplayAjaxResponse('Ajax Request Failure', 'error');
+            })
+            .finally(() => {
+                if (currentlySubmittingForm === window.acyFormName) {
+                    currentlySubmittingForm = '';
                 }
-            } else {
-                console.log(xhr.status);
-                console.log(xhr.responseText);
-            }
-            acymDisplayAjaxResponse(message, type, acyformName);
-        };
-        xhr.send(formData);
+            });
 
+        // We prevent the form from submitting as we are doing it using ajax
         return false;
     }
 
     function acymAddInvalidClass(elemName, validation, message) {
-        let elToInvalidate = document.querySelectorAll('#' + acyformName + ' [name^="' + elemName + '"]');
+        let elToInvalidate = document.querySelectorAll('#' + window.acyFormName + ' [name^="' + elemName + '"]');
         let container = elToInvalidate[0].closest('.onefield');
         for (let i = 0 ; i < elToInvalidate.length ; i++) {
             elToInvalidate[i].classList.add('acym_invalid_field');
@@ -458,14 +448,12 @@ if (typeof submitAcymForm !== 'function') {
         }
 
         validation.errors++;
-
-        return true;
     }
 
-    function acymDisplayAjaxResponse(message, type, formName, replace) {
+    function acymDisplayAjaxResponse(message, type, replace) {
         //create a new div class=responseContainer as we didn't have one already to display the answer
         let responseContainer = document.createElement('div');
-        let fulldiv = document.getElementById('acym_fulldiv_' + formName);
+        let fulldiv = document.getElementById('acym_fulldiv_' + window.acyFormName);
 
         if (fulldiv.firstChild && !fulldiv.classList.contains('acym__subscription__form__popup__overlay')) {
             fulldiv.insertBefore(responseContainer, fulldiv.firstChild);
@@ -478,11 +466,11 @@ if (typeof submitAcymForm !== 'function') {
         //We reset the class name to responseContainer
         responseContainer.className = 'responseContainer';
 
-        let form = document.getElementById(formName);
-        let varform = document[formName];
+        const form = document.getElementById(window.acyFormName);
+
         let successMode = 'replace';
-        if (varform.elements['successmode'] != undefined) {
-            successMode = varform.elements['successmode'].value;
+        if (form.elements['successmode'] != undefined) {
+            successMode = form.elements['successmode'].value;
         }
 
         //We can remove the loading class from the form
@@ -507,7 +495,7 @@ if (typeof submitAcymForm !== 'function') {
         if (replace || (type === 'success' && successMode !== 'toptemp')) {
             form.style.display = 'none';
         }
-        responseContainer.className += ' message_' + formName;
+        responseContainer.className += ' message_' + window.acyFormName;
         responseContainer.className += ' slide_open';
 
         if (type === 'success' && (successMode === 'replacetemp' || successMode === 'toptemp')) {
@@ -522,15 +510,15 @@ if (typeof submitAcymForm !== 'function') {
         }
 
         if (type === 'success') {
-            acymApplyCookie(formName);
+            acymApplyCookie();
         }
     }
 
-    function acymApplyCookie(formName) {
-        let fulldiv = document.getElementById('acym_fulldiv_' + formName);
+    function acymApplyCookie() {
+        const fulldiv = document.getElementById('acym_fulldiv_' + window.acyFormName);
 
         if (fulldiv.classList.contains('acym__subscription__form-erase')) {
-            let form = document.getElementById(formName);
+            const form = document.getElementById(window.acyFormName);
             let cookieExpiration = form.getAttribute('acym-data-cookie');
             if (undefined === cookieExpiration) cookieExpiration = 1;
             let exdate = new Date();

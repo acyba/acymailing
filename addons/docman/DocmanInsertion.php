@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait DocmanInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -21,7 +21,7 @@ trait DocmanInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -31,7 +31,7 @@ trait DocmanInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT documents.*, category.title AS category_title, category.slug AS category_slug, user.username FROM #__docman_documents AS documents';
         $query .= ' JOIN #__docman_categories AS category ON documents.docman_category_id = category.docman_category_id';
@@ -44,7 +44,7 @@ trait DocmanInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -139,7 +139,7 @@ trait DocmanInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT document.*';
         $this->query = 'FROM `#__docman_documents` AS document ';
@@ -179,13 +179,13 @@ trait DocmanInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         //load the tags
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
@@ -231,7 +231,7 @@ trait DocmanInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT documents.*, category.title AS category_title, category.slug AS category_slug, user.username FROM #__docman_documents AS documents';
         $query .= ' JOIN #__docman_categories AS category ON documents.docman_category_id = category.docman_category_id';

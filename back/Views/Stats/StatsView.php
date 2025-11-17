@@ -22,6 +22,6 @@ class StatsView extends AcymView
     {
 
         // We track the fact that he checked the mail stats once for the beginner's steps
-        $this->config->save(['mail_stats_checked_once' => 1]);
+        $this->config->saveConfig(['mail_stats_checked_once' => 1]);
     }
 }

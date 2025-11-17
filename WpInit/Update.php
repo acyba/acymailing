@@ -139,10 +139,11 @@ class Update
         }
 
         // Save the latest version and the license expiration date to warn the user when something's wrong
-        $newConfig = new \stdClass();
-        $newConfig->lastupdatecheck = time();
-        $newConfig->latestversion = $latestVersion;
-        $newConfig->downloadurl = $downloadURL;
+        $newConfig = [
+            'lastupdatecheck' => time(),
+            'latestversion' => $latestVersion,
+            'downloadurl' => $downloadURL,
+        ];
 
         // Save the downloadurl in all the sites' config to ensure a correct download for special ways to update
         if (is_multisite()) {
@@ -154,13 +155,13 @@ class Update
                     $site = get_object_vars($site);
                 }
                 switch_to_blog($site['blog_id']);
-                $config->save($newConfig);
+                $config->saveConfig($newConfig);
             }
 
             switch_to_blog($currentBlog);
         }
 
-        $config->save($newConfig);
+        $config->saveConfig($newConfig);
 
         if (acym_level(ACYM_ESSENTIAL)) {
             acym_checkVersion();
@@ -170,9 +171,11 @@ class Update
     private function resetUpdateData(): void
     {
         $config = acym_config();
-        $newConfig = new \stdClass();
-        $newConfig->downloadurl = '';
-        $newConfig->lastupdatecheck = 0;
-        $config->save($newConfig);
+        $config->saveConfig(
+            [
+                'downloadurl' => '',
+                'lastupdatecheck' => 0,
+            ]
+        );
     }
 }

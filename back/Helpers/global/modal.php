@@ -1,33 +1,36 @@
 <?php
 
 /**
- * @param string  $button The Way to open the modal (Button, link ...). Add the attribute data-open (should be the ID of the modal) to any element.
- * @param string  $data   Modal's content
- * @param null    $id     The ID of the modal
- * @param string  $attributesModal
- * @param string  $attributesButton
- * @param boolean $isButton
- * @param boolean $isLarge
- *
- * @return string The modal
+ * Add the attribute data-open (should be the ID of the modal) to any element to make it open the modal.
  */
-function acym_modal($button, $data, $id = null, $attributesModal = '', $attributesButton = '', $isButton = true, $isLarge = true, $classesModal = ''): string
-{
+function acym_modal(
+    string  $button,
+    string  $data,
+    ?string $id = null,
+    array   $attributesModal = [],
+    array   $attributesButton = [],
+    bool    $isButton = true,
+    bool    $isLarge = true,
+    string  $classesModal = ''
+): string {
     if (empty($id)) {
         $id = 'acymodal_'.rand(1000, 9000);
     }
 
-    $buttonParams = '';
-    if (is_array($attributesButton)) {
-        foreach ($attributesButton as $oneAttribute => $oneValue) {
-            $buttonParams .= ' '.$oneAttribute.'="'.acym_escape($oneValue).'"';
-        }
-    } else {
-        $buttonParams = $attributesButton;
-    }
+    //TODO test with data-iframe param since it's a partial URL
+    $attributesButton['data-open'] = $id;
+    $buttonParams = acym_getFormattedAttributes($attributesButton);
 
-    $modal = $isButton ? '<button type="button" data-open="'.$id.'" '.$buttonParams.'>'.$button.'</button>' : $button;
-    $modal .= '<div class="reveal '.$classesModal.'" '.($isLarge ? 'data-reveal-larger' : '').' id="'.$id.'" '.$attributesModal.' data-reveal>';
+    $attributesModal['class'] = 'reveal '.$classesModal;
+    $attributesModal['id'] = $id;
+    $attributesModal['data-reveal'] = '';
+    if ($isLarge) {
+        $attributesModal['data-reveal-larger'] = '';
+    }
+    $modalParams = acym_getFormattedAttributes($attributesModal);
+
+    $modal = $isButton ? '<button type="button" '.$buttonParams.'>'.$button.'</button>' : $button;
+    $modal .= '<div '.$modalParams.'>';
     $modal .= $data;
     $modal .= '<button class="close-button" data-close aria-label="Close reveal" type="button">';
     $modal .= '<span aria-hidden="true">&times;</span>';
@@ -36,35 +39,25 @@ function acym_modal($button, $data, $id = null, $attributesModal = '', $attribut
     return $modal;
 }
 
-/**
- * Deprecated see acym_modalInclude
- */
-function acym_modal_include($button, $file, $id, $data, $attributes = '', $classModal = '', $containerAttributes = '')
-{
-    return acym_modalInclude($button, $file, $id, $data, $attributes = '', $classModal = '', $containerAttributes = '');
-}
-
-/**
- * @param string $button
- * @param string $file
- * @param string $id
- * @param array  $data Is used in the included file, don't remove
- * @param string $attributes
- * @param string $classModal
- * @param string $containerAttributes
- *
- * @return string
- */
-function acym_modalInclude($button, $file, $id, $data, $attributes = '', $classModal = '', $containerAttributes = '')
-{
+function acym_modalInclude(
+    string $button,
+    string $file,
+    string $id,
+    array  $data,
+    string $classModal = '',
+    array  $containerAttributes = []
+): string {
     if (empty($id)) {
         $id = 'acymodal_'.rand(1000, 9000);
     }
 
+    // Both can be used in the included file
     $dataModal = $data;
 
-    $modal = '<div data-open="'.acym_escape($id).'" '.$containerAttributes.'>'.$button;
-    $modal .= '<div class="reveal '.$classModal.'" id="'.acym_escape($id).'" '.$attributes.' data-reveal>';
+    $containerAttributes['data-open'] = $id;
+    $containerParams = acym_getFormattedAttributes($containerAttributes);
+    $modal = '<div '.$containerParams.'>'.$button;
+    $modal .= '<div class="reveal '.acym_escape($classModal).'" id="'.acym_escape($id).'" data-reveal>';
     ob_start();
     include $file;
     $modal .= ob_get_clean();
@@ -75,32 +68,25 @@ function acym_modalInclude($button, $file, $id, $data, $attributes = '', $classM
     return $modal;
 }
 
-/**
- * @param string  $inputEventId
- * @param string  $checkedLists
- * @param boolean $needDisplaySubscribers
- * @param string  $attributesModal
- *
- * @return string The modal
- */
-function acym_modalPaginationLists($inputEventId = '', $checkedLists = '[]', $needDisplaySubscribers = false, $attributesModal = '')
-{
+function acym_modalPaginationLists(
+    string $inputEventId,
+    string $checkedLists = '[]',
+    bool   $needDisplaySubscribers = false
+): string {
     $searchField = acym_filterSearch('', 'modal_search_lists');
 
-    $data = '';
-    if (!empty($inputEventId)) {
-        $data .= '<input type="hidden" id="'.$inputEventId.'">';
-    }
+    $data = '<input type="hidden" id="'.acym_escape($inputEventId).'">';
+
     if ($needDisplaySubscribers) {
         $data .= '<input type="hidden" id="modal__pagination__need__display__sub">';
     }
 
-    $data .= '<div class="cell grid-x" '.$attributesModal.'>
+    $data .= '<div class="cell grid-x" style="display: none;" id="acym__popup__plugin__subscription__lists__modal">
             <input type="hidden" name="show_selected" value="false" id="modal__pagination__show-information">
             <input type="hidden" id="modal__pagination__search__lists">
             <input type="hidden" name="lists_selected" id="acym__modal__lists-selected" value="'.acym_escape($checkedLists).'">
             <div class="cell grid-x">
-                <h4 class="cell text-center acym__title acym__title__secondary">'.acym_translation('ACYM_CHOOSE_LISTS').'</h4>
+                <h4 class="cell text-center acym__title acym__title__secondary">'.acym_escape(acym_translation('ACYM_CHOOSE_LISTS')).'</h4>
             </div>
             <div class="cell grid-x modal__pagination__search">
                 '.$searchField.'
@@ -109,8 +95,10 @@ function acym_modalPaginationLists($inputEventId = '', $checkedLists = '[]', $ne
                 <i class="acymicon-circle-o-notch acymicon-spin"></i>
             </div>
             <div class="cell medium-6 modal__pagination__show">
-                <a href="#" class="acym__color__blue modal__pagination__show-selected modal__pagination__show-button selected">'.acym_translation('ACYM_SHOW_SELECTED_LISTS').'</a>
-                <a href="#" class="acym__color__blue modal__pagination__show-all modal__pagination__show-button">'.acym_translation('ACYM_SHOW_ALL_LISTS').'</a>
+                <a href="#" class="acym__color__blue modal__pagination__show-selected modal__pagination__show-button selected">'.acym_escape(
+            acym_translation('ACYM_SHOW_SELECTED_LISTS')
+        ).'</a>
+                <a href="#" class="acym__color__blue modal__pagination__show-all modal__pagination__show-button">'.acym_escape(acym_translation('ACYM_SHOW_ALL_LISTS')).'</a>
             </div>
             <div class="cell grid-x modal__pagination__listing__lists">
                 <div class="cell modal__pagination__listing__lists__in-form"></div>
@@ -120,8 +108,13 @@ function acym_modalPaginationLists($inputEventId = '', $checkedLists = '[]', $ne
     return $data;
 }
 
-function acym_frontModal($iframeSrc, $buttonText, $isButton, $identifier = null, $iframeClass = null, $additionalContent = '')
-{
+function acym_frontModal(
+    string  $iframeSrc,
+    string  $buttonText,
+    bool    $isButton,
+    ?string $identifier = null,
+    ?string $iframeClass = null
+): string {
     static $loaded = false;
     if (empty($loaded)) {
         $loaded = true;
@@ -140,13 +133,12 @@ function acym_frontModal($iframeSrc, $buttonText, $isButton, $identifier = null,
     ob_start();
     ?>
 	<a class="<?php echo $isButton ? 'btn ' : ''; ?>acym__modal__handle" data-acym-modal="<?php echo acym_escape($identifier); ?>" href="#">
-        <?php echo acym_translation($buttonText); ?>
+        <?php echo acym_escape(acym_translation($buttonText)); ?>
 	</a>
-	<div class="acym__modal" id="acym__modal__<?php echo $identifier; ?>" style="display: none;">
+	<div class="acym__modal" id="acym__modal__<?php echo acym_escape($identifier); ?>" style="display: none;">
 		<div class="acym__modal__content">
 			<div class="acym__modal__close"><span>&times;</span></div>
-            <?php echo $additionalContent; ?>
-			<iframe class="<?php echo $iframeClass; ?>" src="<?php echo $iframeSrc; ?>"></iframe>
+			<iframe class="<?php echo acym_escape($iframeClass); ?>" src="<?php echo acym_escapeUrl($iframeSrc); ?>"></iframe>
 		</div>
 	</div>
     <?php

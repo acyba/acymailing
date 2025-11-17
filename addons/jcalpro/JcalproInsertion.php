@@ -5,7 +5,7 @@ use Joomla\CMS\Date\Date;
 
 trait JcalproInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -22,7 +22,7 @@ trait JcalproInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -33,7 +33,7 @@ trait JcalproInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT event.*, category.title AS cattitle, location.title AS loctitle ';
         $query .= 'FROM `#__jcalpro_events` AS event ';
@@ -47,7 +47,7 @@ trait JcalproInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -148,7 +148,7 @@ trait JcalproInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT event.* ';
         $this->query = 'FROM `#__jcalpro_events` AS event ';
@@ -200,13 +200,13 @@ trait JcalproInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $time = time();
 
@@ -263,7 +263,7 @@ trait JcalproInsertion
         return $this->generateCampaignResult;
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         $jcalproUrlHelper = rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_jcalpro'.DS.'helpers'.DS.'url.php';
         if (file_exists($jcalproUrlHelper)) include_once $jcalproUrlHelper;
@@ -271,7 +271,7 @@ trait JcalproInsertion
         return true;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT event.* ';
         $query .= 'FROM `#__jcalpro_events` AS event ';

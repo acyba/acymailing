@@ -4,7 +4,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 
-function acym_route($url, $xhtml = true, $ssl = null)
+function acym_route(string $url, bool $xhtml = true): string
 {
     if (ACYM_J40) {
         global $Itemid;
@@ -13,15 +13,15 @@ function acym_route($url, $xhtml = true, $ssl = null)
         }
     }
 
-    return Route::_($url, $xhtml, $ssl === null ? 0 : $ssl);
+    return Route::_($url, $xhtml, 0);
 }
 
-function acym_baseURI($pathonly = false)
+function acym_baseURI(bool $pathonly = false): string
 {
     return Uri::base($pathonly);
 }
 
-function acym_completeLink($link, $popup = false, $redirect = false, $forceNoPopup = false)
+function acym_completeLink(string $link, bool $popup = false, bool $redirect = false, bool $forceNoPopup = false): string
 {
     if (($popup || acym_isNoTemplate()) && $forceNoPopup == false) {
         $link .= '&'.acym_noTemplate();
@@ -30,7 +30,7 @@ function acym_completeLink($link, $popup = false, $redirect = false, $forceNoPop
     return acym_route('index.php?option='.ACYM_COMPONENT.'&ctrl='.$link, !$redirect);
 }
 
-function acym_prepareAjaxURL($url)
+function acym_prepareAjaxURL(string $url): string
 {
     return htmlspecialchars_decode(acym_completeLink($url, true));
 }

@@ -8,7 +8,7 @@ use Joomla\CMS\Installer\Installer;
 
 global $acymLanguages;
 
-function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $textdomain = 'acymailing')
+function acym_translation(string $key, bool $jsSafe = false, bool $interpretBackSlashes = true, string $textdomain = 'acymailing'): string
 {
     $translation = Text::_($key, false, $interpretBackSlashes);
 
@@ -19,7 +19,7 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $
     return $translation;
 }
 
-function acym_setLanguage($lang)
+function acym_setLanguage(string $lang): string
 {
     if (ACYM_J40) {
         $previousLanguage = acym_getLanguageTag();
@@ -34,14 +34,14 @@ function acym_setLanguage($lang)
     return $acylanguage->setLanguage($lang);
 }
 
-function acym_translationSprintf()
+function acym_translationSprintf(): string
 {
     $args = func_get_args();
 
     return call_user_func_array(['Joomla\CMS\Language\Text', 'sprintf'], $args);
 }
 
-function acym_getLanguages($uppercaseLangCode = false, $published = false)
+function acym_getLanguages(bool $uppercaseLangCode = false, bool $published = false): array
 {
     $result = [];
 
@@ -79,7 +79,7 @@ function acym_getLanguages($uppercaseLangCode = false, $published = false)
     return $result;
 }
 
-function acym_getLanguageTag($simple = false)
+function acym_getLanguageTag(bool $simple = false): string
 {
     if (ACYM_J40) {
         $acylanguage = Factory::getLanguage();
@@ -93,7 +93,7 @@ function acym_getLanguageTag($simple = false)
     return $simple ? substr($langCode, 0, 2) : $langCode;
 }
 
-function acym_loadLanguageFile($extension = 'joomla', $basePath = JPATH_SITE, $lang = null, $reload = false, $default = true)
+function acym_loadLanguageFile(string $extension = 'joomla', string $basePath = JPATH_SITE, ?string $lang = null, bool $reload = false, bool $default = true): void
 {
     if (ACYM_J40) {
         $acylanguage = Factory::getLanguage();
@@ -104,12 +104,12 @@ function acym_loadLanguageFile($extension = 'joomla', $basePath = JPATH_SITE, $l
     $acylanguage->load($extension, $basePath, $lang, $reload, $default);
 }
 
-function acym_getLanguagePath($basePath = ACYM_BASE, $language = null)
+function acym_getLanguagePath(string $basePath = ACYM_BASE, ?string $language = null): string
 {
     return LanguageHelper::getLanguagePath(rtrim($basePath, DS), $language);
 }
 
-function acym_languageOption($emailLanguage, $name)
+function acym_languageOption(?string $emailLanguage, string $name): string
 {
     $languages = acym_getLanguages(true, true);
     if (count($languages) < 2) return '';
@@ -129,7 +129,7 @@ function acym_languageOption($emailLanguage, $name)
     );
 }
 
-function acym_getCmsUserLanguage($userId = null)
+function acym_getCmsUserLanguage(?int $userId = null): ?string
 {
     if ($userId === null) $userId = acym_currentUserId();
     if (empty($userId)) return '';
@@ -139,7 +139,7 @@ function acym_getCmsUserLanguage($userId = null)
     return $user->getParam('language', $user->getParam('admin_language', ''));
 }
 
-function acym_getTranslationTools()
+function acym_getTranslationTools(): array
 {
     return [];
 }

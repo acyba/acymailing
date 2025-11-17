@@ -73,7 +73,7 @@ class MailboxHelper extends BounceHelper
             }
         }
 
-        if ($conditions['sender'] == 'group') {
+        if ($conditions['sender'] === 'group') {
             $cmsUserId = acym_getCmsUserIdByEmail($fromEmail);
             if (empty($cmsUserId)) {
                 $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_CMS', $fromEmail, ACYM_CMS_TITLE), self::MESSAGE_TYPE_INFO);

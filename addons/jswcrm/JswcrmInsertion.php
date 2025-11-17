@@ -4,7 +4,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait JswcrmInsertion
 {
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -21,7 +21,7 @@ trait JswcrmInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -31,7 +31,7 @@ trait JswcrmInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT contacts.*, category.title AS category_title, category.slug AS category_slug, user.username FROM #__jswcrm_contacts AS contacts';
         $query .= ' JOIN #__jswcrm_categories AS category ON contacts.jswcrm_category_id = category.jswcrm_category_id';
@@ -44,7 +44,7 @@ trait JswcrmInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -139,7 +139,7 @@ trait JswcrmInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT contact.*';
         $this->query = 'FROM `#__jswcrm_contacts` AS contact ';
@@ -179,20 +179,19 @@ trait JswcrmInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         //load the tags
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
 
         if (empty($tags)) return $this->generateCampaignResult;
-
 
         foreach ($tags as $oneTag => $parameter) {
             if (isset($this->tags[$oneTag])) continue;
@@ -231,7 +230,7 @@ trait JswcrmInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT contacts.*, category.title AS category_title, category.slug AS category_slug, user.username FROM #__jswcrm_contacts AS contacts';
         $query .= ' JOIN #__jswcrm_categories AS category ON contacts.jswcrm_category_id = category.jswcrm_category_id';

@@ -113,7 +113,7 @@ trait Installed
 
         if (file_exists($routePlugin)) {
             acym_deleteFolder($routePlugin);
-            if ($pluginClass->delete($id)) {
+            if ($pluginClass->delete([$id])) {
                 acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_SUCCESSFULLY_DELETED'));
             }
         }
@@ -134,7 +134,8 @@ trait Installed
 
         $plugin->active = $plugin->active == 0 ? 1 : 0;
 
-        if (!$pluginClass->save($plugin)) {
+        $savedPluginId = $pluginClass->save($plugin);
+        if (empty($savedPluginId)) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_SAVE_ADD_ON'), [], false);
         }
 

@@ -102,9 +102,10 @@
                                 }
                             }
                             echo acym_info(
-                                implode('<br />', $details),
-                                '',
-                                'acym__tooltip__listing'
+                                [
+                                    'textShownInTooltip' => implode('<br />', $details),
+                                    'classContainer' => 'acym__tooltip__listing',
+                                ]
                             );
                             ?>
 						</div>

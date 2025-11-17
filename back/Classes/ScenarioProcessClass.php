@@ -15,14 +15,14 @@ class ScenarioProcessClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function getOneByScenarioIdUserId(int $scenarioId, int $userId)
+    public function hasUserProcess(int $scenarioId, int $userId): bool
     {
-        $query = 'SELECT * FROM #__acym_scenario_process WHERE scenario_id = '.$scenarioId.' AND user_id = '.$userId;
+        $process = acym_loadObject('SELECT * FROM #__acym_scenario_process WHERE scenario_id = '.$scenarioId.' AND user_id = '.$userId);
 
-        return acym_loadResult($query);
+        return !empty($process);
     }
 
-    public function endProcess(int $scenarioProcessId)
+    public function endProcess(int $scenarioProcessId): void
     {
         $scenarioProcess = new \stdClass();
         $scenarioProcess->id = $scenarioProcessId;
@@ -31,7 +31,7 @@ class ScenarioProcessClass extends AcymClass
         $this->save($scenarioProcess);
     }
 
-    public function getNumberOfTriggerByScenarioId(int $scenarioId)
+    public function getNumberOfTriggerByScenarioId(int $scenarioId): int
     {
         $numberOfTrigger = acym_loadResult('SELECT COUNT(*) FROM #__acym_scenario_process WHERE scenario_id = '.$scenarioId);
 
@@ -39,9 +39,8 @@ class ScenarioProcessClass extends AcymClass
             return 0;
         }
 
-        return $numberOfTrigger;
+        return (int)$numberOfTrigger;
     }
-
 
     public function getMatchingElements(array $settings = []): array
     {

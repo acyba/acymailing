@@ -1,6 +1,6 @@
 <?php
 
-function acym_getEmailCssFixes()
+function acym_getEmailCssFixes(): string
 {
     $emailFixes = acym_fileGetContent(ACYM_MEDIA.'css'.DS.'email.min.css');
 
@@ -12,7 +12,7 @@ function acym_getEmailCssFixes()
     return $emailFixes;
 }
 
-function acym_getMailThumbnail($thumbnail)
+function acym_getMailThumbnail(?string $thumbnail): string
 {
     $sources = [
         '',
@@ -31,17 +31,21 @@ function acym_getMailThumbnail($thumbnail)
     return ACYM_IMAGES.'templates/default_template_thumbnail.png';
 }
 
-function acym_getFlagByCode($code)
+function acym_getFlagByCode(string $code): string
 {
     $code = explode('-', $code);
     $finalCode = '';
 
     foreach ($code as $part) {
         $part = strtolower($part);
-        if (file_exists(ACYM_MEDIA.'images'.DS.'flags'.DS.$part.'.png')) $finalCode = $part;
+        if (file_exists(ACYM_MEDIA.'images'.DS.'flags'.DS.$part.'.png')) {
+            $finalCode = $part;
+        }
     }
 
-    if (empty($finalCode)) $finalCode = 'unknown';
+    if (empty($finalCode)) {
+        $finalCode = 'unknown';
+    }
 
     return ACYM_IMAGES.'flags/'.$finalCode.'.png';
 }

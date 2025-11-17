@@ -14,14 +14,13 @@ class UserStatClass extends AcymClass
         $this->table = 'user_stat';
     }
 
-    public function save($userStat, $overrideSendDate = false)
+    public function save(object $element, bool $overrideSendDate = false): ?int
     {
+        $userStat = get_object_vars($element);
+
         $column = [];
         $valueColumn = [];
         $columnName = acym_getColumns('user_stat');
-        if (![$userStat] || !is_array($userStat)) {
-            $userStat = (array)$userStat;
-        }
 
         foreach ($userStat as $key => $value) {
             if (in_array($key, $columnName)) {
@@ -84,17 +83,17 @@ class UserStatClass extends AcymClass
             $query .= implode(',', $onDuplicate);
         }
 
-        acym_query($query);
+        return (int)acym_query($query);
     }
 
-    public function getOneByMailAndUserId($mail_id, $user_id)
+    public function getOneByMailAndUserId(int $mailId, int $userId): ?object
     {
-        $query = 'SELECT * FROM #__acym_user_stat WHERE `mail_id` = '.intval($mail_id).' AND `user_id` = '.intval($user_id);
+        $userStat = acym_loadObject('SELECT * FROM #__acym_user_stat WHERE `mail_id` = '.intval($mailId).' AND `user_id` = '.intval($userId));
 
-        return acym_loadObject($query);
+        return empty($userStat) ? null : $userStat;
     }
 
-    public function getDetailedStatistics(array $options)
+    public function getDetailedStatistics(array $options): array
     {
         $limit = $options['limit'] ?? 10;
         $offset = $options['offset'] ?? 0;
@@ -111,11 +110,14 @@ class UserStatClass extends AcymClass
         );
     }
 
-    public function getAllUserStatByUserId($idUser)
+    public function getAllUserStatByUserId(int $userId): array
     {
-        $query = 'SELECT * FROM #__acym_user_stat WHERE user_id = '.intval($idUser);
-
-        return acym_loadObjectList($query);
+        return acym_loadObjectList(
+            'SELECT userStat.*, mail.subject
+            FROM #__acym_user_stat AS userStat 
+            JOIN #__acym_mail AS mail ON mail.id = userStat.mail_id
+            WHERE userStat.user_id = '.intval($userId)
+        );
     }
 
     public function getDetailedStats(array $settings): array
@@ -217,27 +219,8 @@ class UserStatClass extends AcymClass
         ];
     }
 
-    public function getTotalFailClickOpenByMailIds($mailIds)
+    public function getOpenTimeStats(array $mailIds): array
     {
-        acym_arrayToInteger($mailIds);
-        if (empty($mailIds)) return [];
-
-        $query = 'SELECT mail_id, SUM(fail) AS fail, SUM(sent) AS sent, SUM(open) AS open FROM #__acym_user_stat WHERE mail_id IN ('.implode(',', $mailIds).') GROUP BY mail_id';
-
-        return acym_loadObjectList($query, 'mail_id');
-    }
-
-    public function getUserWithNoMailOpen()
-    {
-        $query = 'SELECT user_id FROM #__acym_user_stat GROUP BY user_id HAVING MAX(open) = 0';
-
-        return acym_loadResultArray($query);
-    }
-
-    public function getOpenTimeStats($mailIds)
-    {
-
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
         acym_arrayToInteger($mailIds);
         $where = empty($mailIds) ? '' : ' AND mail_id in ('.implode(',', $mailIds).')';
 
@@ -249,52 +232,23 @@ class UserStatClass extends AcymClass
         return $return;
     }
 
-    public function getDefaultStat()
+    public function getDefaultStat(): array
     {
         $percentageRemaining = 100;
         $stats = [];
 
-
         for ($day = 0; $day < 7; $day++) {
             $stats[$day] = [];
             for ($hour = 0; $hour < 8; $hour++) {
-                $hourPercentage = $this->getRandomStatOpenTime($percentageRemaining, $hour);
-                $stats[$day][$hour] = $hourPercentage;
+                $stats[$day][$hour] = $this->getRandomStatOpenTime($percentageRemaining, $hour);
             }
         }
 
         return $stats;
     }
 
-    private function getRandomStatOpenTime(&$percentageRemaining, $hour)
+    public function getOpenSourcesStats(array $mailIds = []): array
     {
-        if (empty($percentageRemaining)) return 0;
-        $randoms = [
-            0 => [0, 1],
-            1 => [0, 2],
-            2 => [1, 2],
-            3 => [1, 3],
-            4 => [3, 5],
-            5 => [1, 3],
-            6 => [1, 2],
-            7 => [0, 2],
-        ];
-
-        $percentage = rand($randoms[$hour][0], $randoms[$hour][1]);
-
-        if ($percentageRemaining - $percentage < 0) return 0;
-
-
-        $percentageRemaining -= $percentage;
-
-        return $percentage;
-    }
-
-    public function getOpenSourcesStats($mailIds = [])
-    {
-        if (!is_array($mailIds)) {
-            $mailIds = [$mailIds];
-        }
         acym_arrayToInteger($mailIds);
 
         $query = 'SELECT opened_with, COUNT(*) AS number FROM #__acym_user_stat WHERE `open` > 0';
@@ -342,5 +296,33 @@ class UserStatClass extends AcymClass
         }
 
         return ['message' => implode("\r\n", $messages)];
+    }
+
+    private function getRandomStatOpenTime(int &$percentageRemaining, int $hour): int
+    {
+        if (empty($percentageRemaining)) {
+            return 0;
+        }
+
+        $randoms = [
+            0 => [0, 1],
+            1 => [0, 2],
+            2 => [1, 2],
+            3 => [1, 3],
+            4 => [3, 5],
+            5 => [1, 3],
+            6 => [1, 2],
+            7 => [0, 2],
+        ];
+
+        $percentage = rand($randoms[$hour][0], $randoms[$hour][1]);
+
+        if ($percentageRemaining - $percentage < 0) {
+            return 0;
+        }
+
+        $percentageRemaining -= $percentage;
+
+        return $percentage;
     }
 }

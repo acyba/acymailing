@@ -6,10 +6,7 @@ use Joomla\CMS\Http\HttpFactory;
 /**
  * Returns the url content or false if couldn't get it
  *
- * @param string $url
- * @param int    $timeout
- *
- * @return bool|mixed|string
+ * @return bool|null|string
  */
 function acym_fileGetContent(string $url, int $timeout = 10)
 {
@@ -75,7 +72,7 @@ function acym_fileGetContent(string $url, int $timeout = 10)
     return $data;
 }
 
-function acym_extractArchive($archive, $destination)
+function acym_extractArchive(string $archive, string $destination): bool
 {
     if (ACYM_J40) {
         $archiveManager = new Archive();

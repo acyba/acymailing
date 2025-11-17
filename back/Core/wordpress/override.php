@@ -1,6 +1,6 @@
 <?php
 
-function acym_getEmailOverrides()
+function acym_getEmailOverrides(): array
 {
     $emailOverrides = [
         [
@@ -429,7 +429,7 @@ All at {param4}
     return $emailOverrides;
 }
 
-function acym_getOverrideParamsByName($name)
+function acym_getOverrideParamsByName(string $name): array
 {
     $overridesParamsAll = [
         'wp-adminNewUserAdmin' => [

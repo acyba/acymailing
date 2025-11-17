@@ -116,7 +116,7 @@ class ConfigurationController extends AcymController
 
     public function seeLogs(): void
     {
-        $filename = acym_getVar('string', 'filename');
+        $filename = acym_getVar('string', 'filename', '');
 
         if (empty($filename) || !acym_fileNameValid($filename)) {
             echo acym_translation('ACYM_FILENAME_EMPTY_OR_NOT_VALID');

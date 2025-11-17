@@ -51,7 +51,8 @@
 </div>
 <div class="cell large-6 grid-x acym_vcenter acym__mail__edit__followup">
     <?php
-    $inputDelay = '<input type="number" class="cell large-1 medium-3 margin-left-1" min="0" name="followup[delay]" value="'.(empty($data['mail']->delay) ? 0 : $data['mail']->delay).'">';
+    $inputDelay = '<input type="number" class="cell large-1 medium-3 margin-left-1" min="0" name="followup[delay]" value="'.(empty($data['mail']->delay) ? 0
+            : $data['mail']->delay).'">';
     $selectDelayUnit = '<span class="cell large-3 medium-5 margin-left-1 margin-right-1">'.acym_select(
             $data['delay_unit'],
             'followup[delay_unit]',
@@ -68,7 +69,7 @@
 		<label class="cell">
             <?php
             echo acym_translation('ACYM_EMAIL_LANGUAGE');
-            echo acym_info('ACYM_EMAIL_LANGUAGE_DESC');
+            echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_LANGUAGE_DESC']);
             echo $data['langChoice'];
             ?>
 		</label>

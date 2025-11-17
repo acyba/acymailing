@@ -7,7 +7,7 @@ trait RseventsproInsertion
 {
     private $rsconfig;
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -24,7 +24,7 @@ trait RseventsproInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -33,7 +33,7 @@ trait RseventsproInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT event.*, location.name AS location_name, location.id AS location_id '
             .'FROM `#__rseventspro_events` AS event '
@@ -46,7 +46,7 @@ trait RseventsproInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -159,7 +159,7 @@ trait RseventsproInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT event.* ';
         $this->query = 'FROM `#__rseventspro_events` AS event ';
@@ -211,13 +211,13 @@ trait RseventsproInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         acym_loadLanguageFile('com_rseventspro', JPATH_SITE);
 
@@ -233,7 +233,7 @@ trait RseventsproInsertion
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $time = time();
 
@@ -316,7 +316,7 @@ trait RseventsproInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query =
             'SELECT event.*, location.name AS location_name, '

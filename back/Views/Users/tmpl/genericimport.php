@@ -48,7 +48,7 @@
                     echo acym_switch(
                         'import_generate_generic',
                         $this->config->get('import_generate', 1),
-                        acym_translation('ACYM_GENERATE_NAME').acym_info('ACYM_GENERATE_NAME_DESC')
+                        acym_translation('ACYM_GENERATE_NAME').acym_info(['textShownInTooltip' => 'ACYM_GENERATE_NAME_DESC'])
                     );
                     ?>
 				</div>
@@ -87,8 +87,8 @@
                 acym_translation('ACYM_IMPORT_SUBSCRIBERS'),
                 $modalData,
                 'acym__user__import__add-subscription__modal',
-                '',
-                'class="button margin-bottom-0"'
+                [],
+                ['class' => 'button margin-bottom-0']
             );
             ?>
 			<div class="cell hide-for-small-only medium-auto"></div>

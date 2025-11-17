@@ -1,7 +1,7 @@
 <div id="acym__users__import__mailpoet_users" class="grid-x padding-vertical-2 padding-horizontal-2 align-center">
 	<div class="cell medium-8 grid-x grid-margin-x acym_vcenter">
 		<div class="cell medium-4">
-            <?php echo acym_translation('ACYM_ONLY_IMPORT_FROM_MAILPOET_LISTS').acym_info('ACYM_ONLY_IMPORT_FROM_MAILPOET_LISTS_DESC'); ?>
+            <?php echo acym_translation('ACYM_ONLY_IMPORT_FROM_MAILPOET_LISTS').acym_info(['textShownInTooltip' => 'ACYM_ONLY_IMPORT_FROM_MAILPOET_LISTS_DESC']); ?>
 		</div>
 		<div class="cell shrink medium-8">
             <?php

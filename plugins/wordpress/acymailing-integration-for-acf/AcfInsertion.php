@@ -29,7 +29,7 @@ trait AcymAcfInsertion
         'link',
     ];
 
-    public function getStandardStructure(&$customView): void
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -81,7 +81,7 @@ trait AcymAcfInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null): void
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->initAcfData();
 
@@ -328,14 +328,14 @@ trait AcymAcfInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email, $send): void
+    public function replaceContent(object &$email): void
     {
         $this->initAcfData();
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email): stdClass
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -391,7 +391,7 @@ trait AcymAcfInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag): string
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT post.*, `user`.`user_nicename`, `user`.`display_name` 
                     FROM #__posts AS post 
@@ -517,7 +517,6 @@ trait AcymAcfInsertion
 
     protected function getTranslationId($elementId, $translationTool, $defaultLanguage = false): int
     {
-        $elementId = intval($elementId);
         $languageCode = $this->emailLanguage;
 
         if ($defaultLanguage) {

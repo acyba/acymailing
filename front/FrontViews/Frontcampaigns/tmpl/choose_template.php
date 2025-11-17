@@ -25,7 +25,9 @@
 			<div class="grid-x medium-shrink text-center cell acym__templates__choose__type-templates">
 				<a
 						href="<?php echo acym_completeLink(
-                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.intval(
+                                $data['campaignID']
+                            ).'&campaign_type='.$campaignType
                         ); ?>"
 						class="button"
 						id="acym__templates__choose__create__empty">
@@ -44,10 +46,12 @@
 						<input type="hidden"
 							   class="acym__templates__oneTpl__choose"
 							   value="<?php echo acym_completeLink(
-                                   acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&campaignId='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                                   acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&campaignId='.intval(
+                                       $data['campaignID']
+                                   ).'&campaign_type='.$campaignType
                                ); ?>" />
 						<div class="cell acym__templates__pic text-center">
-							<img src="<?php echo acym_getMailThumbnail($oneTemplate->thumbnail); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />
+							<img src="<?php echo acym_escapeUrl(acym_getMailThumbnail($oneTemplate->thumbnail)); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />
                             <?php
                             if ($oneTemplate->drag_editor) {
                                 echo '<div class="acym__templates__choose__ribbon acyeditor">'.acym_translation('ACYM_DD_EDITOR').'</div>';

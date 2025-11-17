@@ -76,7 +76,7 @@
 							   class="acym__templates__oneTpl__choose"
 							   value="<?php echo $link; ?>" />
 						<div class="cell acym__templates__pic text-center">
-							<img src="<?php echo acym_getMailThumbnail($oneTemplate->thumbnail); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />
+							<img src="<?php echo acym_escapeUrl(acym_getMailThumbnail($oneTemplate->thumbnail)); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />
                             <?php
                             if ($oneTemplate->drag_editor) {
                                 echo '<div class="acym__templates__choose__ribbon acyeditor">'.acym_translation('ACYM_DD_EDITOR').'</div>';

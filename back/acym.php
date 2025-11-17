@@ -1,16 +1,25 @@
 <?php
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+$app = Factory::getApplication();
 
 if (version_compare(PHP_VERSION, '7.4.0', '<')) {
-    $app = Factory::getApplication();
     $app->enqueueMessage('This version of AcyMailing requires at least PHP 7.4.0, it is time to update the PHP version of your server!', 'error');
 } else {
+    $user = Factory::getUser();
+
+    if (!$user->authorise('core.manage', 'com_acym')) {
+        $app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
+
+        return;
+    }
+
     $ds = DIRECTORY_SEPARATOR;
     $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'Core'.$ds.'init.php';
     if (!include_once $helperFile) {
-        $app = Factory::getApplication();
-        $app->enqueueMessage('Could not load AcyMailing helper file', 'error');
+        $app->enqueueMessage('AcyMailing could not be initialised.', 'error');
 
         return;
     }

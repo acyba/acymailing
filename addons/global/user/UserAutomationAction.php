@@ -2,7 +2,7 @@
 
 trait UserAutomationActions
 {
-    public function onAcymDeclareActions(&$actions)
+    public function onAcymDeclareActions(array &$actions): void
     {
         $allGroups = acym_getGroups();
         $groups = ['none' => acym_translation('ACYM_SELECT_GROUP')];
@@ -18,7 +18,7 @@ trait UserAutomationActions
         $actions['acy_group_action']->option = ob_get_clean();
     }
 
-    public function onAcymDeclareActionsScenario(&$actions)
+    public function onAcymDeclareActionsScenario(array &$actions): void
     {
         $this->onAcymDeclareActions($actions);
     }

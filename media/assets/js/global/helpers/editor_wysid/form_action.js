@@ -121,7 +121,10 @@ const acym_editorWysidFormAction = {
 
         return acym_helper.post(ajaxUrl, jQuery('#acym_form').serialize()).done(function (res) {
             if (res.error) {
-                acym_helperNotification.addNotification(res.message, 'error');
+                acym_editorWysidNotifications.addEditorNotification({
+                    message: res.message,
+                    level: 'error'
+                }, 3000, false);
             } else {
                 if (!saveAsTmpl) {
                     jQuery('mails' === controller ? '[name="id"], [name="mail[id]"]' : '[name="campaignId"]').val(res.data.result);
@@ -133,17 +136,17 @@ const acym_editorWysidFormAction = {
                     }
                 } else {
                     acym_editorWysidNotifications.addEditorNotification({
-                        'message': ACYM_JS_TXT.ACYM_TEMPLATE_CREATED,
-                        'level': 'success'
+                        message: ACYM_JS_TXT.ACYM_TEMPLATE_CREATED,
+                        level: 'success'
                     }, 3000, false);
                 }
 
                 if (fromSendTest) {
                     acym_editorWysidTest.sendTest(res.data.result);
                 }
-
-                jQuery('#acym__wysid__warning__thumbnail').toggle();
             }
+
+            jQuery('#acym__wysid__warning__thumbnail').toggle();
             jQuery('#acym__wysid__save__button').removeAttr('disabled');
             acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
             acym_editorWysidTinymce.addTinyMceWYSID();

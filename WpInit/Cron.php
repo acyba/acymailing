@@ -36,6 +36,6 @@ class Cron
         if (!empty($config->get('cron_security', 0)) && !empty($config->get('cron_key'))) {
             $cronKey = '&cronKey='.$config->get('cron_key');
         }
-        acym_asyncCurlCall([acym_frontendLink('cron&task=cron'.$cronKey)]);
+        acym_asyncUrlCalls([acym_frontendLink('cron&task=cron'.$cronKey)]);
     }
 }

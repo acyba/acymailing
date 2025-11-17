@@ -25,7 +25,7 @@ class plgAcymPostmark extends AcymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
-		$config = empty($data['tab']) ? $this->config : $data['tab']->config;
+        $config = empty($data['tab']) ? $this->config : $data['tab']->config;
         $defaultApiKey = $config->get(self::SENDING_METHOD_ID.'_api_key');
         ob_start();
         ?>
@@ -47,7 +47,7 @@ class plgAcymPostmark extends AcymPlugin
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<label class="cell medium-6">
-                    <?php echo acym_translation('ACYM_POSTMARK_STREAM_ID').acym_info('ACYM_STREAM_ID_INFO'); ?>
+                    <?php echo acym_translation('ACYM_POSTMARK_STREAM_ID').acym_info(['textShownInTooltip' => 'ACYM_STREAM_ID_INFO']); ?>
 					<input type="text"
 						   class="cell auto"
 						   name="config[postmark_stream_id]"

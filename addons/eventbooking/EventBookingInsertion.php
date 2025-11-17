@@ -7,7 +7,7 @@ trait EventBookingInsertion
 {
     private $eventbookingconfig;
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -24,7 +24,7 @@ trait EventBookingInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -35,7 +35,7 @@ trait EventBookingInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT event.*, location.name AS location_name FROM `#__eb_events` AS event ';
         $query .= 'LEFT JOIN `#__eb_locations` AS location ON event.location_id = location.id ';
@@ -46,7 +46,7 @@ trait EventBookingInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -119,6 +119,12 @@ trait EventBookingInsertion
                     'default' => false,
                 ],
                 [
+                    'title' => 'ACYM_HIDE_TIME_FOR_DATES',
+                    'type' => 'boolean',
+                    'name' => 'hidetime',
+                    'default' => false,
+                ],
+                [
                     'title' => 'ACYM_TRUNCATE',
                     'type' => 'intextfield',
                     'isNumber' => 1,
@@ -185,7 +191,7 @@ trait EventBookingInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT event.* ';
         $this->query = 'FROM `#__eb_events` AS event ';
@@ -235,13 +241,13 @@ trait EventBookingInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         // Load the eventbooking data
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
@@ -259,7 +265,7 @@ trait EventBookingInsertion
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $time = time();
 
@@ -324,7 +330,7 @@ trait EventBookingInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE, $this->emailLanguage);
         acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR, $this->emailLanguage);
@@ -378,7 +384,11 @@ trait EventBookingInsertion
         $varFields['{eb_sdate}'] = '';
         $varFields['{event_date}'] = '';
         $dateFormat = $this->eventbookingconfig->event_date_format;
-        if (!empty($this->eventbookingconfig->event_time_format) && strpos($dateFormat, $this->eventbookingconfig->event_time_format) === false) {
+        if (
+            empty($tag->hidetime)
+            && !empty($this->eventbookingconfig->event_time_format)
+            && strpos($dateFormat, $this->eventbookingconfig->event_time_format) === false
+        ) {
             $dateFormat .= ' '.$this->eventbookingconfig->event_time_format;
         }
 
@@ -405,11 +415,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_regstart}'] = '';
         if ($element->registration_start_date > '0001-00-00') {
-            $varFields['{eb_regstart}'] = acym_date(
-                $element->registration_start_date,
-                $dateFormat,
-                false
-            );
+            $varFields['{eb_regstart}'] = acym_date($element->registration_start_date, $dateFormat, false);
             if (in_array('eb_regstart', $tag->display)) {
                 $customFields[] = [$varFields['{eb_regstart}'], acym_translation('EB_REGISTRATION_START_DATE')];
             }
@@ -433,11 +439,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_early}'] = '';
         if ($element->early_bird_discount_date > '0001-00-00') {
-            $varFields['{eb_early}'] = acym_date(
-                $element->early_bird_discount_date,
-                $dateFormat,
-                false
-            );
+            $varFields['{eb_early}'] = acym_date($element->early_bird_discount_date, $dateFormat, false);
             if (in_array('eb_early', $tag->display)) {
                 $customFields[] = [$varFields['{eb_early}'], acym_translation('EB_EARLY_BIRD_DISCOUNT_DATE')];
             }
@@ -445,11 +447,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_cancel_before}'] = '';
         if ($element->cancel_before_date > '0001-00-00') {
-            $varFields['{eb_cancel_before}'] = acym_date(
-                $element->cancel_before_date,
-                $dateFormat,
-                false
-            );
+            $varFields['{eb_cancel_before}'] = acym_date($element->cancel_before_date, $dateFormat, false);
             if (in_array('eb_cancel_before', $tag->display)) {
                 $customFields[] = [$varFields['{eb_cancel_before}'], acym_translation('EB_CANCEL_BEFORE_DATE')];
             }
@@ -457,11 +455,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_registrant_edit_close}'] = '';
         if ($element->registrant_edit_close_date > '0001-00-00') {
-            $varFields['{eb_registrant_edit_close}'] = acym_date(
-                $element->registrant_edit_close_date,
-                $dateFormat,
-                false
-            );
+            $varFields['{eb_registrant_edit_close}'] = acym_date($element->registrant_edit_close_date, $dateFormat, false);
             if (in_array('eb_registrant_edit_close', $tag->display)) {
                 $customFields[] = [$varFields['{eb_registrant_edit_close}'], acym_translation('EB_REGISTRANT_EDIT_CLOSE_DATE')];
             }
@@ -485,11 +479,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_deposit_until}'] = '';
         if ($element->deposit_until_date > '0001-00-00') {
-            $varFields['{eb_deposit_until}'] = acym_date(
-                $element->deposit_until_date,
-                $dateFormat,
-                false
-            );
+            $varFields['{eb_deposit_until}'] = acym_date($element->deposit_until_date, $dateFormat, false);
             if (in_array('eb_deposit_until', $tag->display)) {
                 $customFields[] = [$varFields['{eb_deposit_until}'], acym_translation('EB_DEPOSIT_UNTIL_DATE')];
             }
@@ -627,7 +617,7 @@ trait EventBookingInsertion
         $fields = $xml->fields->fieldset->children();
         $params = new Registry();
         $params->loadString($customFields, 'INI');
-        $decodedFields = json_decode($customFields);
+        $decodedFields = json_decode($customFields, true);
 
         foreach ($fields as $oneCustomField) {
             $name = $oneCustomField->attributes()->name;
@@ -635,8 +625,8 @@ trait EventBookingInsertion
             $value = $params->get($name);
             $name = (string)$name;
 
-            if ($value === null && !empty($decodedFields) && !empty($decodedFields->$name)) {
-                $value = $decodedFields->$name;
+            if ($value === null && !empty($decodedFields) && !empty($decodedFields[$name])) {
+                $value = $decodedFields[$name];
             }
 
             if (empty($value) || !in_array($name, $selected)) continue;

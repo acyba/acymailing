@@ -2,7 +2,7 @@
 
 use Joomla\CMS\Factory;
 
-function acym_escapeDB($value)
+function acym_escapeDB(?string $value): string
 {
     $acydb = acym_getGlobal('db');
 
@@ -13,7 +13,7 @@ function acym_escapeDB($value)
     return $acydb->quote($value);
 }
 
-function acym_query($query)
+function acym_query(string $query)
 {
     $acydb = acym_getGlobal('db');
     $acydb->setQuery($query);
@@ -28,7 +28,7 @@ function acym_query($query)
     return $acydb->getAffectedRows();
 }
 
-function acym_loadObjectList($query, $key = '', $offset = null, $limit = null): array
+function acym_loadObjectList(string $query, string $key = '', ?int $offset = null, ?int $limit = null): array
 {
     $acydb = acym_getGlobal('db');
     $acydb->setQuery($query, $offset, $limit);
@@ -38,22 +38,24 @@ function acym_loadObjectList($query, $key = '', $offset = null, $limit = null): 
     return empty($results) ? [] : $results;
 }
 
-function acym_prepareQuery($query)
+function acym_prepareQuery(string $query): string
 {
     return str_replace('#__', acym_getPrefix(), $query);
 }
 
-function acym_loadObject($query)
+function acym_loadObject(string $query): ?object
 {
     acym_addLimit($query);
 
     $acydb = acym_getGlobal('db');
     $acydb->setQuery($query);
 
-    return $acydb->loadObject();
+    $object = $acydb->loadObject();
+
+    return empty($object) ? null : $object;
 }
 
-function acym_loadResult($query)
+function acym_loadResult(string $query)
 {
     $acydb = acym_getGlobal('db');
     $acydb->setQuery($query);
@@ -61,7 +63,7 @@ function acym_loadResult($query)
     return $acydb->loadResult();
 }
 
-function acym_loadResultArray($query)
+function acym_loadResultArray(string $query): array
 {
     $acydb = acym_getGlobal('db');
     $acydb->setQuery($query);
@@ -73,57 +75,68 @@ function acym_loadResultArray($query)
     return $acydb->loadResultArray();
 }
 
-function acym_getEscaped($value, $extra = false)
+function acym_getEscaped(string $text, bool $extra = false)
 {
     $acydb = acym_getGlobal('db');
 
     if (ACYM_J30) {
-        return $acydb->escape($value, $extra);
+        return $acydb->escape($text, $extra);
     }
 
-    return $acydb->getEscaped($value, $extra);
+    return $acydb->getEscaped($text, $extra);
 }
 
 function acym_getDBError()
 {
     // Joomla decided to remove the getErrorMsg function in J4 and only use PHP exceptions
-    if (ACYM_J40) return '';
+    if (ACYM_J40) {
+        return '';
+    }
 
     $acydb = acym_getGlobal('db');
+    $lastError = $acydb->getErrorMsg();
 
-    return $acydb->getErrorMsg();
+    return empty($lastError) ? '' : $lastError;
 }
 
-function acym_insertObject($table, $element)
+function acym_insertObject(string $table, object $element): ?int
 {
     $acydb = acym_getGlobal('db');
     $acydb->insertObject($table, $element);
 
-    return $acydb->insertid();
+    $id = $acydb->insertid();
+
+    return empty($id) ? null : (int)$id;
 }
 
-function acym_updateObject($table, $element, $pkey)
+function acym_updateObject(string $table, object $element, array $pkey): bool
 {
     $acydb = acym_getGlobal('db');
+    $updated = $acydb->updateObject($table, $element, $pkey, true);
 
-    return $acydb->updateObject($table, $element, $pkey, true);
+    return !empty($updated);
 }
 
-function acym_getPrefix()
+function acym_getPrefix(): string
 {
     $acydb = acym_getGlobal('db');
 
     return $acydb->getPrefix();
 }
 
-function acym_getTableList()
+function acym_getTableList(): array
 {
     $acydb = acym_getGlobal('db');
 
     return $acydb->getTableList();
 }
 
-function acym_getCMSConfig($varname, $default = null)
+/**
+ * @param mixed $default
+ *
+ * @return mixed
+ */
+function acym_getCMSConfig(string $varname, $default = null)
 {
     if (ACYM_J30 && !ACYM_J40) {
         $acyapp = acym_getGlobal('app');

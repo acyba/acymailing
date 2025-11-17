@@ -6,8 +6,12 @@
             acym_translation('ACYM_USE_TEMPLATE'),
             $data['modalTemplate'],
             'acym__scenario__choose_template',
-            '',
-            'class="button" data-reload="true" data-ajax="false"'
+            [],
+            [
+                'class' => 'button',
+                'data-reload' => 'true',
+                'data-ajax' => 'false',
+            ]
         ); ?>
 	</div>
 	<div id="acym__scenario__edit__content__flow" style="display: none"></div>
@@ -65,7 +69,7 @@
                 <?php echo acym_switch('scenario[active]', $data['scenario']->active); ?>
 			</div>
 			<div class="acym_scenario_settings__field">
-				<p><?php echo acym_translation('ACYM_TRIGGER_ONCE').acym_info('ACYM_TRIGGER_ONCE_DESC'); ?></p>
+				<p><?php echo acym_translation('ACYM_TRIGGER_ONCE').acym_info(['textShownInTooltip' => 'ACYM_TRIGGER_ONCE_DESC']); ?></p>
                 <?php echo acym_switch('scenario[trigger_once]', $data['scenario']->trigger_once); ?>
 			</div>
 		</div>

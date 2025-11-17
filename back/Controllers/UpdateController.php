@@ -16,7 +16,7 @@ class UpdateController extends AcymController
             '',
             [
                 'content' => $headerHelper->checkVersionArea(true),
-                'lastcheck' => acym_date($lastLicenseCheck, 'Y/m/d H:i'),
+                'lastcheck' => acym_date(is_null($lastLicenseCheck) ? 'now' : $lastLicenseCheck, 'Y/m/d H:i'),
             ]
         );
     }

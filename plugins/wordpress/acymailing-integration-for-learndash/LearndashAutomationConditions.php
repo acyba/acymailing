@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorinType;
 
 trait LearndashAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions): void
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $this->groupFilter($conditions);
         $this->courseFilter($conditions);

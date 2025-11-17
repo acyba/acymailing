@@ -43,7 +43,7 @@ trait DefaultData
         $query .= "(7, 'ACYM_MAILBOX_FULL', 'ACYM_MAILBOX_FULL_DESC', 7, '((mailbox|mailfolder|storage|quota|space|inbox) *(is)? *(over)? *(exceeded|size|storage|allocation|full|quota|maxi))|status(-code)? *(:|=)? *5.2.2|quota-issue|not *enough.{1,20}space|((over|exceeded|full|exhausted) *(allowed)? *(mail|storage|quota))|Space shortage', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
         $query .= "(8, 'ACYM_BLOCKED_GOOGLE_GROUPS', 'ACYM_BLOCKED_GOOGLE_GROUPS_DESC', 8, 'message *rejected *by *Google *Groups', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 1, 0),";
         $query .= "(9, 'ACYM_REJECTED', 'ACYM_REJECTED_DESC', 9, 'rejected *your *message|email *provider *rejected *it', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 1, 0),";
-        $query .= "(10, 'ACYM_MAILBOX_DOESNT_EXIST_1', 'ACYM_MAILBOX_DOESNT_EXIST_1_DESC', 10, '(Invalid|no such|unknown|bad|des?activated|inactive|unrouteable) *(mail|destination|recipient|user|address|person)|bad-mailbox|inactive-mailbox|not listed in.{1,20}directory|RecipNotFound|(user|mailbox|address|recipients?|host|account|domain) *(is|has been)? *(error|disabled|failed|unknown|unavailable|not *(found|available)|.{1,30}inactiv)|no *mailbox *here|user does.?n.t have.{0,30}account|no *longer *(active|working|in *use)|mail( *foi)? *desativado', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(10, 'ACYM_MAILBOX_DOESNT_EXIST_1', 'ACYM_MAILBOX_DOESNT_EXIST_1_DESC', 10, '(Invalid|no such|unknown|bad|des?activated|inactive|unrouteable) *(mail|destination|recipient|user|address|person)|bad-mailbox|inactive-mailbox|not listed in.{1,20}directory|RecipNotFound|(user|mailbox|address|recipients?|host|account|domain) *(is|has been)? *(error|disabled|failed|unknown|unavailable|not *(found|available)|.{1,30}inactiv)|no *mailbox *here|user does.?n.t have.{0,30}account|no *longer *(active|working|in *use)|mail( *foi)? *desativado|recipient '[^']+' not known', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
         $query .= "(11, 'ACYM_MESSAGE_BLOCKED_RECIPIENTS', 'ACYM_MESSAGE_BLOCKED_RECIPIENTS_DESC', 11, 'blocked *by|block *list|look(ed)? *like *spam|spam-related|spam *detected| CXBL | CDRBL | IPBL | URLBL |(unacceptable|banned|offensive|filtered|blocked|unsolicited) *(content|message|e?-?mail)|service refused|(status(-code)?|554) *(:|=)? *5.7.1|administratively *denied|blacklisted *IP|policy *reasons|rejected.{1,10}spam|junkmail *rejected|throttling *constraints|exceeded.{1,10}max.{1,40}hour|comply with required standards|421 RP-00|550 SC-00|550 DY-00|550 OU-00', '[\"body\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 1, 0),";
         $query .= "(12, 'ACYM_MAILBOX_DOESNT_EXIST_2', 'ACYM_MAILBOX_DOESNT_EXIST_2_DESC', 12, 'status(-? ?code)? *(:|=)? *(550)? *5.(1.[1-6]|0.0|4.[0123467])|recipient *address *rejected|does *not *like *recipient|recipient *unknown *to *address|email *account *that *you *tried *to *reach *is *disabled', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
         $query .= "(13, 'ACYM_DOMAIN_NOT_EXIST', 'ACYM_DOMAIN_NOT_EXIST_DESC', 13, 'No.{1,10}MX *(record|host)|host *does *not *receive *any *mail|bad-domain|connection.{1,10}mail.{1,20}fail|domain.{1,10}not *exist|fail.{1,10}establish *connection|Unable *to *lookup *DNS *for|Unable *to *connect *to *remote *host', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
@@ -54,7 +54,7 @@ trait DefaultData
 
         acym_query($query);
 
-        $this->config->save(['bounceVersion' => self::BOUNCE_VERSION]);
+        $this->config->saveConfig(['bounceVersion' => self::BOUNCE_VERSION]);
     }
 
     public function installFields(): void
@@ -463,7 +463,7 @@ trait DefaultData
         $newAction->actions = '[{"acy_add_queue":{"mail_id":"'.intval($mailAutomation->id).'","time":"[time]"}}]';
         $newAction->filters = '{"0":{"1":{"acy_field":{"field":"email","operator":"=","value":"'.acym_currentUserEmail().'"}}},"type_filter":"classic"}';
         $newAction->order = 1;
-        $newAction->id = $actionClass->save($newAction);
+        $actionClass->save($newAction);
     }
 
     private function getDTextDisplay(string $dtext, string $preview): string
@@ -484,7 +484,7 @@ trait DefaultData
         return $beginning.$content.$ending;
     }
 
-    private function getCurrentUser()
+    private function getCurrentUser(): ?object
     {
         $currentCMSId = acym_currentUserId();
         $userClass = new UserClass();

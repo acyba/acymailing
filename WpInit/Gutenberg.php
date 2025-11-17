@@ -90,6 +90,14 @@ class Gutenberg
                 'type' => 'string',
                 'default' => '',
             ],
+            'termscontentURL' => [
+                'type' => 'string',
+                'default' => '',
+            ],
+            'privacypolicyURL' => [
+                'type' => 'string',
+                'default' => '',
+            ],
             'unsub' => [
                 'type' => 'string',
                 'default' => '0',

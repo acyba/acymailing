@@ -3,18 +3,18 @@
 use AcyMailing\Classes\PluginClass;
 use Joomla\CMS\Component\ComponentHelper;
 
-function acym_isExtensionActive($extension)
+function acym_isExtensionActive(string $extension): bool
 {
     // Keep both to handle old Joomla 3 versions
     return ComponentHelper::isInstalled($extension) && ComponentHelper::isEnabled($extension, true);
 }
 
-function acym_getPluginPath($plugin)
+function acym_getPluginPath(string $plugin): string
 {
     return ACYM_ADDONS_FOLDER_PATH.$plugin.DS.'plugin.php';
 }
 
-function acym_coreAddons()
+function acym_coreAddons(): array
 {
     acym_loadLanguageFile('com_modules', JPATH_ADMINISTRATOR);
 
@@ -71,12 +71,12 @@ function acym_coreAddons()
     ];
 }
 
-function acym_isTrackingSalesActive()
+function acym_isTrackingSalesActive(): bool
 {
     return false;
 }
 
-function acym_loadPlugins()
+function acym_loadPlugins(): void
 {
     $dynamicsLoadedLast = ['managetext'];
     $dynamics = acym_getFolders(ACYM_BACK.'dynamics');

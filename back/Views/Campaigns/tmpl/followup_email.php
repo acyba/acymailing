@@ -21,7 +21,7 @@
 					</div>
 					<div class="cell grid-x acym_vcenter">
 						<label for="acym__followup__email__display_name" class="cell large-4 medium-5">
-                            <?php echo acym_translation('ACYM_DISPLAY_NAME').acym_info('ACYM_DISPLAY_NAME_DESC'); ?>
+                            <?php echo acym_translation('ACYM_DISPLAY_NAME').acym_info(['textShownInTooltip' => 'ACYM_DISPLAY_NAME_DESC']); ?>
 						</label>
 						<input required
 							   type="text"
@@ -44,7 +44,7 @@
 					</div>
 					<div class="cell grid-x acym_vcenter align-center">
                         <?php
-                        $sendOnceText = acym_translation('ACYM_SEND_ONCE').acym_info('ACYM_SEND_ONCE_DESC');
+                        $sendOnceText = acym_translation('ACYM_SEND_ONCE').acym_info(['textShownInTooltip' => 'ACYM_SEND_ONCE_DESC']);
                         echo acym_switch(
                             'followup[send_once]',
                             empty($data['followup']->send_once) ? 0 : $data['followup']->send_once,

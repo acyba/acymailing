@@ -4,7 +4,7 @@ use AcyMailing\Classes\ListClass;
 
 trait SubscriptionAutomationFilters
 {
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
         $listClass = new ListClass();
         $list = [

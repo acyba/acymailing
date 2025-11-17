@@ -22,7 +22,7 @@ trait JeventsInsertion
         'jevcfnotes',
     ];
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -48,7 +48,7 @@ trait JeventsInsertion
         }
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'title' => ['ACYM_TITLE'],
@@ -66,7 +66,7 @@ trait JeventsInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $query = 'SELECT rpt.*, detail.*, cat.title AS category, ev.catid, ev.uid FROM `#__jevents_repetition` AS rpt ';
         $query .= ' JOIN `#__jevents_vevent` AS ev ON rpt.eventid = ev.ev_id ';
@@ -79,7 +79,7 @@ trait JeventsInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -303,7 +303,7 @@ trait JeventsInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT rpt.*, detail.*, cat.title AS cattitle ';
         $this->query = 'FROM `#__jevents_repetition` AS rpt ';
@@ -359,13 +359,13 @@ trait JeventsInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         // Load the JEvents data
         acym_loadLanguageFile('com_jevents', JPATH_SITE);
@@ -382,7 +382,7 @@ trait JeventsInsertion
         return true;
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $time = time();
 
@@ -493,7 +493,7 @@ trait JeventsInsertion
         return $this->generateCampaignResult;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         //1 : Load the informations of the product...
         $query = 'SELECT rpt.*, detail.*, cat.title AS category, ev.catid, ev.uid, author.name AS authorname FROM `#__jevents_repetition` AS rpt ';

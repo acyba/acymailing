@@ -2,12 +2,12 @@
 
 trait TimeInsertion
 {
-    public function dynamicText($mailId)
+    public function dynamicText(?int $mailId): ?object
     {
         return $this->pluginDescription;
     }
 
-    public function textPopup()
+    public function textPopup(): void
     {
         $text = '<div class="acym__popup__listing text-center grid-x">
                     <h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_TIME_FORMAT').'</h1>';
@@ -39,7 +39,7 @@ trait TimeInsertion
         echo $text;
     }
 
-    public function replaceContent(&$email, $send = true)
+    public function replaceContent(object &$email): void
     {
         $extractedTags = $this->pluginHelper->extractTags($email, 'date');
         if (empty($extractedTags)) {

@@ -80,9 +80,12 @@ trait Edition
     private function changeMailIdInFlowByStepId(array &$node, string $stepId, int $mailId): void
     {
         if (!empty($node['slug']) && $node['slug'] === $stepId) {
-            $node['params']['option'] = [
-                'acym_action[actions][__and__][acy_send_email][mail_id]' => $mailId,
-            ];
+            $existingOptions = !empty($node['params']['option']) && is_array($node['params']['option']) ? $node['params']['option'] : [];
+
+            $existingOptions['acym_action[actions][__and__][acy_send_email][mail_id]'] = $mailId;
+            $existingOptions['mail_id'] = $mailId;
+
+            $node['params']['option'] = $existingOptions;
 
             return;
         }
@@ -104,12 +107,17 @@ trait Edition
     private function searchForSendEmailAction(array &$node): void
     {
         if (!empty($node['params']['action']) && $node['params']['action'] === 'acy_send_email') {
-            $mailId = !empty($node['params']['option']['acym_action[actions][__and__][acy_send_email][mail_id]'])
-                ? $node['params']['option']['acym_action[actions][__and__][acy_send_email][mail_id]'] : 0;
+            $complexKey = 'acym_action[actions][__and__][acy_send_email][mail_id]';
+
+            $mailId = 0;
+            if (!empty($node['params']['option'][$complexKey])) {
+                $mailId = (int)$node['params']['option'][$complexKey];
+            } elseif (!empty($node['params']['option']['mail_id'])) {
+                $mailId = (int)$node['params']['option']['mail_id'];
+            }
 
             if (!empty($mailId)) {
                 $mail = $this->mailClass->getOneById($mailId);
-
                 if (!empty($mail)) {
                     $node['params']['option']['mail'] = $mail;
                 }

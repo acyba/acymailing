@@ -90,7 +90,7 @@ class plgAcymModerneventscalendar extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations()
+    public function getPossibleIntegrations(): ?object
     {
         return $this->pluginDescription;
     }

@@ -5,7 +5,7 @@ use AcyMailing\Classes\ListClass;
 
 trait SubscriptionAutomationActions
 {
-    public function onAcymDeclareActions(&$actions)
+    public function onAcymDeclareActions(array &$actions): void
     {
         $listClass = new ListClass();
 
@@ -37,7 +37,7 @@ trait SubscriptionAutomationActions
         $actions['unsubscribe_followup']->option = ob_get_clean();
     }
 
-    public function onAcymDeclareActionsScenario(&$actions)
+    public function onAcymDeclareActionsScenario(array &$actions): void
     {
         $this->onAcymDeclareActions($actions);
     }
@@ -83,7 +83,7 @@ trait SubscriptionAutomationActions
 
         $nbAffected = acym_query($queryToProcess);
 
-        $followups = $followupClass->getFollowupsWithMailsInfoByIds($action['followup_id']);
+        $followups = $followupClass->getFollowupsWithMailsInfoByIds([$action['followup_id']]);
         foreach ($followups as $mails) {
             foreach ($mails as $mail) {
                 $sendDate = time() + (intval($mail->delay) * intval($mail->delay_unit));
@@ -113,7 +113,7 @@ trait SubscriptionAutomationActions
             return '';
         }
 
-        $mailIds = $followupClass->getEmailsByIds($action['followup_id']);
+        $mailIds = $followupClass->getEmailsByIds([$action['followup_id']]);
         if (!empty($mailIds)) {
             acym_query(
                 'DELETE FROM #__acym_queue 

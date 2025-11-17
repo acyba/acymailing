@@ -3,17 +3,13 @@
 /**
  * Return TRUE if the level is handled by the current application
  * Return FALSE if the level is not enough
- *
- * @param $neededLevel
- *
- * @return bool
  */
-function acym_level($neededLevel)
+function acym_level(int $neededLevel): bool
 {
     $levels = [
-        'Starter' => 0,
-        'Essential' => 1,
-        'Enterprise' => 2,
+        'Starter' => ACYM_STARTER,
+        'Essential' => ACYM_ESSENTIAL,
+        'Enterprise' => ACYM_ENTERPRISE,
     ];
 
     $config = acym_config();
@@ -25,12 +21,12 @@ function acym_level($neededLevel)
         $currentLevel = 'Starter';
     }
 
-    $currentLevelNumber = in_array($currentLevel, array_keys($levels)) ? $levels[$currentLevel] : 0;
+    $currentLevelNumber = $levels[$currentLevel] ?? 0;
 
     return $currentLevelNumber >= $neededLevel;
 }
 
-function acym_upgradeTo(string $version, string $utmMedium)
+function acym_upgradeTo(string $version, string $utmMedium): void
 {
     $link = ACYM_ACYMAILING_WEBSITE.'pricing?utm_source=acymailing_plugin&utm_medium='.$utmMedium.'&utm_campaign=purchase';
     $text = $version === 'essential' ? 'AcyMailing Essential' : 'AcyMailing Enterprise';
@@ -53,7 +49,7 @@ function acym_existsAcyMailing59(): bool
     return version_compare($version, '5.9.0', '>=');
 }
 
-function acym_buttonGetProVersion($class = 'cell shrink', $text = 'ACYM_UPGRADE_NOW_SIMPLE')
+function acym_buttonGetProVersion(string $class = 'cell shrink', string $text = 'ACYM_UPGRADE_NOW_SIMPLE'): string
 {
     return '<a href="'.ACYM_ACYMAILING_WEBSITE.'pricing" target="_blank" class="button acym__button__upgrade '.$class.'">'.acym_translation($text).'</a>';
 }

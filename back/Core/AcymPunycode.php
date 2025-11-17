@@ -300,7 +300,7 @@ class AcymPunycode
                 case 0xFF0E:
                 case 0xFF61:
                     $decoded[$k] = 0x2E;
-                    // normal I guess
+                // normal I guess
                 case 0x2E:
                 case 0x2F:
                 case 0x3A:

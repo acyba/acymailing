@@ -40,7 +40,7 @@ class HeaderHelper extends AcymObject
         if ($lastNewsCheck < time() - 7200) {
             $context = stream_context_create(['http' => ['timeout' => 1]]);
             $news = @file_get_contents(ACYM_ACYMAILING_WEBSITE.'acymnews.xml', false, $context);
-            $this->config->save(
+            $this->config->saveConfig(
                 [
                     'last_news_check' => time(),
                     'last_news' => base64_encode($news),
@@ -329,9 +329,11 @@ class HeaderHelper extends AcymObject
             $notificationCenter .= '<h2 class="cell text-center">'.acym_translation('ACYM_YOU_DONT_HAVE_NOTIFICATIONS').'</h2>';
             $notificationCenter .= '</div>';
         } else {
-            $notificationCenter .= '<div class="cell grid-x acym__header__notification__toolbox"><p class="cell auto">'.acym_translation(
-                    'ACYM_NOTIFICATIONS'
-                ).'</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right" data-id="all">'.acym_translation('ACYM_DELETE_ALL').'</div></div>';
+            $notificationCenter .= '<div class="cell grid-x acym__header__notification__toolbox"><p class="cell auto">';
+            $notificationCenter .= acym_translation('ACYM_NOTIFICATIONS');
+            $notificationCenter .= '</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right" data-id="all">';
+            $notificationCenter .= acym_translation('ACYM_DELETE_ALL');
+            $notificationCenter .= '</div></div>';
             foreach ($notifications as $key => $notif) {
                 $fullMessageHover = $notif['message'];
 
@@ -385,7 +387,7 @@ class HeaderHelper extends AcymObject
 
         if (count($notifications) > 10) unset($notifications[10]);
 
-        $this->config->save(['notifications' => json_encode($notifications)]);
+        $this->config->saveConfig(['notifications' => json_encode($notifications)]);
 
         return $notif->id;
     }

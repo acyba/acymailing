@@ -32,7 +32,13 @@
 
 	<div class="cell grid-x">
         <?php
-        echo acym_switch('visible', $data['mailInformation']->visible, acym_translation('ACYM_VISIBLE').acym_info('ACYM_VISIBLE_CAMPAIGN_DESC'), [], 'shrink')
+        echo acym_switch(
+            'visible',
+            $data['mailInformation']->visible,
+            acym_translation('ACYM_VISIBLE').acym_info(['textShownInTooltip' => 'ACYM_VISIBLE_CAMPAIGN_DESC']),
+            [],
+            'shrink'
+        )
         ?>
 	</div>
 </div>

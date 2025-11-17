@@ -36,7 +36,7 @@
 			<div class="cell grid-x acym__templates__oneTpl acym__listing__block text-center" data-acy-elementid="<?php echo acym_escape($oneTemplate->id); ?>">
 				<a href="<?php echo acym_completeLink('mails&task=edit&id='.acym_escape($oneTemplate->id)); ?>" class="cell grid-x text-center">
 					<div class="cell acym__templates__pic">
-                        <?php echo '<img src="'.acym_escape(acym_getMailThumbnail($oneTemplate->thumbnail)).'" alt="'.acym_escape($oneTemplate->name).'"/>'; ?>
+                        <?php echo '<img src="'.acym_escapeUrl(acym_getMailThumbnail($oneTemplate->thumbnail)).'" alt="'.acym_escape($oneTemplate->name).'"/>'; ?>
 					</div>
 				</a>
 				<a href="<?php echo acym_completeLink('mails&task=edit&id='.acym_escape($oneTemplate->id)); ?>" class="cell grid-x text-center">

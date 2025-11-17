@@ -162,6 +162,14 @@ const acym_subscriptionBlock = {
             trigger: 'getPosts'
         }).then(response => {
             const posts = JSON.parse(response);
+
+            this.posts = [
+                {
+                    value: '',
+                    label: ACYM_JS_TXT.ACYM_SELECT_A_PAGE
+                }
+            ];
+
             posts.map(post => {
                 this.posts.push({
                     value: post[0],
@@ -219,72 +227,68 @@ const acym_subscriptionBlock = {
             subTable.push(self.textEdit(ACYM_JS_TXT.ACYM_SUBSCRIBE_TEXT_LOGGED_IN, props, 'subtextlogged'));
             confirmationTable.push(self.textEdit(ACYM_JS_TXT.ACYM_CONFIRMATION_MESSAGE, props, 'confirmation_message'));
         }
-        return self.el('div', blockProps, self.el(Fragment, {}, self.el(InspectorControls, {}, self.el(
-            PanelBody,
-            {
-                title: ACYM_JS_TXT.ACYM_MAIN_OPTIONS,
-                initialOpen: true
-            },
-            self.textEdit(ACYM_JS_TXT.ACYM_TITLE, props, 'title'),
-            self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_MODE, props, 'mode', 'displayMode'),
-            ...subTable
-        ), self.el(
-            PanelBody,
-            {
-                title: ACYM_JS_TXT.ACYM_LISTS_OPTIONS,
-                initialOpen: true
-            },
-            self.selectEdit(ACYM_JS_TXT.ACYM_AUTO_SUBSCRIBE_TO, props, 'hiddenlists', 'lists', true),
-            self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAYED_LISTS, props, 'displists', 'lists', true),
-            self.selectEdit(ACYM_JS_TXT.ACYM_LISTS_CHECKED_DEFAULT, props, 'listschecked', 'lists', true),
-            self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_LISTS, props, 'listposition', 'listPlacement')
-        ), self.el(
-            PanelBody,
-            {
-                title: ACYM_JS_TXT.ACYM_FIELDS_OPTIONS,
-                initialOpen: false
-            },
-            self.selectEdit(ACYM_JS_TXT.ACYM_FIELDS_TO_DISPLAY, props, 'fields', 'fields', true),
-            self.selectEdit(ACYM_JS_TXT.ACYM_TEXT_MODE, props, 'textmode', 'displayTextMode'),
-            self.selectEdit(ACYM_JS_TXT.ACYM_FORM_AUTOFILL_ID, props, 'userinfo', 'subscriberInfo')
-        ), self.el(
-            PanelBody,
-            {
-                title: ACYM_JS_TXT.ACYM_TERMS_POLICY_OPTIONS,
-                initialOpen: false
-            },
-            self.selectEdit(ACYM_JS_TXT.ACYM_TERMS_CONDITIONS, props, 'termscontent', 'posts'),
-            self.selectEdit(ACYM_JS_TXT.ACYM_PRIVACY_POLICY, props, 'privacypolicy', 'posts')
-        ), self.el(
-            PanelBody,
-            {
-                title: ACYM_JS_TXT.ACYM_SUBSCRIBE_OPTIONS,
-                initialOpen: false
-            },
-            self.selectEdit(ACYM_JS_TXT.ACYM_SUCCESS_MODE, props, 'successmode', 'replaceMessage'),
-            ...confirmationTable,
-            self.textEdit(ACYM_JS_TXT.ACYM_REDIRECT_LINK, props, 'redirect')
-        ), self.el(
-            PanelBody,
-            {
-                title: ACYM_JS_TXT.ACYM_UNSUBSCRIBE_OPTIONS,
-                initialOpen: false
-            },
-            self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_UNSUB_BUTTON, props, 'unsub', 'unsubButton'),
-            self.textEdit(ACYM_JS_TXT.ACYM_UNSUBSCRIBE_TEXT, props, 'unsubtext'),
-            self.textEdit(ACYM_JS_TXT.ACYM_REDIRECT_LINK_UNSUB, props, 'unsubredirect')
-        ), self.el(
-            PanelBody,
-            {
-                title: ACYM_JS_TXT.ACYM_ADVANCED_OPTIONS,
-                initialOpen: false
-            },
-            self.textEdit(ACYM_JS_TXT.ACYM_INTRO_TEXT, props, 'introtext'),
-            self.textEdit(ACYM_JS_TXT.ACYM_POST_TEXT, props, 'posttext'),
-            self.selectEdit(ACYM_JS_TXT.ACYM_ALIGNMENT, props, 'alignment', 'alignment'),
-            self.selectEdit(ACYM_JS_TXT.ACYM_MODULE_JS, props, 'includejs', 'includeJavascript'),
-            self.textEdit(ACYM_JS_TXT.ACYM_SOURCE, props, 'source')
-        ))), self.el(window.wp.serverSideRender, {
+        return self.el('div', blockProps, self.el(Fragment, {}, self.el(InspectorControls,
+            {},
+            self.el(PanelBody,
+                {
+                    title: ACYM_JS_TXT.ACYM_MAIN_OPTIONS,
+                    initialOpen: true
+                },
+                self.textEdit(ACYM_JS_TXT.ACYM_TITLE, props, 'title'),
+                self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_MODE, props, 'mode', 'displayMode'),
+                ...subTable),
+            self.el(PanelBody,
+                {
+                    title: ACYM_JS_TXT.ACYM_LISTS_OPTIONS,
+                    initialOpen: true
+                },
+                self.selectEdit(ACYM_JS_TXT.ACYM_AUTO_SUBSCRIBE_TO, props, 'hiddenlists', 'lists', true),
+                self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAYED_LISTS, props, 'displists', 'lists', true),
+                self.selectEdit(ACYM_JS_TXT.ACYM_LISTS_CHECKED_DEFAULT, props, 'listschecked', 'lists', true),
+                self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_LISTS, props, 'listposition', 'listPlacement')),
+            self.el(PanelBody,
+                {
+                    title: ACYM_JS_TXT.ACYM_FIELDS_OPTIONS,
+                    initialOpen: false
+                },
+                self.selectEdit(ACYM_JS_TXT.ACYM_FIELDS_TO_DISPLAY, props, 'fields', 'fields', true),
+                self.selectEdit(ACYM_JS_TXT.ACYM_TEXT_MODE, props, 'textmode', 'displayTextMode'),
+                self.selectEdit(ACYM_JS_TXT.ACYM_FORM_AUTOFILL_ID, props, 'userinfo', 'subscriberInfo')),
+            self.el(PanelBody,
+                {
+                    title: ACYM_JS_TXT.ACYM_TERMS_POLICY_OPTIONS,
+                    initialOpen: false
+                },
+                self.selectEdit(ACYM_JS_TXT.ACYM_TERMS_CONDITIONS, props, 'termscontent', 'posts'),
+                self.textEdit(ACYM_JS_TXT.ACYM_TERMS_CONDITIONS_URL, props, 'termscontentURL'),
+                self.selectEdit(ACYM_JS_TXT.ACYM_PRIVACY_POLICY, props, 'privacypolicy', 'posts'),
+                self.textEdit(ACYM_JS_TXT.ACYM_PRIVACY_POLICY_URL, props, 'privacypolicyURL')),
+            self.el(PanelBody,
+                {
+                    title: ACYM_JS_TXT.ACYM_SUBSCRIBE_OPTIONS,
+                    initialOpen: false
+                },
+                self.selectEdit(ACYM_JS_TXT.ACYM_SUCCESS_MODE, props, 'successmode', 'replaceMessage'),
+                ...confirmationTable,
+                self.textEdit(ACYM_JS_TXT.ACYM_REDIRECT_LINK, props, 'redirect')),
+            self.el(PanelBody,
+                {
+                    title: ACYM_JS_TXT.ACYM_UNSUBSCRIBE_OPTIONS,
+                    initialOpen: false
+                },
+                self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_UNSUB_BUTTON, props, 'unsub', 'unsubButton'),
+                self.textEdit(ACYM_JS_TXT.ACYM_UNSUBSCRIBE_TEXT, props, 'unsubtext'),
+                self.textEdit(ACYM_JS_TXT.ACYM_REDIRECT_LINK_UNSUB, props, 'unsubredirect')),
+            self.el(PanelBody,
+                {
+                    title: ACYM_JS_TXT.ACYM_ADVANCED_OPTIONS,
+                    initialOpen: false
+                },
+                self.textEdit(ACYM_JS_TXT.ACYM_INTRO_TEXT, props, 'introtext'),
+                self.textEdit(ACYM_JS_TXT.ACYM_POST_TEXT, props, 'posttext'),
+                self.selectEdit(ACYM_JS_TXT.ACYM_ALIGNMENT, props, 'alignment', 'alignment'),
+                self.selectEdit(ACYM_JS_TXT.ACYM_MODULE_JS, props, 'includejs', 'includeJavascript'),
+                self.textEdit(ACYM_JS_TXT.ACYM_SOURCE, props, 'source')))), self.el(window.wp.serverSideRender, {
             block: 'acymailing/subscription-form',
             attributes: props.attributes
         }));

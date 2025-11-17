@@ -13,7 +13,7 @@
 		<input class="cell medium-6" type="text" name="mailbox[password]" value="<?php echo str_repeat('*', strlen($data['mailboxActions']->password)); ?>">
 	</label>
 	<div class="cell grid-x">
-		<label class="cell medium-4"><?php echo acym_translation('ACYM_CONNECTION_METHOD').acym_info('ACYM_CONNECTION_METHOD_DESC'); ?></label>
+		<label class="cell medium-4"><?php echo acym_translation('ACYM_CONNECTION_METHOD').acym_info(['textShownInTooltip' => 'ACYM_CONNECTION_METHOD_DESC']); ?></label>
 		<div class="cell medium-6">
             <?php
             echo acym_select(
@@ -54,7 +54,7 @@
 		</div>
 	</div>
 	<label class="cell grid-x">
-		<span class="cell medium-4"><?php echo acym_translation('ACYM_SMTP_PORT').acym_info('ACYM_BOUNCE_PORT_DESC'); ?></span>
+		<span class="cell medium-4"><?php echo acym_translation('ACYM_SMTP_PORT').acym_info(['textShownInTooltip' => 'ACYM_BOUNCE_PORT_DESC']); ?></span>
 		<input class="cell medium-6"
 			   type="number"
 			   name="mailbox[port]"
@@ -81,6 +81,6 @@
 		<i class="acymicon-spin acymicon-circle-o-notch acym_vcenter cell shrink margin-left-1" id="acym__mailbox__edition__configuration__test-loader"></i>
 		<i class="cell shrink acym_vcenter margin-left-1" id="acym__mailbox__edition__configuration__test-result"></i>
 		<i class="acymicon-check-circle acym__color__green acymicon-times-circle acym__color__red cell shrink acym_vcenter"
-			  id="acym__mailbox__edition__configuration__test-icon"></i>
+		   id="acym__mailbox__edition__configuration__test-icon"></i>
 	</div>
 </div>

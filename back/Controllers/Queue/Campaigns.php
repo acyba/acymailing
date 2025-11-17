@@ -90,8 +90,13 @@ trait Campaigns
             '<i class="acymicon-paper-plane"></i>'.acym_translation('ACYM_SEND_MAILS_MANUALLY'),
             '',
             null,
-            'data-reveal-larger',
-            'class="cell medium-6 large-shrink button" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
+            ['data-reveal-larger' => true],
+            [
+                'class' => 'cell medium-6 large-shrink button',
+                'data-reload' => 'true',
+                'data-ajax' => 'true',
+                'data-iframe' => '&ctrl=queue&task=continuesend&id=0&totalsend=0',
+            ]
         );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addFilterByTag($data, 'cqueue_tag', 'acym__queue__filter__tags acym__select');

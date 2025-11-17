@@ -20,7 +20,6 @@ use AcyMailing\Classes\TagClass;
             ACYM_VIEW.'Mails'.DS.'tmpl'.DS.'choose_template_ajax.php',
             'acym__template__choose__modal',
             $dataForTemplate,
-            '',
             'acym__template__choose__modal__listing'
         );
         ?>

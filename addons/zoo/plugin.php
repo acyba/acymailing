@@ -60,7 +60,7 @@ class plgAcymZoo extends AcymPlugin
         }
     }
 
-    public function getPossibleIntegrations(): ?stdClass
+    public function getPossibleIntegrations(): ?object
     {
         if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') return null;
 

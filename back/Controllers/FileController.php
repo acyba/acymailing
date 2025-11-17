@@ -35,7 +35,7 @@ class FileController extends AcymController
             ob_start();
             $uploaded = acym_importFile($uploadedFile, $uploadPath, false);
             $warnings = ob_get_clean();
-            if ($uploaded) {
+            if (!empty($uploaded)) {
                 $selectedFile = $uploaded;
             }
         }

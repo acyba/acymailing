@@ -101,7 +101,7 @@
 								<div class="auto cell grid-x align-center">
                                     <?php
                                     echo $mail->delay_display;
-                                    echo acym_info('ACYM_DELAY_SUMMARY');
+                                    echo acym_info(['textShownInTooltip' => 'ACYM_DELAY_SUMMARY']);
                                     ?>
 								</div>
 								<div class="auto cell grid-x align-center acym__followup__summary__listing__action">

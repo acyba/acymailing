@@ -6,7 +6,7 @@ trait EasyblogInsertion
 {
     private $EBconfig = null;
 
-    public function getStandardStructure(&$customView)
+    public function getStandardStructure(string &$customView): void
     {
         $tag = new stdClass();
         $tag->id = 0;
@@ -23,7 +23,7 @@ trait EasyblogInsertion
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initReplaceOptionsCustomView()
+    public function initReplaceOptionsCustomView(): void
     {
         $this->replaceOptions = [
             'link' => ['ACYM_LINK'],
@@ -32,7 +32,7 @@ trait EasyblogInsertion
         ];
     }
 
-    public function initElementOptionsCustomView()
+    public function initElementOptionsCustomView(): void
     {
         $element = acym_getColumns('easyblog_post', false);
         if (empty($element)) return;
@@ -50,7 +50,7 @@ trait EasyblogInsertion
         }
     }
 
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $this->defaultValues = $defaultValues;
 
@@ -164,7 +164,7 @@ trait EasyblogInsertion
         $tabHelper->display('plugin');
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         //we load all elements with the categories
         $this->querySelect = 'SELECT element.id, element.title, element.publish_up ';
@@ -212,13 +212,13 @@ trait EasyblogInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
 
-    public function generateByCategory(&$email)
+    public function generateByCategory(object &$email): object
     {
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -262,7 +262,7 @@ trait EasyblogInsertion
         return $this->generateCampaignResult;
     }
 
-    protected function loadLibraries($email)
+    protected function loadLibraries(?object $email): bool
     {
         $EBHelper = JPATH_SITE.DS.'components'.DS.'com_easyblog'.DS.'helpers'.DS.'helper.php';
         if (file_exists($EBHelper)) include_once $EBHelper;
@@ -277,7 +277,7 @@ trait EasyblogInsertion
         return true;
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $query = 'SELECT element.* FROM #__easyblog_post AS element WHERE element.published = 1 AND element.id = '.intval($tag->id);
 

@@ -14,8 +14,12 @@
                 acym_translation('ACYM_IMPORT'),
                 $data['templateImportView'],
                 null,
-                '',
-                'class="button cell medium-auto button-secondary" data-reload="true" data-ajax="false"'
+                [],
+                [
+                    'class' => 'button cell medium-auto button-secondary',
+                    'data-reload' => 'true',
+                    'data-ajax' => 'false',
+                ]
             );
             ?>
 			<button type="button" id="acym__mail__install-default" class="button cell auto button-secondary acy_button_submit" data-task="installDefaultTmpl">
@@ -33,8 +37,8 @@
                 ).'</button>
 							</div>',
                 '',
-                '',
-                'class="button cell auto"',
+                [],
+                ['class' => 'button cell auto'],
                 true,
                 false
             );

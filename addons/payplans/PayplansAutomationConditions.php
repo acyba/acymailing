@@ -4,7 +4,7 @@ use AcyMailing\Types\OperatorInType;
 
 trait PayplansAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         $allPlans = acym_loadObjectList('SELECT `title` AS `text`, `plan_id` AS `value` FROM `#__payplans_plan` ORDER BY `ordering` ASC');
         if (empty($allPlans)) return;
@@ -70,7 +70,7 @@ trait PayplansAutomationConditions
         $conditions['user']['payplans']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

@@ -2,7 +2,7 @@
 
 trait ModuleInsertion
 {
-    public function insertionOptions($defaultValues = null)
+    public function insertionOptions(?object $defaultValues = null): void
     {
         $languages = [
             '' => 'ACYM_DEFAULT_LANGUAGE',
@@ -31,7 +31,7 @@ trait ModuleInsertion
         $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $defaultValues);
     }
 
-    public function prepareListing()
+    public function prepareListing(): string
     {
         $this->querySelect = 'SELECT item.id, item.title, item.position, item.module ';
         $this->query = 'FROM #__modules AS item ';
@@ -73,12 +73,12 @@ trait ModuleInsertion
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(object &$email): void
     {
         $this->replaceOne($email);
     }
 
-    public function replaceIndividualContent($tag)
+    public function replaceIndividualContent(object $tag): string
     {
         $module = acym_loadObject('SELECT * FROM #__modules WHERE id = '.intval($tag->id));
         if (empty($module)) {

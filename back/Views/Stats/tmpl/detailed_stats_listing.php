@@ -52,9 +52,13 @@
 					</div>
 				</div>
 				<div class="cell auto align-right grid-x">
-					<button type="button" class="cell shrink button primary acy_button_submit acym__stats__export__button " data-task="exportDetailed"><?php echo acym_translation(
-                            'ACYM_EXPORT'
-                        ); ?></button>
+                    <?php
+                    echo acym_tooltip([
+                        'hoveredText' => '<button type="button" class="cell shrink button primary acy_button_submit acym__stats__export__button " data-task="exportDetailed">'
+                            .acym_translation('ACYM_EXPORT').'</button>',
+                        'textShownInTooltip' => acym_translation('ACYM_STATS_EXPORT_SETTINGS_TOOLTIP'),
+                    ]);
+                    ?>
 				</div>
 			</div>
 			<div class="grid-x cell align-right">
@@ -218,7 +222,9 @@
                             echo acym_tooltip(
                                 [
                                     'hoveredText' => empty($detailed_stat->fail) ? $targetSuccess : $targetFail,
-                                    'textShownInTooltip' => acym_translation('ACYM_SENT').' : '.$detailed_stat->sent.' '.acym_translation('ACYM_FAIL').' : '.$detailed_stat->fail,
+                                    'textShownInTooltip' => acym_translation('ACYM_SENT').' : '.$detailed_stat->sent.' '.acym_translation(
+                                            'ACYM_FAIL'
+                                        ).' : '.$detailed_stat->fail,
                                 ]
                             );
                             ?>

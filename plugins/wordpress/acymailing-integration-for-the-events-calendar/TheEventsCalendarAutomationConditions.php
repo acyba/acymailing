@@ -2,7 +2,7 @@
 
 trait TheEventsCalendarAutomationConditions
 {
-    public function onAcymDeclareConditions(&$conditions)
+    public function onAcymDeclareConditions(array &$conditions): void
     {
         if (!$this->rtecInstalled && !$this->eventTicketsInstalled) return;
 
@@ -58,7 +58,7 @@ trait TheEventsCalendarAutomationConditions
         $conditions['user']['eventscalendar']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions)
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
     {
         $this->onAcymDeclareConditions($conditions);
     }

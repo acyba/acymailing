@@ -2673,7 +2673,8 @@ class ImapClient
             if ($line[0] == '(' && substr($line, -1) == ')') {
                 // tokenize content inside brackets
                 // the content can be e.g.: (UID 9844 BODY[2.4] NIL)
-                $tokens = $this->tokenizeResponse(preg_replace('/(^\(|\)$)/', '', $line));
+                $preg_replace = preg_replace('/(^\(|\)$)/', '', $line);
+                $tokens = $this->tokenizeResponse($preg_replace);
 
                 for ($i = 0 ; $i < count($tokens) ; $i += 2) {
                     if (preg_match('/^(BODY|BINARY)/i', $tokens[$i])) {

@@ -31,9 +31,7 @@ trait Patchv7
             }
         }
 
-        $newConfig = new \stdClass();
-        $newConfig->social_icons = json_encode($socialIcons);
-        $config->save($newConfig);
+        $config->saveConfig(['social_icons' => json_encode($socialIcons)]);
 
         $this->updateQuery('ALTER TABLE `#__acym_form` ADD `redirection_options` TEXT');
         $formClass = new FormClass();
@@ -83,8 +81,8 @@ trait Patchv7
             return;
         }
 
-        $config->save(['built_by_update' => 1]);
-        $config->save(['display_built_by' => 0]);
+        $config->saveConfig(['built_by_update' => 1]);
+        $config->saveConfig(['display_built_by' => 0]);
         $this->updateQuery('ALTER TABLE #__acym_user CHANGE `language` `language` VARCHAR(20) NOT NULL DEFAULT ""');
         $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `language` `language` VARCHAR(20) NOT NULL DEFAULT ""');
         $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `links_language` `links_language` VARCHAR(20) NOT NULL DEFAULT ""');
@@ -178,7 +176,7 @@ trait Patchv7
         $ruleClass->save($rule);
 
         $captchaOption = $config->get('captcha', 0);
-        $config->save([
+        $config->saveConfig([
             'captcha' => intval($captchaOption) === 1 ? 'acym_ireCaptcha' : 'none',
         ]);
 
@@ -201,7 +199,7 @@ trait Patchv7
 
         $news = $config->get('last_news', '');
         if (!empty($news)) {
-            $config->save(
+            $config->saveConfig(
                 [
                     'last_news' => base64_encode($news),
                 ],
@@ -224,6 +222,7 @@ trait Patchv7
             return;
         }
 
+        $actionClass = new ActionClass();
         $automationClass = new AutomationClass();
         $adminAutomations = $automationClass->getAutomationsAdmin();
 
@@ -233,7 +232,7 @@ trait Patchv7
 
         $mailClass = new MailClass();
         foreach ($adminAutomations as $oneAutomation) {
-            $actions = $automationClass->getActionsByAutomationId(intval($oneAutomation->id));
+            $actions = $actionClass->getActionsByAutomationId($oneAutomation->id);
             foreach ($actions as $oneAction) {
                 $oneAction->actions = json_decode($oneAction->actions, true);
                 foreach ($oneAction->actions as $action) {
@@ -315,7 +314,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE #__acym_history ADD `unsubscribe_reason` TEXT NULL');
 
         $fieldClass = new FieldClass();
-        $dateCustomFields = $fieldClass->getFieldsByType('date');
+        $dateCustomFields = $fieldClass->getFieldsByType(['date']);
 
         // Convert the already saved data into the new format
         foreach ($dateCustomFields as $oneField) {

@@ -1,6 +1,8 @@
 <?php
 
 /*
+ * version 5.3.0 modified by acyba
+ *
  * This file is part of the Symfony package.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
@@ -59,8 +61,10 @@ class CssSelectorConverter
      *
      * Optionally, a prefix can be added to the resulting XPath
      * expression with the $prefix parameter.
+     *
+     * @return string
      */
-    public function toXPath(string $cssExpr, string $prefix = 'descendant-or-self::'): string
+    public function toXPath(string $cssExpr, string $prefix = 'descendant-or-self::')
     {
         return $this->cache[$prefix][$cssExpr] ?? $this->cache[$prefix][$cssExpr] = $this->translator->cssToXPath($cssExpr, $prefix);
     }

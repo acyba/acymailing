@@ -1,7 +1,15 @@
 <?php
 
-function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $identifier = null, $width = '800', $height = '400')
-{
+function acym_cmsModal(
+    bool    $isIframe,
+    string  $content,
+    string  $buttonText,
+    bool    $isButton,
+    string  $modalTitle,
+    ?string $identifier = null,
+    int     $width = 800,
+    int     $height = 400
+): string {
     // Use the WP's thickbox library
     add_thickbox();
 
@@ -19,18 +27,22 @@ function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $identifier 
     }
 }
 
-function acym_CMSArticleTitle($id)
+function acym_CMSArticleTitle(int $id): string
 {
-    return acym_loadResult('SELECT post_title FROM #__posts WHERE ID = '.intval($id));
+    $title = acym_loadResult('SELECT post_title FROM #__posts WHERE ID = '.intval($id));
+
+    return empty($title) ? '' : $title;
 }
 
-function acym_getArticleURL($id, $popup, $text)
+function acym_getArticleURL(int $id, bool $popup, string $text): string
 {
-    if (empty($id)) return '';
+    if (empty($id)) {
+        return '';
+    }
 
     $url = get_permalink($id);
 
-    if ($popup == 1) {
+    if ($popup) {
         $url .= (strpos($url, '?') ? '&' : '?').acym_noTemplate();
         $url = acym_frontModal($url, $text, false);
     } else {
@@ -40,7 +52,7 @@ function acym_getArticleURL($id, $popup, $text)
     return $url;
 }
 
-function acym_articleSelectionPage()
+function acym_articleSelectionPage(): string
 {
     return admin_url('admin-ajax.php').'?action=acymailing_router&page=acymailing_configuration&ctrl=configuration&task=getarticles&'.acym_getFormToken();
 }
@@ -50,7 +62,7 @@ function acym_getPageOverride(string $ctrl, string $view, bool $forceBackend = f
     return ACYM_OVERRIDES.$ctrl.DS.$view.'.php';
 }
 
-function acym_cmsCleanHtml($html)
+function acym_cmsCleanHtml(string $html): string
 {
     if (strpos($html, '<!-- wp:') === false) return $html;
 
@@ -177,12 +189,12 @@ function acym_cmsCleanHtml($html)
     return $html;
 }
 
-function acym_getAlias($name)
+function acym_getAlias(string $name): string
 {
     return sanitize_title_with_dashes(remove_accents($name));
 }
 
-function acym_getAllPages()
+function acym_getAllPages(): array
 {
     $allPges = get_pages();
     if (empty($allPges)) return [];
@@ -196,7 +208,7 @@ function acym_getAllPages()
     return $return;
 }
 
-function acym_getArticles($search)
+function acym_getArticles(string $search): array
 {
     $return = [];
 
@@ -220,7 +232,7 @@ function acym_getArticles($search)
     return $return;
 }
 
-function acym_getArticleById($id)
+function acym_getArticleById(int $id): array
 {
     $post = get_post($id);
 

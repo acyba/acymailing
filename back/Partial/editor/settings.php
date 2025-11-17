@@ -126,7 +126,7 @@
 		</div>
 		<div class="grid-x margin-bottom-1 small-12 cell">
 			<label for="acym__wysid__maincolor-colorpicker1" class="cell large-6 small-9" for="acym__wysid__maincolor-colorpicker1">
-                <?php echo acym_translation('ACYM_MAIN_COLORS').acym_info('ACYM_MAIN_COLORS_DESC'); ?>
+                <?php echo acym_translation('ACYM_MAIN_COLORS').acym_info(['textShownInTooltip' => 'ACYM_MAIN_COLORS_DESC']); ?>
 			</label>
 			<div class="small-1 cell" style="margin:auto 0;">
 				<input type="text" id="acym__wysid__maincolor-colorpicker1" class="cell medium-shrink small-4" />
@@ -190,7 +190,7 @@
 	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
         <?php echo acym_translation('ACYM_DESIGN'); ?>
 		<i class="acymicon-keyboard-arrow-up"></i>
-        <?php echo acym_info('ACYM_INTRO_CUSTOMIZE_FONT'); ?>
+        <?php echo acym_info(['textShownInTooltip' => 'ACYM_INTRO_CUSTOMIZE_FONT']); ?>
 	</p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">
@@ -292,8 +292,11 @@
                 acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
                 $dataStyleSheet,
                 'acym__wysid__right__toolbar__settings__stylesheet__modal',
-                '',
-                'class="button cell medium-6 margin-top-2" id="acym__wysid__right__toolbar__settings__stylesheet__open"'
+                [],
+                [
+                    'class' => 'button cell medium-6 margin-top-2',
+                    'id' => 'acym__wysid__right__toolbar__settings__stylesheet__open',
+                ]
             ); ?>
 		</div>
 	</div>

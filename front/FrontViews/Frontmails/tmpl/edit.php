@@ -54,7 +54,7 @@
 								<label for="acym__mail__edit__preheader">
                                     <?php
                                     echo acym_translation('ACYM_EMAIL_PREHEADER');
-                                    echo acym_info('ACYM_EMAIL_PREHEADER_DESC');
+                                    echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_PREHEADER_DESC']);
                                     ?>
 								</label>
 							</div>

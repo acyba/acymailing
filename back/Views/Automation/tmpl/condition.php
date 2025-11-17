@@ -62,7 +62,7 @@
 		</div>
 
 		<h6 class="acym__title acym__title__secondary cell">
-            <?php echo acym_translation('ACYM_SELECT_YOUR_CONDITIONS').acym_info('ACYM_CONDITIONS_DESC'); ?>
+            <?php echo acym_translation('ACYM_SELECT_YOUR_CONDITIONS').acym_info(['textShownInTooltip' => 'ACYM_CONDITIONS_DESC']); ?>
 		</h6>
 		<div class="cell grid-x grid-margin-x margin-bottom-2" <?php echo $data['type_trigger'] == 'classic' ? 'style="display: none;"' : ''; ?>>
 			<div class="cell auto"></div>

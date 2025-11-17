@@ -2,7 +2,7 @@
 
 trait WooCommerceAutomationFilters
 {
-    public function onAcymDeclareFilters(&$filters)
+    public function onAcymDeclareFilters(array &$filters): void
     {
         $this->filtersFromConditions($filters);
     }
