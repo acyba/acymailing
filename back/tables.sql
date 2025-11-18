@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_list` (
 	`welcome_id` INT NULL,
 	`unsubscribe_id` INT NULL,
 	`cms_user_id` INT NOT NULL,
-	`access` VARCHAR(50) NOT NULL DEFAULT '',
+	`access` VARCHAR(150) NOT NULL DEFAULT '',
 	`description` TEXT NOT NULL,
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
 	`type` VARCHAR(20) NOT NULL DEFAULT 'standard',

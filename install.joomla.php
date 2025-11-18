@@ -29,11 +29,6 @@ class com_acymInstallerScript
 
                 return false;
             }
-
-            if (!empty($extension->extension_id)) {
-                $installer = new Installer();
-                $installer->refreshManifestCache($extension->extension_id);
-            }
         }
 
         return true;

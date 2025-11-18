@@ -176,11 +176,28 @@ trait Patchv10
 
     private function updateFor1050(): void
     {
+        if ($this->isPreviousVersionAtLeast('10.5.0')) {
+            return;
+        }
+
         $this->updateQuery('ALTER TABLE #__acym_automation CHANGE `active` `active` TINYINT(3) NOT NULL DEFAULT 0');
     }
 
     private function updateFor1060(): void
     {
+        if ($this->isPreviousVersionAtLeast('10.6.0')) {
+            return;
+        }
+
         $this->updateQuery('ALTER TABLE #__acym_scenario_process ADD COLUMN `unsubscribed` TINYINT(1) NOT NULL DEFAULT 0');
+    }
+
+    private function updateFor1062(): void
+    {
+        if ($this->isPreviousVersionAtLeast('10.6.2')) {
+            return;
+        }
+
+        $this->updateQuery('ALTER TABLE #__acym_list CHANGE `access` `access` VARCHAR(150) NOT NULL DEFAULT ""');
     }
 }
