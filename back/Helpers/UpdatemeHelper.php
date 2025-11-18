@@ -54,15 +54,15 @@ class UpdatemeHelper extends AcymObject
         return $return;
     }
 
-    public static function getLicenseInfo(bool $ajax): ?int
+    public static function getLicenseInfo(bool $ajax = false): void
     {
         // Get any error correctly
         ob_start();
-        $config = acym_config();
+        $config = acym_config(true);
         $url = 'public/getLicenseInfo';
         // Know which version to look at
         $url .= '?level='.urlencode(strtolower($config->get('level', 'starter')));
-        if (acym_level(ACYM_ESSENTIAL)) {
+        if (acym_level(ACYM_ESSENTIAL) || $config->get('isTrial', 0) == 1) {
             // Tell the user if the automatic features are available for the current installation
             if ($config->get('different_admin_url_toggle', 0) === 1) {
                 $url .= '&domain='.$config->get('different_admin_url_value', 0);
@@ -84,12 +84,12 @@ class UpdatemeHelper extends AcymObject
                     '',
                     [
                         'content' => '<br/><span style="color:#C10000;">'.acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').'</span><br/>'.$result,
-                        'lastcheck' => acym_date(time(), 'Y/m/d H:i'),
+                        'lastcheck' => acym_date(time(), 'ACYM_DATE_FORMAT_LC2'),
                     ],
                     false
                 );
             } else {
-                return null;
+                return;
             }
         }
 
@@ -97,14 +97,16 @@ class UpdatemeHelper extends AcymObject
             'latestversion' => $userInformation['latestversion'],
             'expirationdate' => $userInformation['expiration'],
             'lastlicensecheck' => time(),
-            'isTrial' => empty($userInformation['isTrial']) ? 0 : 1,
         ];
+
+        $licenseKey = $config->get('license_key');
+        if (!empty($licenseKey)) {
+            $newConfig['isTrial'] = empty($userInformation['isTrial']) ? 0 : 1;
+        }
 
         $config->saveConfig($newConfig);
 
         //check for plugins
         acym_checkPluginsVersion();
-
-        return $newConfig['lastlicensecheck'];
     }
 }

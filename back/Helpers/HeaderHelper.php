@@ -220,16 +220,16 @@ class HeaderHelper extends AcymObject
         }
 
         $lastLicenseCheck = $this->config->get('lastlicensecheck', 0);
-        $time = time();
-        $checking = ($time > $lastLicenseCheck + 604800) ? $checking = '1' : '0';
-        if (empty($lastLicenseCheck)) $lastLicenseCheck = $time;
+        if (empty($lastLicenseCheck)) {
+            $lastLicenseCheck = time();
+        }
+
+        $lastDateFormatted = acym_date($lastLicenseCheck, 'ACYM_DATE_FORMAT_LC2');
 
         return acym_tooltip(
             [
-                'hoveredText' => '<a id="checkVersionButton" type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" data-check="'.acym_escape(
-                        $checking
-                    ).'"><i class="cell shrink acymicon-autorenew"></i></a>',
-                'textShownInTooltip' => acym_translation('ACYM_LAST_CHECK').' <span id="acym__check__version__last__check">'.acym_date($lastLicenseCheck, 'Y/m/d H:i').'</span>',
+                'hoveredText' => '<a id="checkVersionButton" type="button" class="grid-x align-center button_header medium-shrink acym_vcenter"><i class="cell shrink acymicon-autorenew"></i></a>',
+                'textShownInTooltip' => acym_translation('ACYM_LAST_CHECK').' <span id="acym__check__version__last__check">'.$lastDateFormatted.'</span>',
             ]
         );
     }

@@ -131,11 +131,6 @@ function acym_cmsPermission(): string
 		</div>';
 }
 
-function acym_checkVersion(bool $ajax = false): ?int
-{
-    return UpdatemeHelper::getLicenseInfo($ajax);
-}
-
 function acym_loadJoomlaPlugin(string $family, ?string $name = null): void
 {
     PluginHelper::importPlugin($family, $name);

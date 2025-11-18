@@ -22,7 +22,9 @@ trait License
 
         if ($resultUnlinkLicenseOnUpdateMe['success'] === true) {
             $this->config->saveConfig(['license_key' => '']);
+            UpdatemeHelper::getLicenseInfo();
         }
+
 
         if (!empty($resultUnlinkLicenseOnUpdateMe['message'])) {
             $this->displayMessage($resultUnlinkLicenseOnUpdateMe['message']);
@@ -58,6 +60,8 @@ trait License
 
         if ($resultAttachLicenseOnUpdateMe['success'] === false) {
             $this->config->saveConfig(['license_key' => '']);
+        } else {
+            UpdatemeHelper::getLicenseInfo();
         }
 
         if (!empty($resultAttachLicenseOnUpdateMe['message'])) {
@@ -100,8 +104,6 @@ trait License
         ];
 
         $resultAttach = UpdatemeHelper::call('api/websites/attach', 'POST', $data);
-
-        acym_checkVersion();
 
         // If it's not the result well formatted => don't save the license key and out
         // If there is an error when the website has been attached => don't save the license key in the configuration
@@ -148,8 +150,6 @@ trait License
 
         //Call updateme to unlink the license from this website
         $resultUnlink = UpdatemeHelper::call('api/websites/unlink', 'POST', $data);
-
-        acym_checkVersion();
 
         //If it's not the result well formated => out
         if (empty($resultUnlink) || !$resultUnlink['success']) {

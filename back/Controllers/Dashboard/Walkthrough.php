@@ -106,6 +106,8 @@ trait Walkthrough
 
         if (empty($return['success'])) {
             $this->config->saveConfig(['license_key' => '']);
+        } else {
+            UpdatemeHelper::getLicenseInfo();
         }
 
         $originalMessage = $return['message'];

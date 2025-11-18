@@ -486,6 +486,8 @@ trait Listing
                     $this->displayMessage($resultUnlinkLicenseOnUpdateMe['message']);
                 }
             }
+
+            UpdatemeHelper::getLicenseInfo();
         }
         //__END__production_
     }

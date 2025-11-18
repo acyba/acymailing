@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+use AcyMailing\Helpers\UpdatemeHelper;
+
 class Update
 {
     private bool $cancelUpdate = false;
@@ -164,7 +166,7 @@ class Update
         $config->saveConfig($newConfig);
 
         if (acym_level(ACYM_ESSENTIAL)) {
-            acym_checkVersion();
+            UpdatemeHelper::getLicenseInfo();
         }
     }
 

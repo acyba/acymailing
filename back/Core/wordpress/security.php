@@ -243,12 +243,6 @@ function acym_cmsPermission(): string
     return $option;
 }
 
-function acym_checkVersion(bool $ajax = false): ?int
-{
-
-    return null;
-}
-
 function acym_triggerCmsHook(string $action, array $args = [], bool $isAction = true)
 {
     array_unshift($args, $action);

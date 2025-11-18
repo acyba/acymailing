@@ -611,9 +611,9 @@ class MailerHelper extends Mailer
             $attachments = json_decode($this->defaultMail[$mailId]->attachments, true);
             foreach ($attachments as $oneAttach) {
                 $attach = new \stdClass();
-                $attach->name = basename($oneAttach->filename);
-                $attach->filename = str_replace(['/', '\\'], DS, ACYM_ROOT).$oneAttach->filename;
-                $attach->url = ACYM_LIVE.$oneAttach->filename;
+                $attach->name = basename($oneAttach['filename']);
+                $attach->filename = str_replace(['/', '\\'], DS, ACYM_ROOT).$oneAttach['filename'];
+                $attach->url = ACYM_LIVE.$oneAttach['filename'];
                 $this->defaultMail[$mailId]->attach[] = $attach;
             }
         }

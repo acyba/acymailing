@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Helpers\UpdatemeHelper;
+
 /**
  * To secure text echoed in HTML attributes or HTML content
  *
@@ -250,7 +252,7 @@ function acym_isLicenseValidWeekly(): bool
     $expirationDate = $config->get('expirationdate', 0);
     // $expirationDate is empty when no call has been made yet on our server, or when it is a Starter license. Starter licenses don't have access to the cron
     if (empty($expirationDate) || (time() - 604800) > $config->get('lastlicensecheck', 0)) {
-        acym_checkVersion();
+        UpdatemeHelper::getLicenseInfo();
         $config = acym_config(true);
         $expirationDate = $config->get('expirationdate', 0);
     }
