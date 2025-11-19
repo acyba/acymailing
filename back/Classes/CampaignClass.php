@@ -1051,7 +1051,7 @@ class CampaignClass extends AcymClass
         return true;
     }
 
-    private function generateCampaign(object $campaign, object $campaignMail, int $lastGenerated, MailClass $mailClass): object
+    private function generateCampaign(object $campaign, object $campaignMail, ?int $lastGenerated, MailClass $mailClass): object
     {
         $newMail = $this->generateMailAutoCampaign($campaignMail, $campaign->sending_params['number_generated'], $mailClass);
         $newCampaign = new \stdClass();

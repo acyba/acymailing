@@ -1038,50 +1038,23 @@ class MailClass extends AcymClass
 
     public function sendAutomation(int $mailId, array $userIds, string $sendingDate, array $automationAdmin = [])
     {
-        if (empty($mailId)) return acym_translationSprintf('ACYM_EMAILS_ADDED_QUEUE', 0);
-        if (empty($sendingDate)) return acym_translation('ACYM_WRONG_DATE');
-        if (empty($userIds)) return acym_translation('ACYM_USER_NOT_FOUND');
+        if (empty($mailId)) {
+            return acym_translationSprintf('ACYM_EMAILS_ADDED_QUEUE', 0);
+        }
+
+        if (empty($sendingDate)) {
+            return acym_translation('ACYM_WRONG_DATE');
+        }
+
+        if (empty($userIds)) {
+            return acym_translation('ACYM_USER_NOT_FOUND');
+        }
+
         acym_arrayToInteger($userIds);
 
-        // If we send a notification
-        if (isset($automationAdmin['automationAdmin']) && $automationAdmin['automationAdmin']) {
-            $userClass = new UserClass();
-            $mail = $this->getOneById($mailId);
-            $user = $userClass->getOneById($automationAdmin['user_id']);
-
-            if (empty($mail) || empty($user)) return false;
-
-            // Get the current user values
-            $mailerHelper = new MailerHelper();
-            $pluginHelper = new PluginHelper();
-            $extractedTags = $pluginHelper->extractTags($mail, 'subscriber');
-            if (!empty($extractedTags)) {
-                foreach ($extractedTags as $dtext => $oneTag) {
-                    if (empty($oneTag->info) || $oneTag->info != 'current' || empty($user->{$oneTag->id})) continue;
-
-                    $mailerHelper->addParam(str_replace(['{', '}'], '', $dtext), $user->{$oneTag->id});
-                }
-            }
-
-            if (!empty($automationAdmin['user_id'])) {
-                $userClass = new UserClass();
-                $user = $userClass->getOneById($automationAdmin['user_id']);
-                if (!empty($user)) {
-                    $userField = $userClass->getAllUserFields($user);
-                    foreach ($userField as $map => $value) {
-                        $mailerHelper->addParam('user:'.$map, $value);
-                    }
-                }
-            }
-
-            $emailsSent = 0;
-            foreach ($userIds as $userId) {
-                if ($mailerHelper->sendOne($mail->id, $userId)) {
-                    $emailsSent++;
-                }
-            }
-
-            return $emailsSent;
+        $nbSent = $this->sendNotification($mailId, $userIds, $automationAdmin);
+        if (!is_null($nbSent)) {
+            return $nbSent;
         }
 
         $result = acym_query(
@@ -1091,6 +1064,9 @@ class MailClass extends AcymClass
                 WHERE user.active = 1 AND user.id IN ('.implode(',', $userIds).')'
         );
 
+        if ($result === 0) {
+            return acym_translation('ACYM_CAMPAIGN_ALREADY_QUEUED');
+        }
 
         $mailStatClass = new MailStatClass();
         $mailStat = $mailStatClass->getOneRowByMailId($mailId);
@@ -1104,11 +1080,64 @@ class MailClass extends AcymClass
 
         $mailStatClass->save($newMailStat);
 
-        if ($result === 0) {
-            return acym_translation('ACYM_CAMPAIGN_ALREADY_QUEUED');
+        return $result;
+    }
+
+    private function sendNotification(int $mailId, array $userIds, array $automationAdmin): ?int
+    {
+        if (empty($automationAdmin['user_id'])) {
+            return null;
         }
 
-        return $result;
+        $userClass = new UserClass();
+        $mail = $this->getOneById($mailId);
+        $user = $userClass->getOneById($automationAdmin['user_id']);
+
+        if (empty($mail) || empty($user)) {
+            return 0;
+        }
+
+        // Get the current user values
+        $mailerHelper = new MailerHelper();
+        $pluginHelper = new PluginHelper();
+        $extractedTags = $pluginHelper->extractTags($mail, 'subscriber');
+
+        $isNotification = false;
+        foreach ($extractedTags as $dtext => $oneTag) {
+            if (empty($oneTag->info) || $oneTag->info !== 'current') {
+                continue;
+            }
+
+            $isNotification = true;
+
+            if (!empty($user->{$oneTag->id})) {
+                $mailerHelper->addParam(str_replace(['{', '}'], '', $dtext), $user->{$oneTag->id});
+            }
+        }
+
+        if (!$isNotification) {
+            if (isset($automationAdmin['automationAdmin']) && $automationAdmin['automationAdmin']) {
+                return 0;
+            } else {
+                return null;
+            }
+        }
+
+        $userFields = $userClass->getAllUserFields($user);
+        foreach ($userFields as $map => $value) {
+            $mailerHelper->addParam('subscriber:'.$map.'|info:current', $value);
+            // Might not be used anymore
+            $mailerHelper->addParam('user:'.$map, $value);
+        }
+
+        $emailsSent = 0;
+        foreach ($userIds as $userId) {
+            if ($mailerHelper->sendOne($mail->id, $userId)) {
+                $emailsSent++;
+            }
+        }
+
+        return $emailsSent;
     }
 
     public function encode($mails = [])

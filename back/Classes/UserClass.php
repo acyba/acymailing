@@ -548,7 +548,7 @@ class UserClass extends AcymClass
         return null;
     }
 
-    public function subscribe(array $userIds, array $addLists, bool $trigger = true, bool $forceFront = false): bool
+    public function subscribe($userIds, array $addLists, bool $trigger = true, bool $forceFront = false): bool
     {
         if (empty($addLists)) {
             return false;

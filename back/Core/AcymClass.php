@@ -188,7 +188,7 @@ abstract class AcymClass extends AcymObject
             if (empty($element->$oneColumn)) {
                 $element->$oneColumn = [];
             } elseif (is_string($element->$oneColumn)) {
-                $element->$oneColumn = [];
+                $element->$oneColumn = json_decode($element->$oneColumn, true);
             }
         }
     }

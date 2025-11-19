@@ -109,49 +109,58 @@ function acym_makeCurlCall(string $url, array $options = []): array
 
 function acym_asyncUrlCalls(array $urls): void
 {
-    if (!function_exists('fsockopen')) {
+    if (!function_exists('curl_multi_exec')) {
         return;
     }
 
-    foreach ($urls as $url) {
-        $parts = parse_url($url);
-        $isSecure = ($parts['scheme'] ?? 'http') === 'https';
+    try {
+        $mh = curl_multi_init();
 
-        $scheme = $isSecure ? 'ssl://' : '';
-        $host = $parts['host'] ?? '';
-        $port = $parts['port'] ?? ($isSecure ? 443 : 80);
-        $path = ($parts['path'] ?? '/').(isset($parts['query']) ? '?'.$parts['query'] : '');
+        $handles = [];
+        foreach ($urls as $url) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_multi_add_handle($mh, $ch);
+            $handles[] = $ch;
+        }
 
-        try {
-            $fp = @fsockopen($scheme.$host, $port, $errno, $errstr, 1);
-            if ($fp) {
-                $out = "GET $path HTTP/1.1\r\n";
-                $out .= "Host: $host\r\n";
-                $out .= "Connection: Close\r\n\r\n";
-
-                fwrite($fp, $out);
-                fclose($fp);
-            } else {
-                throw new Exception($errstr.' ('.$errno.')');
+        $running = null;
+        $time = 1;
+        do {
+            curl_multi_exec($mh, $running);
+            usleep(100);
+            // if we are over 5s => we go out
+            if ($time > 50000) {
+                break;
             }
-        } catch (Exception $e) {
-            $config = acym_config();
-            $reportPath = $config->get('cron_savepath');
-            if (!empty($reportPath)) {
-                $reportPath = str_replace(['{year}', '{month}'], [date('Y'), date('m')], $reportPath);
-                $reportPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode($reportPath)));
-                acym_createDir(dirname($reportPath), true, true);
+            $time++;
+        } while ($running);
 
-                $lr = "\r\n";
-                file_put_contents(
-                    $reportPath,
-                    $lr.$lr.'********************     '.acym_getDate(
-                        time()
-                    ).'     ********************'.$lr.'An error occurred while calling the queue sending script, please make sure the PHP function "fsockopen" is activated on your server: '.$e->getMessage(
-                    ),
-                    FILE_APPEND
-                );
-            }
+        foreach ($handles as $handle) {
+            curl_multi_remove_handle($mh, $handle);
+            curl_close($handle);
+        }
+        curl_multi_close($mh);
+    } catch (Exception $e) {
+        $config = acym_config();
+        $reportPath = $config->get('cron_savepath');
+        if (!empty($reportPath)) {
+            $reportPath = str_replace(['{year}', '{month}'], [date('Y'), date('m')], $reportPath);
+            $reportPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode($reportPath)));
+            acym_createDir(dirname($reportPath), true, true);
+
+            $lr = "\r\n";
+            file_put_contents(
+                $reportPath,
+                $lr.$lr.'********************     '.acym_getDate(
+                    time()
+                ).'     ********************'.$lr.'An error occurred while calling the queue sending script, please make sure the PHP function "curl_multi_exec" is activated on your server: '.$e->getMessage(
+                ),
+                FILE_APPEND
+            );
         }
     }
 }

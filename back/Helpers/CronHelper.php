@@ -369,7 +369,7 @@ class CronHelper extends AcymObject
             return;
         }
 
-        if ($this->isSendingCall || !acym_level(ACYM_ENTERPRISE) || !function_exists('fsockopen')) {
+        if ($this->isSendingCall || !acym_level(ACYM_ENTERPRISE) || !function_exists('curl_multi_exec')) {
             $this->sendQueuedEmails();
         } else {
             $this->handleMultiCron();
