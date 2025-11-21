@@ -192,8 +192,9 @@ class CampaignsController extends AcymController
             $mailId = $specificMailId;
             if (empty($mailId)) {
                 if (acym_isMultilingual()) {
-                    $user = $userClass->getOneById($oneAddress);
-                    if (empty($user)) {
+                    if (is_numeric($oneAddress)) {
+                        $user = $userClass->getOneById($oneAddress);
+                    } else {
                         $user = $userClass->getOneByEmail($oneAddress);
                     }
                     if (empty($user)) {

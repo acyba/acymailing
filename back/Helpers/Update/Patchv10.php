@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Helpers\Update;
 
+use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\ConfigurationClass;
 use AcyMailing\Helpers\BounceHelper;
 
@@ -199,5 +200,40 @@ trait Patchv10
         }
 
         $this->updateQuery('ALTER TABLE #__acym_list CHANGE `access` `access` VARCHAR(150) NOT NULL DEFAULT ""');
+    }
+
+    private function updateFor1065(): void
+    {
+        if ($this->isPreviousVersionAtLeast('10.6.5')) {
+            return;
+        }
+
+        $campaignClass = new CampaignClass();
+        $autoCampaigns = $campaignClass->getCampaignsByTypes([CampaignClass::SENDING_TYPE_AUTO], true);
+        $campaignIds = [];
+
+        foreach ($autoCampaigns as $autoCampaign) {
+            if (empty($autoCampaign->sending_params)) {
+                $autoCampaign->active = 0;
+                $campaignClass->save($autoCampaign);
+                $campaignIds[] = $autoCampaign->id;
+            }
+        }
+
+        if (!empty($campaignIds)) {
+            $campaignIdsText = implode(', ', $campaignIds);
+
+            $message = acym_translationSprintf('ACYM_ERROR_WHILE_RECOVERING_TRIGGERS_NOTIF_X', $campaignIdsText);
+            $message .= ' <a id="acym__queue__configure-cron" href="'.acym_completeLink('campaigns&task=campaigns_auto').'">'.acym_translation(
+                    'ACYM_GOTO_CAMPAIGNS_AUTO'
+                ).'</a>';
+            $message .= '<p class="acym__do__not__remindme" title="auto_campaigns_triggers_reminder">'.acym_translation('ACYM_DO_NOT_REMIND_ME').'</p>';
+
+            $notification = [
+                'name' => 'auto_campaigns_triggers_reminder',
+                'removable' => 1,
+            ];
+            acym_enqueueMessage($message, 'warning', true, [$notification]);
+        }
     }
 }

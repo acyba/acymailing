@@ -32,6 +32,17 @@ trait AutoCampaigns
 
             if (empty($textToDisplay->triggers['trigger_type']) || empty($textToDisplay->triggers[$textToDisplay->triggers['trigger_type']])) {
                 $data['allCampaigns'][$key]->sending_params['trigger_text'] = acym_translation('ACYM_ERROR_WHILE_RECOVERING_TRIGGERS');
+                $message = acym_translationSprintf('ACYM_ERROR_WHILE_RECOVERING_TRIGGERS_NOTIF_X', $campaign->id);
+                $message .= ' <a id="acym__queue__configure-cron" href="'.acym_completeLink('campaigns&task=campaigns_auto').'">'.acym_translation(
+                        'ACYM_GOTO_CAMPAIGNS_AUTO'
+                    ).'</a>';
+                $message .= '<p class="acym__do__not__remindme" title="auto_campaigns_triggers_reminder">'.acym_translation('ACYM_DO_NOT_REMIND_ME').'</p>';
+
+                $notification = [
+                    'name' => 'auto_campaigns_triggers_reminder',
+                    'removable' => 1,
+                ];
+                acym_enqueueMessage($message, 'warning', true, [$notification]);
             } else {
                 $data['allCampaigns'][$key]->sending_params['trigger_text'] = $textToDisplay->triggers[$textToDisplay->triggers['trigger_type']];
             }

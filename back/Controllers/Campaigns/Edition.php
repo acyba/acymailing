@@ -1052,7 +1052,9 @@ trait Edition
             $receiver = new stdClass();
             $receiver->email = $currentUserEmail;
             $newID = $userClass->save($receiver);
-            $data['receiver'] = $userClass->getOneById($newID);
+            if (!empty($newID)) {
+                $data['receiver'] = $userClass->getOneById($newID);
+            }
         }
     }
 

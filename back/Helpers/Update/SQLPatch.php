@@ -90,6 +90,7 @@ trait SQLPatch
         $this->updateFor1050();
         $this->updateFor1060();
         $this->updateFor1062();
+        $this->updateFor1065();
     }
 
     public function checkDB(): void
