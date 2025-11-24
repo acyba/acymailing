@@ -425,6 +425,7 @@ function acym_getJSMessages(): string
         'ACYM_SCENARIOS',
         'ACYM_EXTRA_INFORMATION',
         'ACYM_SELECT_A_PAGE',
+        'ACYM_DEDICATED_SENDING_PROCESS_WARNING',
     ];
 
     foreach ($keysToLoad as $oneKey) {

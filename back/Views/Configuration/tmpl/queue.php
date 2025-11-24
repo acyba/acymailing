@@ -225,6 +225,21 @@ use AcyMailing\Helpers\CronHelper;
                         <?php echo acym_switch('config[followup_max_priority]', $this->config->get('followup_max_priority', 0)); ?>
 					</div>
 				</div>
+				<div class="cell medium-3 automatic_only automatic_manual">
+                    <?php
+                    echo acym_translation('ACYM_USE_DEDICATED_SENDING_PROCESS');
+                    echo acym_info(['textShownInTooltip' => 'ACYM_USE_DEDICATED_SENDING_PROCESS_DESC']); ?>
+				</div>
+				<div class="cell medium-9 grid-x automatic_only automatic_manual">
+					<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
+                        <?php
+                        echo acym_switch(
+                            'config[dedicated_send_process]',
+                            $this->config->get('dedicated_send_process', 0)
+                        );
+                        ?>
+					</div>
+				</div>
             <?php } ?>
 		</div>
 	</div>

@@ -47,9 +47,20 @@ jQuery(function ($) {
         setCustomAnswersField();
         setColorPicker();
         initButtonImage();
+        setDedicatedSendProcess();
     }
 
     Configuration();
+
+    function setDedicatedSendProcess() {
+        $('[name="config[dedicated_send_process]"]').on('change', function (event) {
+            setTimeout(() => {
+                if (Number($(this).val()) === 1 && !confirm(ACYM_JS_TXT.ACYM_DEDICATED_SENDING_PROCESS_WARNING)) {
+                    $(`[for="${$(this).data('switch')}"]`).trigger('click');
+                }
+            }, 100);
+        });
+    }
 
     function setSmlConfiguration() {
         const $allInputs = $(`${smlSendingMethodPrefix} input[name^="config["]`);

@@ -121,7 +121,7 @@ function acym_asyncUrlCalls(array $urls): void
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+            //curl_setopt($ch, CURLOPT_TIMEOUT, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_multi_add_handle($mh, $ch);
             $handles[] = $ch;
@@ -141,7 +141,7 @@ function acym_asyncUrlCalls(array $urls): void
 
         foreach ($handles as $handle) {
             curl_multi_remove_handle($mh, $handle);
-            curl_close($handle);
+            //curl_close($handle);
         }
         curl_multi_close($mh);
     } catch (Exception $e) {

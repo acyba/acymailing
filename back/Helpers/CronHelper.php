@@ -369,10 +369,12 @@ class CronHelper extends AcymObject
             return;
         }
 
-        if ($this->isSendingCall || !acym_level(ACYM_ENTERPRISE) || !function_exists('curl_multi_exec')) {
-            $this->sendQueuedEmails();
-        } else {
+        if (!$this->isSendingCall && acym_level(ACYM_ENTERPRISE) && function_exists('curl_multi_exec')) {
             $this->handleMultiCron();
+        }
+
+        if ($this->isSendingCall || $this->config->get('dedicated_send_process', 0) != 1) {
+            $this->sendQueuedEmails();
         }
     }
 
@@ -401,16 +403,26 @@ class CronHelper extends AcymObject
             return;
         }
 
+        $nbBatches = $this->config->get('queue_batch_auto', 1);
+        $nbBatches = intval($nbBatches);
+
+        if ($this->config->get('dedicated_send_process', 0) == 1) {
+            $startCron = 0;
+        } else {
+            if ($nbBatches < 2) {
+                return;
+            }
+
+            $startCron = 1;
+        }
+
         $cronParams = '&t='.time();
         if (!empty($this->config->get('cron_security', 0)) && !empty($this->config->get('cron_key'))) {
             $cronParams .= '&cronKey='.$this->config->get('cron_key');
         }
 
-        $nbBatches = $this->config->get('queue_batch_auto', 1);
-        $nbBatches = intval($nbBatches);
-
         $urls = [];
-        for ($i = 0; $i < $nbBatches; $i++) {
+        for ($i = $startCron; $i < $nbBatches; $i++) {
             $urls[] = acym_frontendLink('cron&task=cron&type=sending&startqueue='.($emailsPerBatches * $i).$cronParams);
         }
 
