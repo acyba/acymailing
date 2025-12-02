@@ -21,8 +21,11 @@ trait Subscription
             die('Access denied for subscription reset of this user');
         }
 
-        $list = acym_getVar('int', 'acym__entity_select__selected');
-        $userClass->resetSubscription([$userId], [$list]);
+        $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected', '[]'), true);
+        if (empty($lists)) {
+            $lists = [];
+        }
+        $userClass->resetSubscription([$userId], $lists);
 
         $this->edit();
     }
@@ -108,7 +111,6 @@ trait Subscription
     public function subscribeUser(bool $returnOnEdit = true, array $lists = [], bool $frontCreation = false): void
     {
         $userId = acym_getVar('int', 'userId');
-
         if (empty($userId)) {
             $this->listing();
 
@@ -118,6 +120,14 @@ trait Subscription
         $userClass = new UserClass();
         if (!$frontCreation && !$userClass->hasUserAccess($userId)) {
             die('Access denied for subscribing this user');
+        }
+
+        // Can be called from the user's edition page when re-subscribing to a list
+        if (empty($lists)) {
+            $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected', '[]'), true);
+            if (empty($lists)) {
+                $lists = [];
+            }
         }
 
         $userClass->subscribe([$userId], $lists);

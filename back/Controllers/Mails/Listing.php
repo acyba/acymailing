@@ -252,16 +252,20 @@ trait Listing
     {
         acym_checkToken();
         $mailId = acym_getVar('int', 'id', 0);
-        if (empty($mailId)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_MAIL'), [], false);
+        if (empty($mailId)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_MAIL'), [], false);
+        }
 
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($mailId);
-        if (empty($mail)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_MAIL'), [], false);
+        if (empty($mail)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_MAIL'), [], false);
+        }
 
         if (!$mailClass->hasUserAccess($mailId)) {
             die('Access denied for this mail');
         }
 
-        acym_sendAjaxResponse('', $mail);
+        acym_sendAjaxResponse('', ['mail' => $mail]);
     }
 }

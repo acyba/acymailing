@@ -222,7 +222,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
     $year = [
         '' => acym_translation('ACYM_YEAR'),
     ];
-    for ($i = 1900; $i <= (acym_date('now', 'Y') + 10); $i++) {
+    for ($i = 1900; $i <= ((int)acym_date('now', 'Y') + 10); $i++) {
         $year[$i] = $i;
     }
 
@@ -289,9 +289,19 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
     }
 }
 
-function acym_getTimeFromUTCDate(string $date): int
+function acym_getTimeFromUTCDate(?string $date): int
 {
-    return strtotime($date) + date('Z');
+    // Accept null/empty inputs gracefully and return 0 when no valid date is provided to avoid error.
+    if (empty($date)) {
+        return 0;
+    }
+
+    $timestamp = strtotime($date);
+    if ($timestamp === false) {
+        return 0;
+    }
+
+    return $timestamp + date('Z');
 }
 
 function acym_getTimeFromCMSDate($date)

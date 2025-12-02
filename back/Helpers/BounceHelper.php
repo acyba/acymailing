@@ -815,7 +815,6 @@ class BounceHelper extends AcymObject
                 );
             }
 
-
             foreach ($rules as $oneRule) {
                 //We stop as soon as we find a good rule...
                 if ($this->handleRule($oneRule)) {

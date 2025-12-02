@@ -505,6 +505,10 @@ trait DefaultData
         $newUser->cms_id = $currentCMSId;
         $newUser->id = $userClass->save($newUser);
 
+        if (empty($newUser->id)) {
+            return null;
+        }
+
         return $userClass->getOneById($newUser->id);
     }
 }

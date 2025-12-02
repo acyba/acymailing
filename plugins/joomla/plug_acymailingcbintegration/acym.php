@@ -252,23 +252,32 @@ class getAcymTab extends cbTabHandler
 
     private function displayLists($mode, $acyUser, $lists)
     {
+        if (empty($acyUser->id)) {
+            return '';
+        }
+
         $listClass = new ListClass();
         $allLists = $listClass->getAllWithoutManagement(true);
 
         $userClass = new UserClass();
         $userLists = $userClass->getSubscriptionStatus($acyUser->id);
 
-
         $visibleListsArray = [];
         $visibleLists = explode(',', $lists);
         foreach ($allLists as $listId => $oneList) {
-            if (0 === intval($oneList->active) || 0 === intval($oneList->visible) || !in_array($listId, $visibleLists)) continue;
-            if ('profile' === $mode && (empty($userLists[$listId]) || 1 !== intval($userLists[$listId]->status))) continue;
+            if (0 === intval($oneList->active) || 0 === intval($oneList->visible) || !in_array($listId, $visibleLists)) {
+                continue;
+            }
+            if ('profile' === $mode && (empty($userLists[$listId]) || 1 !== intval($userLists[$listId]->status))) {
+                continue;
+            }
 
             $visibleListsArray[] = $listId;
         }
 
-        if (empty($visibleListsArray)) return '';
+        if (empty($visibleListsArray)) {
+            return '';
+        }
 
         $return = '';
 

@@ -411,6 +411,9 @@ class FieldClass extends AcymClass
         return parent::delete($elements);
     }
 
+    /**
+     * @param mixed $defaultValue
+     */
     public function displayField(
         object  $field,
                 $defaultValue,
@@ -556,6 +559,8 @@ class FieldClass extends AcymClass
             $required = '';
         }
 
+        $defaultValue = $this->prepareDefaultValue($defaultValue, $field->type, $user);
+
         if ($field->id == 1) {
             $nameAttribute = ' name="user[name]"';
             $inputTmp = '<input autocomplete="name" '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.$readonly.' type="text" class="cell">';
@@ -586,15 +591,11 @@ class FieldClass extends AcymClass
                 $return .= '<ul acym-data-field="'.$uniqueId.'" class="acym_email_suggestions" style="display: none;"></ul>';
             }
         } elseif ($field->type === 'language') {
-            if (empty($defaultValue) && !empty($user->language)) {
-                $defaultValue = $user->language;
-            }
-
             $attributesSelectField['class'] = 'acym__select';
             $selectTmp = acym_select(
                 $this->getLanguagesForDropdown(),
                 'user[language]',
-                empty($defaultValue) ? acym_getLanguageTag() : $defaultValue,
+                $defaultValue,
                 $attributesSelectField
             );
 
@@ -612,9 +613,8 @@ class FieldClass extends AcymClass
         } elseif ($field->type === 'textarea') {
             $return .= '<textarea '.$nameAttribute.$required.$maxCharacters.' rows="'.intval($field->option->rows).'" cols="'.intval(
                     $field->option->columns
-                ).'">'.(empty($defaultValue) ? '' : $defaultValue).'</textarea>';
+                ).'">'.$defaultValue.'</textarea>';
         } elseif ($field->type === 'radio') {
-            $defaultValue = strlen($defaultValue) === 0 ? null : $defaultValue;
             if ($displayFront) {
                 foreach ($valuesArray as $key => $oneValue) {
                     $isCkecked = $defaultValue == $key ? 'checked' : '';
@@ -632,30 +632,20 @@ class FieldClass extends AcymClass
             }
         } elseif ($field->type === 'checkbox') {
             if ($displayFront) {
-                $defaultValue = empty($defaultValue) ? null : (explode(',', $defaultValue));
                 foreach ($valuesArray as $key => $oneValue) {
-                    $checked = !empty($defaultValue) && in_array($key, $defaultValue) ? 'checked' : '';
+                    $checked = in_array($key, $defaultValue) ? 'checked' : '';
                     $return .= '<label><input '.$required.' type="checkbox" name="'.$name.'['.acym_escape($key).']" value="'.acym_escape(
                             $key
                         ).'" '.$checked.'> '.$oneValue.'</label>';
                 }
             } else {
-                if (!empty($defaultValue) && !is_object($defaultValue)) {
-                    $defaultValue = explode(',', $defaultValue);
-                    $temporaryObject = new \stdClass();
-                    foreach ($defaultValue as $oneValue) {
-                        $temporaryObject->$oneValue = 'on';
-                    }
-                    $defaultValue = $temporaryObject;
-                }
-                $defaultValue = is_object($defaultValue) ? $defaultValue : new \stdClass();
                 foreach ($valuesArray as $key => $oneValue) {
-                    if (empty($defaultValue->$key)) {
-                        $labelClass = 'class="cell margin-top-1"';
-                        $attributes = '';
-                    } else {
+                    if (in_array($key, $defaultValue)) {
                         $labelClass = '';
                         $attributes = 'checked '.$required;
+                    } else {
+                        $labelClass = 'class="cell margin-top-1"';
+                        $attributes = '';
                     }
                     $return .= '<label '.$labelClass.'>';
                     $return .= '<input '.$attributes.' type="checkbox" name="'.$name.'['.acym_escape(
@@ -668,19 +658,17 @@ class FieldClass extends AcymClass
             $return .= acym_select(
                 $valuesArray,
                 $name,
-                empty($defaultValue) ? '' : $defaultValue,
+                $defaultValue,
                 $attributesSelectField
             );
         } elseif ($field->type === 'multiple_dropdown') {
-            $defaultValue = is_array($defaultValue) ? $defaultValue : explode(',', $defaultValue);
-
             $attributes = [
                 'class' => 'acym__custom__fields__select__multiple__form acym__select',
                 'style' => empty($field->option->size) ? '' : 'width:'.$field->option->size.'px',
             ];
             if ($field->required) $attributes['data-required'] = $displayFront ? acym_escape($requiredJson) : $requiredJson;
 
-            $return .= acym_selectMultiple($valuesArray, $name, empty($defaultValue) ? [] : $defaultValue, $attributes);
+            $return .= acym_selectMultiple($valuesArray, $name, $defaultValue, $attributes);
         } elseif ($field->type === 'date') {
             $attributes = [
                 'class' => 'acym__custom__fields__select__form acym__select',
@@ -696,14 +684,12 @@ class FieldClass extends AcymClass
                 $attributes
             );
         } elseif ($field->type === 'file') {
-            $defaultValue = is_array($defaultValue) ? $defaultValue[0] : $defaultValue;
             if ($displayFront) {
                 $return .= '<input '.$nameAttribute.$required.' type="file">';
             } else {
                 $return .= acym_inputFile($name.'[]', $defaultValue, '', $required);
             }
         } elseif ($field->type === 'phone') {
-            $defaultValue = !empty($defaultValue) ? explode(',', $defaultValue) : '';
             $indicator = !empty($defaultValue[0]) ? $defaultValue[0] : '';
             $number = !empty($defaultValue[1]) ? $defaultValue[1] : '';
 
@@ -734,6 +720,63 @@ class FieldClass extends AcymClass
         }
 
         return $return;
+    }
+
+    /**
+     * @param mixed $defaultValue
+     *
+     * @return mixed
+     */
+    private function prepareDefaultValue($defaultValue, string $fieldType, ?object $user)
+    {
+        if ($fieldType === 'language') {
+            if (empty($defaultValue) && !empty($user->language)) {
+                $defaultValue = $user->language;
+            }
+
+            return empty($defaultValue) ? acym_getLanguageTag() : $defaultValue;
+        }
+
+        if ($fieldType === 'phone') {
+            return !empty($defaultValue) ? explode(',', $defaultValue) : '';
+        }
+
+        if ($fieldType === 'file') {
+            return is_array($defaultValue) ? $defaultValue[0] : $defaultValue;
+        }
+
+        if (in_array($fieldType, ['single_dropdown', 'textarea'])) {
+            return empty($defaultValue) ? '' : $defaultValue;
+        }
+
+        if ($fieldType === 'radio') {
+            return strlen($defaultValue) === 0 ? null : $defaultValue;
+        }
+
+        if (in_array($fieldType, ['checkbox', 'multiple_dropdown'])) {
+            if (empty($defaultValue)) {
+                return [];
+            }
+
+            if (is_string($defaultValue)) {
+                return explode(',', $defaultValue);
+            }
+
+            if (is_object($defaultValue)) {
+                $defaultValues = [];
+                foreach ($defaultValue as $oneKey => $oneValue) {
+                    if (!empty($oneValue)) {
+                        $defaultValues[] = $oneKey;
+                    }
+                }
+
+                return $defaultValues;
+            }
+
+            return is_array($defaultValue) ? $defaultValue : [];
+        }
+
+        return $defaultValue;
     }
 
     public function getFieldTypeById(int $id): string

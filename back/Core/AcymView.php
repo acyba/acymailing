@@ -78,7 +78,7 @@ abstract class AcymView extends AcymObject
         }
 
         // Open wrapper and display the header
-        if (acym_getVar('cmd', 'task') != 'ajaxEncoding') {
+        if (acym_getVar('cmd', 'task') !== 'ajaxEncoding') {
             echo '<div id="acym_wrapper" class="'.$name.'_'.$view.' cms_'.ACYM_CMS.' cms_v_'.substr(ACYM_CMSV, 0, 1).'">';
         }
 
@@ -124,8 +124,11 @@ abstract class AcymView extends AcymObject
         include acym_getView($name, $view);
 
         // Close the wrapper and the content if CMS = Joomla
-        if (acym_isLeftMenuNecessary()) echo '</div>';
-        if (acym_getVar('cmd', 'task') != 'ajaxEncoding') {
+        if (acym_isLeftMenuNecessary()) {
+            echo '</div>';
+        }
+
+        if (acym_getVar('cmd', 'task') !== 'ajaxEncoding') {
             echo '</div>';
         }
 
@@ -133,18 +136,20 @@ abstract class AcymView extends AcymObject
             echo '</form>';
         }
 
-        if (ACYM_CMS !== 'wordpress' || !acym_isAdmin()) {
+        if (ACYM_CMS !== 'wordpress' || !acym_isAdmin() || in_array($controller->name, ['dashboard', 'language', 'campaigns']) || acym_isAjax()) {
             return;
         }
 
         $remind = json_decode($this->config->get('remindme', '[]'));
         $installationDate = $this->config->get('install_date', time());
+        $sevenDaysAgo = time() - 7 * 86400;
 
-        if (!in_array('reviews', $remind) && !in_array($controller->name, ['dashboard', 'language', 'campaigns']) && $installationDate < time() - 7 * 86400 && !acym_isAjax()) {
+        if (!in_array('reviews', $remind) && $installationDate < $sevenDaysAgo) {
             echo '<div id="acym__reviews__footer" style="margin: 0 0 30px 30px;">';
             echo acym_translationSprintf(
                 'ACYM_REVIEW_FOOTER',
-                '<a title="reviews" id="acym__reviews__footer__link" target="_blank" href="https://wordpress.org/support/plugin/acymailing/reviews/?rate=5#new-post"><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i></a>'
+                '<a title="reviews" id="acym__reviews__footer__link" target="_blank" href="https://wordpress.org/support/plugin/acymailing/reviews/?rate=5#new-post">
+                '.str_repeat('<i class="acymicon-star"></i>', 5).'</a>'
             );
             echo '</div>';
         }

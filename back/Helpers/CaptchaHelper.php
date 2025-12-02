@@ -110,12 +110,10 @@ class CaptchaHelper extends AcymObject
             );
 
             return !empty($responseData['success']);
-        } elseif ($captchaPluginName === 'turnstile') {
-            $response = acym_getVar('string', 'cf-turnstile-response', '');
+        } else {
+            $response = acym_getVar('string', 'acym-captcha', '');
 
             return acym_checkCaptcha($captchaPluginName, $response);
-        } else {
-            return acym_checkCaptcha($captchaPluginName);
         }
     }
 }

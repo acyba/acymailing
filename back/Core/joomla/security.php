@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Helpers\UpdatemeHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Captcha\Captcha;
 
 /**
  * @param mixed $default
@@ -159,7 +159,7 @@ function acym_triggerCmsHook(string $method, array $args = [], bool $isAction = 
 function acym_getCmsCaptcha(): array
 {
     $captchaPlugins = acym_loadObjectList(
-        'SELECT `element`, `name` 
+        'SELECT `element`, `name`
         FROM #__extensions 
         WHERE `type` = "plugin" 
             AND `folder` = "captcha" 
@@ -179,25 +179,44 @@ function acym_getCmsCaptcha(): array
 
 function acym_loadCaptcha(string $captchaPluginName, string $id): string
 {
+    if (ACYM_J40) {
+        $captcha = Captcha::getInstance($captchaPluginName);
+
+        if (empty($captcha) || !method_exists($captcha, 'display')) {
+            return '';
+        }
+
+        return $captcha->display('acym-captcha', $id);
+    }
+
     PluginHelper::importPlugin('captcha', $captchaPluginName);
     acym_triggerCmsHook('onInit', [$id]);
-    $result = acym_triggerCmsHook('onDisplay', [null, $id, 'class=""']);
+    $result = acym_triggerCmsHook('onDisplay', ['acym-captcha', $id, 'class=""']);
 
     return empty($result[0]) ? '' : $result[0];
 }
 
 function acym_checkCaptcha(string $captchaPluginName, ?string $response = null): bool
 {
-    PluginHelper::importPlugin('captcha', $captchaPluginName);
     try {
-        $result = acym_triggerCmsHook('onCheckAnswer', [$response]);
+        if (ACYM_J40) {
+            $captcha = Captcha::getInstance($captchaPluginName);
+            if (empty($captcha) || !method_exists($captcha, 'checkAnswer')) {
+                return '';
+            }
+
+            return (bool)$captcha->checkAnswer($response);
+        } else {
+            PluginHelper::importPlugin('captcha', $captchaPluginName);
+            $result = acym_triggerCmsHook('onCheckAnswer', [$response]);
+
+            $isPassing = $result[0] ?? false;
+
+            return (bool)$isPassing;
+        }
     } catch (Exception $e) {
         acym_enqueueMessage($e->getMessage(), 'error');
 
         return false;
     }
-
-    $isPassing = $result[0] ?? false;
-
-    return (bool)$isPassing;
 }

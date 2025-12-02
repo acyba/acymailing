@@ -63,10 +63,6 @@ class MailboxClass extends AcymClass
             return;
         }
 
-        if (!is_array($mailboxIds)) {
-            $mailboxIds = [$mailboxIds];
-        }
-
         $duplicateErrors = [];
         foreach ($mailboxIds as $mailboxId) {
             $mailbox = $this->getOneById($mailboxId);
@@ -79,6 +75,8 @@ class MailboxClass extends AcymClass
             unset($mailbox->id);
             $mailbox->active = 0;
             $mailbox->name .= '_copy';
+            $mailbox->conditions = json_encode($mailbox->conditions);
+            $mailbox->actions = json_encode($mailbox->actions);
 
             if (empty($this->save($mailbox))) {
                 $duplicateErrors[] = acym_translationSprintf('ACYM_ERROR_DUPLICATING_MAILBOX_ACTION', $originalName);

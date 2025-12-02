@@ -164,7 +164,14 @@ const acym_editorWysidVersions = {
                     acym_helperNotification.addNotification(res.message, 'error', true);
                     return;
                 }
-                acym_editorWysidVersions.switchVersion(res.data.subject, res.data.preheader, res.data.body, '', res.data.settings, res.data.stylesheet);
+                acym_editorWysidVersions.switchVersion(
+                    res.data.mail.subject,
+                    res.data.mail.preheader,
+                    res.data.mail.body,
+                    '',
+                    res.data.mail.settings,
+                    res.data.mail.stylesheet
+                );
                 acym_editorWysidVersions.showEdition();
 
                 jQuery(this).closest('#acym__template__choose__modal').find('.close-button').trigger('click');

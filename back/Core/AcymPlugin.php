@@ -205,7 +205,7 @@ class AcymPlugin extends AcymObject
         }
     }
 
-    protected function getCategoryFilter(): string
+    protected function getCategoryFilter()
     {
         $filter_cat = acym_getVar('int', 'plugin_category', 0);
         $this->catvalues = [];
@@ -529,7 +529,7 @@ class AcymPlugin extends AcymObject
         $this->pluginHelper->replaceTags($email, $this->tags, true);
     }
 
-    protected function handleOrderBy(string &$query, object $parameter, ?string $table = null): void
+    protected function handleOrderBy(string &$query, object $parameter, ?string $table = null)
     {
         if (empty($parameter->order)) return;
 
@@ -1424,7 +1424,7 @@ class AcymPlugin extends AcymObject
         return $ids;
     }
 
-    protected function cleanExtensionContent(string $text): string
+    protected function cleanExtensionContent(string $text)
     {
         if (ACYM_CMS === 'wordpress') {
             if (!acym_isExtensionActive('classic-editor/classic-editor.php') || strpos($text, '<!-- wp:') !== false) {

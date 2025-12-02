@@ -19,6 +19,7 @@ trait Edition
             $field->id = 0;
             $field->name = '';
             $field->active = 1;
+            $field->core = 0;
             $field->type = 'text';
             $field->value = '';
             $field->option = '';

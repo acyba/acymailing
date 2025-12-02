@@ -1,5 +1,4 @@
 <div class="grid-x acym__list__settings__subscribers acym__content" id="acym__list__settings__subscribers">
-	<a name="subscribers"></a>
 	<input type="hidden" name="list[name]" value="<?php echo acym_escape($data['listInformation']->name); ?>" />
 	<input type="hidden" id="subscribers_subscribed" value="<?php echo acym_escape(json_encode($data['subscribers'])); ?>" />
 	<input type="hidden" id="requireConfirmation" value="<?php echo empty($this->config->get('require_confirmation', 0)) ? 0 : 1; ?>" />
@@ -92,3 +91,4 @@
 			<span><?php echo acym_translation('ACYM_NO_SUBSCRIBERS_FOUND'); ?></span>
 		</div>
 	</div>
+</div>
