@@ -617,8 +617,10 @@ trait Edition
             $mail->attachments = $mailClass->getMailAttachments($mail->id);
         }
 
-        if (!empty($mail->attachments) && !is_array($mail->attachments)) {
-            $mail->attachments = json_decode($mail->attachments, true);
+        if (!empty($mail->attachments)) {
+            if (!is_array($mail->attachments)) {
+                $mail->attachments = json_decode($mail->attachments, true);
+            }
         } else {
             $mail->attachments = [];
         }
@@ -630,16 +632,17 @@ trait Edition
             foreach ($attachments as $filepath) {
                 if (empty($filepath)) continue;
 
-                $attachment = new \stdClass();
-                $attachment->filename = $filepath;
-                $attachment->size = filesize(ACYM_ROOT.$filepath);
+                $attachment = [
+                    'filename' => $filepath,
+                    'size' => filesize(ACYM_ROOT.$filepath),
+                ];
 
                 //We will never allow some files to be uploaded...
-                if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $attachment->filename)) {
+                if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $attachment['filename'])) {
                     acym_enqueueMessage(
                         acym_translationSprintf(
                             'ACYM_ACCEPTED_TYPE',
-                            substr($attachment->filename, strrpos($attachment->filename, '.') + 1),
+                            substr($attachment['filename'], strrpos($attachment['filename'], '.') + 1),
                             $this->config->get('allowed_files')
                         ),
                         'notice'
@@ -647,7 +650,7 @@ trait Edition
                     continue;
                 }
 
-                if (in_array((array)$attachment, $mail->attachments)) continue;
+                if (in_array($attachment, $mail->attachments)) continue;
 
                 $newAttachments[] = $attachment;
             }

@@ -21,10 +21,6 @@ trait EasysocialAutomationConditions
         $conditions['user']['easysocialgroups']->option .= '</div>';
 
         $conditions['user']['easysocialgroups']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode([
-            'plugin' => __CLASS__,
-            'trigger' => 'searchGroup',
-        ]);
         $conditions['user']['easysocialgroups']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][easysocialgroups][group]',
@@ -32,7 +28,10 @@ trait EasysocialAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_GROUP'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchGroup',
+                ],
             ]
         );
         $conditions['user']['easysocialgroups']->option .= '</div>';
@@ -58,10 +57,6 @@ trait EasysocialAutomationConditions
         $conditions['user']['easysocialprofiles']->option .= '</div>';
 
         $conditions['user']['easysocialprofiles']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode([
-            'plugin' => __CLASS__,
-            'trigger' => 'searchProfile',
-        ]);
         $conditions['user']['easysocialprofiles']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][easysocialprofiles][profile]',
@@ -69,7 +64,10 @@ trait EasysocialAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_PROFILE'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchProfile',
+                ],
             ]
         );
         $conditions['user']['easysocialprofiles']->option .= '</div>';
@@ -183,7 +181,6 @@ trait EasysocialAutomationConditions
         $conditions['user']['easysocialevent']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['easysocialevent']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchEvent',]);
         $conditions['user']['easysocialevent']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][easysocialevent][event]',
@@ -191,7 +188,10 @@ trait EasysocialAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_EVENT'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchEvent',
+                ],
             ]
         );
         $conditions['user']['easysocialevent']->option .= '</div>';

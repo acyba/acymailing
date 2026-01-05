@@ -214,7 +214,7 @@ class ScenarioClass extends AcymClass
         }
 
         $triggerTypes = array_map('acym_escapeDB', $triggerTypes);
-        $query = 'SELECT * FROM #__acym_scenario WHERE active = 1 AND `trigger` IN ('.implode(', ', $triggerTypes).')';
+        $query = 'SELECT * FROM #__acym_scenario WHERE active = 1 AND `trigger` IN ('.implode(', ', $triggerTypes).') ORDER BY `ordering` ASC';
 
         return array_map([$this, 'formatScenario'], acym_loadObjectList($query));
     }

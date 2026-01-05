@@ -84,15 +84,27 @@ jQuery(function ($) {
     }
 
     function setCheckPortConfiguration() {
-        $('#available_ports_check').off('click').on('click', function (e) {
-            e.preventDefault();
+        const $container = $('#available_ports');
+        $container.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-            let $container = $(this).parent();
-            $container.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
+        const data = {
+            ctrl: 'configuration',
+            task: 'ports'
+        };
 
-            $.get(ACYM_AJAX_URL + '&ctrl=configuration&task=ports', function (response) {
-                $container.html(response);
+        acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+            const portsReport = Object.values(response.data).map(portInfo => {
+                if (portInfo.open) {
+                    return `<span style="color:#3dea91">${portInfo.message}</span>`;
+                } else {
+                    if (portInfo.port === 465) {
+                        jQuery('.acym_port_465_closed').removeClass('is-hidden');
+                    }
+                    return `<span style="color:#ff5259">${portInfo.message}</span>`;
+                }
             });
+
+            $container.html(portsReport.join('<br>'));
         });
     }
 
@@ -447,7 +459,9 @@ jQuery(function ($) {
             // We take 1 second for the average sending speed of an email
             let timeForOneBatch = batchesSize;
             if (waitAmount > 0) {
-                timeForOneBatch = batchesSize * (waitAmount + 1);
+                timeForOneBatch = batchesSize * (
+                    waitAmount + 1
+                );
             }
 
             let emailsSentPerBatch = batchesSize;

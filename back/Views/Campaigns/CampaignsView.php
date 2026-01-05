@@ -35,6 +35,11 @@ class CampaignsView extends AcymView
             'campaigns' => 'ACYM_CAMPAIGNS',
         ];
 
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $this->tabs['campaigns_auto'] = 'ACYM_AUTOMATICS_CAMPAIGNS';
+        }
+        //__END__enterprise_
         $this->tabs['followup'] = 'ACYM_FOLLOW_UP';
 
         if (acym_isAllowed('mails')) {

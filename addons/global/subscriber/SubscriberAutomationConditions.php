@@ -7,31 +7,6 @@ use AcyMailing\Types\OperatorType;
 
 trait SubscriberAutomationConditions
 {
-    private function onAcymDeclareSummary_conditionsFilters(&$automation, $key)
-    {
-        if (!empty($automation['acy_field'])) {
-            $usersColumns = acym_getColumns('user');
-
-            if (!in_array($automation['acy_field']['field'], $usersColumns)) {
-                $fieldClass = new FieldClass();
-                $field = $fieldClass->getOneById($automation['acy_field']['field']);
-                $automation['acy_field']['field'] = $field->name;
-            }
-
-            $automation = acym_translationSprintf(
-                $key,
-                $automation['acy_field']['field'],
-                $automation['acy_field']['operator'],
-                $automation['acy_field']['value']
-            );
-        } elseif (!empty($automation['random'])) {
-            $automation = acym_translationSprintf(
-                'ACYM_RANDOMLY_SELECT_X_SUBSCRIBERS',
-                $automation['random']['number']
-            );
-        }
-    }
-
     public function onAcymDeclareConditions(array &$conditions): void
     {
         $userClass = new UserClass();
@@ -63,26 +38,46 @@ trait SubscriberAutomationConditions
                     ]
                 );
                 $customFieldValues[$field->id] .= '</div>';
-            } elseif ('date' == $field->type) {
-                $field->option = json_decode($field->option, true);
+            } elseif ('date' === $field->type) {
                 $customFieldValues[$field->id] = acym_tooltip(
                     [
-                        'hoveredText' => '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" type="text" name="[conditions][__numor__][__numand__][acy_field][value]" style="display: none" data-condition-field="'.intval(
-                                $field->id
-                            ).'">',
-                        'textShownInTooltip' => acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
+                        'hoveredText' => '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" 
+                                            type="text" 
+                                            name="[conditions][__numor__][__numand__][acy_field][value]" 
+                                            style="display: none" 
+                                            data-condition-field="'.intval($field->id).'">',
+                        'textShownInTooltip' => acym_translation('ACYM_DATE_FORMAT_FILTER'),
                         'classContainer' => 'intext_select_automation cell',
                     ]
                 );
             }
         }
-        $operator = new OperatorType();
 
         $conditions['user']['acy_field'] = new stdClass();
         $conditions['user']['acy_field']->name = acym_translation('ACYM_ACYMAILING_FIELD');
-        ob_start();
-        include acym_getPartial('conditions', 'acy_field');
-        $conditions['user']['acy_field']->option = ob_get_clean();
+
+        $conditions['user']['acy_field']->option = '<div class="intext_select_automation cell">';
+        $conditions['user']['acy_field']->option .= acym_select(
+            $fields,
+            'acym_condition[conditions][__numor__][__numand__][acy_field][field]',
+            null,
+            ['class' => 'acym__select acym__automation__conditions__fields__dropdown']
+        );
+        $conditions['user']['acy_field']->option .= '</div>';
+
+        $conditions['user']['acy_field']->option .= '<div class="intext_select_automation cell">';
+        $operator = new OperatorType();
+        $conditions['user']['acy_field']->option .= $operator->display(
+            'acym_condition[conditions][__numor__][__numand__][acy_field][operator]',
+            '',
+            'acym__automation__conditions__operator__dropdown'
+        );
+        $conditions['user']['acy_field']->option .= '</div>';
+
+        $conditions['user']['acy_field']->option .= '<input class="acym__automation__one-field intext_input_automation cell acym__automation__condition__regular-field"
+                                                           type="text"
+                                                           name="acym_condition[conditions][__numor__][__numand__][acy_field][value]">';
+        $conditions['user']['acy_field']->option .= implode(' ', $customFieldValues);
     }
 
     public function onAcymDeclareConditionsScenario(array &$conditions): void
@@ -133,5 +128,30 @@ trait SubscriberAutomationConditions
         }
 
         return $query->count();
+    }
+
+    private function onAcymDeclareSummary_conditionsFilters(&$automation, $key)
+    {
+        if (!empty($automation['acy_field'])) {
+            $usersColumns = acym_getColumns('user');
+
+            if (!in_array($automation['acy_field']['field'], $usersColumns)) {
+                $fieldClass = new FieldClass();
+                $field = $fieldClass->getOneById($automation['acy_field']['field']);
+                $automation['acy_field']['field'] = $field->name;
+            }
+
+            $automation = acym_translationSprintf(
+                $key,
+                $automation['acy_field']['field'],
+                $automation['acy_field']['operator'],
+                $automation['acy_field']['value']
+            );
+        } elseif (!empty($automation['random'])) {
+            $automation = acym_translationSprintf(
+                'ACYM_RANDOMLY_SELECT_X_SUBSCRIBERS',
+                $automation['random']['number']
+            );
+        }
     }
 }

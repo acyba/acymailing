@@ -41,7 +41,7 @@ class plgAcymSendgrid extends AcymPlugin
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key"
 					   value="<?php echo empty($defaultApiKey) ? $this->config->get(self::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_key]"
-					   class="cell margin-right-1 acym__configuration__mail__settings__text">
+					   class="cell margin-next-1 acym__configuration__mail__settings__text">
                 <?php echo $this->getTestCredentialsSendingMethodButton(self::SENDING_METHOD_ID); ?>
                 <?php echo $this->getCopySettingsButton($data, self::SENDING_METHOD_ID, 'wp_mail_smtp'); ?>
 			</div>

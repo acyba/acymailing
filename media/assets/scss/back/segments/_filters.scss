@@ -20,7 +20,7 @@
 
 .countresults {
     position: relative;
-    padding-left: .5rem;
+    padding: 0 .5rem;
 
     &:after {
         content: "";
@@ -30,6 +30,13 @@
         left: 0;
         width: 2px;
         background-color: $font-primary;
+    }
+
+    &:dir(rtl) {
+        &:after {
+            left: auto;
+            right: 0;
+        }
     }
 
     i {
@@ -73,4 +80,9 @@
 
 .acym__segments__inserted__filter {
     border-left: 2px solid $font-primary;
+
+    &:dir(rtl) {
+        border-left: none;
+        border-right: 2px solid $font-primary;
+    }
 }

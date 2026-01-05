@@ -1,7 +1,7 @@
 === AcyMailing integration for Uncanny Automator ===
 Contributors: acyba
 Tags: newsletter, acymailing, uncanny, automator, integration
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 2.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

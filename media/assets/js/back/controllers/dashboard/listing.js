@@ -28,7 +28,9 @@ jQuery(function ($) {
             }
             currentPosition = Math.round(currentPosition * 100) / 100;
             currentPosition = Math.max(-totalSlides * slideWidth, Math.min(0, currentPosition));
-            $slidesWrapper.css('transform', `translateX(${currentPosition}px)`);
+
+            const dir = document.documentElement.dir === 'rtl' ? -1 : 1;
+            $slidesWrapper.css('transform', `translateX(${dir*currentPosition}px)`);
 
             updateButtons();
         }
@@ -62,11 +64,21 @@ jQuery(function ($) {
                 let totalItems = response.data.listAndSubscribersData.length;
 
                 $.each(response.data.listAndSubscribersData, function (index, item) {
-                    $('.name_' + (index + 1)).text(item.name);
-                    $('.sub_' + (index + 1)).text(item.subscribers);
-                    $('.unsub_' + (index + 1)).text(item.unsubscribed_users);
-                    $('.new_sub_' + (index + 1)).text(`(+${item.new_sub})`);
-                    $('.new_unsub_' + (index + 1)).text(`(+${item.new_unsub})`);
+                    $('.name_' + (
+                      index + 1
+                    )).text(item.name);
+                    $('.sub_' + (
+                      index + 1
+                    )).text(item.subscribers);
+                    $('.unsub_' + (
+                      index + 1
+                    )).text(item.unsubscribed_users);
+                    $('.new_sub_' + (
+                      index + 1
+                    )).text(`(+${item.new_sub})`);
+                    $('.new_unsub_' + (
+                      index + 1
+                    )).text(`(+${item.new_unsub})`);
                 });
 
                 for (let i = totalItems + 1 ; i <= 5 ; i++) {

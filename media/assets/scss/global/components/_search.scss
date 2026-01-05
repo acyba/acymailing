@@ -27,6 +27,11 @@
         &:hover {
             opacity: .7;
         }
+
+        &:dir(rtl) {
+            left: 10px;
+            right: auto;
+        }
     }
 
     &:hover {
@@ -49,6 +54,7 @@
             min-width: auto;
 
             i {
+                margin-right: 8px;
                 vertical-align: middle;
                 color: $font-color-toolbar;
             }
@@ -56,6 +62,12 @@
             &:hover, &:focus {
                 border-color: $blue-night-primary;
                 background-color: $more-options-toggled-toolbar-light !important;
+            }
+
+            &:dir(rtl) {
+                border-left: 0 !important;
+                border-right: 1px solid $blue-night-primary !important;
+                border-radius: 0 $primary-radius $primary-radius 0 !important;
             }
         }
     }
@@ -70,6 +82,12 @@
         &:hover, &:focus {
             border-color: $blue-night-primary;
             background-color: $white !important;
+        }
+
+        &:dir(rtl) {
+            border-left: 1px solid $blue-night-primary !important;
+            border-right: 0 !important;
+            border-radius: $primary-radius 0 0 $primary-radius !important;
         }
     }
 }

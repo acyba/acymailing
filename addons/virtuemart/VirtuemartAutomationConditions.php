@@ -120,7 +120,6 @@ trait VirtuemartAutomationConditions
         $conditions['user']['vmpurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
 
         $conditions['user']['vmpurchased']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchProduct']);
         $conditions['user']['vmpurchased']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][vmpurchased][product]',
@@ -128,13 +127,15 @@ trait VirtuemartAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_AT_LEAST_ONE_PRODUCT'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchProduct',
+                ],
             ]
         );
         $conditions['user']['vmpurchased']->option .= '</div>';
 
         $conditions['user']['vmpurchased']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchCategory',]);
         $conditions['user']['vmpurchased']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][vmpurchased][category]',
@@ -142,7 +143,10 @@ trait VirtuemartAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_CATEGORY'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchCategory',
+                ],
             ]
         );
         $conditions['user']['vmpurchased']->option .= '</div>';

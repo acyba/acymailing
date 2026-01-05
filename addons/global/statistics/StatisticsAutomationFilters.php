@@ -162,7 +162,6 @@ trait StatisticsAutomationFilters
         }";
 
         $filters['statistics']->option .= '<div class="intext_select_automation cell acym__filter__stats_mail">';
-        $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchMail']);
         $filters['statistics']->option .= acym_select(
             [],
             'acym_action[filters][__numor__][__numand__][statistics][mail]',
@@ -170,7 +169,10 @@ trait StatisticsAutomationFilters
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_SELECT_AN_EMAIL'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchMail',
+                ],
                 'onchange' => $onchange,
             ]
         );

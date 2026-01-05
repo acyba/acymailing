@@ -11,7 +11,7 @@
                 <?php
                 $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub');
                 ?>
-				<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
+				<div class="cell small-4 acym__stats__left">
                     <?php
                     if (acym_isAdmin()) {
                         echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['sendable_users'].'</a>';
@@ -20,7 +20,7 @@
                     }
                     ?>
 				</div>
-				<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
+				<div class="cell small-8 acym__stats__right">
                     <?php
                     if (acym_isAdmin()) {
                         echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_SUBSCRIBED').'</a>';
@@ -33,7 +33,7 @@
                 if ($this->config->get('require_confirmation', 1) == 1) {
                     $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=unconfirmed');
                     ?>
-					<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
+					<div class="cell small-4 acym__stats__left">
                         <?php
                         if (acym_isAdmin()) {
                             echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['unconfirmed_users'].'</a>';
@@ -42,7 +42,7 @@
                         }
                         ?>
 					</div>
-					<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
+					<div class="cell small-8 acym__stats__right">
                         <?php
                         if (acym_isAdmin()) {
                             echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_NOT_CONFIRMED').'</a>';
@@ -55,7 +55,7 @@
                 }
                 $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=inactive');
                 ?>
-				<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
+				<div class="cell small-4 acym__stats__left">
                     <?php
                     if (acym_isAdmin()) {
                         echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['inactive_users'].'</a>';
@@ -64,7 +64,7 @@
                     }
                     ?>
 				</div>
-				<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
+				<div class="cell small-8 acym__stats__right">
                     <?php
                     if (acym_isAdmin()) {
                         echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_INACTIVE').'</a>';
@@ -74,7 +74,7 @@
                     ?>
 				</div>
                 <?php $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=unsub'); ?>
-				<div class="cell small-4 text-right">
+				<div class="cell small-4 acym__stats__left">
                     <?php
                     if (acym_isAdmin()) {
                         echo '<a href="'.acym_escapeUrl($url).'" class="acym__color__blue">'.$data['listInformation']->subscribers['unsubscribed_users'].'</a>';
@@ -83,7 +83,7 @@
                     }
                     ?>
 				</div>
-				<div class="cell small-8 text-left">
+				<div class="cell small-8 acym__stats__right">
                     <?php
                     if (acym_isAdmin()) {
                         echo '<a href="'.acym_escapeUrl($url).'">'.acym_translation('ACYM_UNSUBSCRIBED').'</a>';

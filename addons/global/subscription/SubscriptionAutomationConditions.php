@@ -22,9 +22,37 @@ trait SubscriptionAutomationConditions
 
         $conditions['user']['acy_list'] = new stdClass();
         $conditions['user']['acy_list']->name = acym_translation('ACYM_ACYMAILING_LIST');
-        ob_start();
-        include acym_getPartial('conditions', 'acy_list');
-        $conditions['user']['acy_list']->option = ob_get_clean();
+
+        $conditions['user']['acy_list']->option = '<div class="intext_select_automation cell">';
+        $conditions['user']['acy_list']->option .= acym_select(
+            $list['type'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list][action]',
+            null,
+            ['class' => 'intext_select_automation acym__select']
+        );
+        $conditions['user']['acy_list']->option .= '</div>';
+        $conditions['user']['acy_list']->option .= '<div class="intext_select_automation cell">';
+        $conditions['user']['acy_list']->option .= acym_select(
+            $list['lists'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list][list]',
+            null,
+            ['class' => 'intext_select_automation acym__select']
+        );
+        $conditions['user']['acy_list']->option .= '</div><br>';
+        $conditions['user']['acy_list']->option .= '<div class="cell grid-x grid-margin-x">';
+        $conditions['user']['acy_list']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list][date-min]');
+        $conditions['user']['acy_list']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['acy_list']->option .= '<div class="intext_select_automation">';
+        $conditions['user']['acy_list']->option .= acym_select(
+            $list['date'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list][date-type]',
+            null,
+            ['class' => 'intext_select_automation acym__select cell']
+        );
+        $conditions['user']['acy_list']->option .= '</div>';
+        $conditions['user']['acy_list']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['acy_list']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list][date-max]');
+        $conditions['user']['acy_list']->option .= '</div>';
 
         $conditions['classic']['acy_list_all'] = new stdClass();
         $conditions['classic']['acy_list_all']->name = acym_translation('ACYM_NUMBER_USERS_LIST');
@@ -39,7 +67,7 @@ trait SubscriptionAutomationConditions
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<input type="number" min="0" class="intext_input_automation cell" name="acym_condition[conditions][__numor__][__numand__][acy_list_all][number]">';
         $conditions['classic']['acy_list_all']->option .= '<div class="cell shrink acym__automation__inner__text">'.acym_translation('ACYM_ACYMAILING_USERS').'</div>';
-        $conditions['classic']['acy_list_all']->option .= '<div class="cell grid-x grid-margin-x margin-left-0" style="margin-bottom: 0"><div class="intext_select_automation cell">';
+        $conditions['classic']['acy_list_all']->option .= '<div class="cell grid-x grid-margin-x margin-left-0 margin-right-0"><div class="intext_select_automation cell">';
         $conditions['classic']['acy_list_all']->option .= acym_select(
             $list['type'],
             'acym_condition[conditions][__numor__][__numand__][acy_list_all][action]',

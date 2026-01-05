@@ -6,7 +6,7 @@ if (!empty($data['mailInformation'])) $data['mail'] = $data['mailInformation'];
     <?php if (!empty($data['mail']->attachments)) { ?>
         <?php
         foreach ($data['mail']->attachments as $i => $oneAttach) {
-            $onlyFilename = explode("/", $oneAttach->filename);
+            $onlyFilename = explode('/', $oneAttach['filename']);
 
             $onlyFilename = end($onlyFilename);
 
@@ -14,13 +14,13 @@ if (!empty($data['mailInformation'])) $data['mail'] = $data['mailInformation'];
 
             echo acym_tooltip(
                 [
-                    'hoveredText' => '<span class="cell acym__campaigns__attachments__already">'.$onlyFilename.' ('.(round($oneAttach->size / 1000, 1)).' Ko)</span>',
-                    'textShownInTooltip' => $oneAttach->filename,
+                    'hoveredText' => '<span class="cell acym__campaigns__attachments__already">'.$onlyFilename.' ('.(round($oneAttach['size'] / 1000, 1)).' Ko)</span>',
+                    'textShownInTooltip' => $oneAttach['filename'],
                     'classContainer' => 'medium-11 cell',
                 ]
             );
             $mailId = !empty($data['mail']->mail_id) ? $data['mail']->mail_id : $data['mail']->id;
-            echo '<div class="cell medium-1 text-center"><a data-id="'.$i.'" data-mail="'.$mailId.'" class="acym__campaigns__attach__delete"><i class="acymicon-delete acym__color__red"></i></a></div>';
+            echo '<div class="cell medium-1 text-center"><a data-id="'.$i.'" data-mail="'.intval($mailId).'" class="acym__campaigns__attach__delete"><i class="acymicon-delete acym__color__red"></i></a></div>';
             echo '</div>';
         }
     }

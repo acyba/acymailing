@@ -15,7 +15,7 @@ class HeaderHelper extends AcymObject
         // Begin Tools
         $header .= '<div class="cell large-6 xlarge-5 xxlarge-4 grid-x">';
 
-        $header .= '<div id="checkVersionArea" class="cell auto grid-x align-right check-version-area acym_vcenter padding-right-1">';
+        $header .= '<div id="checkVersionArea" class="cell auto grid-x align-right acym_vcenter">';
         $header .= $this->checkVersionArea();
         $header .= '</div>';
 
@@ -169,9 +169,11 @@ class HeaderHelper extends AcymObject
         $version .= '</div></div>';
 
         $expirationDate = $this->config->get('expirationdate', 0);
-        if ((empty($expirationDate) || $expirationDate == -1) && empty($this->config->get('acymailer_apikey', ''))) return $version;
+        if ((empty($expirationDate) || $expirationDate == -1) && empty($this->config->get('acymailer_apikey', ''))) {
+            return $version;
+        }
 
-        $version .= '<div id="acym_expiration" class="text-right cell">';
+        $version .= '<div id="acym_expiration" class="cell">';
         //__START__production_
         if (acym_level(ACYM_ESSENTIAL) && ACYM_PRODUCTION) {
             if ($expirationDate == -2) {

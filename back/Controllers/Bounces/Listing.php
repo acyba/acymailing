@@ -68,6 +68,33 @@ trait Listing
     {
         $data = [];
 
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            acym_setVar('layout', 'listing');
+            $ruleClass = new RuleClass();
+            $listsClass = new ListClass();
+
+            $bounceRules = $ruleClass->getAll();
+
+            $finalRule = null;
+            foreach ($bounceRules as $key => $oneRule) {
+                if ($oneRule->id === RuleClass::FINAL_RULE_ID) {
+                    $finalRule = $oneRule;
+                    unset($bounceRules[$key]);
+                    break;
+                }
+            }
+
+            if ($finalRule !== null) {
+                $bounceRules[] = $finalRule;
+            }
+
+            $data = [
+                'allRules' => $bounceRules,
+                'lists' => $listsClass->getAllWithIdName(),
+            ];
+        }
+        //__END__enterprise_
 
         $data['workflowHelper'] = new WorkflowHelper();
         if (!acym_level(ACYM_ENTERPRISE)) {

@@ -111,11 +111,14 @@ trait SubscriberAutomationActions
                 );
                 $customFieldValues[$field->id] .= '</div>';
             } elseif ('date' == $field->type) {
-                $field->option = json_decode($field->option, true);
                 $customFieldValues[$field->id] = acym_tooltip(
                     [
-                        'hoveredText' => '<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" type="text" name="[actions][__and__][acy_user_value][value]" style="display: none" data-action-field="'.$field->id.'">',
-                        'textShownInTooltip' => acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
+                        'hoveredText' => '<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" 
+                                            type="text" 
+                                            name="[actions][__and__][acy_user_value][value]" 
+                                            style="display: none" 
+                                            data-action-field="'.intval($field->id).'">',
+                        'textShownInTooltip' => acym_translation('ACYM_DATE_FORMAT_FILTER'),
                         'classContainer' => 'intext_select_automation cell',
                     ]
                 );
@@ -142,12 +145,10 @@ trait SubscriberAutomationActions
 
         $actions['acy_remove_queue'] = new stdClass();
         $actions['acy_remove_queue']->name = acym_translation('ACYM_REMOVE_EMAIL_QUEUE');
-        $ajaxParams = json_encode(
-            [
-                'plugin' => __CLASS__,
-                'trigger' => 'searchEmails',
-            ]
-        );
+        $ajaxParams = [
+            'plugin' => __CLASS__,
+            'trigger' => 'searchEmails',
+        ];
         ob_start();
         include acym_getPartial('actions', 'acy_remove_queue');
         $actions['acy_remove_queue']->option = ob_get_clean();
@@ -194,42 +195,37 @@ trait SubscriberAutomationActions
 
         if (empty($action['operator'])) $action['operator'] = '=';
 
-        if (in_array($action['operator'], ['+', '-'])) {
-            $value = intval($value);
-        } else {
-            $value = acym_escapeDB($value);
-        }
-
         $usersColumns = acym_getColumns('user');
 
         if (in_array($action['field'], $usersColumns)) {
             $execute = 'UPDATE #__acym_user AS user';
 
-            $column = "user.`".acym_secureDBColumn($action['field'])."`";
+            $column = 'user.`'.acym_secureDBColumn($action['field']).'`';
         } else {
             $fieldClass = new FieldClass();
             $field = $fieldClass->getOneById($action['field']);
-            if (empty($field)) return 'Unknown field: '.$action['field'];
-            if ('date' == $field->type) $value = acym_escapeDB(json_encode(explode('/', trim($value, '"\''))));
+            if (empty($field)) {
+                return 'Unknown field: '.$action['field'];
+            }
 
-            $allColumn = "`user_id`, `field_id`, `value`";
-            $column = "`value`";
+            $allColumn = '`user_id`, `field_id`, `value`';
+            $column = '`value`';
         }
 
-        if ($action['operator'] == '=') {
-            $newValue = $value;
+        if ($action['operator'] === '=') {
+            $newValue = acym_escapeDB($value);
         } elseif (in_array($action['operator'], ['+', '-'])) {
-            $newValue = $column.' '.$action['operator']." ".$value;
-        } elseif ($action['operator'] == 'add_end') {
-            $newValue = "CONCAT(".$column.", ".$value.")";
-        } elseif ($action['operator'] == 'add_begin') {
-            $newValue = "CONCAT(".$value.", ".$column.")";
+            $newValue = $column.' '.$action['operator'].' '.intval($value);
+        } elseif ($action['operator'] === 'add_end') {
+            $newValue = 'CONCAT('.$column.', '.acym_escapeDB($value).')';
+        } elseif ($action['operator'] === 'add_begin') {
+            $newValue = 'CONCAT('.acym_escapeDB($value).', '.$column.')';
         } else {
             return 'Unknown operator: '.acym_escape($action['operator']);
         }
 
         if (in_array($action['field'], $usersColumns)) {
-            $execute .= " SET ".$column." = ".$newValue;
+            $execute .= ' SET '.$column.' = '.$newValue;
             if (!empty($query->where)) $execute .= ' WHERE ('.implode(') AND (', $query->where).')';
         } else {
             $customFieldAlreadyExists = acym_loadResult('SELECT COUNT(user_id) FROM #__acym_user_has_field WHERE field_id = '.intval($action['field']));

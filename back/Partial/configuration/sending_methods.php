@@ -56,7 +56,7 @@
         echo '<div class="cell medium-1 hide-for-small-only"></div>';
     }
     ?>
-	<div class="cell <?php echo $class; ?> grid-x text-left">
+	<div class="cell <?php echo $class; ?> grid-x">
         <?php
         foreach ($data['sendingMethodsHtmlSettings'] as $html) {
             echo $html;

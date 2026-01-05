@@ -14,6 +14,12 @@ trait ClickMap
             return;
         }
 
+        if (count($data['selectedMailid']) > 1) {
+            $this->globalStats();
+
+            return;
+        }
+
         $this->prepareClickStats($data);
         if (count($this->selectedMailIds) == 1) {
             if ($data['isAbTest']) {

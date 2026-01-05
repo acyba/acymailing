@@ -1,0 +1,16 @@
+#acym_wrapper:dir(rtl) {
+    .acymicon-keyboard-arrow-left, .acymicon-keyboard-arrow-right, .acymicon-chevron-left, .acymicon-chevron-right, .acymicon-play-arrow {
+        transform: rotate(180deg);
+    }
+
+    .select2-container--foundation {
+        .select2-selection__rendered {
+            text-align: right;
+        }
+
+        .select2-selection__arrow {
+            left: .5rem;
+            right: auto;
+        }
+    }
+}

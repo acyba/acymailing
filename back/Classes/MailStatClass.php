@@ -167,9 +167,13 @@ class MailStatClass extends AcymClass
         return acym_loadObject($query);
     }
 
-    public function getByMailIds(array $mailIds): object
+    public function getByMailIds(array $mailIds): ?object
     {
         acym_arrayToInteger($mailIds);
+
+        if (empty($mailIds)) {
+            return null;
+        }
 
         return acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $mailIds).')');
     }

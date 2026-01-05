@@ -9,7 +9,7 @@
         ];
         echo acym_listingActions($actions);
         ?>
-		<div class="margin-left-1 cell medium-auto hide-for-small-only">
+		<div class="margin-left-1 margin-right-1 cell medium-auto hide-for-small-only">
             <?php echo acym_externalLink(
                 'ACYM_SEE_OUR_TEMPLATES_PACK',
                 ACYM_ACYMAILING_WEBSITE.'pack-templates-newsletter/?utm_source=acymailing_plugin&utm_campaign=purchase_templates_pack&utm_medium=button_template_listing'
@@ -80,9 +80,7 @@
 					<!-- ICON DELETE -->
 					<div class="acym__listing__block__delete">
 						<div>
-							<div class="js-acym__listing__block__delete__trash
-							 acym__listing__block__delete__trash
-							 acym__icon">
+							<div class="js-acym__listing__block__delete__trash acym__listing__block__delete__trash acym__icon">
 								<i class="acymicon-delete"></i>
 							</div>
 							<div class="acym__listing__block__delete__action">

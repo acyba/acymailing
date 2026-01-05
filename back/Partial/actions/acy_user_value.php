@@ -1,4 +1,4 @@
-<div class="intext_select_automation">
+<div class="intext_select_automation cell">
     <?php
     echo acym_select(
         $userFields,

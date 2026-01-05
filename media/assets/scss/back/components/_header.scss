@@ -64,7 +64,7 @@
     }
 
     #acym_global_navigation {
-        margin: 3px 0 0 16px;
+        margin: 3px 1rem 0 1rem;
     }
 
     a[type="button"], .acym__header__notification {
@@ -126,11 +126,13 @@
         }
     }
 
-    .check-version-area {
+    #checkVersionArea {
+        padding: 0 1rem;
         font-size: 12px;
         line-height: 17px;
 
         #acym_expiration {
+            text-align: right;
             font-weight: 600;
 
             a:hover {
@@ -146,6 +148,10 @@
                         color: $blue !important;
                     }
                 }
+            }
+
+            &:dir(rtl) {
+                text-align: left;
             }
         }
     }

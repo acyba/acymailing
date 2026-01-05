@@ -18,15 +18,24 @@ trait Mail
             465 => 'ssl://smtp.gmail.com',
         ];
 
+        $response = [];
         foreach ($tests as $port => $targetServer) {
             if ($mailerHelper->isPortOpen($port, $targetServer)) {
-                echo '<span style="color:#3dea91">'.acym_translationSprintf('ACYM_SMTP_AVAILABLE_PORT', $port).'</span><br />';
+                $response[$port] = [
+                    'open' => true,
+                    'port' => $port,
+                    'message' => acym_translationSprintf('ACYM_SMTP_AVAILABLE_PORT', $port),
+                ];
             } else {
-                echo '<span style="color:#ff5259">'.acym_translationSprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $mailerHelper->portError).'</span><br />';
+                $response[$port] = [
+                    'open' => false,
+                    'port' => $port,
+                    'message' => acym_translationSprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $mailerHelper->portError),
+                ];
             }
         }
 
-        exit;
+        acym_sendAjaxResponse('', $response);
     }
 
     public function testCredentialsSendingMethod(): void

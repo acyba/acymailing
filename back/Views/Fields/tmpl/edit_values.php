@@ -160,7 +160,7 @@
         );
         ?>
 	</label>
-	<label class="cell margin-top-1 medium-4 margin-right-1"><?php echo acym_translation('ACYM_WHERE'); ?>
+	<label class="cell margin-top-1 medium-4"><?php echo acym_translation('ACYM_WHERE'); ?>
         <?php
         echo acym_select(
             empty($data['field']->fieldDB->columns) ? [] : $data['field']->fieldDB->columns,
@@ -175,7 +175,7 @@
         );
         ?>
 	</label>
-	<label class="cell margin-top-1 medium-3 margin-right-1"><?php echo acym_translation('ACYM_WHERE_OPERATION'); ?>
+	<label class="cell margin-top-1 medium-3 margin-left-1 margin-right-1"><?php echo acym_translation('ACYM_WHERE_OPERATION'); ?>
         <?php
         $operator = $data['operatorType'];
         echo $operator->display(

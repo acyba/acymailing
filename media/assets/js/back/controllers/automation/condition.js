@@ -97,7 +97,7 @@ jQuery(function ($) {
                 .parent()
                 .after('<div data-and="'
                        + $inputAnd.val()
-                       + '" class="cell grid-x grid-margin-x margin-y acym__automation__inserted__condition margin-top-1 margin-left-2">'
+                       + '" class="cell grid-x grid-margin-x margin-y acym__automation__inserted__condition margin-top-1 margin-left-2 margin-right-2">'
                        + html
                        + '</div>');
             acym_helperSelect2.setSelect2();
@@ -105,32 +105,40 @@ jQuery(function ($) {
             acym_helperTooltip.setTooltip();
 
             $('.switch-label').off('click').on('click', function () {
-                let input = $('input[data-switch="' + $(this).attr('for') + '"]');
+                const input = $('input[data-switch="' + $(this).attr('for') + '"]');
                 input.attr('value', 1 - input.attr('value'));
             });
 
-            let $operatorDropdown = $(this).closest('.acym__automation__one__condition').find('.acym__automation__conditions__operator__dropdown');
-            let $fieldsDropdown = $(this).closest('.acym__automation__one__condition').find('.acym__automation__conditions__fields__dropdown');
+            const $operatorDropdown = $(this).closest('.acym__automation__one__condition').find('.acym__automation__conditions__operator__dropdown');
+            const $fieldsDropdown = $(this).closest('.acym__automation__one__condition').find('.acym__automation__conditions__fields__dropdown');
 
             $operatorDropdown.on('change', function () {
                 $fieldsDropdown.trigger('change');
             });
 
             $fieldsDropdown.on('change', function () {
-                let $parent = $(this).closest('.acym__automation__inserted__condition');
-                let $select = $parent.find('[data-condition-field="' + $(this).val() + '"]');
-                let $selects = $parent.find('.acym__automation__conditions__fields__select');
-                let $defaultInput = $parent.find('.acym__automation__condition__regular-field');
-                if ($select.length > 0 && ($operatorDropdown.val() === '=' || $operatorDropdown.val() === '!=')) {
+                const $parent = $(this).closest('.acym__automation__inserted__condition');
+                const $select = $parent.find('[data-condition-field="' + $(this).val() + '"]');
+                const $selects = $parent.find('.acym__automation__conditions__fields__select');
+                const $defaultInput = $parent.find('.acym__automation__condition__regular-field');
+
+                if ($select.length > 0 && [
+                    '=',
+                    '!='
+                ].includes($operatorDropdown.val())) {
                     $defaultInput.attr('name', $defaultInput.attr('name').replace('acym_condition', '')).hide();
                     $selects.each(function (index) {
                         $(this).attr('name', $(this).attr('name').replace('acym_condition', ''));
                         $(this).closest('.acym__automation__one-field').hide();
                     });
-                    if ($select.attr('name').indexOf('acym_condition') === -1) $select.attr('name', 'acym_condition' + $select.attr('name'));
+                    if (!$select.attr('name').includes('acym_condition')) {
+                        $select.attr('name', 'acym_condition' + $select.attr('name'));
+                    }
                     $select.closest('.acym__automation__one-field').show();
                 } else {
-                    if ($defaultInput.attr('name').indexOf('acym_condition') === -1) $defaultInput.attr('name', 'acym_condition' + $defaultInput.attr('name'));
+                    if (!$defaultInput.attr('name').includes('acym_condition')) {
+                        $defaultInput.attr('name', 'acym_condition' + $defaultInput.attr('name'));
+                    }
                     if ($selects.length > 0) {
                         $selects.each(function () {
                             $(this).attr('name', $(this).attr('name').replace('acym_condition', ''));

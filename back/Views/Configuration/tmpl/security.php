@@ -8,7 +8,7 @@
                     ACYM_DOCUMENTATION.'v/rest-api/',
                     true,
                     true,
-                    ['margin-left-1']
+                    ['margin-left-1 margin-right-1']
                 ); ?>
 			</div>
 			<div class="cell grid-x acym_vcenter">

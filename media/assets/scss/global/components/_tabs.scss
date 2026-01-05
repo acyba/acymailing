@@ -25,6 +25,11 @@
                 .acym__tabs__inbar__element {
                     padding: 1rem;
                 }
+
+                &:dir(rtl) {
+                    left: 0;
+                    right: auto;
+                }
             }
         }
     }

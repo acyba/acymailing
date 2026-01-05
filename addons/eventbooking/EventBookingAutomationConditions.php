@@ -20,12 +20,6 @@ trait EventBookingAutomationConditions
         $conditions['user']['ebregistration']->option .= '</div>';
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(
-            [
-                'plugin' => __CLASS__,
-                'trigger' => 'searchEvent',
-            ]
-        );
         $conditions['user']['ebregistration']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][ebregistration][event]',
@@ -33,18 +27,15 @@ trait EventBookingAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_EVENT'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchEvent',
+                ],
             ]
         );
         $conditions['user']['ebregistration']->option .= '</div>';
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParamsCategory = json_encode(
-            [
-                'plugin' => __CLASS__,
-                'trigger' => 'searchEventCategory',
-            ]
-        );
         $conditions['user']['ebregistration']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][ebregistration][category]',
@@ -52,7 +43,10 @@ trait EventBookingAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_CATEGORY'),
-                'data-params' => $ajaxParamsCategory,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchEventCategory',
+                ],
             ]
         );
         $conditions['user']['ebregistration']->option .= '</div>';

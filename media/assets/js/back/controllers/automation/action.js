@@ -67,47 +67,59 @@ jQuery(function ($) {
     }
 
     function setSelectAction() {
-        let $options = $('#acym__automation__actions__json');
-        if (!$options.length) return;
+        const $options = $('#acym__automation__actions__json');
+        if (!$options.length) {
+            return;
+        }
 
-        let actions = acym_helper.parseJson($options.val());
+        const actions = acym_helper.parseJson($options.val());
 
         $('.acym__automation__actions__select').off('change.loadoptions').on('change.loadoptions', function () {
             $(this).parent().parent().find('.acym__automation__inserted__action').remove();
-            let html = actions[$(this).val()].option.replace(/__and__/g, $(this).closest('.acym__automation__actions__one__action').attr('data-action-number'));
+            const html = actions[$(this).val()].option.replace(
+                /__and__/g,
+                $(this).closest('.acym__automation__actions__one__action').attr('data-action-number')
+            );
             $(this)
                 .parent()
-                .after('<div class="grid-x acym__automation__inserted__action margin-top-1 margin-left-2 grid-margin-x cell acym_vcenter">' + html + '</div>');
+                .after('<div class="grid-x acym__automation__inserted__action margin-top-1 margin-left-2 margin-right-2 grid-margin-x cell acym_vcenter">' + html + '</div>');
             if ($('#adminAutomation').val() == 1) {
                 $(this).parent().next().find('[data-open*="acy_add_queuetime"]').attr('disabled', 'disabled');
             }
             acym_helperSelect2.setSelect2();
+            acym_helperDatePicker.setDatePickerGlobal();
+            acym_helperTooltip.setTooltip();
             $(document).foundation();
             $('.reveal-overlay').appendTo('#acym_form');
             refreshActionsProcess();
 
-            let $operatorDropdown = $(this).closest('.acym__automation__actions__one__action').find('.acym__automation__actions__operator__dropdown');
-            let $fieldsDropdown = $(this).closest('.acym__automation__actions__one__action').find('.acym__automation__actions__fields__dropdown');
+            const $fieldsDropdown = $(this).closest('.acym__automation__actions__one__action').find('.acym__automation__actions__fields__dropdown');
+            const $operatorDropdown = $(this).closest('.acym__automation__actions__one__action').find('.acym__automation__actions__operator__dropdown');
 
             $operatorDropdown.on('change', function () {
                 $fieldsDropdown.trigger('change');
             });
 
             $fieldsDropdown.on('change', function () {
-                let $parent = $(this).closest('.acym__automation__inserted__action');
-                let $select = $parent.find('[data-action-field="' + $(this).val() + '"]');
-                let $selects = $parent.find('.acym__automation__actions__fields__select');
-                let $defaultInput = $parent.find('.acym__automation__action__regular-field');
+                const $parent = $(this).closest('.acym__automation__inserted__action');
+                const $select = $parent.find('[data-action-field="' + $(this).val() + '"]');
+                const $selects = $parent.find('.acym__automation__actions__fields__select');
+                const $defaultInput = $parent.find('.acym__automation__action__regular-field');
+
                 if ($select.length > 0 && $operatorDropdown.val() === '=') {
                     $defaultInput.attr('name', $defaultInput.attr('name').replace('acym_action', '')).hide();
                     $selects.each(function (index) {
                         $(this).attr('name', $(this).attr('name').replace('acym_action', ''));
                         $(this).closest('.acym__automation__one-field').hide();
                     });
-                    if ($select.attr('name').indexOf('acym_action') === -1) $select.attr('name', 'acym_action' + $select.attr('name'));
+                    if ($select.attr('name').indexOf('acym_action') === -1) {
+                        $select.attr('name', 'acym_action' + $select.attr('name'));
+                    }
                     $select.closest('.acym__automation__one-field').show();
                 } else {
-                    if ($defaultInput.attr('name').indexOf('acym_action') === -1) $defaultInput.attr('name', 'acym_action' + $defaultInput.attr('name'));
+                    if ($defaultInput.attr('name').indexOf('acym_action') === -1) {
+                        $defaultInput.attr('name', 'acym_action' + $defaultInput.attr('name'));
+                    }
                     if ($selects.length > 0) {
                         $selects.each(function () {
                             $(this).attr('name', $(this).attr('name').replace('acym_action', ''));

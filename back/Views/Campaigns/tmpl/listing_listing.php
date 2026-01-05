@@ -191,10 +191,21 @@
                                 echo '</span></div>';
                                 // Is currently a valid scheduled but not sent yet
                             } elseif ($campaign->scheduled && !$campaign->draft) {
-                                echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>'.acym_translation('ACYM_SCHEDULED').' : '.acym_date(
-                                        $campaign->sending_date,
-                                        acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3')
-                                    ).'</span></div>';
+                                echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>';
+                                echo acym_escape(acym_translation('ACYM_SCHEDULED').' : ');
+                                echo acym_tooltip(
+                                    [
+                                        'hoveredText' => acym_date(
+                                            $campaign->sending_date,
+                                            acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3')
+                                        ),
+                                        'textShownInTooltip' => acym_date(
+                                            $campaign->sending_date,
+                                            acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC2')
+                                        ),
+                                    ]
+                                );
+                                echo '</span></div>';
                                 $target = '<div class="acym__campaign__listing__scheduled__stop grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape(
                                         $campaign->id
                                     ).'"><i class="acymicon-times-circle cell shrink show-for-xlarge"></i><span class="cell xlarge-shrink">'.acym_translation(

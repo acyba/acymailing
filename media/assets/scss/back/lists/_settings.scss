@@ -24,8 +24,24 @@
             font-size: 1rem;
         }
 
-        .acym__list__settings__subscriber__nb__line {
+        .acym__stats__left {
             margin-bottom: 0.5rem;
+            padding: 0 .5rem;
+            text-align: right;
+
+            &:dir(rtl) {
+                text-align: left;
+            }
+        }
+
+        .acym__stats__right {
+            margin-bottom: 0.5rem;
+            padding: 0 .5rem;
+            text-align: left;
+
+            &:dir(rtl) {
+                text-align: right;
+            }
         }
     }
 

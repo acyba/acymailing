@@ -13,10 +13,14 @@ trait Listing
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
+        $ordering = $this->getVarFiltersListing('string', 'scenario_ordering', 'ordering');
+        $orderingSortOrder = $this->getVarFiltersListing('string', 'scenario_ordering_sort_order', 'asc');
 
         acym_setVar('layout', 'listing');
 
         $data = [
+            'ordering' => $ordering,
+            'ordering_sort_order' => $orderingSortOrder,
             'pagination' => new PaginationHelper(),
         ];
 
@@ -88,5 +92,19 @@ trait Listing
         }
 
         $this->listing();
+    }
+
+    public function ajaxSetOrdering(): void
+    {
+        acym_checkToken();
+
+        $order = json_decode(acym_getVar('string', 'order', '[]'), true);
+
+        foreach ($order as $index => $scenarioId) {
+            $query = 'UPDATE #__acym_scenario SET `ordering` = '.intval($index + 1).' WHERE `id` = '.intval($scenarioId);
+            acym_query($query);
+        }
+
+        acym_sendAjaxResponse($order, [], true);
     }
 }

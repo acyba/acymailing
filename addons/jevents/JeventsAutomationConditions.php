@@ -12,12 +12,6 @@ trait JeventsAutomationConditions
         $conditions['user']['jeventsregistration']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['jeventsregistration']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(
-            [
-                'plugin' => __CLASS__,
-                'trigger' => 'searchEvent',
-            ]
-        );
         $conditions['user']['jeventsregistration']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][jeventsregistration][event]',
@@ -25,7 +19,10 @@ trait JeventsAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_EVENT'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchEvent',
+                ],
             ]
         );
         $conditions['user']['jeventsregistration']->option .= '</div>';

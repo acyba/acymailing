@@ -43,14 +43,12 @@ class plgAcymOutlook extends AcymPlugin
         ob_start();
         ?>
 		<div class="send_settings grid-x cell large-6 xlarge-5 xxlarge-4 margin-auto" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
-            <?php
-            if (!$mailerHelper->isPortOpen(465, 'ssl://smtp.gmail.com')) {
-                acym_display(acym_translation('ACYM_PORT_NEEDED'), 'error', false);
-            }
-            ?>
+			<div class="acym_port_465_closed is-hidden">
+                <?php acym_display(acym_translation('ACYM_PORT_NEEDED'), 'error', false); ?>
+			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<label for="outlook_username" class="cell">
-					<?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info(['textShownInTooltip' => 'ACYM_SMTP_USERNAME_DESC']); ?>
+                    <?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info(['textShownInTooltip' => 'ACYM_SMTP_USERNAME_DESC']); ?>
 				</label>
 				<input id="outlook_username"
 					   class="cell"
@@ -108,7 +106,7 @@ class plgAcymOutlook extends AcymPlugin
                 <?php if ($mustAuthenticate) { ?>
 					<button acym-data-before="jQuery.acymConfigSave();"
 							data-task="loginForOAuth2Smtp"
-							class="button acy_button_submit margin-right-1">
+							class="button acy_button_submit margin-next-1">
                         <?php echo acym_translation('ACYM_AUTHENTICATE'); ?>
 					</button>
                     <?php echo $this->getCopySettingsButton($data, self::SENDING_METHOD_ID, 'wp_mail_smtp', false); ?>

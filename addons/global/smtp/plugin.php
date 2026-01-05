@@ -41,7 +41,7 @@ class plgAcymSmtp extends AcymPlugin
 						placeholder="465, 587, 2525, 25">
 			</div>
 			<div id="available_ports" class="cell acym__sending__methods__one__settings">
-				<a href="#" id="available_ports_check"><?php echo acym_translation('ACYM_SMTP_AVAILABLE_PORTS'); ?></a>
+				<?php echo acym_translation('ACYM_SMTP_AVAILABLE_PORTS'); ?>
                 <?php echo $this->getCopySettingsButton($data, self::SENDING_METHOD_ID, 'wp_mail_smtp'); ?>
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">

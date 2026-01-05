@@ -42,7 +42,7 @@
 	<div class="cell grid-x acym__campaign__sendsettings__params"
 		 data-show="acym__campaign__sendsettings__scheduled" <?php echo $data['currentCampaign']->send_scheduled ? '' : 'style="display: none"'; ?>>
 		<div class="cell grid-x acym__campaign__sendsettings__display-send-type-scheduled">
-			<p id="acym__campaign__sendsettings__scheduled__send-date__label" class="cell shrink"><?php echo acym_translation('ACYM_CAMPAIGN_WILL_BE_SENT'); ?></p>
+			<p id="acym__campaign__sendsettings__scheduled__send-date__label" class="cell shrink padding-next-1"><?php echo acym_translation('ACYM_CAMPAIGN_WILL_BE_SENT'); ?></p>
 			<label class="cell shrink" for="acym__campaign__sendsettings__send">
                 <?php
                 $value = empty($data['currentCampaign']->sending_date) ? '' : acym_date($data['currentCampaign']->sending_date, 'Y-m-d H:i');

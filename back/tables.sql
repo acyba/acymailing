@@ -164,6 +164,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_automation` (
 	`name` VARCHAR(255) NOT NULL,
 	`description` LONGTEXT NULL,
 	`active` TINYINT(3) NOT NULL DEFAULT 0,
+	`ordering` SMALLINT(6) NOT NULL DEFAULT 0,
 	`report` TEXT NULL,
 	`tree` LONGTEXT NULL,
 	`admin` TINYINT(3) NULL,
@@ -599,6 +600,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_scenario` (
 	`active` TINYINT(1) NOT NULL DEFAULT 0,
 	`trigger_params` TEXT NULL,
 	`trigger_once` TINYINT(1) NOT NULL DEFAULT 0,
+	`ordering` SMALLINT(6) NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB

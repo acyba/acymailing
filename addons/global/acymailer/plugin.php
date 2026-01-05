@@ -41,9 +41,10 @@ class plgAcymAcymailer extends AcymPlugin
         27 => 'ACYM_DOMAIN_ONLY_ON_ONE_LICENSE',
         28 => 'ACYM_EMAIL_UNDER_VERIFICATION',
         29 => 'ACYM_DOMAIN_BLOCKED',
+        30 => 'ACYM_ACCOUNT_UNDER_REVIEW',
     ];
 
-    private array $errorCodes = [0, 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29];
+    private array $errorCodes = [0, 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30];
     private array $cnameErrors = [];
 
     public function __construct()
@@ -375,7 +376,7 @@ class plgAcymAcymailer extends AcymPlugin
 					</div>
 					<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings padding-top-1">
 						<div class="cell grid-x">
-							<div class="cell small-7 medium-4 large-3">
+							<div class="cell small-7 medium-4 large-3 margin-next-1">
 								<input id="<?php echo self::SENDING_METHOD_ID; ?>_domain"
 									   class="cell medium-6 large-4 xlarge-3"
 									   type="text"
@@ -391,7 +392,7 @@ class plgAcymAcymailer extends AcymPlugin
 									</span>
                                 <?php } ?>
 							</div>
-							<div id="acym__configuration__sending__method_addDomain_submit" class="cell grid-x small-4 medium-6 large-8 margin-left-1 acym_vcenter">
+							<div id="acym__configuration__sending__method_addDomain_submit" class="cell grid-x small-4 medium-6 large-8 acym_vcenter">
 								<button type="button"
 										id="acym__configuration__sending__method-addDomain"
 										class="cell shrink button button-secondary">
@@ -1172,7 +1173,8 @@ class plgAcymAcymailer extends AcymPlugin
         return strpos($text, '{unsubscribe}') !== false
             || strpos($text, '{unsubscribeall}') !== false
             || strpos($text, 'task=unsubscribe') !== false
-            || strpos($text, 'frontusers/unsubscribe') !== false;
+            || strpos($text, 'frontusers/unsubscribe') !== false
+            || strpos($text, '{direct_unsubscribe') !== false;
     }
 
     private function checkDomainsDNS($domains): array

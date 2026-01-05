@@ -678,7 +678,9 @@ trait SubscriptionInsertion
             $baseLink = 'frontusers'.$lang.'&mail_id='.$email->id;
             if ($parameters->id === 'unsubscribe') {
                 $unsubscribeLink = $baseLink.'&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}';
-                $unsubscribeLink .= '&'.acym_noTemplate();
+                if (ACYM_CMS !== 'wordpress') {
+                    $unsubscribeLink .= '&'.acym_noTemplate();
+                }
                 $unsubClass = 'acym_unsubscribe';
             } else {
                 $unsubscribeLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';

@@ -62,12 +62,22 @@
 			<menu link="option=com_acym&amp;ctrl=users">ACYM_SUBSCRIBERS</menu>
 			<menu link="option=com_acym&amp;ctrl=fields">ACYM_CUSTOM_FIELDS</menu>
 			<menu link="option=com_acym&amp;ctrl=lists">ACYM_LISTS</menu>
+			//__START__enterprise_
+			<menu link="option=com_acym&amp;ctrl=segments">ACYM_SEGMENTS</menu>
+			//__END__enterprise_
 			<menu link="option=com_acym&amp;ctrl=campaigns">ACYM_EMAILS</menu>
 			<menu link="option=com_acym&amp;ctrl=mails">ACYM_TEMPLATES</menu>
 			<menu link="option=com_acym&amp;ctrl=override">ACYM_EMAILS_OVERRIDE</menu>
+			//__START__enterprise_
+			<menu link="option=com_acym&amp;ctrl=automation">ACYM_AUTOMATION</menu>
+			<menu link="option=com_acym&amp;ctrl=scenarios">ACYM_SCENARIO</menu>
+			//__END__enterprise_
 			<menu link="option=com_acym&amp;ctrl=queue">ACYM_QUEUE</menu>
 			<menu link="option=com_acym&amp;ctrl=stats">ACYM_STATISTICS</menu>
 			<menu link="option=com_acym&amp;ctrl=plugins">ACYM_ADD_ONS</menu>
+			//__START__enterprise_
+			<menu link="option=com_acym&amp;ctrl=bounces">ACYM_MAILBOX_ACTIONS</menu>
+			//__END__enterprise_
 			<menu link="option=com_acym&amp;ctrl=configuration">ACYM_CONFIGURATION</menu>
 			//__START__starter_
 			<menu link="option=com_acym&amp;ctrl=gopro">ACYM_GOPRO</menu>

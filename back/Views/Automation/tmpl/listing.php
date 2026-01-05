@@ -52,20 +52,28 @@
                             ?>
 						</div>
 						<div class="cell large-shrink acym_listing_sort-by">
-                            <?php echo acym_sortBy(
+                            <?php
+                            if (empty($data['ordering'])) {
+                                $data['ordering'] = 'ordering';
+                            }
+                            if (empty($data['orderingSortOrder'])) {
+                                $data['orderingSortOrder'] = 'asc';
+                            }
+                            echo acym_sortBy(
                                 [
                                     'id' => acym_strtolower(acym_translation('ACYM_ID')),
                                     'name' => acym_translation('ACYM_NAME'),
                                     'active' => acym_translation('ACYM_ACTIVE'),
+                                    'ordering' => acym_translation('ACYM_ORDERING'),
                                 ],
                                 'automation',
                                 $data['ordering'],
-                                'asc'
+                                $data['orderingSortOrder']
                             ); ?>
 						</div>
 					</div>
 				</div>
-				<div class="grid-x acym__listing">
+				<div class="grid-x acym__listing acym__sortable__listing acym__automation__listing cell grid-x" data-sort-ctrl="automation">
 					<div class="grid-x cell acym__listing__header">
 						<div class="medium-shrink small-1 cell">
 							<input id="checkbox_all" type="checkbox" name="checkbox_all">
@@ -86,12 +94,19 @@
 						</div>
 					</div>
                     <?php foreach ($data['allAutomations'] as $automation) { ?>
-						<div data-acy-elementid="<?php echo acym_escape($automation->id); ?>" class="grid-x cell align-middle acym__listing__row">
+						<div data-acy-elementid="<?php echo acym_escape($automation->id); ?>" class="grid-x cell align-middle acym__listing__row"
+							 data-id-element="<?php echo acym_escape($automation->id); ?>">
 							<div class="medium-shrink small-1 cell">
 								<input id="checkbox_<?php echo acym_escape($automation->id); ?>"
 									   type="checkbox"
 									   name="elements_checked[]"
 									   value="<?php echo acym_escape($automation->id); ?>">
+							</div>
+							<div class="cell small-1 acym_vcenter align-center acym__automation__listing__handle acym__listing__handle">
+								<div class="grabbable acym__sortable__listing__handle grid-x">
+									<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>
+									<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>
+								</div>
 							</div>
 							<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 								<div class="grid-x medium-5 small-9 cell acym__listing__title">

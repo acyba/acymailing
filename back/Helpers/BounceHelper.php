@@ -1029,7 +1029,12 @@ class BounceHelper extends AcymObject
 
 
         //handle this rule in the stats
-        $mail = $this->mailClass->getOneById($this->_message->mailid);
+        if (!empty($this->_message->mailid)) {
+            $mail = $this->mailClass->getOneById($this->_message->mailid);
+        } else {
+            $mail = null;
+        }
+
         if ($oneRule->increment_stats && !empty($this->_message->mailid) && !empty($mail)) {
             //Init the stats...
             if (empty($this->bounceMessages[$this->_message->mailid])) {

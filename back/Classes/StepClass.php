@@ -50,13 +50,14 @@ class StepClass extends AcymClass
 
         $query = 'SELECT step.* 
             FROM #__acym_step AS step 
-            LEFT JOIN #__acym_automation AS automation ON step.automation_id = automation.id 
+            JOIN #__acym_automation AS automation ON step.automation_id = automation.id 
             WHERE automation.active = 1';
 
         foreach ($triggers as $i => $oneTrigger) {
             $triggers[$i] = 'step.triggers LIKE '.acym_escapeDB('%"'.$oneTrigger.'"%');
         }
         $query .= ' AND ('.implode(' OR ', $triggers).')';
+        $query .= ' ORDER BY automation.ordering ASC';
 
         $steps = acym_loadObjectList($query);
 

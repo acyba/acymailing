@@ -125,6 +125,10 @@
         &.text-center {
             text-align: center;
         }
+
+        &:dir(rtl) {
+            text-align: right;
+        }
     }
 
     .acym_not_bold {

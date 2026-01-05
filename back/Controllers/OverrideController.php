@@ -29,6 +29,38 @@ class OverrideController extends AcymController
             return;
         }
 
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $overrideClass = new OverrideClass();
+            if (!$overrideClass->areOverrideMailsInstalled()) {
+                acym_setVar('layout', 'listing_empty');
+
+                parent::display();
+
+                return;
+            }
+
+            acym_setVar('layout', 'listing');
+
+            $currentSource = $this->getVarFiltersListing('string', 'overrideMailSource', ACYM_CMS);
+
+            $data = [];
+            $data['search'] = $this->getVarFiltersListing('string', 'emails_override_search', '');
+            $data['ordering'] = $this->getVarFiltersListing('string', 'emails_override_ordering', 'active');
+            $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'emails_override_ordering_sort_order', 'desc');
+            $data['status'] = $this->getVarFiltersListing('string', 'emails_override_status', '');
+            $data['pagination'] = new PaginationHelper();
+            $data['allInstalledSources'] = $overrideClass->getAllSources();
+            $data['source'] = !in_array($currentSource, $data['allInstalledSources']) ? ACYM_CMS : $currentSource;
+
+            $this->prepareEmailsOverrideListing($data);
+            $this->prepareToolbar($data);
+            acym_loadLanguageFile('plg_user_joomla', ACYM_BASE);
+            acym_loadLanguageFile('com_users');
+
+            parent::display($data);
+        }
+        //__END__enterprise_
     }
 
     protected function prepareToolbar(array &$data): void

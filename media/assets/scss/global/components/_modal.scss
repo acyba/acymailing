@@ -151,6 +151,11 @@ div[aria-haspopup='true'] {
             span {
                 padding: 0 6px;
             }
+
+            &:dir(rtl) {
+                left: 6px;
+                right: auto;
+            }
         }
 
         iframe {

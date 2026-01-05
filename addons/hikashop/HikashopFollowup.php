@@ -38,14 +38,12 @@ trait HikashopFollowup
                 ).'</span>';
             $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
-
-            $ajaxParams = json_encode([
-                'plugin' => __CLASS__,
-                'trigger' => 'searchProduct',
-            ]);
             $parametersProductSelect = [
                 'class' => 'acym__select acym_select2_ajax',
-                'data-params' => acym_escape($ajaxParams),
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchProduct',
+                ],
                 'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
             ];
             $multiselectProducts = acym_selectMultiple(
@@ -63,13 +61,12 @@ trait HikashopFollowup
                 ).'</span>';
             $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
-            $ajaxParams = json_encode([
-                'plugin' => __CLASS__,
-                'trigger' => 'searchCat',
-            ]);
             $parametersCategoriesSelect = [
                 'class' => 'acym__select acym_select2_ajax',
-                'data-params' => acym_escape($ajaxParams),
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchCat',
+                ],
                 'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
             ];
             $multiselectCategories = acym_selectMultiple(

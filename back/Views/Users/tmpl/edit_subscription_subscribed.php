@@ -8,7 +8,7 @@
 					<span class="cell medium-auto">
 					<?php
                     if (acym_isDateValid($oneSubscription->subscription_date)) {
-                        echo acym_escape(acym_date(acym_getTime($oneSubscription->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2')));
+                        echo acym_escape(acym_date($oneSubscription->subscription_date, acym_translation('ACYM_DATE_FORMAT_LC2')));
                     } else {
                         echo acym_translation('ACYM_INVALID_DATE');
                     }

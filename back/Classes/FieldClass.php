@@ -366,6 +366,11 @@ class FieldClass extends AcymClass
     public function getAllFieldsBackendListing(): array
     {
         $whereLanguage = '(backend_listing = 1 OR `type` = "language")';
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $whereLanguage = 'backend_listing = 1';
+        }
+        //__END__enterprise_
         $query = 'SELECT id, name FROM #__acym_field WHERE '.$whereLanguage.' AND active = 1 AND id NOT IN (1, 2) ORDER BY ordering';
 
         $return = [
@@ -694,7 +699,7 @@ class FieldClass extends AcymClass
             $number = !empty($defaultValue[1]) ? $defaultValue[1] : '';
 
             if ($displayOutside) $return .= '<div class="cell margin-top-1 grid-x"><div class="acym__users__creation__fields__title cell">'.$field->name.'</div>';
-            $return .= '<div class="cell large-5 medium-4 padding-right-1">';
+            $return .= '<div class="cell large-5 medium-4 padding-next-1">';
             $return .= acym_generateCountryNumber($name.'[code]', $indicator);
             $return .= '</div>';
             $return .= '<input autocomplete="tel-national" '.$placeholder.$required.$style.$maxCharacters.' class="cell large-7 medium-8" type="tel" name="'.$name.'[phone]" value="'.acym_escape(

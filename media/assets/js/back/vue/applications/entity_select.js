@@ -47,11 +47,11 @@ jQuery(function () {
         const getSelected = (array, columnsNotNull) => array.filter((entity) => entity[columnsNotNull] !== null);
 
         function addTotalRecipients(selectedLists) {
-            const $page = $('[name="page"]');
+            const $page = $('#acym_wrapper [name="page"]');
             const data = {
                 listsSelected: selectedLists,
                 page: $page.length > 0 ? $page.val() : 'acymailing_campaigns',
-                ctrl: $('[name="ctrl"]').val(),
+                ctrl: $('#acym_wrapper [name="ctrl"]').val(),
                 task: 'ajaxCountNumberOfRecipients'
             };
 
@@ -154,8 +154,7 @@ jQuery(function () {
                                                                                                                                             .toUpperCase()
                                                                                                                                       + type.slice(1)],
                             this[type + 'Search'],
-                            this.columnsToDisplay
-                        );
+                            this.columnsToDisplay);
                     },
                     loadMoreEntityAvailable() {
                         this.loadMoreEntity('available');
@@ -190,8 +189,7 @@ jQuery(function () {
                                 this['displaySelectAll_' + type] = false;
                                 this['entitiesToDisplay_' + type] = search(this['entities' + type.charAt(0).toUpperCase() + type.slice(1)],
                                     this[type + 'Search'],
-                                    this.columnsToDisplay
-                                );
+                                    this.columnsToDisplay);
                             }
                         }, timeout);
                     },
@@ -291,7 +289,9 @@ jQuery(function () {
                         document.querySelector('[name="acym__entity_select__selected"]').value = JSON.stringify(idsSelected);
 
                         let countRecipients = document.querySelector('.entity_select__recipients__number-recipients');
-                        if (typeof (countRecipients) != 'undefined' && countRecipients != null) {
+                        if (typeof (
+                            countRecipients
+                        ) != 'undefined' && countRecipients != null) {
                             addTotalRecipients(idsSelected);
                         }
                     },

@@ -1,5 +1,5 @@
 {
-    "max_version": "10.6.0",
+    "max_version": "10.7.0",
     "splash_content": [
         {
             "menu_title": "General",
@@ -7,32 +7,24 @@
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "Subscription forms links",
-                    "desc": "You can now add a link in the subscription form to redirect to the privacy policy and terms of service pages instead of opening them in a popup."
+                    "title": "Automations and scenarios sorting",
+                    "desc": "We added the possibility to sort the automations and scenarios in order to trigger them in the specific order you want."
                 },
                 {
-                    "title": "Direct unsubscribe link with redirection",
-                    "desc": "We added the possibility to insert a direct unsubscribe link with a redirection option in your emails, that will unsubscribe the user from the campaign's lists with one click even if you have enabled the unsubscribe page."
+                    "title": "Better custom field filtering",
+                    "desc": "Filtering on custom fields in automation filters and segments now shows possible values when possible."
                 },
                 {
-                    "title": "Detailed statistics export",
-                    "desc": "A new option is available in the Data Collection tab to choose the separator to use in the CSV export files for statistics export."
+                    "title": "Right-to-left language support",
+                    "desc": "The interfaces have been fully reworked to better handle right-to-left languages."
                 },
                 {
-                    "title": "User export in automations",
-                    "desc": "It is now possible to dynamically add the time to the exported files for the user export action in automations, to generate a file per time period."
+                    "title": "Scheduled campaign sending time display",
+                    "desc": "The sending time is now also shown on the campaigns listing page for scheduled campaigns."
                 },
                 {
-                    "title": "Internal improvements",
-                    "desc": "The internal structure of the extension has been improved to increase security and stability."
-                },
-                {
-                    "title": "RTL support in notifications center",
-                    "desc": "The notifications center now handles RTL languages and multiple notifications can be removed at once."
-                },
-                {
-                    "title": "Scenarios unsubscribe",
-                    "desc": "We added the possibility to unsubscribe from a scenario's emails using the unsubscribe link."
+                    "title": "Timezone handling improvement",
+                    "desc": "The timezone is better handled on the user subscriptions listing."
                 }
             ]
         },
@@ -42,27 +34,12 @@
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "EventBooking time in emails",
-                    "desc": "A new option lets you hide the time in event dates for EventBooking."
+                    "title": "Frontend campaign creation",
+                    "desc": "The subscribers are now correctly calculated when you create a campaign from the frontend."
                 },
                 {
-                    "title": "Joomla 6 compatibility",
-                    "desc": "Modifications have been made for a better compatibility with Joomla 6."
-                },
-                {
-                    "title": "ACL improvements",
-                    "desc": "The Joomla ACL system was not applied for managers and administrators. You can now restrict access to AcyMailing without needing to change the AcyMailing advanced ACL."
-                }
-            ]
-        },
-        {
-            "menu_title": "WordPress",
-            "menu_icon": "acymicon-wordpress",
-            "title": "WHAT CHANGED FOR WORDPRESS",
-            "articles": [
-                {
-                    "title": "GDPR data export",
-                    "desc": "The AcyMailing user data is now added to the WordPress user data export system."
+                    "title": "Unpublished categories handling",
+                    "desc": "The unpublished categories are now ignored when inserting articles by category in emails."
                 }
             ]
         },
@@ -72,24 +49,24 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Template duplication",
-                    "desc": "When duplicating a template, its previous creator ID was copied. It now correctly takes the ID of the user that duplicated the template."
+                    "title": "Maximum sites error message",
+                    "desc": "The error message which should appear when you have already attached the maximum number of sites to your license is now correctly shown."
                 },
                 {
-                    "title": "Bounce address connection for POP3",
-                    "desc": "The connection to the bounce address has been fixed for the POP3 protocol without IMAP in some cases."
+                    "title": "Click map redirection",
+                    "desc": "The click map in statistics now correctly redirects to the global statistics when selecting more than one campaign."
                 },
                 {
-                    "title": "Multilingual welcome email",
-                    "desc": "Saving an alternate version of a welcome email when the multilingual option is active doesn't replace the original version anymore."
+                    "title": "Automation filters",
+                    "desc": "We fixed display issues in some automation filters for dropdown fields for product selection."
                 },
                 {
-                    "title": "RSS feed authors",
-                    "desc": "The authors are now correctly shown when inserting RSS feed items and its shortcode in custom views is now working properly."
+                    "title": "Manual bounce processing",
+                    "desc": "We fixed an error that could occur when you manually trigger bounce processing, causing the process to stop."
                 },
                 {
-                    "title": "Default templates",
-                    "desc": "We fixed the reinstallation of default templates which created empty templates."
+                    "title": "Attachments in welcome emails",
+                    "desc": "The attachments are now correctly shown on welcome and unsubscribe emails on the edition page."
                 }
             ]
         }

@@ -1,7 +1,7 @@
 === AcyMailing integration for The Events Calendar ===
 Contributors: acyba
 Tags: newsletter, integration, acymailing, events, the events calendar
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 4.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

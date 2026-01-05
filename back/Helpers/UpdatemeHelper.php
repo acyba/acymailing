@@ -48,6 +48,9 @@ class UpdatemeHelper extends AcymObject
 
         if ($request['status_code'] < 200 || $request['status_code'] > 299) {
             acym_logError('Error while calling updateme on path '.$path.' with the status code: '.$request['status_code']."\r\n and body".json_encode($request), 'updateme');
+            if (!empty($request['message']) && $request['message'] === 'MAX_SITES_ATTACH') {
+                acym_enqueueMessage(acym_translation('ACYM_REACHED_MAX_SITES_ATTACHED'), 'error');
+            }
             $return['success'] = false;
         }
 

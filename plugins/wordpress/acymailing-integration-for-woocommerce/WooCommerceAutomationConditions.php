@@ -30,11 +30,11 @@ trait WooCommerceAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_PRODUCT'),
-                'data-params' => acym_escape([
+                'data-params' => [
                     'plugin' => 'plgAcymWoocommerce',
                     'trigger' => 'searchProduct',
                     'variations' => true,
-                ]),
+                ],
             ]
         );
         $conditions['user']['woopurchased']->option .= '</div>';
@@ -47,10 +47,10 @@ trait WooCommerceAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_CATEGORY'),
-                'data-params' => acym_escape([
+                'data-params' => [
                     'plugin' => 'plgAcymWoocommerce',
                     'trigger' => 'searchCat',
-                ]),
+                ],
             ]
         );
         $conditions['user']['woopurchased']->option .= '</div>';
@@ -135,12 +135,12 @@ trait WooCommerceAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_PRODUCT'),
-                'data-params' => acym_escape([
+                'data-params' => [
                     'plugin' => 'plgAcymWoocommerce',
                     'trigger' => 'searchProduct',
                     'variations' => true,
                     'onlySubscriptions' => true,
-                ]),
+                ],
             ]
         );
         $conditions['user']['woosubscription']->option .= '</div>';
@@ -153,10 +153,10 @@ trait WooCommerceAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_CATEGORY'),
-                'data-params' => acym_escape([
+                'data-params' => [
                     'plugin' => 'plgAcymWoocommerce',
                     'trigger' => 'searchCat',
-                ]),
+                ],
             ]
         );
         $conditions['user']['woosubscription']->option .= '</div>';

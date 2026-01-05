@@ -111,7 +111,8 @@ class plgAcymArticle extends AcymPlugin
         $this->categories = acym_loadObjectList(
             'SELECT id, parent_id, title
             FROM `#__categories` 
-            WHERE extension = "com_content"'
+            WHERE extension = "com_content"
+                AND published  = 1'
         );
 
         $this->tagvalues = acym_loadObjectList(
@@ -372,7 +373,7 @@ class plgAcymArticle extends AcymPlugin
 
             $query = 'SELECT DISTINCT element.`id` 
                     FROM #__content AS element 
-                    LEFT JOIN #__categories AS category ON element.catid = category.id ';
+                    JOIN #__categories AS category ON element.catid = category.id ';
 
             $where = [];
 
@@ -386,6 +387,7 @@ class plgAcymArticle extends AcymPlugin
                 }
             }
 
+            $where[] = 'category.published = 1';
             $where[] = 'element.state = 1';
             $where[] = 'element.`publish_up` < '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z')));
             $where[] = 'element.`publish_down` > '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z'))).' OR element.`publish_down` = 0 OR element.`publish_down` IS NULL';

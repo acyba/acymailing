@@ -110,6 +110,13 @@
         border-left: 3px solid $font-primary;
         padding-left: 20px;
         align-items: center;
+
+        &:dir(rtl) {
+            border-left: none;
+            border-right: 3px solid $font-primary;
+            padding-left: 0;
+            padding-right: 20px;
+        }
     }
 
     #acym__automation__filters, #acym__automation__conditions {
@@ -208,7 +215,7 @@
         }
     }
 
-    .select2 .select2-search input[placeholder]:not([placeholder=""]){
+    .select2 .select2-search input[placeholder]:not([placeholder=""]) {
         min-width: 178px;
     }
 }

@@ -20,10 +20,10 @@
 				placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER', true); ?>"></textarea>
 	</label>
 	<div class="grid-x">
-		<button id="acym__campaign__send-test" type="button" class="button button-secondary margin-top-1">
+		<button id="acym__campaign__send-test" type="button" class="button button-secondary margin-top-1 margin-next-1">
             <?php echo acym_translation('ACYM_SEND_TEST'); ?>
 		</button>
-		<div class="cell shrink margin-top-1 margin-left-1" id="acym__campaigns__send-test__spinner" style="display: none">
+		<div class="cell shrink margin-top-1" id="acym__campaigns__send-test__spinner" style="display: none">
 			<i class="acymicon-circle-o-notch acymicon-spin"></i>
 		</div>
 	</div>

@@ -60,12 +60,28 @@ class Menu
             'ACYM_CUSTOM_FIELDS' => 'fields',
             'ACYM_LISTS' => 'lists',
         ];
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $menus['ACYM_SEGMENTS'] = 'segments';
+        }
+        //__END__enterprise_
         $menus['ACYM_EMAILS'] = 'campaigns';
         $menus['ACYM_TEMPLATES'] = 'mails';
         $menus['ACYM_EMAILS_OVERRIDE'] = 'override';
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $menus['ACYM_AUTOMATION'] = 'automation';
+            $menus['ACYM_SCENARIO'] = 'scenarios';
+        }
+        //__END__enterprise_
         $menus['ACYM_QUEUE'] = 'queue';
         $menus['ACYM_STATISTICS'] = 'stats';
         $menus['ACYM_ADD_ONS'] = 'plugins';
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $menus['ACYM_MAILBOX_ACTIONS'] = 'bounces';
+        }
+        //__END__enterprise_
         $menus['ACYM_CONFIGURATION'] = 'configuration';
 
         if (!acym_level(ACYM_ESSENTIAL)) {

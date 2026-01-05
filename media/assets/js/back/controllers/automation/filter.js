@@ -79,34 +79,33 @@ jQuery(function ($) {
 
         let filters = acym_helper.parseJson($options.val());
 
-
         $('.acym__automation__select__' + type + '__filter').off('change').on('change', function () {
-            let selectedFilter = $(this).val();
-            if (selectedFilter === null) return;
+            const selectedFilter = $(this).val();
+            if (selectedFilter === null) {
+                return;
+            }
 
-            let $inputAnd = $('#acym__automation__filters__count__and');
+            const $inputAnd = $('#acym__automation__filters__count__and');
             $inputAnd.val(parseInt($inputAnd.val()) + 1);
 
             let seeUsersFilter = acym_helperSegment.getSeeUserModalButton($(this), $inputAnd.val());
 
             $(this).parent().parent().find('.acym__automation__inserted__filter').remove();
-            let html = filters[selectedFilter].replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'));
-            html = html.replace(/__numand__/g, $inputAnd.val());
+            const html = filters[selectedFilter]
+                .replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'))
+                .replace(/__numand__/g, $inputAnd.val());
             if (html.search('acym__filter__noseeuser') != false) {
                 seeUsersFilter = '';
             }
             $(this)
                 .parent()
-                .after('<div data-and="'
-                       + $inputAnd.val()
-                       + '" class="cell grid-x grid-margin-x margin-y acym__automation__inserted__filter margin-top-1 margin-left-2 padding-right-2">'
-                       + '<div class="cell grid-x"><span class="cell shrink margin-right-1 countresults margin-bottom-1" id="results_'
-                       + $inputAnd.val()
-                       + '"></span>'
-                       + seeUsersFilter
-                       + '</div>'
-                       + html
-                       + '</div>');
+                .after(`<div data-and="${$inputAnd.val()}" class="cell grid-x grid-margin-x margin-y acym__automation__inserted__filter margin-top-1 margin-left-2 padding-right-2">
+                        <div class="cell grid-x">
+                            <span class="cell shrink margin-right-1 countresults margin-bottom-1" id="results_${$inputAnd.val()}"></span>
+                            ${seeUsersFilter}
+                        </div>
+                        ${html}
+                    </div>`);
             acym_helperSelect2.setSelect2();
             acym_helperDatePicker.setDatePickerGlobal();
             acym_helperTooltip.setTooltip();
@@ -114,32 +113,40 @@ jQuery(function ($) {
             jQuery(document).trigger('acym__modal__users__summary__ready');
 
             $('.switch-label').off('click').on('click', function () {
-                let input = $('input[data-switch="' + $(this).attr('for') + '"]');
+                const input = $('input[data-switch="' + $(this).attr('for') + '"]');
                 input.attr('value', 1 - input.attr('value'));
             });
 
-            let $operatorDropdown = $(this).closest('.acym__automation__one__filter').find('.acym__automation__filters__operator__dropdown');
-            let $fieldsDropdown = $(this).closest('.acym__automation__one__filter').find('.acym__automation__filters__fields__dropdown');
+            const $fieldsDropdown = $(this).closest('.acym__automation__one__filter').find('.acym__automation__conditions__fields__dropdown');
+            const $operatorDropdown = $(this).closest('.acym__automation__one__filter').find('.acym__automation__conditions__operator__dropdown');
 
             $operatorDropdown.on('change', function () {
                 $fieldsDropdown.trigger('change');
             });
 
             $fieldsDropdown.on('change', function () {
-                let $parent = $(this).closest('.acym__automation__inserted__filter');
-                let $select = $parent.find('[data-filter-field="' + $(this).val() + '"]');
-                let $selects = $parent.find('.acym__automation__filters__fields__select');
-                let $defaultInput = $parent.find('.acym__automation__filter__regular-field');
-                if ($select.length > 0 && ($operatorDropdown.val() === '=' || $operatorDropdown.val() === '!=')) {
+                const $parent = $(this).closest('.acym__automation__inserted__filter');
+                const $select = $parent.find('[data-condition-field="' + $(this).val() + '"]');
+                const $selects = $parent.find('.acym__automation__conditions__fields__select');
+                const $defaultInput = $parent.find('.acym__automation__condition__regular-field');
+
+                if ($select.length > 0 && [
+                    '=',
+                    '!='
+                ].includes($operatorDropdown.val())) {
                     $defaultInput.attr('name', $defaultInput.attr('name').replace('acym_action', '')).hide();
                     $selects.each(function (index) {
                         $(this).attr('name', $(this).attr('name').replace('acym_action', ''));
                         $(this).closest('.acym__automation__one-field').hide();
                     });
-                    if ($select.attr('name').indexOf('acym_action') === -1) $select.attr('name', 'acym_action' + $select.attr('name'));
+                    if (!$select.attr('name').includes('acym_action')) {
+                        $select.attr('name', 'acym_action' + $select.attr('name'));
+                    }
                     $select.closest('.acym__automation__one-field').show();
                 } else {
-                    if ($defaultInput.attr('name').indexOf('acym_action') === -1) $defaultInput.attr('name', 'acym_action' + $defaultInput.attr('name'));
+                    if (!$defaultInput.attr('name').includes('acym_action')) {
+                        $defaultInput.attr('name', 'acym_action' + $defaultInput.attr('name'));
+                    }
                     if ($selects.length > 0) {
                         $selects.each(function () {
                             $(this).attr('name', $(this).attr('name').replace('acym_action', ''));
@@ -207,7 +214,7 @@ jQuery(function ($) {
             $('#acym__automation__type-filter__input').val($(this).attr('data-filter'));
             $('.selected-filter').removeClass('selected-filter');
             $(this).addClass('selected-filter');
-            let $filtersContainers = $('.acym__automation__filter__container');
+            const $filtersContainers = $('.acym__automation__filter__container');
             $filtersContainers.hide();
             $filtersContainers.find('[name^="acym_action"]').each(function (index) {
                 $(this).attr('name', $(this).attr('name').replace('acym_action', ''));
@@ -248,7 +255,9 @@ jQuery(function ($) {
 
     function rebuildFilters() {
         let $filterElement = $('#filters');
-        if (!$filterElement.length) return;
+        if (!$filterElement.length) {
+            return;
+        }
 
         let filters = acym_helper.parseJson($filterElement.val());
         let type = filters['type_filter'];

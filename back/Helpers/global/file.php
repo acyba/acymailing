@@ -222,7 +222,7 @@ function acym_inputFile(string $name, string $value = '', string $class = '', st
 {
     $return = '<div class="cell '.acym_escape($class).' grid-x"><input '.$attributes.' style="display: none" type="file" name="'.acym_escape($name).'">
         <button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation('ACYM_CHOOSE_FILE').'</button>
-        <span class="cell shrink margin-left-2">';
+        <span class="cell shrink margin-left-2 margin-right-2">';
     $return .= acym_escape(empty($value) ? acym_translation('ACYM_NO_FILE_CHOSEN') : $value);
     $return .= '</span></div>';
 

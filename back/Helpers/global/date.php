@@ -222,7 +222,8 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
     $year = [
         '' => acym_translation('ACYM_YEAR'),
     ];
-    for ($i = 1900; $i <= ((int)acym_date('now', 'Y') + 10); $i++) {
+    $currentYear = (int)acym_date('now', 'Y');
+    for ($i = 1900; $i <= $currentYear + 10; $i++) {
         $year[$i] = $i;
     }
 
@@ -233,7 +234,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
     foreach ($formatToDisplay as $one) {
         if ($one === 'd') {
             if ($returnHtml) {
-                $return[] = '<div class="medium-3 margin-left-0 cell">'.acym_select(
+                $return[] = '<div class="medium-3 margin-left-0 margin-right-0 cell">'.acym_select(
                         $days,
                         $name,
                         empty($defaultDate[2]) || $defaultDate[2] === '00' ? '' : $defaultDate[2],

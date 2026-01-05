@@ -16,6 +16,10 @@
         background: $white;
         border: 1px solid var(--color-switch);
 
+        &:dir(rtl) {
+            transform: rotate(180deg);
+        }
+
         &.disabled {
             border-color: var(--color-switch-disabled);
 

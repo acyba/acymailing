@@ -49,7 +49,7 @@ class AutomationClass extends AcymClass
         if (!empty($settings['ordering']) && !empty($settings['ordering_sort_order'])) {
             $query .= ' ORDER BY '.acym_secureDBColumn($settings['ordering']).' '.acym_secureDBColumn(strtoupper($settings['ordering_sort_order']));
         } else {
-            $query .= ' ORDER BY id asc';
+            $query .= ' ORDER BY ordering asc';
         }
 
         if (empty($settings['offset']) || $settings['offset'] < 0) {

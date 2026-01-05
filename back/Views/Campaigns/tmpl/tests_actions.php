@@ -12,7 +12,7 @@
 		<button data-task="save"
 				data-step="listing"
 				type="submit"
-				class="cell button-secondary medium-shrink button medium-margin-bottom-0 margin-right-1 acy_button_submit">
+				class="cell button-secondary medium-shrink button medium-margin-bottom-0 margin-next-1 acy_button_submit">
             <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 		</button>
 		<button data-task="save" data-step="summary" type="submit" class="cell medium-shrink button margin-bottom-0 acy_button_submit">

@@ -81,21 +81,17 @@ class ImportHelper extends AcymObject
 
         $uploadPath = $this->createUploadFolder();
 
-        $attachment = new \stdClass();
-        $attachment->filename = uniqid('import_').'.csv';
-        acym_setVar('acym_import_filename', $attachment->filename);
+        $filename = uniqid('import_').'.csv';
+        acym_setVar('acym_import_filename', $filename);
 
-        //Make sure we can use this sort of extension name!
-        $attachment->size = $importFile['size'];
-
-        if (!acym_uploadFile($importFile['tmp_name'], $uploadPath.$attachment->filename)) {
-            if (!move_uploaded_file($importFile['tmp_name'], $uploadPath.$attachment->filename)) {
+        if (!acym_uploadFile($importFile['tmp_name'], $uploadPath.$filename)) {
+            if (!move_uploaded_file($importFile['tmp_name'], $uploadPath.$filename)) {
                 //If we can not do it with a simple method, let's do it with Joomla and FTP
                 acym_enqueueMessage(
                     acym_translationSprintf(
                         'ACYM_FAIL_UPLOAD',
                         '<b><i>'.acym_escape($importFile['tmp_name']).'</i></b>',
-                        '<b><i>'.acym_escape($uploadPath.$attachment->filename).'</i></b>'
+                        '<b><i>'.acym_escape($uploadPath.$filename).'</i></b>'
                     ),
                     'error'
                 );

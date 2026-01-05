@@ -144,6 +144,11 @@
         font-size: 18px;
         vertical-align: middle;
         margin-right: 8px;
+
+        &:dir(rtl) {
+            margin-left: 8px;
+            margin-right: 0;
+        }
     }
 
     span {

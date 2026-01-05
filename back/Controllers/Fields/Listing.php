@@ -10,6 +10,22 @@ trait Listing
     public function listing(): void
     {
         $data = [];
+        //__START__enterprise_
+        if (acym_level(ACYM_ENTERPRISE)) {
+            acym_setVar('layout', 'listing');
+            $fieldClass = new FieldClass();
+            $fieldsElements = $fieldClass->getMatchingElements();
+
+            $data['allFields'] = $fieldsElements['elements'];
+            $data['languageFieldId'] = $fieldClass->getLanguageFieldId();
+
+            $this->prepareToolbar($data);
+
+            parent::display($data);
+
+            return;
+        }
+        //__END__enterprise_
 
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_setVar('layout', 'splashscreen');

@@ -48,11 +48,11 @@ trait WooCommerceFollowup
                 !empty($followup->condition['products']) ? $followup->condition['products'] : [],
                 [
                     'class' => 'acym__select acym_select2_ajax',
-                    'data-params' => acym_escape([
+                    'data-params' => [
                         'plugin' => 'plgAcymWoocommerce',
                         'trigger' => 'searchProduct',
                         'variations' => true,
-                    ], false),
+                    ],
                     'data-selected' => !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
                 ]
             ).'</span>';
@@ -73,10 +73,10 @@ trait WooCommerceFollowup
                 !empty($followup->condition['categories']) ? $followup->condition['categories'] : [],
                 [
                     'class' => 'acym__select acym_select2_ajax',
-                    'data-params' => acym_escape([
+                    'data-params' => [
                         'plugin' => 'plgAcymWoocommerce',
                         'trigger' => 'searchCat',
-                    ], false),
+                    ],
                     'data-selected' => !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
                 ]
             ).'</span>';

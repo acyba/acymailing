@@ -13,6 +13,7 @@ const acym_helperListing = {
             noSortableElement.insertAfter(list.last());
             list = jQuery('.acym__sortable__listing .acym__listing__row');
             const ctrl = jQuery('.acym__sortable__listing').attr('data-sort-ctrl');
+            const sort = jQuery('.acym__select__sort').val();
             const order = [];
             list.each(function (i) {
                 order.push(jQuery(this).attr('data-id-element'));
@@ -30,6 +31,13 @@ const acym_helperListing = {
         };
 
         const $sortableRows = jQuery('.acym__sortable__listing');
+        if (jQuery('.acym__select__sort').val() !== 'ordering' && [
+            'automation',
+            'scenarios'
+        ].includes($sortableRows.attr('data-sort-ctrl'))) {
+            jQuery('.acym__listing__handle').hide();
+            return;
+        }
         $sortableRows.sortable({
             items: '.acym__listing__row',
             handle: '.acym__sortable__listing__handle',
@@ -206,13 +214,15 @@ const acym_helperListing = {
             const customMessage = fastAction || nbChecked === 1 ? customMessages[page].fastAction : customMessages[page].regularAction;
             const deleteMessageComplete = jQuery('#acym__listing__action__delete-message').val();
             const actionTexts = {
-                'delete': (fastAction || nbChecked === 1)
-                          ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_ONE_X}`
-                          : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_X} ${deleteMessageComplete}`,
-                'setActive': (fastAction || nbChecked === 1) ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE_ONE_X}` : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE_X}`,
-                'setInactive': (fastAction || nbChecked === 1)
-                               ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_INACTIVE_ONE_X}`
-                               : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_INACTIVE_X}`,
+                'delete': (
+                              fastAction || nbChecked === 1
+                          ) ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_ONE_X}` : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_X} ${deleteMessageComplete}`,
+                'setActive': (
+                                 fastAction || nbChecked === 1
+                             ) ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE_ONE_X}` : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE_X}`,
+                'setInactive': (
+                                   fastAction || nbChecked === 1
+                               ) ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_INACTIVE_ONE_X}` : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_INACTIVE_X}`,
                 'default': `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE}`
             };
 
@@ -313,8 +323,10 @@ const acym_helperListing = {
     checkFiltersApplied: function () {
         let nbChecked = jQuery('[name="elements_checked[]"]:checked').length;
         let $nbToExport = jQuery('#acym__users__listing__number_to_export');
-        if (nbChecked === 0 && (jQuery('#users_list').val() > 0 || jQuery('[name="users_search"]').val().length > 0 || jQuery('.acym__status__select')
-            .attr('acym-data-status').length > 0)) {
+        if (nbChecked === 0 && (
+            jQuery('#users_list').val() > 0 || jQuery('[name="users_search"]').val().length > 0 || jQuery('.acym__status__select')
+                .attr('acym-data-status').length > 0
+        )) {
             $nbToExport.hide();
         } else {
             $nbToExport.show();

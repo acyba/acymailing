@@ -18,11 +18,13 @@ trait SubscriberAutomationTriggers
             $triggers['user'][$key]->option = '<input type="hidden" name="[triggers][user]['.$key.'][]" value="">';
 
             if (in_array($key, $this->triggerMail)) {
-                $ajaxParams = json_encode(['plugin' => 'plgAcymStatistics', 'trigger' => 'searchMail',]);
                 $mailIdAttributes = [
                     'data-class' => 'acym_select2_ajax',
                     'data-placeholder' => acym_translation('ACYM_ANY_EMAIL', true),
-                    'data-params' => $ajaxParams,
+                    'data-params' => [
+                        'plugin' => 'plgAcymStatistics',
+                        'trigger' => 'searchMail',
+                    ],
                 ];
                 if (!empty($defaultValues['mail_'.$key])) $mailIdAttributes['data-selected'] = $defaultValues['mail_'.$key];
 

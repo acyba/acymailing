@@ -35,10 +35,6 @@ trait HikashopAutomationConditions
         $conditions['user']['hikapurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
 
         $conditions['user']['hikapurchased']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode([
-            'plugin' => __CLASS__,
-            'trigger' => 'searchProduct',
-        ]);
         $conditions['user']['hikapurchased']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][hikapurchased][product]',
@@ -46,7 +42,10 @@ trait HikashopAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_AT_LEAST_ONE_PRODUCT'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchProduct',
+                ],
             ]
         );
         $conditions['user']['hikapurchased']->option .= '</div>';
@@ -64,10 +63,6 @@ trait HikashopAutomationConditions
         if (acym_isExtensionActive('com_hikamarket')) {
             $conditions['user']['hikapurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_FROM').'</div>';
             $conditions['user']['hikapurchased']->option .= '<div class="intext_select_automation cell">';
-            $ajaxParams = json_encode([
-                'plugin' => __CLASS__,
-                'trigger' => 'searchVendor',
-            ]);
             $conditions['user']['hikapurchased']->option .= acym_select(
                 [],
                 'acym_condition[conditions][__numor__][__numand__][hikapurchased][vendor]',
@@ -75,7 +70,10 @@ trait HikashopAutomationConditions
                 [
                     'class' => 'acym__select acym_select2_ajax',
                     'data-placeholder' => acym_translation('ACYM_ANY_VENDOR'),
-                    'data-params' => $ajaxParams,
+                    'data-params' => [
+                        'plugin' => __CLASS__,
+                        'trigger' => 'searchVendor',
+                    ],
                 ]
             );
             $conditions['user']['hikapurchased']->option .= '</div>';
@@ -145,7 +143,10 @@ trait HikashopAutomationConditions
             [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-placeholder' => acym_translation('ACYM_ANY_PRODUCT'),
-                'data-params' => $ajaxParams,
+                'data-params' => [
+                    'plugin' => __CLASS__,
+                    'trigger' => 'searchProduct',
+                ],
             ]
         );
         $conditions['user']['hikawishlist']->option .= '</div>';

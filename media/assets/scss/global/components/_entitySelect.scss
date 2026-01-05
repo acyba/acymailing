@@ -50,6 +50,11 @@
                     margin-left: 6px;
                     transition: transform .2s ease-in-out;
                     border-radius: 5px;
+
+                    &:dir(rtl) {
+                        margin-left: 0;
+                        margin-right: 6px;
+                    }
                 }
 
                 &.acym__entity_select__selected__listing__row__unselect {
@@ -144,18 +149,34 @@
 
                         &.acym__entity_select__available__listing__row__select .top-plus {
                             transform: translateX(5px) translateY(2.4px) rotate(-45deg);
+
+                            &:dir(rtl) {
+                                transform: translateX(-5px) translateY(2.4px) rotate(45deg);
+                            }
                         }
 
                         &.acym__entity_select__available__listing__row__select .bottom-plus {
                             transform: translateX(5px) translateY(-2.4px) rotate(45deg);
+
+                            &:dir(rtl) {
+                                transform: translateX(-5px) translateY(-2.4px) rotate(-45deg);
+                            }
                         }
 
                         &.acym__entity_select__selected__listing__row__unselect .top-plus {
                             transform: translateX(-5px) translateY(2.4px) rotate(45deg);
+
+                            &:dir(rtl) {
+                                transform: translateX(5px) translateY(2.4px) rotate(-45deg);
+                            }
                         }
 
                         &.acym__entity_select__selected__listing__row__unselect .bottom-plus {
                             transform: translateX(-5px) translateY(-2.4px) rotate(-45deg);
+
+                            &:dir(rtl) {
+                                transform: translateX(5px) translateY(-2.4px) rotate(45deg);
+                            }
                         }
                     }
                 }

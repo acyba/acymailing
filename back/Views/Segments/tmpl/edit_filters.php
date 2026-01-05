@@ -8,10 +8,10 @@
 </div>
 <div id="acym__automation__or__example" style="display: none;">
 	<div class="cell grid-x acym__segments__or__container">
-		<h6 class="cell acym__content__title__light-blue margin-top-1 shrink">
+		<h6 class="cell acym__content__title__light-blue margin-top-1 margin-next-1 shrink">
             <?php echo acym_translation('ACYM_OR'); ?>
 		</h6>
-		<span class="cell acym_vcenter shrink acym__segments__delete__one__or margin-left-1">
+		<span class="cell acym_vcenter shrink acym__segments__delete__one__or">
 			<i class="acymicon-delete"></i>
 			<?php echo acym_translation('ACYM_DELETE_THIS_BLOCK'); ?>
 		</span>

@@ -25,6 +25,11 @@
                     top: 20px;
                     right: 20px;
 
+                    &:dir(rtl) {
+                        left: 20px;
+                        right: auto;
+                    }
+
                     .acym__campaigns__segment__edit__filters__save-icon {
 
                         & > * {
@@ -71,7 +76,7 @@
                 min-height: 60px;
 
                 #acym__campaigns__segment__edit-user-count {
-                    margin-right: .5rem;
+                    margin: 0 .5rem;
                     font-weight: 500;
 
                     i {

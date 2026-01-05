@@ -236,4 +236,14 @@ trait Patchv10
             acym_enqueueMessage($message, 'warning', true, [$notification]);
         }
     }
+
+    private function updateFor1070(): void
+    {
+        if ($this->isPreviousVersionAtLeast('10.7.0')) {
+            return;
+        }
+
+        $this->updateQuery('ALTER TABLE #__acym_automation ADD COLUMN  `ordering` SMALLINT(6) NOT NULL DEFAULT 0');
+        $this->updateQuery('ALTER TABLE #__acym_scenario ADD COLUMN  `ordering` SMALLINT(6) NOT NULL DEFAULT 0');
+    }
 }
