@@ -44,7 +44,7 @@ trait HikashopFollowup
                     'plugin' => __CLASS__,
                     'trigger' => 'searchProduct',
                 ],
-                'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
+                'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : [],
             ];
             $multiselectProducts = acym_selectMultiple(
                 [],
@@ -67,7 +67,7 @@ trait HikashopFollowup
                     'plugin' => __CLASS__,
                     'trigger' => 'searchCat',
                 ],
-                'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
+                'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : [],
             ];
             $multiselectCategories = acym_selectMultiple(
                 [],

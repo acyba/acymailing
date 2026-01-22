@@ -53,7 +53,7 @@ trait WooCommerceFollowup
                         'trigger' => 'searchProduct',
                         'variations' => true,
                     ],
-                    'data-selected' => !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
+                    'data-selected' => !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : [],
                 ]
             ).'</span>';
 
@@ -77,7 +77,7 @@ trait WooCommerceFollowup
                         'plugin' => 'plgAcymWoocommerce',
                         'trigger' => 'searchCat',
                     ],
-                    'data-selected' => !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
+                    'data-selected' => !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : [],
                 ]
             ).'</span>';
 

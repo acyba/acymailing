@@ -44,217 +44,8 @@ class FrontusersController extends UsersController
             'gdprDelete',
         ];
 
-        //__START__enterprise_
-        $this->allowedTasks = [
-            'index.php?option=com_acym&view=frontusers&layout=listing' => [
-                'listing',
-                'edit',
-                'apply',
-                'save',
-                'delete',
-                'resetSubscription',
-                'unsubscribeUser',
-                'subscribeUser',
-                'unsubscribeUserFromAll',
-                'resubscribeUserToAll',
-                'setActive',
-                'setInactive',
-                'addToList',
-                'import',
-                'doImport',
-                'finalizeImport',
-            ],
-        ];
-        //__END__enterprise_
     }
 
-    //__START__enterprise_
-    protected function prepareUsersFields(array &$data): void
-    {
-        $data['fields'] = [];
-
-        if (empty($data['allUsers'])) return;
-
-        $fieldClass = new FieldClass();
-        $fieldsToDisplay = $fieldClass->getAllFieldsFrontendListing();
-        if (empty($fieldsToDisplay['ids'])) return;
-
-        $userIds = [];
-        foreach ($data['allUsers'] as $user) {
-            $userIds[] = $user->id;
-        }
-
-        $fieldValue = $fieldClass->getAllFieldsListingByUserIds($userIds, $fieldsToDisplay['ids'], 'field.frontend_listing = 1');
-        foreach ($data['allUsers'] as &$user) {
-            $user->fields = [];
-            foreach ($fieldsToDisplay['ids'] as $fieldId) {
-                $user->fields[$fieldId] = empty($fieldValue[$fieldId.'-'.$user->id]) ? '' : $fieldValue[$fieldId.'-'.$user->id];
-            }
-        }
-
-        $data['fields'] = $fieldsToDisplay['names'];
-    }
-
-    protected function prepareUsersSubscriptions(array &$data): void
-    {
-        $subscriptions = [];
-
-        if (!empty($data['allUsers'])) {
-            $usersId = [];
-            foreach ($data['allUsers'] as $oneUser) {
-                $usersId[] = $oneUser->id;
-            }
-            $userClass = new UserClass();
-            $subscriptionsArray = $userClass->getUsersSubscriptionsByIds($usersId, acym_currentUserId());
-
-            foreach ($subscriptionsArray as $oneSubscription) {
-                $subscriptions[$oneSubscription->user_id][$oneSubscription->id] = $oneSubscription;
-            }
-        }
-
-        $data['usersSubscriptions'] = $subscriptions;
-    }
-
-    protected function prepareFieldsEdit(array &$data, string $fieldVisibility = 'frontend_edition'): void
-    {
-        if (!acym_level(ACYM_ENTERPRISE) && acym_isAdmin()) {
-            acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
-        }
-
-        $data['menuClass'] = $this->menuClass;
-
-        parent::prepareFieldsEdit($data, $fieldVisibility);
-    }
-
-    protected function prepareUsersListing(array &$data): void
-    {
-        if (!acym_level(ACYM_ENTERPRISE)) {
-            acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
-        }
-
-        // Prepare the pagination
-        $usersPerPage = $data['pagination']->getListLimit();
-        $page = $this->getVarFiltersListing('int', 'users_pagination_page', 1);
-        $currentUserId = acym_currentUserId();
-
-        if (empty($currentUserId)) return;
-        $matchingUsers = $this->getMatchingElementsFromData(
-            [
-                'search' => $data['search'],
-                'elementsPerPage' => $usersPerPage,
-                'offset' => ($page - 1) * $usersPerPage,
-                'status' => $data['status'],
-                'ordering' => $data['ordering'],
-                'ordering_sort_order' => $data['orderingSortOrder'],
-                'creator_id' => $currentUserId,
-            ],
-            $data['status'],
-            $page,
-            'user'
-        );
-
-        // Prepare the pagination
-        $data['pagination']->setStatus($matchingUsers['total']->total, $page, $usersPerPage);
-
-        $data['menuClass'] = $this->menuClass;
-        $data['allUsers'] = $matchingUsers['elements'];
-        $data['userNumberPerStatus'] = $matchingUsers['status'];
-    }
-
-    protected function prepareToolbar(array &$data): void
-    {
-        $toolbarHelper = new ToolbarHelper();
-        $toolbarHelper->addSearchBar($data['search'], 'users_search', 'ACYM_SEARCH');
-        $toolbarHelper->addButton(acym_translation('ACYM_IMPORT'), ['data-task' => 'import'], 'download');
-        $entityHelper = new EntitySelectHelper();
-        $otherContent = acym_modal(
-            '<i class="acymicon-bell"></i>'.acym_translation('ACYM_SUBSCRIBE').' (<span id="acym__users__listing__number_to_add_to_list">0</span>)',
-            $entityHelper->entitySelect('list', ['join' => ''], $entityHelper->getColumnsForList(), [
-                'text' => acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'),
-                'action' => 'addToList',
-            ]),
-            null,
-            [],
-            [
-                'class' => 'button button-secondary disabled cell medium-6 large-shrink',
-                'id' => 'acym__users__listing__button--add-to-list',
-            ]
-        );
-        $toolbarHelper->addOtherContent($otherContent);
-        $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'user-plus', true);
-
-        $data['toolbar'] = $toolbarHelper;
-    }
-
-    public function apply(bool $listing = false): void
-    {
-        $listsToSave = json_decode(acym_getVar('string', 'acym__entity_select__selected', '[]'), true);
-        if (empty($listsToSave)) {
-            $listClass = new ListClass();
-            $listManagementId = $listClass->getfrontManagementList();
-            if (empty($listManagementId)) {
-                acym_redirect(acym_rootURI(), 'ACYM_UNABLE_TO_CREATE_MANAGEMENT_LIST', 'error');
-            }
-            $listsToAdd = json_encode([$listManagementId]);
-            acym_setVar('acym__entity_select__selected', $listsToAdd);
-        }
-
-        parent::apply($listing);
-    }
-
-    public function save(): void
-    {
-        $this->apply(true);
-    }
-
-    public function delete(): void
-    {
-        acym_checkToken();
-        $ids = acym_getVar('array', 'elements_checked', []);
-
-        $initialNumberOfUsers = count($ids);
-
-        $userClass = new UserClass();
-        $userClass->onlyManageableUsers($ids);
-
-        if ($initialNumberOfUsers !== count($ids)) {
-            die('Access denied for user deletion');
-        }
-
-        parent::delete();
-    }
-
-    public function setActive(): void
-    {
-        acym_checkToken();
-        $ids = acym_getVar('array', 'elements_checked', []);
-
-        $userClass = new UserClass();
-        $userClass->onlyManageableUsers($ids);
-
-        if (!empty($ids)) {
-            $userClass->setActive($ids);
-        }
-
-        $this->listing();
-    }
-
-    public function setInactive(): void
-    {
-        acym_checkToken();
-        $ids = acym_getVar('array', 'elements_checked', []);
-
-        $userClass = new UserClass();
-        $userClass->onlyManageableUsers($ids);
-
-        if (!empty($ids)) {
-            $userClass->setInactive($ids);
-        }
-
-        $this->listing();
-    }
-
-    //__END__enterprise_
 
     private function displayMessage(string $message, bool $ajax, string $type = 'error'): void
     {
@@ -733,6 +524,8 @@ class FrontusersController extends UsersController
         $data['svgImage'] = $this->getSVGImage($unsubscribeColor, $hoverColor);
 
         acym_setVar('layout', 'unsubscribepage');
+        acym_header('Content-Type: text/html; charset=utf-8');
+
         parent::display($data);
     }
 
@@ -1082,15 +875,6 @@ class FrontusersController extends UsersController
 
         $userClass = new UserClass();
 
-        //__START__essential_
-        if (acym_level(ACYM_ESSENTIAL) && $this->config->get('captcha', 'none') !== 'none' && empty($userClass->identify(true, 'userId', 'userKey'))) {
-            //Check the captcha!
-            $captchaHelper = new CaptchaHelper();
-            if (!$captchaHelper->check()) {
-                $this->displayMessage('ACYM_WRONG_CAPTCHA', true);
-            }
-        }
-        //__END__essential_
 
         $status = $userClass->saveForm(true);
         if ($status) {

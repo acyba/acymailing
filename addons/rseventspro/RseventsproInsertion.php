@@ -411,11 +411,13 @@ trait RseventsproInsertion
         if (!empty($allcats)) {
             foreach ($allcats as $cat) {
                 $style = '';
-                if ($this->rsconfig->color) {
+                if ($this->rsconfig->color && !empty($cat->params)) {
                     $registry = new Registry();
                     $registry->loadString($cat->params);
                     $color = $registry->get('color');
-                    if ($color) $style = 'style="color: '.$color.'"';
+                    if ($color) {
+                        $style = 'style="color: '.$color.'"';
+                    }
                 }
                 $url = rseventsproHelper::route('index.php?option=com_rseventspro&category='.rseventsproHelper::sef($cat->id, $cat->title).$language, true, $menuId);
                 $url = str_replace('administrator/', '', $url);

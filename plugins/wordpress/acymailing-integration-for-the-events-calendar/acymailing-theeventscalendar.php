@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 4.5
+ * Version: 4.6
  * Requires Plugins: acymailing, the-events-calendar
 */
 

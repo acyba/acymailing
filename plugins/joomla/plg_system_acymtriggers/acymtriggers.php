@@ -182,11 +182,6 @@ class plgSystemAcymtriggers extends CMSPlugin
             return true;
         }
 
-        //__START__enterprise_
-        // Remove front lists used for management
-        $listClass = new ListClass();
-        $listClass->synchDeleteCmsList($user['id']);
-        //__END__enterprise_
 
         $userClass = new UserClass();
         $userClass->synchDeleteCmsUser($user['email']);
@@ -292,20 +287,22 @@ class plgSystemAcymtriggers extends CMSPlugin
             return;
         }
 
-        $formClass = new FormClass();
-        $forms = $formClass->getAllFormsToDisplay();
-        if (empty($forms)) {
-            return;
-        }
-
-        foreach ($forms as $form) {
-            if (!empty($form->pages) && (in_array($menu->id, $form->pages) || in_array('all', $form->pages))) {
-                $this->formToDisplay[] = $formClass->renderForm($form);
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $formClass = new FormClass();
+            $forms = $formClass->getAllFormsToDisplay();
+            if (empty($forms)) {
+                return;
             }
-        }
 
-        if (!empty($this->formToDisplay)) {
-            acym_initModule();
+            foreach ($forms as $form) {
+                if (!empty($form->pages) && (in_array($menu->id, $form->pages) || in_array('all', $form->pages))) {
+                    $this->formToDisplay[] = $formClass->renderForm($form);
+                }
+            }
+
+            if (!empty($this->formToDisplay)) {
+                acym_initModule();
+            }
         }
     }
 
@@ -351,36 +348,6 @@ class plgSystemAcymtriggers extends CMSPlugin
         $this->handleAutologin();
     }
 
-    //__START__enterprise_
-
-    // Hide menu entries when the access is not granted
-    public function onPreprocessMenuItems($context, $items, $params = null, $enabled = true)
-    {
-        if (!is_array($items) || !$this->initAcy()) {
-            return;
-        }
-
-        $acySubMenus = acym_getPagesForAcl();
-
-        foreach ($items as $item) {
-            $controller = array_search($item->title, $acySubMenus);
-            if ($controller === false) {
-                continue;
-            }
-
-            if (!acym_isAllowed($controller)) {
-                if (ACYM_J40) {
-                    $itemParams = $item->getParams();
-                    $itemParams->set('menu_show', 0);
-                    $item->setParams($itemParams);
-                } else {
-                    $item->params->set('menu_show', 0);
-                }
-            }
-        }
-    }
-
-    //__END__enterprise_
 
     private function initAcy(): bool
     {
@@ -647,58 +614,6 @@ class plgSystemAcymtriggers extends CMSPlugin
 
     private function handleCron()
     {
-        //__START__essential_
-        // No cron call on ajax
-        if (!empty($_REQUEST['tmpl']) && in_array($_REQUEST['tmpl'], ['component', 'raw'])) {
-            return;
-        }
-
-        $ctrl = empty($_REQUEST['ctrl']) ? '' : $_REQUEST['ctrl'];
-        if ($ctrl === 'cron') {
-            return;
-        }
-
-        $level = $this->getAcyConf('level');
-        if ($level === 'Starter') {
-            return;
-        }
-
-        $activeCron = $this->getAcyConf('active_cron');
-        if (empty($activeCron)) {
-            return;
-        }
-
-        $cronNext = $this->getAcyConf('cron_next');
-        $queueType = $this->getAcyConf('queue_type');
-        if (empty($cronNext) || $cronNext > time() || $queueType === 'manual') {
-            return;
-        }
-
-        $cronFrequency = $this->getAcyConf('cron_frequency');
-        $cronBatches = $this->getAcyConf('queue_batch_auto');
-
-        // Disable multicron if the frequency is set to 0 minutes => it would slow down the website
-        if (empty($cronFrequency)) {
-            return;
-        }
-
-        // Only one batch every 15 minutes+, no need for the multi cron
-        if (intval($cronFrequency) >= 900 && intval($cronBatches) < 2) {
-            return;
-        }
-
-        if (!$this->initAcy()) {
-            return;
-        }
-
-        $cronKey = '';
-        $config = acym_config();
-        if (!empty($config->get('cron_security', 0)) && !empty($config->get('cron_key'))) {
-            $cronKey = '&cronKey='.$config->get('cron_key');
-        }
-
-        acym_asyncUrlCalls([acym_frontendLink('cron&task=cron'.$cronKey)]);
-        //__END__essential_
     }
 
     private function handleAutologin()

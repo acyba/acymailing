@@ -42,7 +42,7 @@ class ConfigurationController extends AcymController
         $whitelistedFields = [
             'level',
             'unsplash_key',
-            'tenor_key',
+            'giphy_key',
         ];
 
         if (acym_isAdmin()) {

@@ -330,7 +330,7 @@ trait Tests
 
                         if ($mailerHelper->sendOne($mailId, $receiver)) {
                             $success = true;
-                            $data['url'] = 'https://mailtester.acyba.com/'.(substr($spamtestSystem['email'], 0, strpos($spamtestSystem['email'], '@')));
+                            $data['url'] = $spamtestSystem['displayURL'];
                             $data['lang'] = acym_getLanguageTag(true);
                         } else {
                             $message = $mailerHelper->reportMessage;

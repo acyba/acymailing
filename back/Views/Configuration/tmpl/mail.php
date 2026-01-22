@@ -154,17 +154,17 @@
 		<div class="cell grid-x">
 			<label class="cell medium-6 grid-x">
 				<span class="cell medium-6">
-					<?php echo acym_translation('ACYM_TENOR_ACCESS_KEY').acym_info(['textShownInTooltip' => 'ACYM_TENOR_ACCESS_KEY_DESC']); ?>
+					<?php echo acym_translation('ACYM_GIPHY_API_KEY').acym_info(['textShownInTooltip' => 'ACYM_GIPHY_API_KEY_DESC']); ?>
 				</span>
                 <?php
-                $tenorKey = $this->config->get('tenor_key');
-                if (strlen($tenorKey) > 5) {
-                    $tenorKey = str_repeat('*', 10).substr($tenorKey, -5);
+                $giphyKey = $this->config->get('giphy_key');
+                if (strlen($giphyKey) > 5) {
+                    $giphyKey = str_repeat('*', 10).substr($giphyKey, -5);
                 }
                 ?>
 				<input type="text"
-					   name="config[tenor_key]"
-					   value="<?php echo acym_escape($tenorKey); ?>"
+					   name="config[giphy_key]"
+					   value="<?php echo acym_escape($giphyKey); ?>"
 					   class="cell medium-auto" />
 			</label>
 		</div>

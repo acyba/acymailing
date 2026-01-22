@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Sabberworm\CSS\CSSList;
 
@@ -127,6 +127,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
                 }
                 $parserState->setCharset($atRule->getCharset());
             }
+
             return $atRule;
         } elseif ($parserState->comes('}')) {
             if ($isRoot) {
@@ -166,11 +167,13 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
                 }
             }
             $parserState->consumeUntil([';', ParserState::EOF], true, true);
+
             return new Import($location, $mediaQuery, $identifierLineNumber);
         } elseif ($identifier === 'charset') {
             $charsetString = CSSString::parse($parserState);
             $parserState->consumeWhiteSpace();
             $parserState->consumeUntil([';', ParserState::EOF], true, true);
+
             return new Charset($charsetString, $identifierLineNumber);
         } elseif (self::identifierIs($identifier, 'keyframes')) {
             $result = new KeyFrame($identifierLineNumber);
@@ -180,6 +183,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             if ($parserState->comes('}')) {
                 $parserState->consume('}');
             }
+
             return $result;
         } elseif ($identifier === 'namespace') {
             $prefix = null;
@@ -200,6 +204,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
                     $identifierLineNumber
                 );
             }
+
             return new CSSNamespace($url, $prefix, $identifierLineNumber);
         } else {
             // Unknown other at rule (font-face or such)
@@ -228,6 +233,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
                     $parserState->consume('}');
                 }
             }
+
             return $atRule;
         }
     }
@@ -251,6 +257,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
         if ($safeResult === false) {
             throw new \Exception('Error during regex match');
         }
+
         return $safeResult;
     }
 
@@ -260,15 +267,17 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
         if ($safeResult === false) {
             throw new \Exception('Error during regex split');
         }
+
         return $safeResult;
     }
 
-    function iconv(string $from_encoding, string $to_encoding, string $string): string
+    public static function iconv(string $from_encoding, string $to_encoding, string $string): string
     {
         $safeResult = \iconv($from_encoding, $to_encoding, $string);
         if ($safeResult === false) {
             throw new \Exception('Error during iconv');
         }
+
         return $safeResult;
     }
 
@@ -325,6 +334,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
         $key = \array_search($itemToRemove, $this->contents, true);
         if ($key !== false) {
             unset($this->contents[$key]);
+
             return true;
         }
 
@@ -334,7 +344,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     /**
      * Replaces an item from the CSS list.
      *
-     * @param CSSListItem $oldItem
+     * @param CSSListItem                    $oldItem
      *        May be a `RuleSet` (most likely a `DeclarationBlock`), an `Import`, a `Charset`
      *        or another `CSSList` (most likely a `MediaQuery`)
      * @param CSSListItem|array<CSSListItem> $newItem
@@ -348,6 +358,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             } else {
                 \array_splice($this->contents, $key, 1, [$newItem]);
             }
+
             return true;
         }
 
@@ -369,7 +380,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
      * Removes a declaration block from the CSS list if it matches all given selectors.
      *
      * @param DeclarationBlock|array<Selector>|string $selectors the selectors to match
-     * @param bool $removeAll whether to stop at the first declaration block found or remove all blocks
+     * @param bool                                    $removeAll whether to stop at the first declaration block found or remove all blocks
      */
     public function removeDeclarationBlockBySelector($selectors, bool $removeAll = false): void
     {
@@ -383,7 +394,7 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             if (!($selector instanceof Selector)) {
                 if (!Selector::isValid($selector)) {
                     throw new UnexpectedTokenException(
-                        "Selector did not match '" . Selector::SELECTOR_VALIDATION_RX . "'.",
+                        "Selector did not match '".Selector::SELECTOR_VALIDATION_RX."'.",
                         $selector,
                         'custom'
                     );

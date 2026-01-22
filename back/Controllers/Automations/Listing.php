@@ -18,59 +18,6 @@ trait Listing
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
-        //__START__enterprise_
-        acym_session();
-        $_SESSION['massAction'] = ['filters' => [], 'actions' => []];
-        acym_setVar('layout', 'listing');
-        $pagination = new PaginationHelper();
-
-        $searchFilter = $this->getVarFiltersListing('string', 'automation_search', '');
-        $status = $this->getVarFiltersListing('string', 'automation_status', '');
-        $tagFilter = $this->getVarFiltersListing('string', 'automation_tag', '');
-        $ordering = $this->getVarFiltersListing('string', 'automation_ordering', 'ordering');
-        $orderingSortOrder = $this->getVarFiltersListing('string', 'automation_ordering_sort_order', 'asc');
-
-        // Get pagination data
-        $automationsPerPage = $pagination->getListLimit();
-        $page = $this->getVarFiltersListing('int', 'automation_pagination_page', 1);
-
-
-        // Get the matching automations
-        $requestData = [
-            'ordering' => $ordering,
-            'search' => $searchFilter,
-            'elementsPerPage' => $automationsPerPage,
-            'offset' => ($page - 1) * $automationsPerPage,
-            'tag' => $tagFilter,
-            'ordering_sort_order' => $orderingSortOrder,
-            'status' => $status,
-        ];
-        $matchingAutomations = $this->getMatchingElementsFromData($requestData, $status, $page);
-
-        // Prepare the pagination
-        $pagination->setStatus($matchingAutomations['total']->total, $page, $automationsPerPage);
-
-        $filters = [
-            'all' => $matchingAutomations['total']->total,
-            'active' => $matchingAutomations['total']->totalActive,
-            'inactive' => $matchingAutomations['total']->total - $matchingAutomations['total']->totalActive,
-        ];
-
-        $data = [
-            'allAutomations' => $matchingAutomations['elements'],
-            'pagination' => $pagination,
-            'search' => $searchFilter,
-            'ordering' => $ordering,
-            'tag' => $tagFilter,
-            'status' => $status,
-            'orderingSortOrder' => $orderingSortOrder,
-            'automationNumberPerStatus' => $filters,
-        ];
-
-        $this->prepareToolbar($data);
-
-        parent::display($data);
-        //__END__enterprise_
     }
 
     public function prepareToolbar(array &$data): void

@@ -186,6 +186,20 @@ jQuery(function ($) {
             return;
         }
 
+        if (rightPanel.style.display
+            === 'flex'
+            && currentStepData.scenarioId
+            === data.scenarioId
+            && currentStepData.stepId
+            === data.stepId
+            && currentStepData.type
+            === data.type) {
+            closeRightPanel();
+            return;
+        }
+
+        acym_helperScenarioRightPanel.removeCloseRightPanelListener();
+
         currentStepData.scenarioId = data.scenarioId;
         currentStepData.stepId = data.stepId;
         currentStepData.type = data.type;
@@ -195,10 +209,9 @@ jQuery(function ($) {
         rightPanelTitle.innerText = data.name;
         rightPanel.style.display = 'flex';
 
-        // We add a delay to avoid the click event to be triggered by the click that opened the right panel
         setTimeout(() => {
             acym_helperScenarioRightPanel.addCloseRightPanelListener(closeRightPanel);
-        }, 100);
+        }, 150);
     }
 
     function setCloseRightPanel() {
@@ -236,18 +249,58 @@ jQuery(function ($) {
             return;
         }
 
-        const data = JSON.parse(inputData.value);
-        const nodesData = JSON.parse(inputNodesData.value);
+        let data, nodesData;
+
+        try {
+            data = JSON.parse(inputData.value);
+            nodesData = JSON.parse(inputNodesData.value);
+        } catch (e) {
+            console.error('Error parsing JSON:', e);
+            return;
+        }
+
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            console.warn('Empty or invalid links data');
+            return;
+        }
+
+        if (!nodesData || Object.keys(nodesData).length === 0) {
+            console.warn('Empty or invalid nodes data');
+            return;
+        }
+
+        const validData = data
+            .map(link => (
+                {
+                    source: String(link.source),
+                    target: String(link.target),
+                    value: link.value
+                }
+            ))
+            .filter(link => {
+                const sourceExists = nodesData[link.source] !== undefined;
+                const targetExists = nodesData[link.target] !== undefined;
+
+                if (!sourceExists || !targetExists) {
+                    console.warn('Link with missing node:', link);
+                }
+
+                return sourceExists && targetExists;
+            });
+
+        if (validData.length === 0) {
+            console.warn('No valid link found');
+            return;
+        }
 
         const labels = {};
-
         for (const [key, node] of Object.entries(nodesData)) {
             labels[key] = node.name;
         }
 
         SankeyChart.display({
             id: 'acym__scenario__performances__sankey',
-            data,
+            data: validData,
             labels,
             nodeClickCallback: function (nodeId, isLastNodeBranch) {
                 if (nodesData[nodeId]) {

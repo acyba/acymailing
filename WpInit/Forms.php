@@ -13,8 +13,10 @@ class Forms
         $isPreview = acym_getVar('bool', 'acym_preview', false);
         if ($isPreview) return;
 
-        add_action('wp_head', [$this, 'prepareFormsToDisplay']);
-        add_action('wp_footer', [$this, 'displayForms']);
+        if (acym_level(ACYM_ENTERPRISE)) {
+            add_action('wp_head', [$this, 'prepareFormsToDisplay']);
+            add_action('wp_footer', [$this, 'displayForms']);
+        }
         $this->registerShortcodes();
     }
 

@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, events, modern events calendar, filter, automations
 Tested up to: 6.9
-Stable tag: 4.4
+Stable tag: 4.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

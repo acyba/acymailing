@@ -13,7 +13,9 @@ function acym_route(string $url, bool $xhtml = true): string
         }
     }
 
-    return Route::_($url, $xhtml, 0);
+    $routedUrl = Route::_($url, $xhtml, 0);
+
+    return $routedUrl ?? '';
 }
 
 function acym_baseURI(bool $pathonly = false): string

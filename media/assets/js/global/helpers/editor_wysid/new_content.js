@@ -139,7 +139,7 @@ const acym_editorWysidNewContent = {
     setModalGifWYSID: function () {
         let content = `<div class="grid-container">
             <div class="cell grid-x align-center grid-padding-x margin-bottom-1">
-                <img hspace="0" class="cell" id="acym__wysid__modal__gif--image" src="${ACYM_MEDIA_URL}images/editor/image_insertion/tenor.svg" alt="Tenor logo">
+                <img hspace="0" class="cell" id="acym__wysid__modal__gif--image" src="${ACYM_MEDIA_URL}images/editor/image_insertion/giphy.svg" alt="Giphy logo">
                 <div class="cell grid-x grid-margin-x">
                     <input class="cell auto gif_fields" type="text" id="acym__wysid__modal__gif--search" placeholder="${ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS}">
                     <button type="button" class="cell shrink button modal-button button-secondary gif_fields" id="acym__wysid__modal__gif--search--button">

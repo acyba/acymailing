@@ -16,46 +16,6 @@ trait Info
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
-        //__START__enterprise_
-        acym_setVar('layout', 'info');
-        acym_setVar('step', 'info');
-
-        $automationId = acym_getVar('int', 'id');
-        $automationClass = new AutomationClass();
-        $stepClass = new StepClass();
-        $workflowHelper = new WorkflowHelper();
-
-        if (empty($automationId)) {
-            $automation = new \stdClass();
-            $step = new \stdClass();
-
-            $automation->name = '';
-            $automation->description = '';
-            $automation->active = 0;
-            $this->breadcrumb[acym_translation('ACYM_NEW_AUTOMATION')] = acym_completeLink('automation&task=edit&step=info');
-        } else {
-            $automation = $automationClass->getOneById($automationId);
-            $this->breadcrumb[acym_translation($automation->name)] = acym_completeLink('automation&task=edit&step=info&id='.$automation->id);
-
-            $step = $stepClass->getOneStepByAutomationId($automationId);
-        }
-
-        $defaultValues = empty($step->triggers) ? [] : json_decode($step->triggers, true);
-        $triggers = ['classic' => [], 'user' => []];
-        acym_trigger('onAcymDeclareTriggers', [&$triggers, &$defaultValues]);
-
-        $data = [
-            'automation' => $automation,
-            'step' => $step,
-            'user' => $triggers['user'],
-            'classic' => $triggers['classic'],
-            'defaultValues' => !empty($defaultValues) ? array_keys($defaultValues) : [],
-            'type_trigger' => !empty($defaultValues) ? $defaultValues['type_trigger'] : '',
-            'workflowHelper' => $workflowHelper,
-        ];
-
-        parent::display($data);
-        //__END__enterprise_
     }
 
     private function saveInfos(): array

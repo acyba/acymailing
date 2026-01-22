@@ -11,13 +11,6 @@
         echo $workflow->displayTabs($this->tabs, 'followup');
 
         if (acym_level(ACYM_ENTERPRISE)) {
-            //__START__enterprise_
-            if ($isEmpty) {
-                include acym_getView('campaigns', 'listing_empty', true);
-            } else {
-                include acym_getView('campaigns', 'listing_listing_followup', true);
-            }
-            //__END__enterprise_
         } else {
             include acym_getView('campaigns', 'followup_splashscreen', true);
         }

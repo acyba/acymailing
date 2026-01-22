@@ -61,28 +61,12 @@ function acym_getLeftMenu(string $name): string
         'fields' => ['title' => 'ACYM_CUSTOM_FIELDS', 'class-i' => 'acymicon-text-fields', 'span-class' => ''],
         'lists' => ['title' => 'ACYM_LISTS', 'class-i' => 'acymicon-address-book-o', 'span-class' => 'acym__joomla__left-menu__fa'],
     ];
-    //__START__essential_
-    if (acym_level(ACYM_ENTERPRISE)) {
-        $menus['segments'] = ['title' => 'ACYM_SEGMENTS', 'class-i' => 'acymicon-filter', 'span-class' => 'acym__joomla__left-menu__fa'];
-    }
-    //__END__essential_
     $menus['campaigns'] = ['title' => 'ACYM_EMAILS', 'class-i' => 'acymicon-email', 'span-class' => ''];
     $menus['mails'] = ['title' => 'ACYM_TEMPLATES', 'class-i' => 'acymicon-pencil', 'span-class' => 'acym__joomla__left-menu__fa'];
     $menus['override'] = ['title' => 'ACYM_EMAILS_OVERRIDE', 'class-i' => 'acymicon-paint-format', 'span-class' => 'acym__joomla__left-menu__fa'];
-    //__START__enterprise_
-    if (acym_level(ACYM_ENTERPRISE)) {
-        $menus['automation'] = ['title' => 'ACYM_AUTOMATION', 'class-i' => 'acymicon-cogs', 'span-class' => 'acym__joomla__left-menu__fa'];
-        $menus['scenarios'] = ['title' => 'ACYM_SCENARIO', 'class-i' => 'acymicon-cog', 'span-class' => 'acym__joomla__left-menu__fa'];
-    }
-    //__END__enterprise_
     $menus['queue'] = ['title' => 'ACYM_QUEUE', 'class-i' => 'acymicon-hourglass-2', 'span-class' => 'acym__joomla__left-menu__fa'];
     $menus['stats'] = ['title' => 'ACYM_STATISTICS', 'class-i' => 'acymicon-bar-chart', 'span-class' => 'acym__joomla__left-menu__fa'];
     $menus['plugins'] = ['title' => $addOnsTitle, 'class-i' => 'acymicon-puzzle-piece', 'span-class' => 'acym__joomla__left-menu__fa'];
-    //__START__enterprise_
-    if (acym_level(ACYM_ENTERPRISE)) {
-        $menus['bounces'] = ['title' => 'ACYM_MAILBOX_ACTIONS', 'class-i' => 'acymicon-random', 'span-class' => 'acym__joomla__left-menu__fa'];
-    }
-    //__END__enterprise_
     $menus['configuration'] = ['title' => 'ACYM_CONFIGURATION', 'class-i' => 'acymicon-cog', 'span-class' => ''];
 
     if (!acym_level(ACYM_ESSENTIAL)) {

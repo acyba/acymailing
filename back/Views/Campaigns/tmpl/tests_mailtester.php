@@ -15,13 +15,6 @@
 	<div class="grid-x align-center">
 		<div class="cell">
             <?php
-            //__START__essential_
-            //__START__production_
-            if (empty($data['upgrade']) && ACYM_PRODUCTION) { ?>
-				<button id="launch_spamtest" class="button button-secondary" type="button"><?php echo acym_translation('ACYM_RUN_SPAM_TEST'); ?></button>
-            <?php }
-            //__END__production_
-            //__END__essential_
             ?>
 		</div>
         <?php

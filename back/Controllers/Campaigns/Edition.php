@@ -329,119 +329,12 @@ trait Edition
     {
         $data['abtest'] = false;
 
-        //__START__enterprise_
-        $data['tagClass'] = new TagClass();
-        $keyDataCampaign = $editor ? 'mailInformation' : 'campaignInformation';
-        $abTestSendingParams = empty($data[$keyDataCampaign]->sending_params['abtest']) ? [] : $data[$keyDataCampaign]->sending_params['abtest'];
-
-        // If !editor means that we are in the summary
-        if (!$editor && !isset($data[$keyDataCampaign]->sending_params['abtest'])) {
-            return;
-        }
-
-        if ($editor && (!$data['editor']->isDragAndDrop() || (!acym_getVar('bool', 'abtest', false) && !isset($data[$keyDataCampaign]->sending_params['abtest'])))) {
-            return;
-        }
-
-        $data['abtest'] = true;
-
-        if (!$editor) {
-            $campaignClass = new CampaignClass();
-            $data['nbSubscribersAbTest'] = $campaignClass->countUsersCampaign($data['campaignInformation']->id, true);
-        }
-
-        $data['versions'] = [];
-
-        $mailClass = new MailClass();
-        $versions = $mailClass->getVersionsById($data['mailId']);
-        $data['main_version'] = new \stdClass();
-        $data['main_version']->code = 'A';
-        $data['main_version']->name = acym_translationSprintf('ACYM_VERSION_NAME', 'A');
-        if (!$editor) {
-            $data['main_version']->id = $data['mailInformation']->id;
-        }
-
-        $versionsToCreate = ['B'];
-
-        $defaultVersion = new \stdClass();
-        $defaultVersion->subject = '';
-        $defaultVersion->preview = '';
-        $defaultVersion->content = '';
-        $defaultVersion->autosave = '';
-        $defaultVersion->settings = '';
-        $defaultVersion->stylesheet = '';
-
-        foreach ($versionsToCreate as $versionKey) {
-            $version = clone $defaultVersion;
-            $version->code = $versionKey;
-            $version->name = acym_translationSprintf('ACYM_VERSION_NAME', $versionKey);
-
-            if (!empty($abTestSendingParams[$versionKey]) && !empty($versions[$abTestSendingParams[$versionKey]])) {
-                $version->id = $versions[$abTestSendingParams[$versionKey]]->id;
-                $version->subject = $versions[$abTestSendingParams[$versionKey]]->subject;
-                $version->preview = $versions[$abTestSendingParams[$versionKey]]->preheader;
-                $version->content = $versions[$abTestSendingParams[$versionKey]]->body;
-                $version->autosave = $versions[$abTestSendingParams[$versionKey]]->autosave;
-                $version->settings = $versions[$abTestSendingParams[$versionKey]]->settings;
-                $version->stylesheet = $versions[$abTestSendingParams[$versionKey]]->stylesheet;
-            }
-
-            $data['versions'][$versionKey] = $version;
-        }
-
-        if ($editor) {
-            $data['editor']->data = $data;
-            if (empty($data['editor']->data['mailClass'])) $data['editor']->data['mailClass'] = new MailClass();
-        }
-        //__END__enterprise_
     }
 
     private function prepareMultilingual(array &$data, bool $editor = true): void
     {
         $data['multilingual'] = 0;
 
-        //__START__essential_
-        if (!empty($data['abtest'])) {
-            return;
-        }
-        $data['main_language'] = $this->config->get('multilingual_default');
-        $data['languages'] = explode(',', $this->config->get('multilingual_languages'));
-        if ($editor) {
-            $data['multilingual'] = $data['editor']->isDragAndDrop() && acym_isMultilingual();
-        } else {
-            $data['multilingual'] = acym_isMultilingual();
-        }
-
-
-        if ($data['multilingual']) {
-            $data['tagClass'] = new TagClass();
-            $allLanguages = acym_getLanguages();
-
-            $mainLang = new stdClass();
-            $mainLang->code = $data['main_language'];
-            $mainLang->name = empty($allLanguages[$data['main_language']]) ? $data['main_language'] : $allLanguages[$data['main_language']]->name;
-            $data['main_language'] = $mainLang;
-
-            $mailClass = new MailClass();
-            $translations = $mailClass->getTranslationsById($data['mailId'], true);
-            foreach ($data['languages'] as $i => $oneLangCode) {
-                $data['languages'][$i] = new stdClass();
-                $data['languages'][$i]->code = $oneLangCode;
-                $data['languages'][$i]->name = empty($allLanguages[$oneLangCode]) ? $oneLangCode : $allLanguages[$oneLangCode]->name;
-                $data['languages'][$i]->subject = empty($translations[$oneLangCode]->subject) ? '' : $translations[$oneLangCode]->subject;
-                $data['languages'][$i]->preview = empty($translations[$oneLangCode]->preheader) ? '' : $translations[$oneLangCode]->preheader;
-                $data['languages'][$i]->content = empty($translations[$oneLangCode]->body) ? '' : $translations[$oneLangCode]->body;
-                $data['languages'][$i]->autosave = empty($translations[$oneLangCode]->autosave) ? '' : $translations[$oneLangCode]->autosave;
-                $data['languages'][$i]->settings = empty($translations[$oneLangCode]->settings) ? '' : $translations[$oneLangCode]->settings;
-                $data['languages'][$i]->stylesheet = empty($translations[$oneLangCode]->stylesheet) ? '' : $translations[$oneLangCode]->stylesheet;
-            }
-        }
-
-        if ($editor) {
-            $data['editor']->data = $data;
-            if (empty($data['editor']->data['mailClass'])) $data['editor']->data['mailClass'] = new MailClass();
-        }
-        //__END__essential_
     }
 
     private function prepareAllMailsForAbtest(array &$data): void
@@ -578,44 +471,6 @@ trait Edition
             'workflowHelper' => new WorkflowHelper(),
         ];
 
-        //__START__enterprise_
-        if (acym_level(ACYM_ENTERPRISE)) {
-            $listClass = new ListClass();
-            $segmentClass = new SegmentClass();
-
-            $campaignLists = $mailClass->getAllListsByMailId($campaign->mail_id);
-            $campaignListsIds = array_keys($campaignLists);
-
-            $recipientsNumber = empty($campaignListsIds) ? 0 : $listClass->getTotalSubCount($campaignListsIds);
-
-            $segments = $segmentClass->getAllForSelect();
-
-            $filters = [];
-            acym_trigger('onAcymDeclareFilters', [&$filters]);
-
-            uasort($filters, function ($a, $b) {
-                return strcmp(strtolower($a->name), strtolower($b->name));
-            });
-
-            $selectFilter = new stdClass();
-            $selectFilter->name = acym_translation('ACYM_SELECT_FILTER');
-            $selectFilter->option = '';
-            array_unshift($filters, $selectFilter);
-
-            $filtersClassic = ['name' => [], 'option'];
-
-            foreach ($filters as $key => $filter) {
-                $filtersClassic['name'][$key] = $filter->name;
-                $filtersClassic['option'][$key] = $filter->option;
-            }
-
-            $data['campaignLists'] = $campaignLists;
-            $data['recipientsNumber'] = $recipientsNumber;
-            $data['segments'] = $segments;
-            $data['filter_name'] = $filtersClassic['name'];
-            $data['filter_option'] = json_encode(preg_replace_callback(ACYM_REGEX_SWITCHES, [new AutomationController(), 'switches'], $filtersClassic['option']));
-        }
-        //__END__enterprise_
 
         $this->breadcrumb[acym_escape($mail->name)] = acym_completeLink(acym_completeLink('campaigns&task=edit&step=recipients&campaignId='.$campaign->id));
         parent::display($data);

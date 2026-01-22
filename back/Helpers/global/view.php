@@ -29,7 +29,6 @@ function acym_loadAssets(string $ctrl, string $task): void
         true,
         'const ACYM_AVAILABLE_PLUGINS = "'.str_replace('"', '\"', ACYM_AVAILABLE_PLUGINS).'";
         const ACYM_UPDATEME_API_URL = "'.ACYM_UPDATEME_API_URL.'";
-        const AJAX_URL_ACYMAILING = "'.ACYM_ACYMAILING_WEBSITE.'";
         const ACYM_MEDIA_URL = "'.ACYM_MEDIA_URL.'";
         const ACYM_CMS = "'.addslashes(ACYM_CMS).'";
         const ACYM_J40 = '.(defined('ACYM_J40') && ACYM_J40 ? 'true' : 'false').';
@@ -404,7 +403,7 @@ function acym_getJSMessages(): string
         'ACYM_GET_ONE_HERE',
         'ACYM_ENTITY',
         'ACYM_DELETE_DOMAIN_CONFIRMATION',
-        'ACYM_TENOR_KEY_NEEDED',
+        'ACYM_GIPHY_KEY_NEEDED',
         'ACYM_COPY_CODE',
         'ACYM_SCENARIO_ARE_YOU_SURE_DELETE_X',
         'ACYM_DELAY',
@@ -426,6 +425,7 @@ function acym_getJSMessages(): string
         'ACYM_EXTRA_INFORMATION',
         'ACYM_SELECT_A_PAGE',
         'ACYM_DEDICATED_SENDING_PROCESS_WARNING',
+        'ACYM_GET_MY_API_KEY',
     ];
 
     foreach ($keysToLoad as $oneKey) {

@@ -366,11 +366,6 @@ class FieldClass extends AcymClass
     public function getAllFieldsBackendListing(): array
     {
         $whereLanguage = '(backend_listing = 1 OR `type` = "language")';
-        //__START__enterprise_
-        if (acym_level(ACYM_ENTERPRISE)) {
-            $whereLanguage = 'backend_listing = 1';
-        }
-        //__END__enterprise_
         $query = 'SELECT id, name FROM #__acym_field WHERE '.$whereLanguage.' AND active = 1 AND id NOT IN (1, 2) ORDER BY ordering';
 
         $return = [

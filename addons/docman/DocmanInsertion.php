@@ -315,6 +315,11 @@ trait DocmanInsertion
         if (in_array('readmore', $tag->display)) $afterArticle = $varFields['{readmore}'];
 
         $description = '';
+
+        if (empty($element->description)) {
+            $element->description = '';
+        }
+
         $varFields['{content}'] = $element->description;
         $varFields['{intro}'] = $this->getIntro($element->description);
         if (in_array('content', $tag->display)) {

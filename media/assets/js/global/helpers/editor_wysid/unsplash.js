@@ -65,14 +65,17 @@ const acym_editorWysidUnsplash = {
         });
     },
     loadImages: function () {
+        const $errorMessage = jQuery('#acym__wysid__modal__unsplash--error_message');
+
         if (!this.unsplashKey) {
             jQuery('.unsplash_fields').prop('disabled', true);
-            const $errorMessageZone = jQuery('#acym__wysid__modal__unsplash--error_message');
-            $errorMessageZone.html(ACYM_JS_TXT.ACYM_UNSPLASH_KEY_NEEDED
-                                   + ' <a class="acym__color__blue" target="_blank" href="https://docs.acymailing.com/main-pages/the-email-editor/unsplash-integration">'
-                                   + ACYM_JS_TXT.ACYM_GET_ONE_HERE
-                                   + '</a> ');
-            $errorMessageZone.show();
+            $errorMessage.html(`${ACYM_JS_TXT.ACYM_UNSPLASH_KEY_NEEDED} 
+                <div class="margin-top-1">
+                    <a class="button margin-auto" target="_blank" href="https://docs.acymailing.com/main-pages/the-email-editor/unsplash-integration">
+                        ${ACYM_JS_TXT.ACYM_GET_MY_API_KEY}
+                    </a>
+                </div>`);
+            $errorMessage.show();
             return;
         }
 
@@ -106,7 +109,6 @@ const acym_editorWysidUnsplash = {
                     $grid.masonry('destroy');
                 }
 
-                let $errorMessage = jQuery('#acym__wysid__modal__unsplash--error_message');
                 $errorMessage.html(ACYM_JS_TXT.ACYM_NO_RESULTS_FOUND);
                 $errorMessage.show();
                 // We empty the results grid and empty it
@@ -118,7 +120,6 @@ const acym_editorWysidUnsplash = {
                 jQuery('.acym__wysid__modal__unsplash__results--img--new').removeClass('acym__wysid__modal__unsplash__results--img--new');
 
                 //We remove the title no result if there is one
-                let $errorMessage = jQuery('#acym__wysid__modal__unsplash--error_message');
                 $errorMessage.html('');
                 $errorMessage.hide();
 
@@ -131,11 +132,11 @@ const acym_editorWysidUnsplash = {
 
                 //We build the content of the grid => create img tab for every result
                 let results = '';
-                let columnWidth = $grid.width() / 4;
+                const columnWidth = $grid.width() / 4;
                 const widthMatcher = /&w=(\d+)/;
                 jQuery.each(res.results, function (index, value) {
-                    let originalWidth = value.width;
-                    let originalHeight = value.height;
+                    const originalWidth = value.width;
+                    const originalHeight = value.height;
 
                     let width = value.urls.thumb.match(widthMatcher);
                     if (width !== null) {
@@ -144,8 +145,8 @@ const acym_editorWysidUnsplash = {
                         width = originalWidth;
                     }
 
-                    let ratio = parseInt((columnWidth * 100) / parseInt(width)) / 100;
-                    let height = parseInt((originalHeight * width / originalWidth) * ratio);
+                    const ratio = parseInt((columnWidth * 100) / parseInt(width)) / 100;
+                    const height = parseInt((originalHeight * width / originalWidth) * ratio);
 
                     const searchSize = jQuery('#acym__wysid__modal__unsplash--size').val();
                     let insertionUrl = value.urls.full;
@@ -166,7 +167,7 @@ const acym_editorWysidUnsplash = {
                 });
 
                 //We append it and init masonry for them
-                let $results = jQuery(results);
+                const $results = jQuery(results);
                 $grid.append($results);
                 $grid.masonry('appended', $results);
                 $grid.masonry('layout');
@@ -181,9 +182,9 @@ const acym_editorWysidUnsplash = {
             if ($grid.data('masonry')) $grid.masonry('destroy');
             let $errorMessage = jQuery('#acym__wysid__modal__unsplash--error_message');
 
-            if(jqXHR.responseText === 'Rate Limit Exceeded'){
+            if (jqXHR.responseText === 'Rate Limit Exceeded') {
                 $errorMessage.html(ACYM_JS_TXT.ACYM_REACHED_SEARCH_LIMITS);
-            }else{
+            } else {
                 $errorMessage.html(ACYM_JS_TXT.ACYM_COULD_NOT_LOAD_UNSPLASH);
             }
             $errorMessage.show();
@@ -233,7 +234,9 @@ const acym_editorWysidUnsplash = {
             const search = jQuery(this).val();
             const sameResearch = lastSearchUnsplash === search;
 
-            if ((search === '' && lastSearchUnsplash === defaultSearchUnsplash) || isSearchingUnsplash || sameResearch) return;
+            if ((search === '' && lastSearchUnsplash === defaultSearchUnsplash) || isSearchingUnsplash || sameResearch) {
+                return;
+            }
 
             clearTimeout(typingTimerUnsplash);
 

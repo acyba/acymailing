@@ -2,59 +2,67 @@ let isSearching = false;
 let lastSearch = '';
 let defaultSearch = 'hello';
 let limitSearch = 24;
-let offsetGif = '';
+let offsetGif = 0;
 let queryGif = 'hello';
 let typingTimerGif = '';
 
 const acym_editorWysidGif = {
-    tenorKey: '',
+    giphyKey: '',
     init: function () {
-        acym_helper.config_get('tenor_key').done((resConfig) => {
-            this.tenorKey = resConfig.data.value;
+        acym_helper.config_get('giphy_key').done((resConfig) => {
+            this.giphyKey = resConfig.data.value;
 
             this.insertGif();
             this.makeNewResearch('');
         });
     },
     loadGif: function () {
-        if (!this.tenorKey) {
+        const $errorMessage = jQuery('#acym__wysid__modal__gif--error_message');
+        $errorMessage.html('');
+        $errorMessage.hide();
+
+        if (!this.giphyKey) {
             jQuery('.gif_fields').prop('disabled', true);
-            const $errorMessageZone = jQuery('#acym__wysid__modal__gif--error_message');
-            $errorMessageZone.html(ACYM_JS_TXT.ACYM_TENOR_KEY_NEEDED
-                                   + ' <a class="acym__color__blue" target="_blank" href="https://docs.acymailing.com/main-pages/the-email-editor/tenor-integration">'
-                                   + ACYM_JS_TXT.ACYM_GET_ONE_HERE
-                                   + '</a> ');
-            $errorMessageZone.show();
+            $errorMessage.html(`${ACYM_JS_TXT.ACYM_GIPHY_KEY_NEEDED} 
+                <div class="margin-top-1">
+                    <a
+                        class="button margin-auto" 
+                        target="_blank" 
+                        href="https://docs.acymailing.com/main-pages/the-email-editor/giphy-integration"
+                    >
+                        ${ACYM_JS_TXT.ACYM_GET_MY_API_KEY}
+                    </a>
+                </div>`);
+            $errorMessage.show();
             return;
         }
 
-        //When we're already searching for gif no need to make more research in the function setResearchInput
+        // When we're already searching for gif no need to make more research in the function setResearchInput
         isSearching = true;
-        //When it's the same research no need to make the research again
+        // When it's the same research no need to make the research again
         lastSearch = queryGif;
-        //We get the grid where we display the result and then we initiate masonry
+        // We get the grid where we display the result and then we initiate masonry
         let $grid = jQuery('#acym__wysid__modal__gif--results');
         $grid = $grid.masonry({
             itemSelector: 'img'
         });
 
-        let queryUrl = 'https://tenor.googleapis.com/v2/search?contentfilter=medium&client_key=acymailing&media_filter=gif,tinygif';
+        let queryUrl = 'https://api.giphy.com/v1/gifs/search?rating=g';
         queryUrl += '&limit=' + limitSearch;
+        queryUrl += '&offset=' + offsetGif;
         queryUrl += '&q=' + queryGif;
-        queryUrl += '&key=' + this.tenorKey;
+        queryUrl += '&api_key=' + this.giphyKey;
 
-        if (offsetGif !== '') {
-            queryUrl += '&pos=' + offsetGif;
-        }
-
-        // We make the call on Tenor to get all the GIFs
+        // We make the call on Giphy to get all the GIFs
         jQuery.ajax({
             url: queryUrl,
             dataType: 'json'
         }).then((res) => {
-            const $errorMessage = jQuery('#acym__wysid__modal__gif--error_message');
+            if (!res.data || !res.data.length) {
+                if (offsetGif > 0) {
+                    return;
+                }
 
-            if (res.results.length === 0 && offsetGif === '') {
                 // There is no result
                 if ($grid.data('masonry')) {
                     $grid.masonry('destroy');
@@ -70,53 +78,45 @@ const acym_editorWysidGif = {
             }
 
             $grid.show();
-            //We remove the class new to only get the new images
             jQuery('.acym__wysid__modal__gif__results--img--new').removeClass('acym__wysid__modal__gif__results--img--new');
 
-            //We remove the title no result if there is one
-            $errorMessage.html('');
-            $errorMessage.hide();
-
-            //if the offset is not set it means we reset the research or it's the first call
-            if (offsetGif === '') {
-                //We remove all the images that could be in the grid
+            // If the offset is empty, we either reset the search or it's the first call
+            if (offsetGif === 0) {
+                // We remove all the images that could be in the grid
                 $grid.masonry('remove', $grid.find('.acym__wysid__modal__gif__results--img'));
-                //We scroll at the top to get the first images
+                // We scroll at the top to get the first images
                 jQuery('.acym__wysid__modal__gif__results__container').scrollTop(0);
             }
 
-            //We build the content of the grid => create img tab for every result
+            // We build the content of the grid => create img tab for every result
             let results = '';
-            let columnWidth = $grid.width() / 4;
-            offsetGif = res.next;
-            jQuery.each(res.results, function (index, value) {
-                let ratio = parseInt((columnWidth * 100) / parseInt(value.media_formats.tinygif.dims[0])) / 100;
-                let height = parseInt(value.media_formats.tinygif.dims[1] * ratio);
-                results += `<img alt="" 
+            const columnWidth = $grid.width() / 4;
+            jQuery.each(res.data, function (index, value) {
+                const ratio = parseInt((
+                    columnWidth * 100
+                ) / parseInt(value.images.fixed_width.width)) / 100;
+                const height = parseInt(value.images.fixed_width.height * ratio);
+
+                results += `<img alt="${value.title.replaceAll('"', '&quot;')}" 
                                 class="acym__wysid__modal__gif__results--img acym__wysid__modal__gif__results--img--new" 
                                 style="height: ${height}px" 
-                                src="${value.media_formats.tinygif.url}" 
-                                data-full-res-src="${value.media_formats.gif.url}">`;
+                                src="${value.images.fixed_width.webp}" 
+                                data-full-res-src="${value.images.original.webp}" />`;
             });
 
-            //We append it and init masonry for them
-            let $results = jQuery(results);
+            const $results = jQuery(results);
             $grid.append($results).masonry('appended', $results);
-
             $grid.masonry('layout');
 
-            //load more on scroll
             this.loadMoreGif();
-            //selection for the gif (put the border selected)
             this.setSelectGif();
-            //Set the research bar with the button
             this.setResearchInput();
+
+            offsetGif += limitSearch;
         }).fail(() => {
-            //If the request fail we let know the user
             if ($grid.data('masonry')) {
                 $grid.masonry('destroy');
             }
-            let $errorMessage = jQuery('#acym__wysid__modal__gif--error_message');
             $errorMessage.html(ACYM_JS_TXT.ACYM_COULD_NOT_LOAD_GIF_TRY_AGAIN);
             $errorMessage.show();
             // We empty the results grid and empty it
@@ -159,7 +159,11 @@ const acym_editorWysidGif = {
             let search = jQuery(this).val();
             let sameResearch = lastSearch === search;
 
-            if ((search === '' && lastSearch === defaultSearch) || isSearching || sameResearch) return;
+            if ((
+                    search === '' && lastSearch === defaultSearch
+                ) || isSearching || sameResearch) {
+                return;
+            }
 
             clearTimeout(typingTimerGif);
 
@@ -177,7 +181,7 @@ const acym_editorWysidGif = {
     makeNewResearch: function (query) {
         clearTimeout(typingTimerGif);
         //If we make a new research we reset the research to 0 like it's the first we load the modal
-        offsetGif = '';
+        offsetGif = 0;
         queryGif = query === '' ? defaultSearch : query;
         const $grid = jQuery('#acym__wysid__modal__gif--results');
         if ($grid.data('masonry')) {

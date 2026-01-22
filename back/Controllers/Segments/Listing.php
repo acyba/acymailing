@@ -14,55 +14,6 @@ trait Listing
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
-        //__START__enterprise_
-        if (acym_level(ACYM_ENTERPRISE)) {
-            acym_setVar('layout', 'listing');
-            $pagination = new PaginationHelper();
-            $searchFilter = $this->getVarFiltersListing('string', 'segments_search', '');
-            $status = $this->getVarFiltersListing('string', 'segments_status', '');
-            $ordering = $this->getVarFiltersListing('string', 'segments_ordering', 'id');
-            $orderingSortOrder = $this->getVarFiltersListing('string', 'segments_ordering_sort_order', 'asc');
-
-            // Get pagination data
-            $formsPerPage = $pagination->getListLimit();
-            $page = $this->getVarFiltersListing('int', 'forms_pagination_page', 1);
-
-
-            $requestData = [
-                'ordering' => $ordering,
-                'search' => $searchFilter,
-                'elementsPerPage' => $formsPerPage,
-                'offset' => ($page - 1) * $formsPerPage,
-                'ordering_sort_order' => $orderingSortOrder,
-                'status' => $status,
-            ];
-
-            $matchingSegments = $this->getMatchingElementsFromData($requestData, $status, $page);
-
-            // Prepare the pagination
-            $pagination->setStatus($matchingSegments['total']->total, $page, $formsPerPage);
-
-            $filters = [
-                'all' => $matchingSegments['total']->total,
-                'active' => $matchingSegments['total']->totalActive,
-                'inactive' => $matchingSegments['total']->total - $matchingSegments['total']->totalActive,
-            ];
-
-            $data = [
-                'segments' => $matchingSegments['elements'],
-                'pagination' => $pagination,
-                'search' => $searchFilter,
-                'ordering' => $ordering,
-                'status' => $status,
-                'orderingSortOrder' => $orderingSortOrder,
-                'segmentsNumberPerStatus' => $filters,
-            ];
-
-            $this->prepareToolbar($data);
-
-            parent::display($data);
-        }
-        //__END__enterprise_
     }
 
     private function prepareToolbar(array &$data): void

@@ -10,20 +10,6 @@ trait AutoCampaigns
 {
     public function campaigns_auto(): void
     {
-        //__START__enterprise_
-        if (acym_level(ACYM_ENTERPRISE)) {
-            acym_setVar('layout', self::TASK_TYPE_CAMPAIGN_AUTO);
-            $data = [
-                'cleartask' => self::TASK_TYPE_CAMPAIGN_AUTO,
-                'campaign_type' => 'campaigns_auto',
-                'element_to_display' => lcfirst(acym_translation('ACYM_AUTOMATICS_CAMPAIGNS')),
-            ];
-            $this->prepareAllCampaignsListing($data);
-            $this->prepareToolbar($data);
-            $this->prepareListingClasses($data);
-            parent::display($data);
-        }
-        //__END__enterprise_
         if (!acym_level(ACYM_ENTERPRISE)) {
             $this->campaigns();
         }

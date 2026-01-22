@@ -14,63 +14,6 @@ trait Edition
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
-        //__START__enterprise_
-        if (acym_level(ACYM_ENTERPRISE)) {
-            acym_setVar('layout', 'edit');
-            $segmentId = acym_getVar('int', 'segmentId', 0);
-
-            $segmentClass = new SegmentClass();
-
-            if (empty($segmentId)) {
-                $segment = new \stdClass();
-                $segment->active = 1;
-            } else {
-                $segment = $segmentClass->getOneById($segmentId);
-
-                if (empty($segment)) {
-                    acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_FIND_SEGMENT'), 'error');
-                    $this->listing();
-
-                    return;
-                }
-            }
-
-            $filters = [];
-            acym_trigger('onAcymDeclareFilters', [&$filters]);
-
-            uasort(
-                $filters,
-                function ($a, $b) {
-                    return strcmp(strtolower($a->name), strtolower($b->name));
-                }
-            );
-
-            $selectFilter = new \stdClass();
-            $selectFilter->name = acym_translation('ACYM_SELECT_FILTER');
-            $selectFilter->option = '';
-            array_unshift($filters, $selectFilter);
-
-            $filtersClassic = ['name' => [], 'option'];
-
-            foreach ($filters as $key => $filter) {
-                $filtersClassic['name'][$key] = $filter->name;
-                $filtersClassic['option'][$key] = $filter->option;
-            }
-
-
-            $this->breadcrumb[empty($segment->id) ? acym_translation('ACYM_NEW_SEGMENT') : $segment->name] = acym_completeLink(
-                'segments&task=edit'.(empty($segment->id) ? '' : '&segmentId='.$segment->id)
-            );
-
-            $data = [
-                'segment' => $segment,
-                'filter_name' => $filtersClassic['name'],
-                'filter_option' => json_encode(preg_replace_callback(ACYM_REGEX_SWITCHES, [new AutomationController(), 'switches'], $filtersClassic['option'])),
-            ];
-
-            parent::display($data);
-        }
-        //__END__enterprise_
     }
 
     public function apply(): void

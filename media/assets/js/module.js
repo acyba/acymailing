@@ -23,7 +23,7 @@ if (typeof submitAcymForm !== 'function') {
 
         if (initRecaptcha.getAttribute('data-captchaname') === 'acym_ireCaptcha') {
             initRecaptcha.className = 'g-recaptcha';
-            let invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
+            const invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
 
             if (!invisibleRecaptcha) {
                 return window[submitFunction]();
@@ -42,15 +42,14 @@ if (typeof submitAcymForm !== 'function') {
                 invisibleRecaptcha.setAttribute('grcID', grcID);
             }
 
-            let response = grecaptcha.getResponse(grcID);
-            if (response) {
+            if (grecaptcha.getResponse(grcID)) {
                 return window[submitFunction]();
             } else {
                 grecaptcha.execute(grcID);
                 return false;
             }
         } else {
-            let captcha = document.getElementById(recaptchaid);
+            const captcha = document.getElementById(recaptchaid);
             if (!captcha) {
                 return window[submitFunction]();
             }
@@ -61,8 +60,13 @@ if (typeof submitAcymForm !== 'function') {
                     input.setAttribute('type', 'hidden');
                     input.setAttribute('name', 'g-recaptcha-response');
                     input.setAttribute('value', token);
-                    document.getElementById(window.acyFormName).appendChild(input);
-                    return window[submitFunction]();
+
+                    const form = document.getElementById(window.acyFormName);
+                    form.appendChild(input);
+
+                    if (window[submitFunction]()) {
+                        form.submit();
+                    }
                 });
             });
 
