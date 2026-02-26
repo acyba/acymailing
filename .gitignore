@@ -12,6 +12,7 @@
 **/.sass-cache/
 
 media/assets/css/
+media/assets/js/blockEditor/editor-sample/node_modules/
 media/css/
 media/js/*
 !media/js/tinymce/
