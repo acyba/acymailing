@@ -157,9 +157,9 @@ class plgAcymMailgun extends AcymPlugin
 
         $responseMailer = $this->callApiSendingMethod($this->sendingMethodApiUrl.'messages', $data, $headers, 'POST', $authentication, true);
 
-        if (empty($responseMailer['message']) || empty($responseMailer['id']) || $responseMailer['message'] != 'Queued. Thank you.') {
+        if (empty($responseMailer['message']) || empty($responseMailer['id']) || $responseMailer['message'] !== 'Queued. Thank you.') {
             $response['error'] = true;
-            $response['message'] = $responseMailer['message'];
+            $response['message'] = $responseMailer['message'] ?? ($responseMailer['error_curl'] ?? acym_translation('ACYM_ERROR'));
         } else {
             $response['error'] = false;
         }

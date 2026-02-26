@@ -59,7 +59,7 @@ function acym_punycode(string $email, string $method = 'emailToPunycode'): strin
         return $email;
     }
 
-    $explodedAddress = explode('@', $email);
+    $explodedAddress = explode('@', $email, 2);
     $newEmail = $explodedAddress[0];
 
     if (!empty($explodedAddress[1])) {

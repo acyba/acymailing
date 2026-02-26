@@ -3,7 +3,7 @@
 function acym_getEmailRegex(bool $secureJS = false, bool $forceRegex = false): string
 {
     $config = acym_config();
-    if ($forceRegex || $config->get('special_chars', 0) == 0) {
+    if ($forceRegex || $config->get('special_chars', 0) != 1) {
         $regex = '[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*\@([a-z0-9-]+\.)+[a-z0-9]{2,20}';
     } else {
         $regex = '.+\@(.+\.)+.{2,20}';

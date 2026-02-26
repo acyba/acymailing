@@ -194,7 +194,7 @@ function acym_getCustomTranslation()
     }
 }
 
-function acym_loadLanguageFile(string $extension, string $basePath = null, ?string $lang = null, bool $reload = false, bool $default = true): void
+function acym_loadLanguageFile(string $extension, ?string $basePath = null, ?string $lang = null, bool $reload = false, bool $default = true): void
 {
     global $acymLanguages;
     $currentLanguage = acym_getLanguageTag();

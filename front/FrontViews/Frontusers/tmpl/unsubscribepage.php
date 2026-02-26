@@ -17,6 +17,7 @@
 		<div class="cell">
 			<form action="<?php echo acym_frontendLink('frontusers'); ?>" name="unsubscribepage" class="acym_front_page acym__unsubscribe__form">
 				<fieldset class="grid-x grid-margin-x align-center">
+					<legend class="show-for-sr"><?php echo acym_escape(acym_translation('ACYM_EMAIL_PREFERENCES')); ?></legend>
 					<div class="acym__unsubscribe__container cell">
 						<div class="acy__unsubscribe__form__header margin-bottom-3">
 							<div class="acym__unsubscribe__form__header__image cell padding-bottom-1">
@@ -24,15 +25,23 @@
 									<img class="cell" src="<?php echo $this->config->get('unsubscribe_logo'); ?>" alt="Unsubscribe Logo">
                                 <?php } ?>
 							</div>
-							<h2 class="acym__title acym__unsubscribe__title margin-bottom-1">
+							<h1 class="acym__title acym__unsubscribe__title margin-bottom-1">
                                 <?php if (!empty($this->config->get('unsubscribe_title'))) {
                                     echo acym_escape($this->config->get('unsubscribe_title'));
                                 } else {
                                     echo acym_translation('ACYM_EMAIL_PREFERENCES');
                                 } ?>
-							</h2>
+							</h1>
                             <?php if (!empty($data['languages'])) {
-                                echo acym_select($data['languages'], 'language', $data['lang'], null, 'value', 'text', 'acym__unsubscribe__language__select');
+                                echo acym_select(
+                                    $data['languages'],
+                                    'language',
+                                    $data['lang'],
+                                    ['aria-label' => acym_translation('ACYM_LANGUAGE')],
+                                    'value',
+                                    'text',
+                                    'acym__unsubscribe__language__select'
+                                );
                             }
                             ?>
 						</div>
@@ -55,7 +64,18 @@
 													</p>
 												</div>
 												<div class="acym__unsubscribe__list__switch margin-bottom-1 cell">
-                                                    <?php echo acym_switch('lists['.$list->id.']', $list->status, null, ['name' => 'lists['.$list->id.']']); ?>
+                                                    <?php
+                                                    $listName = !empty($list->display_name) ? $list->display_name : $list->name;
+                                                    echo acym_switch(
+                                                        'lists['.$list->id.']',
+                                                        $list->status,
+                                                        null,
+                                                        [
+                                                            'name' => 'lists['.$list->id.']',
+                                                            'aria-label' => $listName,
+                                                        ]
+                                                    );
+                                                    ?>
 												</div>
 											</li>
                                         <?php } ?>
@@ -74,10 +94,17 @@
 										<p class="acym__unsubscribe__reason"><?php echo acym_translation('ACYM_CAN_YOU_TELL_MORE'); ?></p>
 										<span class="acym__optional"><?php echo acym_translation('ACYM_OPTIONAL'); ?></span>
 									</div>
-									<input type="text" id="acym__custom__unsubscribe__reason" name="unsubscribe_custom_reason" class="is-hidden">
+									<input type="text"
+										   id="acym__custom__unsubscribe__reason"
+										   name="unsubscribe_custom_reason"
+										   class="is-hidden"
+										   aria-label="<?php echo acym_escape(acym_translation('ACYM_CAN_YOU_TELL_MORE')); ?>">
 									<input type="hidden" name="unsubscribe_reason">
                                 <?php } else { ?>
-									<input type="text" name="unsubscribe_reason" class="acym__unsubscribe__input__reason">
+									<input type="text"
+										   name="unsubscribe_reason"
+										   class="acym__unsubscribe__input__reason"
+										   aria-label="<?php echo acym_escape(acym_translation('ACYM_SHARE_YOUR_REASONS')); ?>">
                                 <?php } ?>
 							</div>
 							<div class="acym__unsubscribe__actions grid-x align-center">

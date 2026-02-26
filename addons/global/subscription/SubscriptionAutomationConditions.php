@@ -174,7 +174,7 @@ trait SubscriptionAutomationConditions
                     $operators[$automation['acy_list_all']['operator']]
                 ).' '.$automation['acy_list_all']['number'].' '.acym_translation('ACYM_ACYMAILING_USERS').' ';
             $listClass = new ListClass();
-            $automation['acy_list_all']['list'] = $listClass->getOneById($automation['acy_list_all']['list']);
+            $automation['acy_list_all']['list'] = $listClass->getOneById($automation['acy_list_all']['list'] ? : 0);
             if (empty($automation['acy_list_all']['list'])) {
                 $automation = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_A_LIST').'</span>';
 
@@ -200,7 +200,7 @@ trait SubscriptionAutomationConditions
         if (!empty($automation['acy_list'])) {
             $finalText = '';
             $listClass = new ListClass();
-            $automation['acy_list']['list'] = $listClass->getOneById($automation['acy_list']['list']);
+            $automation['acy_list']['list'] = $listClass->getOneById($automation['acy_list']['list'] ? : 0);
             if (empty($automation['acy_list']['list'])) {
                 $automation = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_A_LIST').'</span>';
 

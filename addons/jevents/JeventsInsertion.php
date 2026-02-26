@@ -495,7 +495,6 @@ trait JeventsInsertion
 
     public function replaceIndividualContent(object $tag): string
     {
-        //1 : Load the informations of the product...
         $query = 'SELECT rpt.*, detail.*, cat.title AS category, ev.catid, ev.uid, author.name AS authorname FROM `#__jevents_repetition` AS rpt ';
         $query .= ' JOIN `#__jevents_vevent` AS ev ON rpt.eventid = ev.ev_id ';
         $query .= ' JOIN `#__jevents_vevdetail` AS detail ON rpt.eventdetail_id = detail.evdet_id ';
@@ -505,7 +504,9 @@ trait JeventsInsertion
 
         $element = $this->initIndividualContent($tag, $query);
 
-        if (empty($element)) return '';
+        if (empty($element)) {
+            return '';
+        }
 
         $this->pluginHelper->translateItem($element, $tag, 'jevents_vevdetail', intval($element->evdet_id));
 
@@ -887,7 +888,7 @@ trait JeventsInsertion
             }
 
             if (isset($customValues[$oneCustom])) {
-                $customFields[] = [$customValues[$oneCustom], $label];
+                $customFields[] = [$customValues[$oneCustom], acym_translation($label)];
             }
         }
     }

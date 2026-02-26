@@ -45,6 +45,11 @@
             left: calc(var(--width-switch) - var(--height-switch));
         }
     }
+
+    input.switch-input:focus + .switch-paddle {
+        outline: 2px solid var(--color-switch);
+        outline-offset: 2px;
+    }
 }
 
 .switch-active, .switch-inactive, input[type="checkbox"].switch-input {

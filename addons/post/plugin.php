@@ -525,7 +525,7 @@ class plgAcymPost extends AcymPlugin
             $this->currentCategory = min($catIds);
 
             $categoryTitle = '<h1 class="acymailing_category_title">'.$postCategories[$this->currentCategory]->name.'</h1>';
-            $categoryTitle = '<a target="_blank" href="'.get_category_link($this->currentCategory).'">'.$categoryTitle.'</a>';
+            $categoryTitle = '<div class="acymailing_content"><a target="_blank" href="'.get_category_link($this->currentCategory).'">'.$categoryTitle.'</a></div>';
         }
 
         return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);

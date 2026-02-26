@@ -76,8 +76,10 @@ const acym_helperPreview = {
             jQuery('.acym__preview-toggle').hide();
         }
 
-        //If chrome we load the iframe synchronously, yeah it's a fix for chrome
-        if (/chrom(e|ium)/.test(navigator.userAgent.toLowerCase()) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+        const isFirefox148OrNewer = navigator.userAgent.includes('Firefox') && typeof Iterator === 'function' && typeof Iterator.zip === 'function';
+
+        // Chrome and Firefox require loading iframes synchronously
+        if (/chrom(e|ium)/.test(navigator.userAgent.toLowerCase()) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || isFirefox148OrNewer) {
             acym_helperPreview.loadIframe(idIframe, onEditor);
         } else {
             $iframe.on('load', function () {

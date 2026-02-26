@@ -16,21 +16,6 @@ class com_acymInstallerScript
 
     public function preflight($type, $parent)
     {
-        if ($type === 'update') {
-            $db = Factory::getDbo();
-            $query = $db->getQuery(true)->select('*')->from('#__extensions');
-            $query->where('type = "component" AND element = "com_acym"');
-            $db->setQuery($query);
-
-            try {
-                $extension = $db->loadObject();
-            } catch (Exception $e) {
-                echo Text::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()).'<br />';
-
-                return false;
-            }
-        }
-
         return true;
     }
 

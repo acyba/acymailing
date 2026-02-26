@@ -856,6 +856,14 @@ class UserClass extends AcymClass
                 acym_query('DELETE FROM #__acym_scenario_process WHERE id IN ('.implode(',', $scenarioProcessIds).')');
             }
 
+            $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
+            foreach ($elements as $userId) {
+                $folderPath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$userId.DS);
+                if (is_dir($folderPath)) {
+                    acym_deleteFolder($folderPath);
+                }
+            }
+
             return parent::delete($elements);
         } else {
             $listClass = new ListClass();
@@ -1470,6 +1478,9 @@ class UserClass extends AcymClass
         $isnew = $isnew || empty($cmsUser->id);
 
         $id = $this->save($cmsUser);
+        if (empty($id)) {
+            return;
+        }
 
         // Force trigger confirmation process on cms user confirmation (send welcome emails, automation, save history...)
         $confirmationRequired = $this->config->get('require_confirmation', 1);
@@ -1619,10 +1630,15 @@ class UserClass extends AcymClass
                 continue;
             }
 
+            $admin = $this->getOneByEmail($oneUser, true);
+
             $notificationEmail = $mailClass->getOneByName($notification);
-            if (!empty($notificationEmail)) {
-                //TODO pass user id instead of email
-                $mailerHelper->sendOne($notificationEmail->id, $oneUser);
+            if (!empty($admin) && !empty($notificationEmail)) {
+                try {
+                    $mailerHelper->sendOne($notificationEmail->id, $admin->id);
+                } catch (\Exception $e) {
+                    acym_logError($e->getMessage());
+                }
             }
         }
     }

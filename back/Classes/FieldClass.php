@@ -142,7 +142,10 @@ class FieldClass extends AcymClass
     {
         if (!empty($_FILES['customField'])) {
             $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
-            $uploadPath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS);
+            $uploadPath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$userID.DS);
+            if (!file_exists($uploadPath)) {
+                acym_createDir($uploadPath);
+            }
             $allowedExtensions = explode(',', $this->config->get('allowed_files'));
 
             foreach ($_FILES['customField']['tmp_name'] as $key => $value) {
@@ -242,10 +245,30 @@ class FieldClass extends AcymClass
                 $value = substr($value, 0, $fieldOptions->max_characters);
             }
 
+            // If deleting a file field, also delete the physical file
+            if ($field->type === 'file' && strlen($value) === 0) {
+                $oldValue = acym_loadResult(
+                    'SELECT `value` FROM #__acym_user_has_field WHERE `user_id` = '.intval($userID).' AND `field_id` = '.intval($id)
+                );
+                if (!empty($oldValue)) {
+                    $fileName = @json_decode($oldValue, true);
+                    if (is_array($fileName)) $fileName = $fileName[0];
+                    if (empty($fileName)) $fileName = $oldValue;
+
+                    $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
+                    // Try new path (with user folder) first, then legacy path (without user folder)
+                    $filePath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$userID.DS.$fileName);
+                    if (!file_exists($filePath)) {
+                        $filePath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$fileName);
+                    }
+                    acym_deleteFile($filePath, false);
+                }
+            }
+
             // The user removed a value, don't add an empty line and remove any previous value from the bd
             if (strlen($value) === 0) {
-                $query = 'DELETE FROM `#__acym_user_has_field` 
-                          WHERE `user_id` = '.intval($userID).' 
+                $query = 'DELETE FROM `#__acym_user_has_field`
+                          WHERE `user_id` = '.intval($userID).'
                             AND `field_id` = '.intval($id);
             } else {
                 $query = 'INSERT INTO #__acym_user_has_field (`user_id`, `field_id`, `value`) VALUES ('.intval($userID).', '.intval($id).', '.acym_escapeDB($value).')';
@@ -522,7 +545,9 @@ class FieldClass extends AcymClass
         }
 
         $placeholder = '';
-        if (!$displayOutside) $placeholder = ' placeholder="'.acym_escape($field->name).'"';
+        if (!$displayOutside) {
+            $placeholder = ' placeholder="'.acym_escape($field->name).'" aria-label="'.acym_escape($field->name).'"';
+        }
 
         $name = 'customField['.intval($field->id).']';
         $nameAttribute = ' name="'.$name.'"';
@@ -631,6 +656,7 @@ class FieldClass extends AcymClass
                 );
             }
         } elseif ($field->type === 'checkbox') {
+            $return .= '<input type="hidden" name="'.acym_escape($name).'" value="">';
             if ($displayFront) {
                 foreach ($valuesArray as $key => $oneValue) {
                     $checked = in_array($key, $defaultValue) ? 'checked' : '';
@@ -687,7 +713,22 @@ class FieldClass extends AcymClass
             if ($displayFront) {
                 $return .= '<input '.$nameAttribute.$required.' type="file">';
             } else {
-                $return .= acym_inputFile($name.'[]', $defaultValue, '', $required);
+                $downloadUrl = '';
+                if (!empty($defaultValue) && !empty($user->id)) {
+                    $fileName = is_array($defaultValue) ? $defaultValue[0] : $defaultValue;
+                    if (!empty($fileName)) {
+                        $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
+                        $userFilePath = $uploadFolder.'userfiles'.DS.$user->id.DS.$fileName;
+                        $legacyFilePath = $uploadFolder.'userfiles'.DS.$fileName;
+
+                        if (file_exists(acym_cleanPath(ACYM_ROOT.$userFilePath))) {
+                            $downloadUrl = ACYM_LIVE.str_replace(DS, '/', $userFilePath);
+                        } elseif (file_exists(acym_cleanPath(ACYM_ROOT.$legacyFilePath))) {
+                            $downloadUrl = ACYM_LIVE.str_replace(DS, '/', $legacyFilePath);
+                        }
+                    }
+                }
+                $return .= acym_inputFile($name.'[]', $defaultValue, '', $required, $downloadUrl);
             }
         } elseif ($field->type === 'phone') {
             $indicator = !empty($defaultValue[0]) ? $defaultValue[0] : '';
@@ -705,7 +746,7 @@ class FieldClass extends AcymClass
             $return .= $field->option->custom_text;
         }
 
-        $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language'];
+        $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'language'];
         if ($displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, $labelTypes))) {
             $return .= '</label>';
         }

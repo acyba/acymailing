@@ -720,7 +720,7 @@ trait Edition
 
         $language = acym_getVar('string', 'language', 'main');
         $mail->id = acym_getVar('int', 'mailId', 0);
-        $mail->autosave = acym_getVar('string', 'autoSave', '', 'REQUEST', ACYM_ALLOWRAW);
+        $mail->autosave = base64_decode(acym_getVar('string', 'autoSave', '', 'REQUEST', ACYM_ALLOWRAW));
 
         if (empty($mail->id) || !$mailClass->hasUserAccess($mail->id) || !$mailClass->autoSave($mail, $language)) {
             acym_sendAjaxResponse('', [], false);

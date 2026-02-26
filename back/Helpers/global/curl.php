@@ -89,17 +89,11 @@ function acym_makeCurlCall(string $url, array $options = []): array
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     if (curl_errno($ch)) {
-        $error = curl_error($ch);
-
-        curl_close($ch);
-
         return [
-            'error' => $error,
+            'error' => curl_error($ch),
             'status_code' => $httpCode,
         ];
     }
-
-    curl_close($ch);
 
     $result = json_decode($result, true);
     $result['status_code'] = $httpCode;
@@ -141,7 +135,6 @@ function acym_asyncUrlCalls(array $urls): void
 
         foreach ($handles as $handle) {
             curl_multi_remove_handle($mh, $handle);
-            //curl_close($handle);
         }
         curl_multi_close($mh);
     } catch (Exception $e) {

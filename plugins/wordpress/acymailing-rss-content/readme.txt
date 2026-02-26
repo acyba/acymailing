@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, rss, rss feed
 Tested up to: 6.9
-Stable tag: 4.6
+Stable tag: 4.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

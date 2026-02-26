@@ -83,27 +83,36 @@ const acym_editorWysidDynamic = {
         }
 
         acym_helperEditorWysid.dynamicPreviewIdentifier++;
-        let currentPreviewIdentifier = acym_helperEditorWysid.dynamicPreviewIdentifier;
+        const currentPreviewIdentifier = acym_helperEditorWysid.dynamicPreviewIdentifier;
 
         $focusedElement.find('.plugin_loader').css('display', 'flex');
-        let mailId = jQuery('input[name="editor_autoSave"]').val();
-        let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_dynamics&ctrl=' + acym_helper.ctrlDynamics + '&task=replaceDummy';
+        const mailId = jQuery('input[name="editor_autoSave"]').val();
+        const ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_dynamics&ctrl=' + acym_helper.ctrlDynamics + '&task=replaceDummy';
+        const previewHtml = jQuery('#acym__wysid__template').html();
+
+        let encodedPreview = new TextEncoder().encode(previewHtml).reduce((data, byte) => data + String.fromCharCode(byte), '');
+        encodedPreview = btoa(encodedPreview);
+
         jQuery.ajax({
             url: ajaxUrl,
             type: 'POST',
             data: {
-                'mailId': mailId,
-                'code': shortcode,
-                'language': acym_editorWysidVersions.currentVersion,
-                'previewBody': jQuery('#acym__wysid__template').html()
+                mailId: mailId,
+                code: shortcode,
+                language: acym_editorWysidVersions.currentVersion,
+                previewBody: encodedPreview
             }
         }).then(function (response) {
             // Another option has been changed, apply the newest only
-            if (currentPreviewIdentifier !== acym_helperEditorWysid.dynamicPreviewIdentifier) return;
+            if (currentPreviewIdentifier !== acym_helperEditorWysid.dynamicPreviewIdentifier) {
+                return;
+            }
 
             let preview;
             let customView = false;
-            if (response) response = acym_helper.parseJson(response);
+            if (response) {
+                response = acym_helper.parseJson(response);
+            }
             if (!response.data.content || 0 === response.data.content.length) {
                 preview = '';
             } else {

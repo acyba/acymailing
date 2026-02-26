@@ -966,7 +966,7 @@ class CampaignClass extends AcymClass
 
         foreach ($activeAutoCampaigns as $campaign) {
             // Check the start date
-            if (!empty($campaign->sending_params['start_date']) && (int)acym_getTime(acym_date($campaign->sending_params['start_date'], 'Y-m-d H:i')) > $time) {
+            if (!empty($campaign->sending_params['start_date']) && acym_getTime(acym_date($campaign->sending_params['start_date'], 'Y-m-d H:i')) > $time) {
                 continue;
             }
 
@@ -998,6 +998,12 @@ class CampaignClass extends AcymClass
 
             //We generate the new campaign
             $generatedCampaign = $this->generateCampaign($campaign, $campaignMail, $lastGenerated, $mailClass);
+            if (empty($generatedCampaign)) {
+                $this->messages[] = acym_translationSprintf('ACYM_CAMPAIGN_FAILED_GENERATING', $campaign->name);
+                continue;
+            }
+
+            $this->messages[] = acym_translationSprintf('ACYM_CAMPAIGN_GENERATED', $campaign->name, $campaign->sending_params['number_generated']);
 
             // We send it directly if no confirmation is needed
             if (empty($campaign->sending_params['need_confirm_to_send'])) {
@@ -1046,14 +1052,16 @@ class CampaignClass extends AcymClass
         }
         $campaign->last_generated = $time;
 
-        $this->messages[] = acym_translationSprintf('ACYM_CAMPAIGN_GENERATED', $campaign->name, $campaign->sending_params['number_generated']);
-
         return true;
     }
 
-    private function generateCampaign(object $campaign, object $campaignMail, ?int $lastGenerated, MailClass $mailClass): object
+    private function generateCampaign(object $campaign, object $campaignMail, ?int $lastGenerated, MailClass $mailClass): ?object
     {
         $newMail = $this->generateMailAutoCampaign($campaignMail, $campaign->sending_params['number_generated'], $mailClass);
+        if (empty($newMail)) {
+            return null;
+        }
+
         $newCampaign = new \stdClass();
         $newCampaign->mail_id = $newMail->id;
         $newCampaign->parent_id = $campaign->id;
@@ -1074,7 +1082,7 @@ class CampaignClass extends AcymClass
         return $newCampaign;
     }
 
-    private function generateMailAutoCampaign(object $newMail, int $generatedMailNumber, MailClass $mailClass): object
+    private function generateMailAutoCampaign(object $newMail, int $generatedMailNumber, MailClass $mailClass): ?object
     {
         $mailId = $newMail->id;
         unset($newMail->id);
@@ -1082,6 +1090,10 @@ class CampaignClass extends AcymClass
         $newMail->name .= ' #'.$generatedMailNumber;
 
         $newMail->id = $mailClass->save($newMail);
+        if (empty($newMail->id)) {
+            return null;
+        }
+
         $this->setListToGeneratedCampaign($mailId, $newMail->id, $mailClass);
 
         if (acym_isMultilingual()) {

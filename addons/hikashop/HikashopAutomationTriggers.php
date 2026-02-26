@@ -179,17 +179,18 @@ trait HikashopAutomationTriggers
         ]);
     }
 
-    // Build Hikashop trigger display for the summary
-    public function onAcymDeclareSummary_triggers(&$automation)
+    // Build HikaShop trigger display for the summary
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
         if (!empty($automation->triggers['hikashoporder']['status'])) {
-            //$return = acym_translation('ACYM_HIKASHOP_ORDER_STATUS_TO').' ';
             $status = implode(', ', $automation->triggers['hikashoporder']['status']);
             $automation->triggers['hikashoporder'] = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', $status);
         }
+
         if (isset($automation->triggers['hikashopNewOrder'])) {
             $automation->triggers['hikashopNewOrder'] = acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop');
         }
+
         if (isset($automation->triggers['hikashopWishlistUpdated'])) {
             $automation->triggers['hikashopWishlistUpdated'] = acym_translationSprintf('ACYM_X_ADD_TO_WISHLIST', 'HikaShop');
         }

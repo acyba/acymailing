@@ -132,8 +132,7 @@ trait Ajax
 
         $return .= $pagination->displayAjax();
 
-        echo $return;
-        exit;
+        acym_sendAjaxResponse('', ['paginationListing' => $return]);
     }
 
     public function loadMoreSubscribers(): void

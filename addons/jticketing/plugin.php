@@ -636,7 +636,7 @@ class plgAcymJticketing extends AcymPlugin
 
             $categoryTitle = '<h1 class="acymailing_category_title">'.$element->category_title.'</h1>';
             $categoryLink = $this->finalizeLink('index.php?option=com_jticketing&view=category&id='.$element->catid, $tag);
-            $categoryTitle = '<a target="_blank" href="'.$categoryLink.'">'.$categoryTitle.'</a>';
+            $categoryTitle = '<div class="acymailing_content"><a target="_blank" href="'.$categoryLink.'">'.$categoryTitle.'</a></div>';
         }
 
         return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);

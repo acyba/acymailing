@@ -93,7 +93,7 @@ function acym_getLanguageTag(bool $simple = false): string
     return $simple ? substr($langCode, 0, 2) : $langCode;
 }
 
-function acym_loadLanguageFile(string $extension = 'joomla', string $basePath = JPATH_SITE, ?string $lang = null, bool $reload = false, bool $default = true): void
+function acym_loadLanguageFile(string $extension = 'joomla', ?string $basePath = JPATH_SITE, ?string $lang = null, bool $reload = false, bool $default = true): void
 {
     if (ACYM_J40) {
         $acylanguage = Factory::getLanguage();

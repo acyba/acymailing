@@ -12,7 +12,7 @@ class DynamicsController extends AcymController
     {
         $mailId = acym_getVar('int', 'mailId', 0);
         $code = acym_getVar('string', 'code', '', '', ACYM_ALLOWRAW);
-        $previewBody = acym_getVar('string', 'previewBody', '', '', ACYM_ALLOWRAW);
+        $previewBody = base64_decode(acym_getVar('string', 'previewBody', '', '', ACYM_ALLOWRAW));
 
         $pluginHelper = new PluginHelper();
         $email = $pluginHelper->createDummyEmailObject($mailId, $code, $previewBody);

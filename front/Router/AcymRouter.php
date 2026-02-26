@@ -106,7 +106,7 @@ class AcymRouter extends RouterBase
         }
 
         if ($ctrl === 'archive' && $task === 'view' && !empty($query['id'])) {
-            $segments[] = $this->getMailSEF($query['id']);
+            $segments[] = $this->getMailSEF((int)$query['id']);
             unset($query['id']);
         } else {
             if (!empty($task)) $segments[] = $task;
@@ -118,12 +118,12 @@ class AcymRouter extends RouterBase
         }
 
         if ($ctrl === 'frontlists' && !empty($query['listId'])) {
-            $segments[] = $this->getListSEF($query['listId']);
+            $segments[] = $this->getListSEF((int)$query['listId']);
             unset($query['listId']);
         }
 
         if ($ctrl === 'frontusers' && $task === 'unsubscribe' && !empty($query['mail_id'])) {
-            $segments[] = $this->getMailSEF($query['mail_id']);
+            $segments[] = $this->getMailSEF((int)$query['mail_id']);
             unset($query['mail_id']);
         }
 
@@ -213,7 +213,7 @@ class AcymRouter extends RouterBase
         return $vars;
     }
 
-    private function getMailSEF($id): string
+    private function getMailSEF(int $id): string
     {
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($id);
@@ -221,7 +221,7 @@ class AcymRouter extends RouterBase
         return $id.$this->separator.acym_getAlias($mail->subject);
     }
 
-    private function getListSEF($id): string
+    private function getListSEF(int $id): string
     {
         $listClass = new ListClass();
         $list = $listClass->getOneById($id);

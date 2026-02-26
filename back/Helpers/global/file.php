@@ -218,13 +218,27 @@ function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?stri
     return $file['name'];
 }
 
-function acym_inputFile(string $name, string $value = '', string $class = '', string $attributes = ''): string
+function acym_inputFile(string $name, string $value = '', string $class = '', string $attributes = '', string $downloadUrl = ''): string
 {
-    $return = '<div class="cell '.acym_escape($class).' grid-x"><input '.$attributes.' style="display: none" type="file" name="'.acym_escape($name).'">
-        <button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation('ACYM_CHOOSE_FILE').'</button>
-        <span class="cell shrink margin-left-2 margin-right-2">';
-    $return .= acym_escape(empty($value) ? acym_translation('ACYM_NO_FILE_CHOSEN') : $value);
-    $return .= '</span></div>';
+    $hasValue = !empty($value);
+    $actionStyle = $hasValue ? '' : ' style="display: none;"';
+    $noFileText = acym_translation('ACYM_NO_FILE_CHOSEN');
+    $baseName = substr($name, -2) === '[]' ? substr($name, 0, -2) : $name;
+
+    $downloadAttr = !empty($downloadUrl) ? ' data-download-url="'.acym_escapeUrl($downloadUrl).'"' : '';
+
+    $return = '</label><div class="cell '.acym_escape($class).' grid-x acym__input__file__container">';
+    $return .= '<input type="hidden" name="'.acym_escape($baseName).'"  value="'.acym_escape($value).'" class="acym__input__file__clear">';
+    $return .= '<input '.$attributes.' style="display: none" type="file" name="'.acym_escape($name).'">';
+    $return .= '<button type="button" class="acym__button__file button button-secondary cell shrink">'.acym_translation('ACYM_CHOOSE_FILE').'</button>';
+    $return .= '<span class="cell shrink margin-left-2 margin-right-2 acym__input__file__name" data-no-file="'.acym_escape($noFileText).'">';
+    $return .= acym_escape($hasValue ? $value : $noFileText);
+    $return .= '</span>';
+    $return .= '<i class="acym__input__file__download cell shrink acym__color__blue cursor-pointer acymicon-download margin-right-1"'.$actionStyle.$downloadAttr.
+        ' title="'.acym_escape(acym_translation('ACYM_DOWNLOAD')).'" aria-label="'.acym_escape(acym_translation('ACYM_DOWNLOAD')).'"></i>';
+    $return .= '<i class="acymicon-close acym__color__red acym__input__file__delete cursor-pointer cell shrink margin-left-1"'.$actionStyle.
+        ' title="'.acym_escape(acym_translation('ACYM_DELETE')).'" aria-label="'.acym_escape(acym_translation('ACYM_DELETE')).'"></i>';
+    $return .= '</div>';
 
     return $return;
 }

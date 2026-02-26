@@ -435,7 +435,7 @@ trait EasysocialInsertion
         if (empty($element)) return '';
 
         $varFields = $this->getCustomLayoutVars($element);
-        $link = 'index.php?option=com_easysocial&view=events&layout=item&id='.$tag->id.':'.$element->alias;
+        $link = 'index.php?option=com_easysocial&view=events&layout=item&id='.$tag->id.':'.$element->alias.'&Itemid='.ESR::getItemId('events', 'item', $tag->id);
         $link = $this->finalizeLink($link, $tag);
 
         $varFields['{link}'] = $link;

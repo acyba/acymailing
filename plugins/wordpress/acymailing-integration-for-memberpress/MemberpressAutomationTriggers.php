@@ -73,9 +73,11 @@ trait MemberpressAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
-        if (empty($automation->triggers['member_transaction_complete'])) return;
+        if (empty($automation->triggers['member_transaction_complete']) || !is_array($automation->triggers['member_transaction_complete'])) {
+            return;
+        }
 
         if (empty($automation->triggers['member_transaction_complete']['membership'])) {
             $membershipName = strtolower(acym_translation('ACYM_ANY_MEMBERSHIP'));

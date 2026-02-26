@@ -38,7 +38,7 @@ class UrlClass extends AcymClass
         return empty($url) ? null : $url;
     }
 
-    public function getUrl(string $url, int $mailid, int $userid): string
+    public function getUrl(string $url, int $mailid, int $userid, string $userkey = ''): string
     {
         if (empty($url) || empty($mailid) || empty($userid)) {
             return '';
@@ -56,7 +56,13 @@ class UrlClass extends AcymClass
             return $url;
         }
 
-        return acym_frontendLink('fronturl&task=click&urlid='.$allurls[$url]->id.'&userid='.$userid.'&mailid='.$mailid);
+        $trackingUrl = acym_frontendLink('fronturl&task=click&urlid='.$allurls[$url]->id.'&userid='.$userid.'&mailid='.$mailid);
+
+        if (!empty($userkey)) {
+            $trackingUrl .= (strpos($trackingUrl, '?') === false ? '?' : '&').'userkey='.urlencode($userkey);
+        }
+
+        return $trackingUrl;
     }
 
     // Used in checkDB to address a bug before the 12/04/19

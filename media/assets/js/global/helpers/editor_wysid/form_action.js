@@ -251,6 +251,7 @@ const acym_editorWysidFormAction = {
             if (jQuery('#acym__wysid .acym__wysid__template__content').css('background-image') !== 'none') {
                 jQuery('#acym__wysid__background-image__template-delete').hide();
             }
+
             jQuery('.acym__wysid__row__element__toolbox__colorpicker').spectrum('destroy');
             jQuery('.sp-container').remove();
             jQuery('#acym_header').css('display', 'none');

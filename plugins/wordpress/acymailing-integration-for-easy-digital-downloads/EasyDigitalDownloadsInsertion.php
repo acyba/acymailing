@@ -449,10 +449,10 @@ trait EasyDigitalDownloadsInsertion
 			</div>
 		</div>
 		<script type="text/javascript">
-            const _additionalInfo<?php echo esc_attr($identifier); ?> = {};
+			window._additionalInfo<?php echo esc_html($identifier); ?> = window._additionalInfo<?php echo esc_html($identifier); ?> || {};
             <?php
-            echo '_additionalInfo'.esc_attr($identifier).'.min = '.intval($this->defaultValues->min).';';
-            echo '_additionalInfo'.esc_attr($identifier).'.max = '.intval($this->defaultValues->max).';';
+            echo 'window._additionalInfo'.esc_attr($identifier).'.min = '.intval($this->defaultValues->min).';';
+            echo 'window._additionalInfo'.esc_attr($identifier).'.max = '.intval($this->defaultValues->max).';';
             ?>
 		</script>
         <?php

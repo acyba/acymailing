@@ -1099,9 +1099,7 @@ class plgAcymAcymailer extends AcymPlugin
     private function checkSuccessCode($responseCode): bool
     {
         // we can add more success response codes if needed but for now, that's all the success response codes the API can send
-        $successCodes = [200, 201, 204];
-
-        return in_array($responseCode, $successCodes);
+        return in_array($responseCode, [200, 201]);
     }
 
     private function translate($response)

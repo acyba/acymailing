@@ -137,7 +137,7 @@ trait SubscriptionAutomationActions
     {
         if (!empty($automationAction['acy_list'])) {
             $listClass = new ListClass();
-            $list = $listClass->getOneById($automationAction['acy_list']['list_id']);
+            $list = $listClass->getOneById($automationAction['acy_list']['list_id'] ? : 0);
             if ($automationAction['acy_list']['list_actions'] == 'sub') $automationAction['acy_list']['list_actions'] = 'ACYM_SUBSCRIBED_TO';
             if ($automationAction['acy_list']['list_actions'] == 'unsub') $automationAction['acy_list']['list_actions'] = 'ACYM_UNSUBSCRIBE_FROM';
             if ($automationAction['acy_list']['list_actions'] == 'remove') $automationAction['acy_list']['list_actions'] = 'ACYM_REMOVE_FROM';

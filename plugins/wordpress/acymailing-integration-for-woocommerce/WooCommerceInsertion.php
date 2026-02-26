@@ -549,16 +549,16 @@ trait WooCommerceInsertion
 
     private function lastOrCartContentInsert($type = 'last')
     {
-        if ($type == 'last') {
-            $identifier = 'last'.$this->name;
-            $partId = 'last__purchased';
-            $endIdMin = '';
-            $endIdMax = '';
-        } elseif ($type == 'cart') {
+        if ($type === 'cart') {
             $identifier = 'cart'.$this->name;
             $partId = 'cart';
             $endIdMin = 'min';
             $endIdMax = 'max';
+        } else {
+            $identifier = 'last'.$this->name;
+            $partId = 'last__purchased';
+            $endIdMin = '';
+            $endIdMax = '';
         }
 
         $selectedArea = empty($this->defaultValues->id) ? [] : $this->getSelectedArea($this->defaultValues);
@@ -646,10 +646,10 @@ trait WooCommerceInsertion
 			</div>
 		</div>
 		<script type="text/javascript">
-            const _additionalInfo<?php echo esc_html($identifier); ?> = {};
+			window._additionalInfo<?php echo esc_html($identifier); ?> = window._additionalInfo<?php echo esc_html($identifier); ?> || {};
             <?php
-            echo esc_html('_additionalInfo'.$identifier.'.min = '.$this->defaultValues->min.';');
-            echo esc_html('_additionalInfo'.$identifier.'.max = '.$this->defaultValues->max.';');
+            echo esc_html('window._additionalInfo'.$identifier.'.min = '.$this->defaultValues->min.';');
+            echo esc_html('window._additionalInfo'.$identifier.'.max = '.$this->defaultValues->max.';');
             ?>
 		</script>
         <?php

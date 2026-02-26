@@ -139,7 +139,7 @@ class EncodingHelper extends AcymObject
 /**
  * Logs the errors happening in the iconv function in order to know if we can use its result or not
  *
- * @return boolean true if an error occurred
+ * @return bool true if an error occurred
  */
 function acym_errorHandlerEncoding(int $errno, string $errstr = ''): bool
 {

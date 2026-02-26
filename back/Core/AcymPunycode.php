@@ -48,7 +48,7 @@ class AcymPunycode
             return mb_strlen($string, '8bit');
         }
 
-        return strlen((binary)$string);
+        return strlen((string)$string);
     }
 
     protected function _decode_digit($cp)

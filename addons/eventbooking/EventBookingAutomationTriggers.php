@@ -73,18 +73,20 @@ trait EventBookingAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
-        if (!empty($automation->triggers['eventbooking_reminder'])) {
-            $params = $this->getTriggerParams();
-
-            $final = $automation->triggers['eventbooking_reminder']['number'].' ';
-            $final .= $params['every'][$automation->triggers['eventbooking_reminder']['time']].' ';
-            $final .= $params['when'][$automation->triggers['eventbooking_reminder']['when']].' ';
-            $final .= acym_translation('ACYM_AN_EVENT_IN').' '.strtolower($params['categories'][$automation->triggers['eventbooking_reminder']['cat']]);
-
-            $automation->triggers['eventbooking_reminder'] = $final;
+        if (empty($automation->triggers['eventbooking_reminder']) || !is_array($automation->triggers['eventbooking_reminder'])) {
+            return;
         }
+
+        $params = $this->getTriggerParams();
+
+        $final = $automation->triggers['eventbooking_reminder']['number'].' ';
+        $final .= $params['every'][$automation->triggers['eventbooking_reminder']['time']].' ';
+        $final .= $params['when'][$automation->triggers['eventbooking_reminder']['when']].' ';
+        $final .= acym_translation('ACYM_AN_EVENT_IN').' '.strtolower($params['categories'][$automation->triggers['eventbooking_reminder']['cat']]);
+
+        $automation->triggers['eventbooking_reminder'] = $final;
     }
 
     private function getTriggerParams()

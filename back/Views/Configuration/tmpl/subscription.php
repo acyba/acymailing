@@ -43,7 +43,7 @@
 				<div class="cell medium-auto">
                     <?php if (acym_isAllowed('mails')) { ?>
 						<a class="button button-secondary margin-bottom-1"
-						   href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm'); ?>">
+						   href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm&return='.urlencode(base64_encode(acym_completeLink('configuration')))); ?>">
                             <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
 						</a>
                     <?php } ?>
@@ -135,7 +135,9 @@
 					<div class="cell large-2 medium-4 shrink grid-x">
                         <?php if (acym_isAllowed('mails')) { ?>
 							<a class="cell shrink button button-secondary acym__configuration__edit-email"
-							   href="<?php echo acym_completeLink('mails&task=edit&notification='.$identifier); ?>">
+							   href="<?php echo acym_completeLink(
+                                   'mails&task=edit&notification='.$identifier.'&return='.urlencode(base64_encode(acym_completeLink('configuration')))
+                               ); ?>">
                                 <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
 							</a>
                         <?php } ?>

@@ -88,7 +88,9 @@ jQuery(function ($) {
                     let nbTesterCalls = 0;
                     let testerCall = setInterval(function () {
                         nbTesterCalls++;
-                        acym_helper.get(result.data.url + '&format=json').then(data => {
+                        // Proxy through backend to avoid CORS issues
+                        acym_helper.get(`${ACYM_AJAX_URL}&ctrl=campaigns&task=spamTestResults&url=${encodeURIComponent(result.data.url)}`).then(res => {
+                            const data = res.error ? {status: false, title: res.message} : res.data;
                             if (data.status !== false) {
                                 clearInterval(testerCall);
                                 $check.next('.acym_check_results').hide();

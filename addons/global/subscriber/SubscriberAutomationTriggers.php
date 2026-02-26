@@ -65,7 +65,7 @@ trait SubscriberAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
         if (!empty($automation->triggers['user_open'])) $automation->triggers['user_open'] = acym_translation('ACYM_WHEN_USER_OPEN_MAIL');
         if (!empty($automation->triggers['user_click'])) $automation->triggers['user_click'] = acym_translation('ACYM_WHEN_USER_CLICKS_MAIL');

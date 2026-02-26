@@ -46,20 +46,23 @@ const acym_editorWysidVersioning = {
         jQuery('#template_version_' + acym_helperEditorWysid.versionControl).val(templateContent);
 
         // Auto save
-        let $campaignID = jQuery('#acym__campaign__recipients__form__campaign');
+        const $campaignID = jQuery('#acym__campaign__recipients__form__campaign');
         if (0 !== $campaignID.length && '0' === $campaignID.val()) {
             return;
         }
 
-        let $contentSave = $template.clone();
-        $contentSave.find('.acym__wysid__row__selector, .acym__wysid__element__toolbox').remove();
-        $contentSave.find('.acym__wysid__tinymce--text--placeholder--empty').removeClass('acym__wysid__tinymce--text--placeholder--empty');
-        $contentSave = $contentSave.wrap('<div id="acym__wysid__template-save" class="cell">').html();
-        let mailid = jQuery('#editor_mailid').val();
+        const mailid = jQuery('#editor_mailid').val();
 
         if (false !== initEdit || acym_helper.empty(mailid) || mailid === '-1') {
             return;
         }
+
+        const $contentSave = $template.clone();
+        $contentSave.find('.acym__wysid__row__selector, .acym__wysid__element__toolbox').remove();
+        $contentSave.find('.acym__wysid__tinymce--text--placeholder--empty').removeClass('acym__wysid__tinymce--text--placeholder--empty');
+        let encodedContentSave = $contentSave.wrap('<div id="acym__wysid__template-save" class="cell">').html();
+        encodedContentSave = new TextEncoder().encode(encodedContentSave).reduce((data, byte) => data + String.fromCharCode(byte), '');
+        encodedContentSave = btoa(encodedContentSave);
 
         jQuery.ajax({
             type: 'POST',
@@ -68,7 +71,7 @@ const acym_editorWysidVersioning = {
                 ctrl: acym_helper.ctrlMails,
                 task: 'autoSave',
                 language: acym_editorWysidVersions.currentVersion,
-                autoSave: $contentSave,
+                autoSave: encodedContentSave,
                 mailId: mailid
             },
             success: function (response) {

@@ -40,7 +40,7 @@ trait SubscriptionAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
         if (!empty($automation->triggers[$this->subscribeTrigger])) {
             $automation->triggers[$this->subscribeTrigger] = acym_translation('ACYM_WHEN_USER_SUBSCRIBES');

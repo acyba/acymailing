@@ -121,23 +121,25 @@
 			<div class="cell grid-x margin-top-1">
 				<label class="cell">
                     <?php
-                    echo acym_translation('ACYM_START_DATE');
-                    echo acym_info(['textShownInTooltip' => 'ACYM_START_DATE_AUTO_CAMPAIGN_DESC']);
+                    echo acym_translation('ACYM_NEXT_EXECUTION');
+                    echo acym_info(['textShownInTooltip' => 'ACYM_NEXT_EXECUTION_DESC']);
                     ?>
 				</label>
 				<div class="cell medium-5 small-10">
                     <?php
-                    $startDateValue = '';
-                    if (!empty($data['currentCampaign']->sending_params['start_date'])) {
-                        $startDateValue = acym_date($data['currentCampaign']->sending_params['start_date'], 'Y-m-d H:i');
+                    $nextDateValue = '';
+                    if (!empty($data['currentCampaign']->next_trigger)) {
+                        $nextDateValue = acym_date($data['currentCampaign']->next_trigger, 'Y-m-d H:i');
+                    } elseif (!empty($data['currentCampaign']->sending_params['start_date'])) {
+                        $nextDateValue = acym_date($data['currentCampaign']->sending_params['start_date'], 'Y-m-d H:i');
                     }
                     ?>
 					<input type="text"
-						   name="start_date"
+						   name="next_date"
 						   class="acy_date_picker"
 						   data-acym-translate="0"
 						   readonly
-						   value="<?php echo acym_escape($startDateValue); ?>">
+						   value="<?php echo acym_escape($nextDateValue); ?>">
 				</div>
 			</div>
 			<div class="cell grid-x margin-top-1">

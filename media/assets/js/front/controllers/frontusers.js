@@ -142,14 +142,20 @@ function handleUnsubscribeReasonChange() {
         if (this.selectedIndex === 0) {
             hiddenInput.value = '';
             customInput.classList.add('is-hidden');
+            customInput.setAttribute('aria-hidden', 'true');
             customInputLabel.classList.add('is-hidden');
+            customInputLabel.setAttribute('aria-hidden', 'true');
         } else if (this.selectedIndex === this.options.length - 1) {
             customInput.classList.remove('is-hidden');
+            customInput.removeAttribute('aria-hidden');
             customInputLabel.classList.remove('is-hidden');
+            customInputLabel.removeAttribute('aria-hidden');
             hiddenInput.value = '';
         } else {
             customInput.classList.add('is-hidden');
+            customInput.setAttribute('aria-hidden', 'true');
             customInputLabel.classList.add('is-hidden');
+            customInputLabel.setAttribute('aria-hidden', 'true');
             hiddenInput.value = this.selectedIndex;
         }
         updateFieldStyle(select, hiddenInput.value !== '');

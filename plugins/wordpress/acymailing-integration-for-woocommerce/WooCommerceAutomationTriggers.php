@@ -63,9 +63,11 @@ trait WooCommerceAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
-        if (empty($automation->triggers['woocommerce_order_change'])) return;
+        if (empty($automation->triggers['woocommerce_order_change']['from'])) {
+            return;
+        }
 
         $orderStatuses = $this->getOrderStatuses(true);
 

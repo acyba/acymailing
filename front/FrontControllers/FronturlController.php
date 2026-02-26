@@ -52,7 +52,7 @@ class FronturlController extends AcymController
 
         // The mail has been deleted, or we didn't send this email to this user, or it's a bot
         if (empty($mail) || empty($userStat) || acym_isRobot()) {
-            acym_redirect($urlObject->url);
+            acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId));
         }
 
         $urlClick = new \stdClass();
@@ -94,6 +94,26 @@ class FronturlController extends AcymController
             $userClass->save($subscriber);
         }
 
-        acym_redirect($urlObject->url);
+        acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId));
+    }
+
+    private function resolveSubscriberTags(string $url, int $userId): string
+    {
+        if (!preg_match('#\{|%7B#i', $url)) {
+            return $url;
+        }
+
+        $userClass = new UserClass();
+        $subscriber = $userClass->identify(true, 'userid', 'userkey');
+
+        if (empty($subscriber) || (int)$subscriber->id !== $userId) {
+            return $url;
+        }
+
+        $tempEmail = new \stdClass();
+        $tempEmail->body = $url;
+        acym_trigger('replaceUserInformation', [&$tempEmail, &$subscriber, true]);
+
+        return $tempEmail->body;
     }
 }

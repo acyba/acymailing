@@ -81,18 +81,20 @@ trait JeventsAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
-        if (!empty($automation->triggers['jevents_reminder'])) {
-            $params = $this->getTriggerParams();
-
-            $final = $automation->triggers['jevents_reminder']['number'].' ';
-            $final .= $params['every'][$automation->triggers['jevents_reminder']['time']].' ';
-            $final .= $params['when'][$automation->triggers['jevents_reminder']['when']].' ';
-            $final .= acym_translation('ACYM_AN_EVENT_IN').' '.strtolower($params['categories'][$automation->triggers['jevents_reminder']['cat']]);
-
-            $automation->triggers['jevents_reminder'] = $final;
+        if (empty($automation->triggers['jevents_reminder']) || !is_array($automation->triggers['jevents_reminder'])) {
+            return;
         }
+
+        $params = $this->getTriggerParams();
+
+        $final = $automation->triggers['jevents_reminder']['number'].' ';
+        $final .= $params['every'][$automation->triggers['jevents_reminder']['time']].' ';
+        $final .= $params['when'][$automation->triggers['jevents_reminder']['when']].' ';
+        $final .= acym_translation('ACYM_AN_EVENT_IN').' '.strtolower($params['categories'][$automation->triggers['jevents_reminder']['cat']]);
+
+        $automation->triggers['jevents_reminder'] = $final;
     }
 
     private function getTriggerParams()

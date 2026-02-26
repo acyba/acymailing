@@ -195,34 +195,39 @@ trait BirthdayAutomationTriggers
         return $fieldsOption;
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
-        if (!empty($automation->triggers['on_birthday'])) {
-            $dataSources = [];
-            acym_trigger('onAcymDeclareDataSourcesBirthdayTrigger', [&$dataSources]);
-
-            if (empty($dataSources[$automation->triggers['on_birthday']['source']]['fields']) && !empty($dataSources[$automation->triggers['on_birthday']['source']]['no_fields_error_message'])) {
-                $automation->triggers['on_birthday'] = acym_translation($dataSources[$automation->triggers['on_birthday']['source']]['no_fields_error_message']);
-
-                return;
-            }
-
-            $fieldToDsiplay = [];
-            foreach ($dataSources[$automation->triggers['on_birthday']['source']]['fields'] as $field) {
-                if ($field['id'] != $automation->triggers['on_birthday']['field']) continue;
-                $fieldToDsiplay = $field;
-            }
-
-            $date = empty($automation->triggers['on_birthday']['day_before'])
-                ? acym_translation('ACYM_ON_USER_BIRTHDAY')
-                : acym_translationSprintf(
-                    'ACYM_X_DAYS_BEFORE_BIRTHDAY',
-                    $automation->triggers['on_birthday']['day_before']
-                );
-            $time = acym_translationSprintf('ACYM_AT_DATE_TIME', $automation->triggers['on_birthday']['hour'], $automation->triggers['on_birthday']['minutes']);
-            $end = acym_translationSprintf('ACYM_FOR_THE_X_FIELD_X', $dataSources[$automation->triggers['on_birthday']['source']]['source_name'], $fieldToDsiplay['name']);
-
-            $automation->triggers['on_birthday'] = $date.' '.$time.' '.$end;
+        if (empty($automation->triggers['on_birthday']['source'])) {
+            return;
         }
+
+        $dataSources = [];
+        acym_trigger('onAcymDeclareDataSourcesBirthdayTrigger', [&$dataSources]);
+
+        if (
+            empty($dataSources[$automation->triggers['on_birthday']['source']]['fields'])
+            && !empty($dataSources[$automation->triggers['on_birthday']['source']]['no_fields_error_message'])
+        ) {
+            $automation->triggers['on_birthday'] = acym_translation($dataSources[$automation->triggers['on_birthday']['source']]['no_fields_error_message']);
+
+            return;
+        }
+
+        $fieldToDisplay = [];
+        foreach ($dataSources[$automation->triggers['on_birthday']['source']]['fields'] as $field) {
+            if ($field['id'] != $automation->triggers['on_birthday']['field']) continue;
+            $fieldToDisplay = $field;
+        }
+
+        $date = empty($automation->triggers['on_birthday']['day_before'])
+            ? acym_translation('ACYM_ON_USER_BIRTHDAY')
+            : acym_translationSprintf(
+                'ACYM_X_DAYS_BEFORE_BIRTHDAY',
+                $automation->triggers['on_birthday']['day_before']
+            );
+        $time = acym_translationSprintf('ACYM_AT_DATE_TIME', $automation->triggers['on_birthday']['hour'], $automation->triggers['on_birthday']['minutes']);
+        $end = acym_translationSprintf('ACYM_FOR_THE_X_FIELD_X', $dataSources[$automation->triggers['on_birthday']['source']]['source_name'], $fieldToDisplay['name']);
+
+        $automation->triggers['on_birthday'] = $date.' '.$time.' '.$end;
     }
 }

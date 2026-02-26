@@ -320,18 +320,10 @@ trait TimeAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
-        if (!empty($automation->triggers['type_trigger'])) unset($automation->triggers['type_trigger']);
-        if (!empty($automation->triggers['asap'])) $automation->triggers['asap'] = acym_translation('ACYM_EACH_TIME');
-        if (!empty($automation->triggers['day'])) {
-            $hour = $automation->triggers['day']['hour'];
-            $minutes = $automation->triggers['day']['minutes'];
-
-            if (strlen($hour) < 2) $hour = '0'.$hour;
-            if (strlen($minutes) < 2) $minutes = '0'.$minutes;
-
-            $automation->triggers['day'] = acym_translationSprintf('ACYM_TRIGGER_DAY_SUMMARY', $hour, $minutes);
+        if (!empty($automation->triggers['type_trigger'])) {
+            unset($automation->triggers['type_trigger']);
         }
 
         $days = [
@@ -343,63 +335,106 @@ trait TimeAutomationTriggers
             'saturday' => acym_translation('ACYM_SATURDAY'),
             'sunday' => acym_translation('ACYM_SUNDAY'),
         ];
-        if (!empty($automation->triggers['weeks_on'])) {
-            foreach ($automation->triggers['weeks_on']['day'] as $i => $oneDay) {
-                $automation->triggers['weeks_on']['day'][$i] = $days[$oneDay];
-            }
 
-            if (isset($automation->triggers['weeks_on']['hour'])) {
-                $hour = $automation->triggers['weeks_on']['hour'];
-                $minutes = $automation->triggers['weeks_on']['minutes'];
-            } else {
-                $hour = $this->config->get('daily_hour', '12');
-                $minutes = $this->config->get('daily_minute', '00');
-            }
+        $this->summaryAsap($automation);
+        $this->summaryDay($automation);
+        $this->summaryWeeksOn($automation, $days);
+        $this->summaryOnDayMonth($automation, $days);
+        $this->summaryEvery($automation);
+    }
 
-            if (strlen($hour) < 2) $hour = '0'.$hour;
-            if (strlen($minutes) < 2) $minutes = '0'.$minutes;
-
-            $automation->triggers['weeks_on'] = acym_translationSprintf(
-                    'ACYM_TRIGGER_WEEKS_ON_SUMMARY',
-                    implode(', ', $automation->triggers['weeks_on']['day'])
-                ).' '.acym_translationSprintf('ACYM_AT_DATE_TIME', $hour, $minutes);
+    private function summaryAsap(object $automation): void
+    {
+        if (!empty($automation->triggers['asap'])) {
+            $automation->triggers['asap'] = acym_translation('ACYM_EACH_TIME');
         }
-        if (!empty($automation->triggers['on_day_month'])) {
-            $numbers = [
-                'first' => acym_translation('ACYM_FIRST'),
-                'second' => acym_translation('ACYM_SECOND'),
-                'third' => acym_translation('ACYM_THIRD'),
-                'fourth' => acym_translation('ACYM_FOURTH'),
-                'last' => acym_translation('ACYM_LAST'),
-            ];
+    }
 
-            if (isset($automation->triggers['on_day_month']['hour'])) {
-                $hour = $automation->triggers['on_day_month']['hour'];
-                $minutes = $automation->triggers['on_day_month']['minutes'];
-            } else {
-                $hour = $this->config->get('daily_hour', '12');
-                $minutes = $this->config->get('daily_minute', '00');
-            }
-
-            if (strlen($hour) < 2) $hour = '0'.$hour;
-            if (strlen($minutes) < 2) $minutes = '0'.$minutes;
-
-            $automation->triggers['on_day_month'] = acym_translationSprintf(
-                    'ACYM_TRIGGER_ON_DAY_MONTH_SUMMARY',
-                    $numbers[$automation->triggers['on_day_month']['number']],
-                    $days[$automation->triggers['on_day_month']['day']]
-                ).' '.acym_translationSprintf('ACYM_AT_DATE_TIME', $hour, $minutes);
+    private function summaryDay(object $automation): void
+    {
+        if (empty($automation->triggers['day']) || !is_array($automation->triggers['day'])) {
+            return;
         }
-        if (!empty($automation->triggers['every'])) {
-            if ($automation->triggers['every']['type'] == 3600) $automation->triggers['every']['type'] = acym_translation('ACYM_HOURS');
-            if ($automation->triggers['every']['type'] == 86400) $automation->triggers['every']['type'] = acym_translation('ACYM_DAYS');
-            if ($automation->triggers['every']['type'] == 604800) $automation->triggers['every']['type'] = acym_translation('ACYM_WEEKS');
-            if ($automation->triggers['every']['type'] == 2628000) $automation->triggers['every']['type'] = acym_translation('ACYM_MONTHS');
-            $automation->triggers['every'] = acym_translationSprintf(
-                'ACYM_TRIGGER_EVERY_SUMMARY',
-                $automation->triggers['every']['number'],
-                $automation->triggers['every']['type']
-            );
+
+        $hour = sprintf('%02d', $automation->triggers['day']['hour']);
+        $minutes = sprintf('%02d', $automation->triggers['day']['minutes']);
+
+        $automation->triggers['day'] = acym_translationSprintf('ACYM_TRIGGER_DAY_SUMMARY', $hour, $minutes);
+    }
+
+    private function summaryWeeksOn(object $automation, array $days): void
+    {
+        if (empty($automation->triggers['weeks_on']) || !is_array($automation->triggers['weeks_on'])) {
+            return;
         }
+
+        foreach ($automation->triggers['weeks_on']['day'] as $i => $oneDay) {
+            $automation->triggers['weeks_on']['day'][$i] = $days[$oneDay];
+        }
+
+        if (isset($automation->triggers['weeks_on']['hour'])) {
+            $hour = $automation->triggers['weeks_on']['hour'];
+            $minutes = $automation->triggers['weeks_on']['minutes'];
+        } else {
+            $hour = $this->config->get('daily_hour', '12');
+            $minutes = $this->config->get('daily_minute', '00');
+        }
+
+        $hour = sprintf('%02d', $hour);
+        $minutes = sprintf('%02d', $minutes);
+
+        $automation->triggers['weeks_on'] = acym_translationSprintf(
+                'ACYM_TRIGGER_WEEKS_ON_SUMMARY',
+                implode(', ', $automation->triggers['weeks_on']['day'])
+            ).' '.acym_translationSprintf('ACYM_AT_DATE_TIME', $hour, $minutes);
+    }
+
+    private function summaryOnDayMonth(object $automation, array $days): void
+    {
+        if (empty($automation->triggers['on_day_month']) || !is_array($automation->triggers['on_day_month'])) {
+            return;
+        }
+
+        $numbers = [
+            'first' => acym_translation('ACYM_FIRST'),
+            'second' => acym_translation('ACYM_SECOND'),
+            'third' => acym_translation('ACYM_THIRD'),
+            'fourth' => acym_translation('ACYM_FOURTH'),
+            'last' => acym_translation('ACYM_LAST'),
+        ];
+
+        if (isset($automation->triggers['on_day_month']['hour'])) {
+            $hour = $automation->triggers['on_day_month']['hour'];
+            $minutes = $automation->triggers['on_day_month']['minutes'];
+        } else {
+            $hour = $this->config->get('daily_hour', '12');
+            $minutes = $this->config->get('daily_minute', '00');
+        }
+
+        $hour = sprintf('%02d', $hour);
+        $minutes = sprintf('%02d', $minutes);
+
+        $automation->triggers['on_day_month'] = acym_translationSprintf(
+                'ACYM_TRIGGER_ON_DAY_MONTH_SUMMARY',
+                $numbers[$automation->triggers['on_day_month']['number']],
+                $days[$automation->triggers['on_day_month']['day']]
+            ).' '.acym_translationSprintf('ACYM_AT_DATE_TIME', $hour, $minutes);
+    }
+
+    private function summaryEvery(object $automation): void
+    {
+        if (empty($automation->triggers['every']) || !is_array($automation->triggers['every'])) {
+            return;
+        }
+
+        if ($automation->triggers['every']['type'] == 3600) $automation->triggers['every']['type'] = acym_translation('ACYM_HOURS');
+        if ($automation->triggers['every']['type'] == 86400) $automation->triggers['every']['type'] = acym_translation('ACYM_DAYS');
+        if ($automation->triggers['every']['type'] == 604800) $automation->triggers['every']['type'] = acym_translation('ACYM_WEEKS');
+        if ($automation->triggers['every']['type'] == 2628000) $automation->triggers['every']['type'] = acym_translation('ACYM_MONTHS');
+        $automation->triggers['every'] = acym_translationSprintf(
+            'ACYM_TRIGGER_EVERY_SUMMARY',
+            $automation->triggers['every']['number'],
+            $automation->triggers['every']['type']
+        );
     }
 }

@@ -19,6 +19,7 @@ use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
 class MailerHelper extends Mailer
 {
     const NEW_TRY_ERRORS = [1, 6];
+    const REGEX_URL = '#<[^>]* href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui';
 
     // Redefine PHPMailer protected attributes for dynamic texts system
     public $to = [];
@@ -58,6 +59,7 @@ class MailerHelper extends Mailer
 
     public string $reportMessage = '';
     public bool $dtextsFailed = false;
+    private array $originalDynamicUrls = [];
 
     // Should we track the sending of a	message (used for welcoming message)
     public bool $trackEmail = false;
@@ -680,13 +682,14 @@ class MailerHelper extends Mailer
         $this->prepareBcc($mailId, $options);
         $this->prepareAttachments($mailId, $options);
         $this->replaceDynamicContent($mailId);
-        $this->prepareTracking($mailId, $receiver);
-
+        $this->extractOriginalDynamicUrls();
         if (!$this->handleDtexts($receiver)) {
             $this->dtextsFailed = true;
 
             return false;
         }
+        $this->prepareTracking($mailId, $receiver);
+
         $status = $this->send();
 
         $this->initStatistics($status, $receiver->id);
@@ -729,7 +732,7 @@ class MailerHelper extends Mailer
         $followUpClass->triggerFollowUp(intval($followUp->id), intval($userId), $delay, $mailToSkip);
     }
 
-    public function statClick(int $mailId, int $userid, bool $fromStat = false): void
+    public function statClick(int $mailId, int $userid, bool $fromStat = false, string $userkey = ''): void
     {
         if (!$fromStat && !in_array($this->type, MailClass::TYPES_WITH_STATS)) {
             return;
@@ -752,7 +755,7 @@ class MailerHelper extends Mailer
             $utmCampaign = acym_getAlias($mail->subject);
         }
 
-        preg_match_all('#<[^>]* href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);
+        preg_match_all(self::REGEX_URL, $this->body, $results);
         if (empty($results)) {
             return;
         }
@@ -899,8 +902,32 @@ class MailerHelper extends Mailer
                     continue;
                 }
 
+                $urlForRegistration = $url;
+                if (!empty($this->originalDynamicUrls[$i])) {
+                    $urlForRegistration = $this->originalDynamicUrls[$i];
+
+                    if (strpos($urlForRegistration, $autologinParams) !== false) {
+                        $isAutologin = true;
+                    }
+
+                    $urlForRegistration = str_replace(
+                        [
+                            '?'.$autologinParams.'&amp;',
+                            '?'.$autologinParams,
+                            '&amp;'.$autologinParams,
+                        ],
+                        ['?', '', ''],
+                        $urlForRegistration
+                    );
+
+                    if (preg_match('#[?&](idU=\d+)#', $url, $idUMatch)) {
+                        $separator = strpos($urlForRegistration, '?') === false ? '?' : '&amp;';
+                        $urlForRegistration .= $separator.$idUMatch[1];
+                    }
+                }
+
                 if (!$fromStat) {
-                    $mytracker = $urlClass->getUrl($url, $mailId, $userid);
+                    $mytracker = $urlClass->getUrl($urlForRegistration, $mailId, $userid, $userkey);
                 }
 
                 if (empty($mytracker)) {
@@ -909,7 +936,11 @@ class MailerHelper extends Mailer
 
                 if ($isAutologin) {
                     $mytracker .= strpos($mytracker, '?') === false ? '?' : '&amp;';
-                    $mytracker .= $autologinParams;
+                    if (!empty($this->originalDynamicUrls[$i]) && preg_match('#autoSubId=[^&"]+&amp;subKey=[^&"]+#', $url, $resolvedAutologinMatch)) {
+                        $mytracker .= $resolvedAutologinMatch[0];
+                    } else {
+                        $mytracker .= $autologinParams;
+                    }
                 }
 
                 $urls[$results[0][$i]] = str_replace($results[1][$i], $mytracker, $results[0][$i]);
@@ -1416,13 +1447,34 @@ class MailerHelper extends Mailer
         $this->links_language = $this->defaultMail[$mailId]->links_language;
     }
 
+    private function extractOriginalDynamicUrls(): void
+    {
+        $this->originalDynamicUrls = [];
+        $absoluteBody = acym_absoluteURL($this->body);
+        preg_match_all(
+            self::REGEX_URL,
+            $absoluteBody,
+            $results
+        );
+
+        if (empty($results[1])) {
+            return;
+        }
+
+        foreach ($results[1] as $i => $url) {
+            if (preg_match('#\{|%7B#i', $url)) {
+                $this->originalDynamicUrls[$i] = $url;
+            }
+        }
+    }
+
     private function prepareTracking(int $mailId, object $receiver): void
     {
         if ($this->canTrack($mailId, $receiver)) {
             $receiver->id = intval($receiver->id);
             $this->statPicture($this->mailId, $receiver->id);
             $this->body = acym_absoluteURL($this->body);
-            $this->statClick($this->mailId, $receiver->id);
+            $this->statClick($this->mailId, $receiver->id, false, $receiver->key ?? '');
             if (acym_isTrackingSalesActive()) {
                 $this->trackingSales($this->mailId, $receiver->id);
             }

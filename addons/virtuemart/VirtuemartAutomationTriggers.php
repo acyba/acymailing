@@ -25,8 +25,10 @@ trait VirtuemartAutomationTriggers
         }
     }
 
-    public function onAcymDeclareSummary_triggers(&$automation)
+    public function onAcymDeclareSummary_triggers(object $automation): void
     {
-        if (!empty($automation->triggers['vmorder'])) $automation->triggers['vmorder'] = acym_translation('ACYM_WHEN_ORDER');
+        if (!empty($automation->triggers['vmorder'])) {
+            $automation->triggers['vmorder'] = acym_translation('ACYM_WHEN_ORDER');
+        }
     }
 }

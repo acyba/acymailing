@@ -10,6 +10,9 @@ class FrontconfigurationController extends ConfigurationController
     {
         parent::__construct();
 
+        $this->menuAlias = [
+            'index.php?option=com_acym&view=frontcampaigns&layout=listing' => 'index.php?option=com_acym&view=frontcampaigns&layout=campaigns',
+        ];
         $this->allowedTasks = [
             'index.php?option=com_acym&view=frontlists&layout=listing' => [
                 'getAjax',

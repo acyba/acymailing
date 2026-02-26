@@ -65,7 +65,12 @@ class UserHelper extends AcymObject
             }
 
             if (in_array($fields[$column]->type, ['gravatar', 'file'])) {
-                $value = $uploadFolder.'userfiles'.DS.$value;
+                $userFilePath = $uploadFolder.'userfiles'.DS.$user->id.DS.$value;
+                if (file_exists(ACYM_ROOT.$userFilePath)) {
+                    $value = $userFilePath;
+                } else {
+                    $value = $uploadFolder.'userfiles'.DS.$value;
+                }
             }
 
             $profileData[] = [

@@ -101,11 +101,12 @@ trait Listing
 
         $order = json_decode(acym_getVar('string', 'order') ?? '[]', true);
 
+        $error = false;
         foreach ($order as $index => $automationId) {
             $query = 'UPDATE #__acym_automation SET `ordering` = '.intval($index + 1).' WHERE `id` = '.intval($automationId);
-            acym_query($query);
+            $error = acym_query($query) < 0 || $error;
         }
 
-        acym_sendAjaxResponse($order, [], true);
+        acym_sendAjaxResponse('', [], !$error);
     }
 }

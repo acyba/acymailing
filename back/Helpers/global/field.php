@@ -203,14 +203,18 @@ function acym_selectMultiple(
     string $optText = 'text',
     bool   $translate = false
 ): string {
+
     if (substr($name, -2) !== '[]') {
         $name .= '[]';
     }
+    $baseName = substr($name, 0, -2);
 
     $attribs['multiple'] = 'multiple';
 
     $parameters = acym_getFormattedAttributes($attribs);
-    $dropdown = '<select name="'.acym_escape($name).'"'.$parameters.'>';
+
+    $dropdown = '<input type="hidden" name="'.acym_escape($baseName).'" value="">';
+    $dropdown .= '<select name="'.acym_escape($name).'"'.$parameters.'>';
 
     foreach ($data as $oneDataKey => $oneDataValue) {
         $disabled = '';
@@ -286,6 +290,12 @@ function acym_switch(
     $id = 'switch_'.$occurrence;
     $checked = $value == 1 ? 'checked="checked"' : '';
 
+    $checkboxAriaLabel = '';
+    if (!empty($attrInput['aria-label'])) {
+        $checkboxAriaLabel = ' aria-label="'.acym_escape($attrInput['aria-label']).'"';
+        unset($attrInput['aria-label']);
+    }
+
     $attrInput['name'] = $name;
     $attrInput['data-switch'] = $id;
     $attrInput['value'] = $value;
@@ -304,7 +314,7 @@ function acym_switch(
     $inputSwitchDisabled = !$disabled ? '' : ' disabled="disabled"';
     $disabledTooltip = !$disabled || empty($disabledMessage) ? '' : ' data-acym-tooltip="'.acym_escape($disabledMessage).'"';
     $switch .= '
-        <input class="switch-input" type="checkbox" id="'.acym_escape($id).'" value="1" '.$checked.$inputSwitchDisabled.'>
+        <input class="switch-input" type="checkbox" id="'.acym_escape($id).'" value="1" tabindex="0" role="switch" '.$checked.$inputSwitchDisabled.$checkboxAriaLabel.'>
         <label class="switch-paddle switch-label'.$labelSwitchDisabled.'" '.$disabledTooltip.' for="'.acym_escape($id).'">
             <span class="switch-active" aria-hidden="true">1</span>
             <span class="switch-inactive" aria-hidden="true">0</span>

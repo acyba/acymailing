@@ -313,7 +313,7 @@ trait Edition
                 )
             ) {
                 $decoded = json_decode($data['fieldsValues'][$one->id]);
-                $defaultValue = is_null($decoded) ? $data['fieldsValues'][$one->id] : $decoded;
+                $defaultValue = is_array($decoded) ? $decoded : $data['fieldsValues'][$one->id];
             } else {
                 $defaultValue = $one->default_value;
             }
@@ -324,7 +324,7 @@ trait Edition
                 $valuesArray,
                 true,
                 !acym_isAdmin(),
-                null,
+                $data['user-information'],
                 $one->$fieldVisibility != 0
             );
         }

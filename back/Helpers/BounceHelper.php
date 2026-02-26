@@ -493,10 +493,10 @@ class BounceHelper extends AcymObject
         if (is_array($this->_message->header->sender_email)) {
             $this->_message->header->sender_email = reset($this->_message->header->sender_email);
         }
-        if (preg_match($this->detectEmail, $this->_message->header->sender_email, $results)) {
+        if (!empty($this->_message->header->sender_email) && preg_match($this->detectEmail, $this->_message->header->sender_email, $results)) {
             $this->_message->header->sender_email = $results[0];
         }
-        $this->_message->header->sender_name = strip_tags(@$this->_message->headerinfo['from']);
+        $this->_message->header->sender_name = strip_tags(@$this->_message->headerinfo['from'] ?? '');
         $this->_message->header->reply_to_email = $this->_message->header->sender_email;
         $this->_message->header->reply_to_name = $this->_message->header->sender_name;
         $this->_message->header->from_email = $this->_message->header->sender_email;

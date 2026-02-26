@@ -335,7 +335,7 @@ class FrontusersController extends UsersController
 
         // User not found
         if (empty($alreadyExists->id)) {
-            $this->displayMessage('ACYM_SUB_NOT_IN_LIST', $ajax);
+            $this->displayMessage(acym_translationSprintf('ACYM_SUB_NOT_IN_LIST', $email), $ajax);
         }
 
         $fromModuleOrWidget = acym_getVar('string', 'acysubmode', '');

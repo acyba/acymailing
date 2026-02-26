@@ -60,7 +60,19 @@ function acym_punycode(string $email, string $method = 'emailToPunycode'): strin
         return $email;
     }
 
-    return PunycodeHelper::$method($email);
+    if (strpos($email, '@') === false) {
+        return $email;
+    }
+
+    [$local, $domain] = explode('@', $email, 2);
+
+    try {
+        $domain = PunycodeHelper::toPunycode($domain);
+    } catch (\Exception $e) {
+        return $email;
+    }
+
+    return $local.'@'.$domain;
 }
 
 function acym_currentUserId(): int

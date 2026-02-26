@@ -886,9 +886,9 @@ trait Edition
                 'trigger_type' => $triggerType,
             ];
 
-            $startDate = acym_getVar('string', 'start_date', 0);
-            if (!empty($startDate)) {
-                $specificSendingParams['start_date'] = acym_date(acym_getTime($startDate), 'Y-m-d H:i:s', false);
+            $nextDate = acym_getVar('string', 'next_date', 0);
+            if (!empty($nextDate)) {
+                $currentCampaign->next_trigger = acym_getTime($nextDate);
             }
 
             if (!empty($currentCampaign->sending_params['number_generated'])) {

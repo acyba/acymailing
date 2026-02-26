@@ -51,7 +51,6 @@ function acym_fileGetContent(string $url, int $timeout = 10)
         if ($data === false) {
             echo curl_error($conn);
         }
-        curl_close($conn);
     }
 
     if (empty($data) && function_exists('fopen') && function_exists('stream_get_contents')) {

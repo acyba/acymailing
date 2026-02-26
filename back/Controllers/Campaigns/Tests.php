@@ -280,6 +280,31 @@ trait Tests
         acym_sendAjaxResponse('', ['result' => $result]);
     }
 
+    public function spamTestResults(): void
+    {
+        $url = acym_getVar('string', 'url', '');
+
+        if (empty($url) || strpos($url, 'mailtester.') === false) {
+            acym_sendAjaxResponse('Invalid URL', [], false);
+        }
+
+        $url .= '&format=json';
+
+        $response = acym_fileGetContent($url);
+
+        if ($response === false) {
+            acym_sendAjaxResponse('Could not fetch results', [], false);
+        }
+
+        $data = json_decode($response, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            acym_sendAjaxResponse('Invalid response', [], false);
+        }
+
+        acym_sendAjaxResponse('', $data, true);
+    }
+
     public function checkSPAM(): void
     {
         $message = '';

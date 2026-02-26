@@ -21,7 +21,7 @@ class UpdatemeHelper extends AcymObject
     {
         $url = ACYM_UPDATEME_API_URL.$path;
 
-        // No array merge because we need the keep the keys
+        // No array merge because we need to keep the keys
         $headers = $headers + self::getDefaultHeaders();
 
         if (ACYM_CMS === 'joomla' && acym_getCMSConfig('proxy_enable', false)) {

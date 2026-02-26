@@ -28,6 +28,10 @@ class TagClass extends AcymClass
         $tagsToInsertQuery = [];
 
         foreach ($newTags as $oneTag) {
+            if (empty($oneTag)) {
+                continue;
+            }
+
             $newTag = new \stdClass();
             $newTag->type = $type;
 

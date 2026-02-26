@@ -268,7 +268,7 @@ trait RseventsproInsertion
             $enableFeaturedPriority = !empty($parameter->enable_featured_priority);
 
             if ($enableFeaturedPriority) {
-                $parameter->order = 'featured, desc';
+                $parameter->order = 'featured,DESC';
             }
 
             $selectedArea = $this->getSelectedArea($parameter);

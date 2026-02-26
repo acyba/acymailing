@@ -32,7 +32,7 @@ trait VirtuemartInsertion
         );
 
         foreach ($customFieldsObjects as $oneCustom) {
-            $this->customOptions['{'.$oneCustom->custom_title.'}'] = [$oneCustom->custom_title];
+            $this->customOptions[$oneCustom->custom_title] = [$oneCustom->custom_title];
         }
     }
 
