@@ -101,7 +101,7 @@
 							<div class="cell small-12 medium-2">
                                 <?php echo acym_date($oneHistory->date, acym_getDateTimeFormat()); ?>
 							</div>
-							<div class="cell small-6 medium-2">
+							<div class="cell small-6 medium-2 acym__users__display__history__listing__ip">
                                 <?php echo acym_escape($oneHistory->ip); ?>
 							</div>
 							<div class="cell small-6 medium-2">

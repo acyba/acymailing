@@ -1070,6 +1070,7 @@ class UserClass extends AcymClass
             foreach ($userData as $attribute => $value) {
                 $user->$attribute = $value;
             }
+            unset($user->cms_id);
         }
 
         if (empty($user->email)) {

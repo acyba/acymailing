@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailerPhp\Mailer;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Helpers\MailerHelper;
@@ -219,11 +220,13 @@ class plgAcymElasticemail extends AcymPlugin
 
     private function handleHeaders(array &$data, MailerHelper $mailerHelper): void
     {
+        $data['content']->Headers = new stdClass();
+        $data['content']->Headers->Date = Mailer::rfcDate();
+
         if (empty($mailerHelper->CustomHeader)) {
             return;
         }
 
-        $data['content']->Headers = new stdClass();
         foreach ($mailerHelper->CustomHeader as $oneHeader) {
             $data['content']->Headers->{$oneHeader[0]} = $oneHeader[1];
         }

@@ -246,4 +246,21 @@ trait Patchv10
         $this->updateQuery('ALTER TABLE #__acym_automation ADD COLUMN  `ordering` SMALLINT(6) NOT NULL DEFAULT 0');
         $this->updateQuery('ALTER TABLE #__acym_scenario ADD COLUMN  `ordering` SMALLINT(6) NOT NULL DEFAULT 0');
     }
+
+    private function updateFor1081(): void
+    {
+        if ($this->isPreviousVersionAtLeast('10.8.1')) {
+            return;
+        }
+
+        global $acymCmsUserVars;
+        $this->updateQuery(
+            'UPDATE `#__acym_user` AS `acyuser` 
+            JOIN '.$acymCmsUserVars->table.' AS `user` 
+                ON `user`.'.$acymCmsUserVars->email.' COLLATE utf8mb4_unicode_ci = `acyuser`.`email` COLLATE utf8mb4_unicode_ci
+            SET `acyuser`.`cms_id` = `user`.'.$acymCmsUserVars->id.'
+            WHERE `acyuser`.`cms_id` > 0 
+                AND `acyuser`.`cms_id` != `user`.'.$acymCmsUserVars->id
+        );
+    }
 }

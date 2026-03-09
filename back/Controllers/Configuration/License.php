@@ -25,7 +25,6 @@ trait License
             UpdatemeHelper::getLicenseInfo();
         }
 
-
         if (!empty($resultUnlinkLicenseOnUpdateMe['message'])) {
             $this->displayMessage($resultUnlinkLicenseOnUpdateMe['message']);
         }

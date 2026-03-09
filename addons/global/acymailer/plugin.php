@@ -41,7 +41,7 @@ class plgAcymAcymailer extends AcymPlugin
         27 => 'ACYM_DOMAIN_ONLY_ON_ONE_LICENSE',
         28 => 'ACYM_EMAIL_UNDER_VERIFICATION',
         29 => 'ACYM_DOMAIN_BLOCKED',
-        30 => 'ACYM_ACCOUNT_UNDER_REVIEW',
+        30 => 'ACYM_DOMAIN_UNDER_REVIEW',
     ];
 
     private array $errorCodes = [0, 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30];
