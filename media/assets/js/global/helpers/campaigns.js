@@ -65,17 +65,17 @@ const acym_helperCampaigns = {
     },
     setDeleteAttachment: function () {
         jQuery('.acym__campaigns__attach__delete').off('click').on('click', function (evt) {
-            let allAttachment = jQuery('.acym__campaigns__attach__delete');
-            let current = jQuery(this);
+            const allAttachment = jQuery('.acym__campaigns__attach__delete');
+            const current = jQuery(this);
             let idRemove = '';
             let idDivToRemove = '';
             allAttachment.each(function (index) {
-                if (jQuery(this).attr('data-id') == current.attr('data-id')) {
+                if (jQuery(this).attr('data-id') === current.attr('data-id')) {
                     idRemove = index;
                     idDivToRemove = current.attr('data-id');
                 }
             });
-            let mailid = current.attr('data-mail');
+            const mailid = current.attr('data-mail');
             jQuery.post(
                 ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlCampaigns + '&task=deleteAttachmentAjax&id=' + idRemove + '&mail=' + mailid,
                 function (response) {

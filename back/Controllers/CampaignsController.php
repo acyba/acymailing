@@ -80,52 +80,6 @@ class CampaignsController extends AcymController
         $this->storeRedirectListing();
     }
 
-    public function cancelDashboardAndGetCampaignsAjax(): void
-    {
-        $campaignId = acym_getVar('int', 'campaignId');
-        $campaignClass = new CampaignClass();
-
-        if (empty($campaignId)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), [], false);
-        }
-
-        $campaign = new \stdClass();
-        $campaign->id = $campaignId;
-        $campaign->active = 0;
-        $campaign->draft = 1;
-
-        $campaignId = $campaignClass->save($campaign);
-        if (empty($campaignId)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_CANT_BE_SAVED'), [], false);
-        }
-
-        $campaigns = $campaignClass->getCampaignForDashboard();
-
-        if (empty($campaigns)) {
-            $result = '<h1 class="acym__dashboard__active-campaigns__none">'.acym_translation('ACYM_NONE_OF_YOUR_CAMPAIGN_SCHEDULED_GO_SCHEDULE_ONE').'</h1>';
-            acym_sendAjaxResponse('', ['content' => $result]);
-        }
-
-        $result = '';
-
-        foreach ($campaigns as $campaign) {
-            $result .= '<div class="cell grid-x acym__dashboard__active-campaigns__one-campaign">
-                        <a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12" href="'.acym_completeLink(
-                    'campaigns&task=edit&step=editEmail&id='
-                ).$campaign->id.'">'.$campaign->name.'</a>
-                        <div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center"><span>'.acym_translation(
-                    'ACYM_SCHEDULED'
-                ).' : '.acym_getDate($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3').'</span></div>
-                        <div class="medium-6 small-12"><p id="'.$campaign->id.'" class="acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray">'.acym_translation(
-                    'ACYM_CANCEL_SCHEDULING'
-                ).'</p></div>
-                    </div>
-                    <hr class="cell small-12">';
-        }
-
-        acym_sendAjaxResponse('', ['content' => $result]);
-    }
-
     public function ajaxCountNumberOfRecipients(): void
     {
         $listsSelected = acym_getVar('array', 'listsSelected', []);
@@ -242,22 +196,5 @@ class CampaignsController extends AcymController
         $mailController = new MailsController();
         $mailId = $mailController->store(true);
         acym_sendAjaxResponse(!empty($mailId) ? '' : acym_translation('ACYM_ERROR_SAVING'), ['result' => $mailId], !empty($mailId));
-    }
-
-    /**
-     * Search user emails to suggest (autocomplete on send a test)
-     */
-    public function searchTestReceiversAjax(): void
-    {
-        $search = acym_getVar('string', 'search', '');
-        $userClass = new UserClass();
-        $users = $userClass->getUsersLikeEmail($search);
-
-        $return = [];
-        foreach ($users as $oneUser) {
-            $return[] = [$oneUser->id, $oneUser->email];
-        }
-        echo json_encode($return);
-        exit;
     }
 }

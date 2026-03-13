@@ -1,7 +1,7 @@
 jQuery(function ($) {
     let timeout;
-    let appVue = new Vue({
-        'el': '#acym__forms',
+    new Vue({
+        el: '#acym__forms',
         data: () => {
             return {
                 form: acym_helper.parseJson($('#acym__form__structure').val()),

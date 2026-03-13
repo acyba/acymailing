@@ -130,7 +130,7 @@ trait ManagetextInsertion
 
     private function ifStatement(&$email, $user, $loop = 1)
     {
-        if (isset($this->noIfStatementTags[$email->id])) {
+        if (empty($email->id) || isset($this->noIfStatementTags[$email->id])) {
             return;
         }
 

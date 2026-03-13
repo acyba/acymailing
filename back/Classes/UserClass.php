@@ -935,9 +935,13 @@ class UserClass extends AcymClass
             }
 
             $source = acym_getVar('string', 'acy_source', '');
-            if (empty($user->source) && !empty($source)) $user->source = $source;
+            if (empty($user->source) && !empty($source)) {
+                $user->source = $source;
+            }
 
-            if (empty($user->key)) $user->key = acym_generateKey(14);
+            if (empty($user->key)) {
+                $user->key = acym_generateKey(14);
+            }
 
             $user->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
         } elseif (!empty($user->confirmed)) {
@@ -1071,6 +1075,7 @@ class UserClass extends AcymClass
                 $user->$attribute = $value;
             }
             unset($user->cms_id);
+            unset($user->key);
         }
 
         if (empty($user->email)) {

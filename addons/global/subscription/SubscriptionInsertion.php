@@ -237,6 +237,9 @@ trait SubscriptionInsertion
 
     public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
     {
+        if (empty($email->id)) {
+            return;
+        }
         $this->replacelisttags($email, $user, $send);
 
         // Check if we should add the List-Unsubscribe header

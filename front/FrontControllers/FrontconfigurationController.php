@@ -15,10 +15,10 @@ class FrontconfigurationController extends ConfigurationController
         ];
         $this->allowedTasks = [
             'index.php?option=com_acym&view=frontlists&layout=listing' => [
-                'getAjax',
+                'getOption',
             ],
             'index.php?option=com_acym&view=frontcampaigns&layout=campaigns' => [
-                'getAjax',
+                'getOption',
             ],
         ];
     }

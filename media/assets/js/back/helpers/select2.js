@@ -115,10 +115,10 @@ const acym_helperSelect2 = {
         });
     },
     setSelect2Email: function () {
-        let $emailsField = jQuery('.acym__multiselect__email');
-        let searchParams = {
-            'ctrl': 'campaigns',
-            'task': 'searchTestReceiversAjax'
+        const $emailsField = jQuery('.acym__multiselect__email');
+        const searchParams = {
+            ctrl: 'users',
+            task: 'searchTestReceiversAjax'
         };
 
         $emailsField.select2({

@@ -33,27 +33,27 @@ class ConfigurationController extends AcymController
         ];
     }
 
-    public function getAjax(): void
+    public function getOption(): void
     {
         acym_checkToken();
 
         $field = acym_getVar('string', 'field', '');
 
-        $whitelistedFields = [
+        $allowedFields = [
             'level',
             'unsplash_key',
             'giphy_key',
         ];
 
         if (acym_isAdmin()) {
-            $whitelistedFields[] = 'save_thumbnail';
+            $allowedFields[] = 'save_thumbnail';
         }
 
-        if (!in_array($field, $whitelistedFields)) {
+        if (!in_array($field, $allowedFields)) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_LOAD_INFORMATION'), [], false);
         }
 
-        $res = $this->config->get($field, '');
+        $res = $this->config->get($field);
 
         if (intval($res) !== 0 && empty($res)) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_LOAD_INFORMATION'), [], false);

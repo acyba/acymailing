@@ -247,20 +247,30 @@ trait Patchv10
         $this->updateQuery('ALTER TABLE #__acym_scenario ADD COLUMN  `ordering` SMALLINT(6) NOT NULL DEFAULT 0');
     }
 
-    private function updateFor1081(): void
+    private function updateFor1082(): void
     {
-        if ($this->isPreviousVersionAtLeast('10.8.1')) {
+        if ($this->isPreviousVersionAtLeast('10.8.2')) {
             return;
         }
 
         global $acymCmsUserVars;
+
         $this->updateQuery(
             'UPDATE `#__acym_user` AS `acyuser` 
             JOIN '.$acymCmsUserVars->table.' AS `user` 
-                ON `user`.'.$acymCmsUserVars->email.' COLLATE utf8mb4_unicode_ci = `acyuser`.`email` COLLATE utf8mb4_unicode_ci
+                ON CONVERT(`user`.'.$acymCmsUserVars->email.' USING utf8mb4) COLLATE utf8mb4_unicode_ci = CONVERT(`acyuser`.`email` USING utf8mb4) COLLATE utf8mb4_unicode_ci
             SET `acyuser`.`cms_id` = `user`.'.$acymCmsUserVars->id.'
             WHERE `acyuser`.`cms_id` > 0 
                 AND `acyuser`.`cms_id` != `user`.'.$acymCmsUserVars->id
+        );
+
+        $this->updateQuery(
+            'UPDATE `#__acym_user` AS `acyuser` 
+            LEFT JOIN '.$acymCmsUserVars->table.' AS `user` 
+                ON CONVERT(`user`.'.$acymCmsUserVars->email.' USING utf8mb4) COLLATE utf8mb4_unicode_ci = CONVERT(`acyuser`.`email` USING utf8mb4) COLLATE utf8mb4_unicode_ci
+            SET `acyuser`.`cms_id` = 0
+            WHERE `acyuser`.`cms_id` > 0 
+                AND `user`.'.$acymCmsUserVars->id.' IS NULL'
         );
     }
 }

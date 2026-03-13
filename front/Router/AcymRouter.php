@@ -218,6 +218,10 @@ class AcymRouter extends RouterBase
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($id);
 
+        if (empty($mail->subject)) {
+            return (string)$id;
+        }
+
         return $id.$this->separator.acym_getAlias($mail->subject);
     }
 
@@ -225,6 +229,10 @@ class AcymRouter extends RouterBase
     {
         $listClass = new ListClass();
         $list = $listClass->getOneById($id);
+
+        if (empty($list->name)) {
+            return (string)$id;
+        }
 
         return $id.$this->separator.acym_getAlias($list->name);
     }

@@ -32,36 +32,41 @@ function acymDisplayCallout(callout, i) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', ACYM_AJAX + '&page=acymailing_front&ctrl=frontusers&task=ajaxGetEnqueuedMessages');
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            let response = xhr.responseText;
-
+    fetch(ACYM_AJAX + '&page=acymailing_front&ctrl=frontusers&task=ajaxGetEnqueuedMessages', {
+        method: 'POST'
+    })
+        .then(response => response.text())
+        .then(response => {
             try {
-                let begin = response.indexOf('{');
-                let beginBrackets = response.indexOf('[');
+                const begin = response.indexOf('{');
+                const beginBrackets = response.indexOf('[');
 
-                if ((!isNaN(begin) && begin > 0) && (!isNaN(beginBrackets) && beginBrackets > 0)) {
+                if ((
+                    !isNaN(begin) && begin > 0
+                    ) && (
+                    !isNaN(beginBrackets) && beginBrackets > 0
+                    )) {
                     response = response.substring(begin);
                 }
 
-                if (response !== undefined || response !== '') response = JSON.parse(response);
+                if (response !== undefined || response !== '') {
+                    response = JSON.parse(response);
+                }
             } catch (error) {
                 console.log(error.stack);
             }
 
-            if (!response || !response.data || !response.data.messages) return;
-            if (response.data.messages.length === 0) return;
+            if (!response || !response.data || !response.data.messages || response.data.messages.length === 0) {
+                return;
+            }
 
-            let acy_messages_container = document.createElement('div');
-            acy_messages_container.innerHTML = response.data.messages;
-            while (acy_messages_container.children.length > 0) {
-                document.body.appendChild(acy_messages_container.children[0]);
+            const messagesContainer = document.createElement('div');
+            messagesContainer.innerHTML = response.data.messages;
+            while (messagesContainer.children.length > 0) {
+                document.body.appendChild(messagesContainer.children[0]);
             }
 
             acymSetCallouts();
-        }
-    };
-    xhr.send();
+        })
+        .catch(error => console.log(error.stack));
 });

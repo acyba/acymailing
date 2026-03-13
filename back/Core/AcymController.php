@@ -26,8 +26,13 @@ abstract class AcymController extends AcymObject
 
         $classname = get_class($this);
         $classname = substr($classname, strrpos($classname, '\\') + 1);
-        $ctrlpos = strpos($classname, 'Controller');
-        $this->name = strtolower(substr($classname, 0, $ctrlpos));
+        $this->name = strtolower(
+            substr(
+                $classname,
+                0,
+                strpos($classname, 'Controller')
+            )
+        );
 
         $currentClassName = 'AcyMailing\\Classes\\'.rtrim(ucfirst(str_replace(['Front', 'front'], '', $this->name)), 's').'Class';
         if (class_exists($currentClassName)) {
@@ -92,13 +97,14 @@ abstract class AcymController extends AcymObject
         $_SESSION[$this->sessionName] = [];
 
         $taskToCall = acym_getVar('string', 'cleartask', $this->defaulttask);
-        $this->call($taskToCall);
+        if (in_array($taskToCall, ['campaigns_auto', 'welcome', 'unsubscribe', $this->defaulttask])) {
+            $this->call($taskToCall);
+        }
     }
 
     public function call(string $task): void
     {
-        // If not authorized, display message and redirect to dashboard
-        if (!in_array($task, ['countResultsTotal', 'countGlobalBySegmentId', 'countResults']) && strpos($task, 'Ajax') === false && !acym_isAllowed($this->name)) {
+        if (!acym_isAllowed($this->name)) {
             acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'warning');
             acym_redirect(acym_completeLink('dashboard'));
 

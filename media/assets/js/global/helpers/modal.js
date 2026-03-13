@@ -246,7 +246,6 @@ const acym_helperModal = {
         });
     },
     setShowSelectedOrShowAllListsModalPaginationLists: function () {
-
         let buttonShowSelected = jQuery('.modal__pagination__show-selected');
         let buttonShowAll = jQuery('.modal__pagination__show-all');
 
@@ -281,11 +280,13 @@ const acym_helperModal = {
             return;
         }
 
-        let ajaxURL = ACYM_AJAX_URL
-                      + '&page=acymailing_lists&ctrl='
-                      + acym_helper.ctrlLists
-                      + '&action=acymailing_router&noheader=1&task=setAjaxListing&listsPerPage=10';
-
+        let ajaxURL = ACYM_AJAX_URL;
+        ajaxURL += '&ctrl=' + acym_helper.ctrlLists;
+        ajaxURL += '&page=acymailing_lists';
+        ajaxURL += '&action=acymailing_router';
+        ajaxURL += '&noheader=1';
+        ajaxURL += '&task=setAjaxListing';
+        ajaxURL += '&listsPerPage=10';
         ajaxURL += '&pagination_page_ajax=' + jQuery('#acym_pagination__ajax').val();
         ajaxURL += '&selectedLists=' + jQuery('#acym__modal__lists-selected').val();
         ajaxURL += '&alreadyLists=' + jQuery('#acym__user__lists_already_add').val();

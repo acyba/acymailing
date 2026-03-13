@@ -8,7 +8,7 @@ const acym_helper = {
         const controller = ACYM_IS_ADMIN ? 'configuration' : 'frontconfiguration';
         return jQuery.ajax({
             type: 'GET',
-            url: ACYM_AJAX_URL + '&ctrl=' + controller + '&task=getAjax&field=' + field,
+            url: ACYM_AJAX_URL + '&ctrl=' + controller + '&task=getOption&field=' + field,
             dataType: 'json'
         });
     },
