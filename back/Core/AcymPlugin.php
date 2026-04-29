@@ -54,8 +54,8 @@ class AcymPlugin extends AcymObject
     public string $logFilename = '';
     protected int $responseCode;
 
-    private $active;
-    public $settings;
+    private bool $active;
+    public array $settings = [];
     private array $savedSettings = [];
 
     public function __construct()
@@ -883,7 +883,7 @@ class AcymPlugin extends AcymObject
 
             case 'repeatable':
                 if (!empty($field->value)) {
-                    $values = json_decode($field->value);
+                    $values = is_string($field->value) ? json_decode($field->value) : $field->value;
                     $formattedValues = [];
                     foreach ($values as $oneSetOfValues) {
                         $formattedSet = [];
@@ -939,7 +939,7 @@ class AcymPlugin extends AcymObject
                 break;
             case 'subform':
                 if (!empty($field->value)) {
-                    $rows = json_decode($field->value, true);
+                    $rows = is_string($field->value) ? json_decode($field->value, true) : $field->value;
 
                     $formattedValues = [];
                     foreach ($rows as $values) {
@@ -1029,7 +1029,7 @@ class AcymPlugin extends AcymObject
         }
 
         if (!empty($tag->autologin)) {
-            $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:key|urlencode}';
+            $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:autologin_token|urlencode}';
         }
 
         // Retro-compatibility for add-on versions before the v8.6.0
@@ -1348,6 +1348,10 @@ class AcymPlugin extends AcymObject
      */
     public function onAcymAddSettings(array &$plugins): void
     {
+        if (method_exists($this, 'initSettings')) {
+            $this->initSettings();
+        }
+
         foreach ($plugins as $key => $plugin) {
             if ($plugin->folder_name === $this->name) {
                 if (!empty($plugin->settings)) {

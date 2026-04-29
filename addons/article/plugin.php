@@ -562,7 +562,7 @@ class plgAcymArticle extends AcymPlugin
         $varFields['{image_intro_caption}'] = '';
         $varFields['{image_fulltext_caption}'] = '';
         if (!empty($element->images)) {
-            $images = json_decode($element->images, true);
+            $images = is_string($element->images) ? json_decode($element->images, true) : $element->images;
             if (!empty($images['image_intro_caption'])) $varFields['{image_intro_caption}'] = $images['image_intro_caption'];
             if (!empty($images['image_fulltext_caption'])) $varFields['{image_fulltext_caption}'] = $images['image_fulltext_caption'];
 
@@ -730,7 +730,7 @@ class plgAcymArticle extends AcymPlugin
                 continue;
             }
 
-            $fieldParams = empty($fieldValues[0]->params) ? [] : json_decode($fieldValues[0]->params, true);
+            $fieldParams = empty($fieldValues[0]->params) ? [] : (is_string($fieldValues[0]->params) ? json_decode($fieldValues[0]->params, true) : $fieldValues[0]->params);
 
             if (!empty($fieldParams['showlabel'])) {
                 $customFields[] = [

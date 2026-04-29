@@ -133,6 +133,14 @@ trait SubscriberInsertion
             }
 
             $fieldNameKey = $oneTag->id === 'acym_language' ? 'language' : $oneTag->id;
+
+            if ($fieldNameKey === 'autologin_token' && !empty($user->id) && !empty($user->key)) {
+                $fieldValue = acym_generateAutologinToken(intval($user->id), $user->key);
+                $this->pluginHelper->formatString($fieldValue, $oneTag);
+                $tags[$i] = $fieldValue;
+                continue;
+            }
+
             $fieldId = $fieldsNameKeyIdMap[$fieldNameKey] ?? 0;
             $fieldValue = $user->$fieldNameKey ?? '';
 

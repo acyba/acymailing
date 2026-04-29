@@ -71,6 +71,7 @@ class ApiController extends AcymController
             'source',
             'confirmed',
             'confirmation_date',
+            'deactivation_date',
             'confirmation_ip',
             'tracking',
             'language',

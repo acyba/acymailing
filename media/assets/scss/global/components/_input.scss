@@ -28,7 +28,7 @@ input[type="checkbox"] {
     visibility: hidden;
     cursor: pointer;
     font-family: 'acymicon' !important;
-    @include appearance('none');
+    appearance: none;
 
     &:after {
         @supports (-ms-ime-align:auto) {

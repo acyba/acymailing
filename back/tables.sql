@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_user` (
 	`email` VARCHAR(255) NOT NULL,
 	`creation_date` DATETIME NOT NULL,
 	`active` TINYINT(1) NOT NULL DEFAULT 1,
+	`deactivation_date` DATETIME DEFAULT NULL,
 	`cms_id` INT NOT NULL DEFAULT 0,
 	`source` VARCHAR(255) NULL,
 	`confirmed` TINYINT(1) NOT NULL DEFAULT 0,

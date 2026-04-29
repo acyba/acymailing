@@ -7,13 +7,16 @@ trait SubscriptionAutomationConditions
     public function onAcymDeclareConditions(array &$conditions): void
     {
         $listClass = new ListClass();
+        $allLists = $listClass->getAllForSelect(false);
+        $listsWithAny = ['' => acym_translation('ACYM_ANY_LIST')] + $allLists;
         $list = [
             'type' => [
                 'sub' => acym_translation('ACYM_SUBSCRIBED'),
                 'unsub' => acym_translation('ACYM_UNSUBSCRIBED'),
                 'notsub' => acym_translation('ACYM_NO_SUBSCRIPTION_STATUS'),
+                'notcurrentsub' => acym_translation('ACYM_NOT_CURRENTLY_SUBSCRIBED'),
             ],
-            'lists' => $listClass->getAllForSelect(),
+            'lists' => $listsWithAny,
             'date' => [
                 'subscription_date' => acym_translation('ACYM_SUBSCRIPTION_DATE'),
                 'unsubscribe_date' => acym_translation('ACYM_UNSUBSCRIPTION_DATE'),
@@ -67,9 +70,14 @@ trait SubscriptionAutomationConditions
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<input type="number" min="0" class="intext_input_automation cell" name="acym_condition[conditions][__numor__][__numand__][acy_list_all][number]">';
         $conditions['classic']['acy_list_all']->option .= '<div class="cell shrink acym__automation__inner__text">'.acym_translation('ACYM_ACYMAILING_USERS').'</div>';
+        $listTypeAll = [
+            'sub' => acym_translation('ACYM_SUBSCRIBED'),
+            'unsub' => acym_translation('ACYM_UNSUBSCRIBED'),
+            'notsub' => acym_translation('ACYM_NO_SUBSCRIPTION_STATUS'),
+        ];
         $conditions['classic']['acy_list_all']->option .= '<div class="cell grid-x grid-margin-x margin-left-0 margin-right-0"><div class="intext_select_automation cell">';
         $conditions['classic']['acy_list_all']->option .= acym_select(
-            $list['type'],
+            $listTypeAll,
             'acym_condition[conditions][__numor__][__numand__][acy_list_all][action]',
             null,
             ['class' => 'intext_select_automation acym__select']
@@ -105,6 +113,8 @@ trait SubscriptionAutomationConditions
 
     private function processConditionAcyLists(&$query, &$options, $num)
     {
+        $isAnyList = empty($options['list']);
+
         $otherConditions = '';
         if (!empty($options['date-min'])) {
             $options['date-min'] = acym_replaceDate($options['date-min']);
@@ -125,14 +135,33 @@ trait SubscriptionAutomationConditions
             }
         }
 
-        $query->leftjoin['list'.$num] = '#__acym_user_has_list as userlist'.$num.' ON user.id = userlist'.$num.'.user_id AND userlist'.$num.'.list_id = '.intval(
-                $options['list']
-            ).$otherConditions;
-        if ($options['action'] == 'notsub') {
-            $query->where[] = 'userlist'.$num.'.user_id IS NULL';
+        if ($isAnyList) {
+            $standardListType = acym_escapeDB(ListClass::LIST_TYPE_STANDARD);
+
+            if (in_array($options['action'], ['notsub', 'notcurrentsub'])) {
+                $statusCondition = $options['action'] == 'notcurrentsub' ? 'userlist.status = 1 AND ' : '';
+                $subquery = 'SELECT userlist.user_id FROM #__acym_user_has_list AS userlist
+                             INNER JOIN #__acym_list AS list ON userlist.list_id = list.id
+                             WHERE '.$statusCondition.'list.type = '.$standardListType;
+                $query->where[] = 'user.id NOT IN ('.$subquery.')';
+            } else {
+                $status = $options['action'] === 'sub' ? '1' : '0';
+                $query->join['list'.$num] = '#__acym_user_has_list AS userlist'.$num.' ON user.id = userlist'.$num.'.user_id AND userlist'.$num.'.status = '.$status.$otherConditions;
+                $query->join['listtype'.$num] = '#__acym_list AS list'.$num.' ON userlist'.$num.'.list_id = list'.$num.'.id AND list'.$num.'.type = '.$standardListType;
+            }
         } else {
-            $status = $options['action'] == 'sub' ? '1' : '0';
-            $query->where[] = 'userlist'.$num.'.status = '.intval($status);
+            // specific list
+            $query->leftjoin['list'.$num] = '#__acym_user_has_list AS userlist'.$num.' ON user.id = userlist'.$num.'.user_id AND userlist'.$num.'.list_id = '.intval(
+                    $options['list']
+                ).$otherConditions;
+            if ($options['action'] == 'notsub') {
+                $query->where[] = 'userlist'.$num.'.user_id IS NULL';
+            } elseif ($options['action'] === 'notcurrentsub') {
+                $query->where[] = '(userlist'.$num.'.user_id IS NULL OR userlist'.$num.'.status = 0)';
+            } else {
+                $status = $options['action'] == 'sub' ? '1' : '0';
+                $query->where[] = 'userlist'.$num.'.status = '.intval($status);
+            }
         }
 
         return $query->count();
@@ -192,27 +221,41 @@ trait SubscriptionAutomationConditions
             $automation = $this->summaryDate($automation['acy_list_all'], $finalText);
         }
 
-        $this->onAcymDeclareSummary_conditionsFilters($automation, 'ACYM_CONDITION_ACY_LIST_SUMMARY', 'ACYM_IS_SUBSCRIBED', 'ACYM_IS_UNSUBSCRIBED', 'ACYM_IS_NOT_SUBSCRIBED');
+        $this->onAcymDeclareSummary_conditionsFilters(
+            $automation,
+            'ACYM_CONDITION_ACY_LIST_SUMMARY',
+            'ACYM_IS_SUBSCRIBED',
+            'ACYM_IS_UNSUBSCRIBED',
+            'ACYM_IS_NOT_SUBSCRIBED',
+            'ACYM_IS_NOT_CURRENTLY_SUBSCRIBED'
+        );
     }
 
-    private function onAcymDeclareSummary_conditionsFilters(&$automation, $key, $keySub, $keyUnsub, $keyNotSub)
-    {
+    private function onAcymDeclareSummary_conditionsFilters(
+        &$automation,
+        string $key,
+        string $keySub,
+        string $keyUnsub,
+        string $keyNotSub,
+        string $keyNotCurrentSub
+    ): void {
         if (!empty($automation['acy_list'])) {
             $finalText = '';
             $listClass = new ListClass();
             $automation['acy_list']['list'] = $listClass->getOneById($automation['acy_list']['list'] ? : 0);
-            if (empty($automation['acy_list']['list'])) {
-                $automation = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_A_LIST').'</span>';
 
-                return;
-            }
-            if ($automation['acy_list']['action'] == 'sub') $automation['acy_list']['action'] = $keySub;
-            if ($automation['acy_list']['action'] == 'unsub') $automation['acy_list']['action'] = $keyUnsub;
-            if ($automation['acy_list']['action'] == 'notsub') $automation['acy_list']['action'] = $keyNotSub;
+            $listName = empty($automation['acy_list']['list'])
+                ? acym_translation('ACYM_ANY_LIST')
+                : $automation['acy_list']['list']->name;
+
+            if ($automation['acy_list']['action'] === 'sub') $automation['acy_list']['action'] = $keySub;
+            if ($automation['acy_list']['action'] === 'unsub') $automation['acy_list']['action'] = $keyUnsub;
+            if ($automation['acy_list']['action'] === 'notsub') $automation['acy_list']['action'] = $keyNotSub;
+            if ($automation['acy_list']['action'] === 'notcurrentsub') $automation['acy_list']['action'] = $keyNotCurrentSub;
             $finalText .= acym_translationSprintf(
                     $key,
                     acym_translation($automation['acy_list']['action']),
-                    $automation['acy_list']['list']->name
+                    $listName
                 ).' ';
 
             $automation = $this->summaryDate($automation['acy_list'], $finalText);

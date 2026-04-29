@@ -34,6 +34,7 @@
                         $actions = [
                             'setActive' => acym_translation('ACYM_ENABLE'),
                             'setInactive' => acym_translation('ACYM_DISABLE'),
+                            'triggerAutomation' => acym_translation('ACYM_TRIGGER'),
                             'duplicate' => acym_translation('ACYM_DUPLICATE'),
                             'delete' => acym_translation('ACYM_DELETE'),
                         ];
@@ -79,14 +80,19 @@
 							<input id="checkbox_all" type="checkbox" name="checkbox_all">
 						</div>
 						<div class="grid-x medium-auto small-11 cell acym__listing__header__title__container">
+							<div class="medium-1 small-1 hide-for-small-only cell acym__listing__header__title">
+							</div>
 							<div class="medium-5 small-9 cell acym__listing__header__title">
                                 <?php echo acym_translation('ACYM_AUTOMATION'); ?>
 							</div>
 							<div class="medium-auto hide-for-small-only cell acym__listing__header__title">
                                 <?php echo acym_translation('ACYM_DESCRIPTION'); ?>
 							</div>
-							<div class="xxlarge-2 medium-3 text-center hide-for-small-only cell acym__listing__header__title">
+							<div class="medium-2 text-center hide-for-small-only cell acym__listing__header__title">
                                 <?php echo acym_translation('ACYM_ACTIVE'); ?>
+							</div>
+							<div class="medium-2 text-center hide-for-small-only cell acym__listing__header__title">
+                                <?php echo acym_translation('ACYM_ACTION'); ?>
 							</div>
 							<div class="medium-1 text-center hide-for-small-only cell acym__listing__header__title">
                                 <?php echo acym_translation('ACYM_ID'); ?>
@@ -102,13 +108,13 @@
 									   name="elements_checked[]"
 									   value="<?php echo acym_escape($automation->id); ?>">
 							</div>
-							<div class="cell small-1 acym_vcenter align-center acym__automation__listing__handle acym__listing__handle">
-								<div class="grabbable acym__sortable__listing__handle grid-x">
-									<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>
-									<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>
-								</div>
-							</div>
 							<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
+								<div class="medium-1 small-1 cell acym_vcenter align-center acym__automation__listing__handle acym__listing__handle">
+									<div class="grabbable acym__sortable__listing__handle grid-x">
+										<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>
+										<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>
+									</div>
+								</div>
 								<div class="grid-x medium-5 small-9 cell acym__listing__title">
 									<a class="cell auto" href="<?php echo acym_completeLink('automation&task=edit&step=info&id=').acym_escape($automation->id); ?>">
 										<h6><?php echo acym_escape(acym_translation($automation->name)); ?></h6>
@@ -131,7 +137,7 @@
                                         ?>
 									</h6>
 								</div>
-								<div class="xxlarge-2 small-3 cell acym__listing__controls grid-x">
+								<div class="medium-2 cell acym__listing__controls grid-x">
 									<div class="text-center cell">
                                         <?php
                                         $class = $automation->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
@@ -141,6 +147,21 @@
                                             ).'" class="acym_toggleable '.$class.'"></i>';
                                         ?>
 									</div>
+								</div>
+								<div class="medium-2 hide-for-small-only cell grid-x acym_vcenter align-center">
+                                    <?php if (!empty($automation->type_trigger) && $automation->type_trigger === 'classic') { ?>
+										<i class="cursor-pointer acymicon-paper-plane fastActions"
+										   data-action="triggerAutomation"
+										   data-acy-elementid="<?php echo acym_escape($automation->id); ?>"
+										   title="<?php echo acym_escape(acym_translation('ACYM_TRIGGER')); ?>"></i>
+                                    <?php } else { ?>
+                                        <?php echo acym_tooltip(
+                                            [
+                                                'hoveredText' => '<i class="acymicon-paper-plane acym__color__medium-gray"></i>',
+                                                'textShownInTooltip' => acym_translation('ACYM_MANUAL_TRIGGER_NOT_AVAILABLE_FOR_THIS_TYPE'),
+                                            ]
+                                        ); ?>
+                                    <?php } ?>
 								</div>
 								<div class="medium-1 hide-for-small-only grid-x">
 									<h6 class="cell text-center acym__listing__text"><?php echo acym_escape($automation->id); ?></h6>

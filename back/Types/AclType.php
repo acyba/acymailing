@@ -30,7 +30,7 @@ class AclType extends AcymObject
     {
         $name = 'acl_'.$page;
 
-        $selected = explode(',', $this->config->get($name, 'all'));
+        $selected = explode(',', $this->config->get($name, ACYM_ADMIN_GROUP));
 
         return acym_selectMultiple($this->groups, 'config['.$name.']', $selected, ['class' => 'acym__select']);
     }

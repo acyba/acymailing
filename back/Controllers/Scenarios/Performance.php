@@ -182,14 +182,14 @@ trait Performance
         $type = acym_getVar('string', 'type', '');
 
         if (empty($scenarioId) || empty($type) || ($type !== 'trigger' && empty($stepId))) {
-            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_OCCURRED'), [], false);
+            acym_sendAjaxResponse(acym_translation('ACYM_AN_ERROR_OCCURRED'), [], false);
         }
 
         $scenarioClass = new ScenarioClass();
         $scenario = $scenarioClass->getOneById($scenarioId);
 
         if (empty($scenario)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_OCCURRED'), [], false);
+            acym_sendAjaxResponse(acym_translation('ACYM_AN_ERROR_OCCURRED'), [], false);
         }
 
         switch ($type) {
@@ -206,7 +206,7 @@ trait Performance
         }
 
         if (empty($html)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_OCCURRED'), [], false);
+            acym_sendAjaxResponse(acym_translation('ACYM_AN_ERROR_OCCURRED'), [], false);
         }
 
         acym_sendAjaxResponse('', ['content' => $html]);
@@ -287,21 +287,21 @@ trait Performance
         $processId = acym_getVar('int', 'processId', 0);
 
         if (empty($userId) || empty($processId)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_OCCURRED'), [], false);
+            acym_sendAjaxResponse(acym_translation('ACYM_AN_ERROR_OCCURRED'), [], false);
         }
 
         $userClass = new UserClass();
         $user = $userClass->getOneById($userId);
 
         if (empty($user)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_OCCURRED'), [], false);
+            acym_sendAjaxResponse(acym_translation('ACYM_AN_ERROR_OCCURRED'), [], false);
         }
 
         $scenarioProcessClass = new ScenarioProcessClass();
         $process = $scenarioProcessClass->getOneById($processId);
 
         if (empty($process)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_OCCURRED'), [], false);
+            acym_sendAjaxResponse(acym_translation('ACYM_AN_ERROR_OCCURRED'), [], false);
         }
 
         $scenarioHistoryLineClass = new ScenarioHistoryLineClass();

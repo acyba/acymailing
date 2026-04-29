@@ -104,14 +104,14 @@ class plgAcymOutlook extends AcymPlugin
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
                 <?php if ($mustAuthenticate) { ?>
-					<button acym-data-before="jQuery.acymConfigSave();"
+					<button data-before-action="configSave"
 							data-task="loginForOAuth2Smtp"
 							class="button acy_button_submit margin-next-1">
                         <?php echo acym_translation('ACYM_AUTHENTICATE'); ?>
 					</button>
                     <?php echo $this->getCopySettingsButton($data, self::SENDING_METHOD_ID, 'wp_mail_smtp', false); ?>
                 <?php } else { ?>
-					<button acym-data-before="jQuery.acymConfigSave();"
+					<button data-before-action="configSave"
 							data-task="logoutForOAuth2Smtp"
 							class="button acy_button_submit button-secondary margin-bottom-1">
                         <?php echo acym_translation('ACYM_REVOKE_PERMISSIONS'); ?>

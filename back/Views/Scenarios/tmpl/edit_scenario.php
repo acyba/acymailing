@@ -11,14 +11,14 @@
 					<button type="button"
 							class="margin-right-1 shrink button button-secondary acy_button_submit"
 							data-task="saveExit"
-							acym-data-before="(() => acym_helperScenario.areGeneralInformationSet())()"
+							data-before-action="scenario"
 					>
                         <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 					</button>
 					<button
 							type="button"
 							class="shrink button acy_button_submit" data-task="save"
-							acym-data-before="(() => acym_helperScenario.areGeneralInformationSet())()"
+							data-before-action="scenario"
 					>
                         <?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?>
 					</button>

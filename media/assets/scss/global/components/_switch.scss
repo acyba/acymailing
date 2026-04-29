@@ -1,6 +1,6 @@
 .switch {
-    --color-switch: $color-palette-dark-blue;
-    --color-switch-disabled: $very-light-gray;
+    --color-switch: #{$color-palette-dark-blue};
+    --color-switch-disabled: #{$very-light-gray};
     --height-switch: 18px;
     --width-switch: 42px;
     --spacing-switch: 2px;

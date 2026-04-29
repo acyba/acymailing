@@ -45,3 +45,22 @@ function acym_isElementorEdition(): bool
 
     return \Elementor\Plugin::$instance->db->is_built_with_elementor($post->ID);
 }
+
+function acym_scheduleTask(array $options, int $taskId = 0): ?int
+{
+    if (wp_next_scheduled($options['name'])) {
+        return 1;
+    }
+
+    return true === wp_schedule_event(time(), $options['taskFrequency'], $options['name']) ? 1 : 0;
+}
+
+function acym_deleteScheduledTask(array $options): bool
+{
+    $timestamp = wp_next_scheduled($options['name']);
+    if ($timestamp) {
+        return true === wp_unschedule_event($timestamp, $options['name']);
+    }
+
+    return true;
+}

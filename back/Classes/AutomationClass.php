@@ -287,6 +287,67 @@ class AutomationClass extends AcymClass
         return false;
     }
 
+    public function triggerManual(array $automationIds): array
+    {
+        if (!acym_level(ACYM_ENTERPRISE) || empty($automationIds)) {
+            return [];
+        }
+
+        acym_arrayToInteger($automationIds);
+
+        $actionClass = new ActionClass();
+        $conditionClass = new ConditionClass();
+        $stepClass = new StepClass();
+
+        $executedCount = 0;
+        $skippedCount = 0;
+
+        foreach ($automationIds as $automationId) {
+            $steps = $stepClass->getStepsByAutomationId($automationId);
+            if (empty($steps)) {
+                continue;
+            }
+
+            $step = $steps[0];
+            if (!empty($step->triggers)) {
+                $step->triggers = json_decode($step->triggers, true);
+            }
+
+            if (!empty($step->triggers['type_trigger']) && $step->triggers['type_trigger'] !== 'classic') {
+                $skippedCount++;
+                continue;
+            }
+
+            $data = ['time' => time()];
+            $data['automation'] = $this->getOneById($step->automation_id);
+
+            $conditions = $conditionClass->getConditionsByStepId($step->id);
+            if (!empty($conditions)) {
+                foreach ($conditions as $condition) {
+                    if (!$this->verifyCondition($condition->conditions, $data)) {
+                        continue;
+                    }
+
+                    $actions = $actionClass->getActionsByStepId($step->id);
+                    if (empty($actions)) {
+                        continue;
+                    }
+
+                    foreach ($actions as $action) {
+                        $this->execute($action, $data);
+                    }
+                }
+            }
+
+            $executedCount++;
+        }
+
+        return [
+            'executed' => $executedCount,
+            'skipped' => $skippedCount,
+        ];
+    }
+
     public function getAutomationsAdmin(array $ids = []): array
     {
         acym_arrayToInteger($ids);

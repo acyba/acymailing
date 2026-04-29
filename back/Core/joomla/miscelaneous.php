@@ -3,6 +3,8 @@
 use AcyMailing\Classes\PluginClass;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Table\Table;
+use Joomla\Component\Scheduler\Administrator\Table\TaskTable;
 
 function acym_getGlobal(string $type): object
 {
@@ -102,4 +104,104 @@ function acym_isPluginActive(string $plugin, string $family = 'system'): bool
 
 function acym_disableCmsEditor(): void
 {
+}
+
+function acym_scheduleTask(array $options): ?int
+{
+    if (!ACYM_J40) {
+        return null;
+    }
+
+    $model = Factory::getApplication()
+                    ->bootComponent('com_scheduler')
+                    ->getMVCFactory()
+                    ->createModel('Task', 'Administrator', ['ignore_request' => true]);
+    $table = $model->getTable();
+
+    $cronKey = '';
+    if (!empty($options['config']['cron_security']) && !empty($options['config']['cron_key'])) {
+        $cronKey = '&cronKey='.$options['config']['cron_key'];
+    }
+
+    $cronUrl = acym_frontendLink('cron&task=cron'.$cronKey);
+
+    if (empty($options['taskId']) || !$table->load($options['taskId'])) {
+        $table->title = $options['title'];
+        $table->type = $options['type'];
+
+        $table->params = json_encode(
+            (object)[
+                'individual_log' => false,
+                'log_file' => '',
+                'notifications' => (object)[
+                    'success_mail' => '0',
+                    'failure_mail' => '1',
+                    'notification_failure_groups' => [
+                        ACYM_ADMIN_GROUP,
+                    ],
+                    'fatal_failure_mail' => '1',
+                    'notification_fatal_groups' => [
+                        ACYM_ADMIN_GROUP,
+                    ],
+                    'orphan_mail' => '0',
+                ],
+                'url' => $cronUrl,
+                'timeout' => 600,
+                'auth' => 0,
+                'authType' => 'Bearer',
+                'authKey' => '',
+            ]
+        );
+    } else {
+        $params = json_decode($table->params, true);
+        $params['url'] = $cronUrl;
+        $params['notifications'] = (object)$params['notifications'];
+        $table->params = json_encode((object)$params);
+    }
+
+    $table->state = 1;
+    $table->next_execution = date('Y-m-d H:i:s', time() - date('Z'));
+    $table->execution_rules = json_encode(
+        (object)[
+            'rule-type' => 'interval-minutes',
+            'interval-minutes' => $options['frequencyInMinutes'],
+            'exec-day' => date('d', time() - date('Z')),
+            'exec-time' => date('H:i:s', time() - date('Z')),
+        ]
+    );
+    $table->cron_rules = json_encode(
+        (object)[
+            'type' => 'interval',
+            'exp' => 'PT'.$options['frequencyInMinutes'].'M',
+        ]
+    );
+
+    if (!$table->check() || !$table->store()) {
+        acym_logError($table->getError());
+
+        return null;
+    }
+
+    return (int)$table->id;
+}
+
+function acym_deleteScheduledTask(array $options): bool
+{
+    if (empty($options['taskId']) || $options['taskId'] <= 0) {
+        return false;
+    }
+
+    $model = Factory::getApplication()
+                    ->bootComponent('com_scheduler')
+                    ->getMVCFactory()
+                    ->createModel('Task', 'Administrator', ['ignore_request' => true]);
+    $task = $model->getItem($options['taskId']);
+
+    if (empty($task) || $task->type !== $options['type']) {
+        return false;
+    }
+
+    $table = $model->getTable();
+
+    return (bool)$table->delete($options['taskId']);
 }

@@ -4,6 +4,7 @@ namespace AcyMailing\Helpers\Update;
 
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\ConfigurationClass;
+use AcyMailing\Controllers\ConfigurationController;
 use AcyMailing\Helpers\BounceHelper;
 
 trait Patchv10
@@ -272,5 +273,55 @@ trait Patchv10
             WHERE `acyuser`.`cms_id` > 0 
                 AND `user`.'.$acymCmsUserVars->id.' IS NULL'
         );
+    }
+
+    private function updateFor1090(ConfigurationClass $config): void
+    {
+        if ($this->isPreviousVersionAtLeast('10.9.0')) {
+            return;
+        }
+
+        $frequency = (int)$config->get('cron_frequency');
+
+        if (
+            acym_level(ACYM_ESSENTIAL)
+            && $config->get('queue_type') !== 'manual'
+            && !empty($frequency)
+            && $frequency < 900
+            && acym_isLicenseValidWeekly()
+        ) {
+            $taskId = acym_scheduleTask(
+                [
+                    'title' => 'AcyMailing – Automated tasks',
+                    'type' => 'plg_task_requests_task_get',
+                    'frequencyInMinutes' => $frequency / 60,
+                    'name' => ConfigurationController::CRON_TASK_NAME,
+                    'taskFrequency' => 'every_minute',
+                    'config' => [
+                        'cron_security' => $config->get('cron_security'),
+                        'cron_key' => $config->get('cron_key'),
+                    ],
+                ]
+            );
+
+            if (!empty($taskId) && ACYM_CMS === 'joomla') {
+                $config->saveConfig(['scheduled_task_id' => $taskId]);
+            }
+        }
+
+        $this->updateQuery('ALTER TABLE `#__acym_user` ADD COLUMN `deactivation_date` DATETIME DEFAULT NULL');
+
+        $aclPages = acym_getPagesForAcl();
+
+        $configToSave = [];
+        foreach ($aclPages as $page => $title) {
+            if ($config->get('acl_'.$page) === 'all') {
+                $configToSave['acl_'.$page] = ACYM_ADMIN_GROUP;
+            }
+        }
+
+        if (!empty($configToSave)) {
+            $config->saveConfig($configToSave);
+        }
     }
 }

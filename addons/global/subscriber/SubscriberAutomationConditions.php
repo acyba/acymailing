@@ -117,7 +117,7 @@ trait SubscriberAutomationConditions
                 'phone' === $fieldType ? AutomationHelper::TYPE_PHONE : ''
             );
         } else {
-            if (in_array($options['field'], ['creation_date', 'confirmation_date', 'last_sent_date', 'last_open_date', 'last_click_date'])) {
+            if (in_array($options['field'], ['creation_date', 'confirmation_date', 'last_sent_date', 'last_open_date', 'last_click_date', 'deactivation_date'])) {
                 $options['value'] = acym_replaceDate($options['value']);
                 if (!is_numeric($options['value'])) {
                     $options['value'] = strtotime($options['value']);

@@ -1,3 +1,21 @@
+window.AcymBeforeActions = {
+    configSave: () => jQuery.acymConfigSave(),
+    wysidSwitch: () => {
+        acym_editorWysidVersions.storeCurrentValues(true);
+        acym_editorWysidFormAction.cleanMceInput();
+    },
+    languageCampaign: () => acym_helperSelectionMultilingual.changeLanguage_campaign(acym_helperSelectionMultilingual.mainLanguage),
+    languageField: () => acym_helperSelectionMultilingual.changeLanguage_field(acym_helperSelectionMultilingual.mainLanguage),
+    languageList: () => acym_helperSelectionMultilingual.changeLanguage_list(acym_helperSelectionMultilingual.mainLanguage),
+    segmentSave: () => acym_helperSegments.beforeSave(),
+    scenario: () => acym_helperScenario.areGeneralInformationSet(),
+    editorApply: () => acym_editorWysidFormAction.cleanMceInput(),
+    editorApplyMultilingual: () => {
+        acym_editorWysidFormAction.cleanMceInput();
+        acym_editorWysidVersions.storeCurrentValues(true);
+    }
+};
+
 const acym_helper = {
     ctrlMails: ACYM_IS_ADMIN ? 'mails' : 'frontmails',
     ctrlDynamics: ACYM_IS_ADMIN ? 'dynamics' : 'frontdynamics',
@@ -76,8 +94,9 @@ const acym_helper = {
                 return false;
             }
 
-            if (jQuery(this).attr('acym-data-before')) {
-                const result = eval(jQuery(this).attr('acym-data-before'));
+            const beforeAction = jQuery(this).data('before-action');
+            if (beforeAction && typeof AcymBeforeActions[beforeAction] === 'function') {
+                const result = AcymBeforeActions[beforeAction]();
                 if (result === false) {
                     return false;
                 }

@@ -38,10 +38,10 @@ class StatsController extends AcymController
         ];
     }
 
-    public function call(string $task): void
+    public function call(string $task, bool $isFront = false): void
     {
         $task = $this->storeAndGetTask($task);
-        parent::call($task);
+        parent::call($task, $isFront);
     }
 
     private function storeAndGetTask(string $task): string

@@ -1,7 +1,7 @@
 <?php
 $beforeSave = '';
 if (!empty($data['translation_languages'])) {
-    $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_field(acym_helperSelectionMultilingual.mainLanguage)"';
+    $beforeSave = 'data-before-action="languageField"';
 }
 ?>
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>

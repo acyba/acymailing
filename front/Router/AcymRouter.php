@@ -131,6 +131,9 @@ class AcymRouter extends RouterBase
             if (in_array($name, $this->paramsNotSef)) {
                 continue;
             }
+            if (is_array($value)) {
+                $value = implode(',', $value);
+            }
 
             $segments[] = $name.$this->separator.$value;
             unset($query[$name]);

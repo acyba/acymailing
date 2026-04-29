@@ -150,6 +150,16 @@ class ToggleController extends AcymController
         acym_sendAjaxResponse('', $data);
     }
 
+    protected function userActive(int $id, string $table, string $field, int $newValue): void
+    {
+        $userClass = new UserClass();
+        if ($newValue === 0) {
+            $userClass->deactivate([$id]);
+        } else {
+            $userClass->reactivate([$id]);
+        }
+    }
+
     protected function doToggle(int $id, string $table, string $field, int $newValue): void
     {
         $updateQuery = 'UPDATE '.acym_secureDBColumn(ACYM_DBPREFIX.$table);

@@ -134,7 +134,7 @@ class PaginationHelper extends AcymObject
             $currentConfig = $listLimitSelect;
         }
 
-        return $currentConfig;
+        return $currentConfig ?: $default;
     }
 
     private function getClosest(int $search, array $arr): string

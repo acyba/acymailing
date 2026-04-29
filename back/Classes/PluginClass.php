@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymClass;
 
 class PluginClass extends AcymClass
 {
-    private array $plugins;
+    private array $plugins = [];
 
     public function __construct()
     {
@@ -14,23 +14,25 @@ class PluginClass extends AcymClass
 
         $this->table = 'plugin';
         $this->pkey = 'id';
+    }
 
+    public function getPlugins(): array
+    {
         global $acymPluginByFolderName;
         if (empty($acymPluginByFolderName)) {
             $acymPluginByFolderName = $this->getAll('folder_name');
         }
 
         $this->plugins = $acymPluginByFolderName;
-    }
 
-    public function getPlugins(): array
-    {
         return $this->plugins;
     }
 
     public function getOnePluginByFolderName(string $folderName): ?object
     {
-        return $this->plugins[$folderName] ?? null;
+        $plugins = $this->getPlugins();
+
+        return $plugins[$folderName] ?? null;
     }
 
     public function getNotUptoDatePlugins(): array
@@ -49,7 +51,8 @@ class PluginClass extends AcymClass
             return;
         }
 
-        $data = $this->plugins[$plugin->name] ?? null;
+        $plugins = $this->getPlugins();
+        $data = $plugins[$plugin->name] ?? null;
 
         // Prepare the missing entry in the db
         $newPlugin = new \stdClass();

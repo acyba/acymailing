@@ -1,5 +1,5 @@
 {
-    "max_version": "10.8.0",
+    "max_version": "10.9.0",
     "splash_content": [
         {
             "menu_title": "General",
@@ -7,20 +7,20 @@
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "Automatic campaigns execution",
-                    "desc": "It is now possible to modify the next execution date of an automatic campaign after it started."
+                    "title": "Subscription forms customization",
+                    "desc": "We added new options for subscription forms to change the field width, the popup type and the border of the popup."
                 },
                 {
-                    "title": "File type custom field",
-                    "desc": "It is now possible to download the file inserted in the file type custom field from the user edition page in the admin."
+                    "title": "New automation filters",
+                    "desc": "You can now filter users that aren't currently subscribed to any list, and the ones that never subscribed."
                 },
                 {
-                    "title": "Click tracking in emails",
-                    "desc": "The click tracking in emails now handles the URLs with customised dynamic parameters."
+                    "title": "Manual automation trigger",
+                    "desc": "You can now manually trigger an automation directly from the listing (Enterprise)."
                 },
                 {
-                    "title": "Planet Hoster compatibility",
-                    "desc": "The way dynamic content and auto-save is handled has been modified to prevent false-positives from Planet Hoster's security rules."
+                    "title": "Subscribers deactivation date",
+                    "desc": "We now save the deactivation date of subscribers, so you can filter them in automations and segments."
                 }
             ]
         },
@@ -30,24 +30,20 @@
             "title": "SEE THE IMPROVEMENTS",
             "articles": [
                 {
-                    "title": "Automatic campaigns generation",
-                    "desc": "A dedicated message has been added when automatic campaigns could not generate a new campaign."
-                },
-                {
-                    "title": "Multibyte characters handling",
-                    "desc": "Multibyte characters (Japanese, Chinese, Arabic, Hebrew...) are now handled when wrapping text of an element inserted in an email."
+                    "title": "Performance optimization",
+                    "desc": "We optimized the way AcyMailing works to reduce the number of SQL queries performed on pages."
                 },
                 {
                     "title": "Bounce handling rules",
-                    "desc": "The default bounce rules have been updated to catch more messages of blocked emails by filters."
+                    "desc": "The default bounce rules have been updated to handle even more cases."
                 },
                 {
-                    "title": "PHP 8.6 preparation",
-                    "desc": "Modifications have been made to prepare for PHP 8.6."
+                    "title": "Sending domains validation",
+                    "desc": "Sending domains are now regularly re-checked with our sending service to make sure authentication remains correct."
                 },
                 {
-                    "title": "Unsubscribe page accessibility",
-                    "desc": "We have improved the accessibility of the unsubscribe page."
+                    "title": "Lighter campaign editing",
+                    "desc": "The media manager is no longer preloaded when editing a campaign — it now loads only when you open it in the editor."
                 }
             ]
         },
@@ -57,44 +53,16 @@
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "Front-end router improvements",
-                    "desc": "The front-end router has been improved for the AcyMailing unsubscribe and online pages."
+                    "title": "RSEventsPro filtering",
+                    "desc": "New options to filter RSEventsPro events by locations, speakers, tags and sponsors when inserting them in emails."
                 },
                 {
-                    "title": "Non-latin characters for user import",
-                    "desc": "Better handling of email addresses with non-latin characters in the domain part when importing users."
+                    "title": "Custom event registration links",
+                    "desc": "Custom event registration links are now taken into account for events inserted in emails."
                 },
                 {
-                    "title": "More article custom fields possibilities",
-                    "desc": "The article custom fields can now be used in custom views when inserting articles in an email."
-                },
-                {
-                    "title": "EasySocial links handling",
-                    "desc": "We added SEF handling for the EasySocial links."
-                },
-                {
-                    "title": "Front-end campaign edition",
-                    "desc": "An issue has been fixed on the front-end campaign edition for the latest version of Joomla 6."
-                },
-                {
-                    "title": "Falang integration for multilingual",
-                    "desc": "The integration with Falang for inserted articles now correctly auto-detects the language when the multilingual option is active along with the language filter plugin."
-                },
-                {
-                    "title": "RSEventsPro grouping",
-                    "desc": "Grouping events by featured status has been fixed for RSEventsPro."
-                },
-                {
-                    "title": "RSEventsPro events insertion",
-                    "desc": "The insertion of RSEventsPro events by category in emails has been fixed when no settings are available on the categories."
-                },
-                {
-                    "title": "Joomla CLI installation",
-                    "desc": "The installation via Joomla CLI has been fixed."
-                },
-                {
-                    "title": "Integrations with empty descriptions",
-                    "desc": "The integrations for DOCman and JSW CRM now correctly handle items with empty descriptions."
+                    "title": "Article insertion fix",
+                    "desc": "We fixed a rare bug that could prevent articles from being inserted into emails."
                 }
             ]
         },
@@ -104,16 +72,12 @@
             "title": "WHAT CHANGED FOR WORDPRESS",
             "articles": [
                 {
-                    "title": "WooCommerce product insertion",
-                    "desc": "We fixed an error message preventing last product insertion in the editor for WooCommerce."
+                    "title": "Contact Form 7 compatibility",
+                    "desc": "Our integration with Contact Form 7 is now compatible with their latest version."
                 },
                 {
-                    "title": "User auto-creation",
-                    "desc": "The new account registration could lead to an error in some cases when the auto user creation was active."
-                },
-                {
-                    "title": "WooCommerce follow-up campaigns",
-                    "desc": "Fixed the default values for the products and categories options in order based follow-up"
+                    "title": "Contact Form 7 custom fields",
+                    "desc": "You can now add AcyMailing custom fields in Contact Form 7 forms."
                 }
             ]
         },
@@ -123,64 +87,36 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Mail-Tester integration",
-                    "desc": "We changed the integration with Mail-Tester due to their new version, the spam test is now working again."
+                    "title": "Fixed start date of automatic campaigns",
+                    "desc": "We fixed an issue impacting the starting date of automatic campaigns."
                 },
                 {
-                    "title": "Notification messages",
-                    "desc": "An issue has been fixed when notification messages are configured to be sent to a non existing user and that user could not be automatically added."
+                    "title": "A/B testing scheduling",
+                    "desc": "We fixed a bug where a scheduled A/B test campaign was sent to the entire list instead of a percentage."
                 },
                 {
-                    "title": "Special characters in email addresses",
-                    "desc": "The special characters option for email addresses was not working as intended, special characters are now correctly rejected when a new user is created."
+                    "title": "Campaign recipients summary",
+                    "desc": "Disabled subscribers are no longer counted on the summary step of a campaign when showing the number of recipients."
                 },
                 {
-                    "title": "Styling for category titles",
-                    "desc": "The editor styling is now correctly applied to the category title when inserting items by category in emails and grouping by category."
+                    "title": "Saving without config rights",
+                    "desc": "Saving a campaign or template now works correctly for users without configuration access rights."
                 },
                 {
-                    "title": "Automations and scenarios ordering",
-                    "desc": "The automations and scenarios ordering has been fixed on listings."
+                    "title": "AcyChecker name validation on subscription forms",
+                    "desc": "We fixed the AcyChecker name check on user subscription that was not working in some cases."
                 },
                 {
-                    "title": "Firefox fixes",
-                    "desc": "On firefox, the plugins card are now correctly displayed and not mirrored."
+                    "title": "CSP compatibility",
+                    "desc": "Some code structure has been improved to avoid CSP blockage when saving a campaign."
                 },
                 {
-                    "title": "Redirection after email edition",
-                    "desc": "We fixed the redirection issue that could occur after a cancel or a save and exit in the email edition from the configuration page."
+                    "title": "Security",
+                    "desc": "Global security issues have been fixed."
                 },
                 {
-                    "title": "Subscription forms messages",
-                    "desc": "We fixed issues that could cause errors in some subscription forms and on automation configurations."
-                },
-                {
-                    "title": "Automation summary",
-                    "desc": "A special case has been handled on the automation summary."
-                },
-                {
-                    "title": "Custom fields display",
-                    "desc": "We fixed some custom fields in the subscriber edition page that were not allowing you to empty their value."
-                },
-                {
-                    "title": "Bounce handling",
-                    "desc": "We fixed a deprecated warning that could occur when you manually triggered bounce handling."
-                },
-                {
-                    "title": "GIF block",
-                    "desc": "Google has disabled Tenor, their GIF integration API. The GIF block has been updated to use the Giphy API instead."
-                },
-                {
-                    "title": "reCaptcha v3",
-                    "desc": "The integration with the reCaptcha v3 has been fixed for forms that were submitted with a page reload."
-                },
-                {
-                    "title": "Scenario performance page",
-                    "desc": "The display of the right panel in the scenario performance page has been fixed"
-                },
-                {
-                    "title": "Subscription forms for license downgrade",
-                    "desc": "We fixed an issue that caused unintended behavior when you had a subscription form and downgraded your license from the Enterprise version."
+                    "title": "Queued campaigns listing",
+                    "desc": "A deprecation message has been fixed on the queued campaigns listing."
                 }
             ]
         }

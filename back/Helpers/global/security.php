@@ -203,10 +203,12 @@ function acym_noCache(): void
     acym_header('Expires: Wed, 17 Sep 1975 21:32:10 GMT');
 }
 
-function acym_isAllowed(string $controller): bool
+function acym_isAllowed(string $controller, string $task = ''): bool
 {
+    $controller = str_replace('front', '', $controller);
+
     $config = acym_config();
-    $globalAccess = $config->get('acl_'.$controller, 'all');
+    $globalAccess = $config->get('acl_'.$controller, ACYM_ADMIN_GROUP);
     if ($globalAccess === 'all') {
         return true;
     }
@@ -228,6 +230,100 @@ function acym_isAllowed(string $controller): bool
         if (in_array($oneGroup, $globalAccess)) {
             return true;
         }
+    }
+
+    // Having access to campaigns gives access to some email actions
+    if ($controller === 'mails' && in_array($task, ['autoSave', 'getTemplateAjax']) && acym_isAllowed('campaigns')) {
+        return true;
+    }
+
+    // The language management is made in the configuration
+    if ($controller === 'language' && acym_isAllowed('configuration')) {
+        return true;
+    }
+
+    // When editing a campaign or a template, the user might need attachments
+    if ($controller === 'file' && (acym_isAllowed('campaigns') || acym_isAllowed('mails'))) {
+        return true;
+    }
+
+    // When editing a campaign, one can need to get a segment's number of affected users from the segment step
+    if (in_array($task, ['countResultsTotal', 'countGlobalBySegmentId', 'countResults']) && acym_isAllowed('campaigns')) {
+        return true;
+    }
+
+    // When editing an email, lists might be loaded with ajax
+    if ($controller === 'lists' && $task === 'setAjaxListing' && (acym_isAllowed('campaigns') || acym_isAllowed('mails'))) {
+        return true;
+    }
+
+    // The zones are used in the editor
+    if (
+        $controller === 'zones'
+        && (
+            acym_isAllowed('campaigns')
+            || acym_isAllowed('mails')
+        )
+    ) {
+        return true;
+    }
+
+    // Togglable icons are located in most features
+    if (
+        $controller === 'toggle'
+        && (
+            acym_isAllowed('campaigns')
+            || acym_isAllowed('mails')
+            || acym_isAllowed('automations')
+            || acym_isAllowed('segments')
+            || acym_isAllowed('scenarios')
+            || acym_isAllowed('forms')
+            || acym_isAllowed('users')
+            || acym_isAllowed('lists')
+            || acym_isAllowed('fields')
+            || acym_isAllowed('bounces')
+        )
+    ) {
+        return true;
+    }
+
+    // The add-ons are used in the editor and the filters
+    if (
+        $controller === 'dynamics'
+        && (
+            acym_isAllowed('campaigns')
+            || acym_isAllowed('mails')
+            || acym_isAllowed('automations')
+            || acym_isAllowed('segments')
+            || acym_isAllowed('scenarios')
+        )
+    ) {
+        return true;
+    }
+
+    // The entity select is used in multiple features
+    if (
+        $task === 'loadEntityFront'
+        && (
+            acym_isAllowed('campaigns')
+            || acym_isAllowed('mails')
+            || acym_isAllowed('users')
+            || acym_isAllowed('lists')
+        )
+    ) {
+        return true;
+    }
+
+    // An option can be needed when editing an email or visiting the add-ons listing
+    if (
+        $task === 'getOption'
+        && (
+            acym_isAllowed('campaigns')
+            || acym_isAllowed('mails')
+            || acym_isAllowed('plugins')
+        )
+    ) {
+        return true;
     }
 
     return false;
@@ -258,4 +354,55 @@ function acym_isLicenseValidWeekly(): bool
     }
 
     return $expirationDate >= time();
+}
+
+/**
+ * Generate a time-limited autologin token for a subscriber.
+ * Token format: hex(timestamp).hmac_signature
+ * The token is bound to the subscriber ID and their secret key, and signed with the site's auth salt.
+ */
+function acym_generateAutologinToken(int $subId, string $subKey): string
+{
+    $timestamp = time();
+    $payload = $subId.'|'.$timestamp;
+    $secret = $subKey.acym_getSiteSalt();
+    $signature = hash_hmac('sha256', $payload, $secret);
+
+    return dechex($timestamp).'.'.$signature;
+}
+
+/**
+ * Verify an autologin token. Returns true if the token is valid and not expired.
+ *
+ * @param int    $subId     The subscriber ID
+ * @param string $token     The token from the URL
+ * @param string $storedKey The subscriber's stored secret key
+ */
+function acym_verifyAutologinToken(int $subId, string $token, string $storedKey): bool
+{
+    $parts = explode('.', $token, 2);
+    if (count($parts) !== 2) {
+        return false;
+    }
+
+    $timestamp = @hexdec($parts[0]);
+    $signature = $parts[1];
+
+    if (empty($timestamp) || $timestamp <= 0) {
+        return false;
+    }
+
+    $config = acym_config();
+    $maxAgeHours = intval($config->get('autologin_token_duration', 48));
+    $maxAge = $maxAgeHours * 3600;
+
+    if ((time() - $timestamp) > $maxAge) {
+        return false;
+    }
+
+    $payload = $subId.'|'.$timestamp;
+    $secret = $storedKey.acym_getSiteSalt();
+    $expectedSignature = hash_hmac('sha256', $payload, $secret);
+
+    return hash_equals($expectedSignature, $signature);
 }

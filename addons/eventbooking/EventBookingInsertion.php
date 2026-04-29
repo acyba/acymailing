@@ -566,9 +566,11 @@ trait EventBookingInsertion
             $customFields[] = [$varFields['{cut}'], acym_translation('EB_CUT_OFF_DATE')];
         }
 
-        $varFields['{indiv}'] = [];
         if (in_array('indiv', $tag->display)) {
             $reglink = $this->finalizeLink('index.php?option=com_eventbooking&task=register.individual_registration&event_id='.$tag->id.$menuId, $tag);
+            if (!empty($element->registration_handle_url)) {
+                $reglink = $element->registration_handle_url;
+            }
             $varFields['{individualregbutton}'] = '<a class="event_registration eb_indivreg" href="'.$reglink.'" target="_blank">'.acym_translation(
                     'EB_REGISTER_INDIVIDUAL'
                 ).'</a> ';
@@ -577,12 +579,11 @@ trait EventBookingInsertion
 
         if (in_array('group', $tag->display)) {
             $reglink = acym_frontendLink('index.php?option=com_eventbooking&task=register.group_registration&event_id='.$tag->id, false);
+            if (!empty($element->registration_handle_url)) {
+                $reglink = $element->registration_handle_url;
+            }
             $varFields['{groupregbutton}'] = '<a class="event_registration eb_groupreg" href="'.$reglink.'" target="_blank">'.acym_translation('EB_REGISTER_GROUP').'</a> ';
             $customFields[] = [$varFields['{groupregbutton}']];
-        }
-        $varFields['{indiv}'] = implode(' ', $varFields['{indiv}']);
-        if (in_array('indiv', $tag->display) || in_array('group', $tag->display)) {
-            $customFields[] = [$varFields['{indiv}']];
         }
 
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation(

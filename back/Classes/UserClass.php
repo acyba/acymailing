@@ -939,9 +939,7 @@ class UserClass extends AcymClass
                 $user->source = $source;
             }
 
-            if (empty($user->key)) {
-                $user->key = acym_generateKey(14);
-            }
+            $user->key = acym_generateKey(14);
 
             $user->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
         } elseif (!empty($user->confirmed)) {
@@ -956,6 +954,16 @@ class UserClass extends AcymClass
             }
         } else {
             $oldUser = $this->getOneByIdWithCustomFields($user->id);
+        }
+
+        if (!empty($user->id) && isset($user->active) && !empty($oldUser)) {
+            $wasActive = isset($oldUser['active']) ? (int)$oldUser['active'] : 1;
+            $isNowActive = (int)$user->active;
+            if ($wasActive === 1 && $isNowActive === 0) {
+                $user->deactivation_date = acym_date('now', 'Y-m-d H:i:s');
+            } elseif ($wasActive === 0 && $isNowActive === 1) {
+                $user->deactivation_date = null;
+            }
         }
 
         foreach ($user as $oneAttribute => $value) {
@@ -992,6 +1000,7 @@ class UserClass extends AcymClass
                         $acymCmsUserVars->email
                     ).' = '.acym_escapeDB($user->email)
                 );
+
                 if (!empty($userCmsID)) $user->cms_id = $userCmsID;
             }
             if ($this->triggers) {
@@ -1063,8 +1072,8 @@ class UserClass extends AcymClass
 
     public function saveForm(bool $ajax = false): bool
     {
-        $allowUserModifications = (bool)($this->config->get('allow_modif', 'data') == 'all') || $this->allowModif;
-        $allowSubscriptionModifications = (bool)($this->config->get('allow_modif', 'data') != 'none') || $this->allowModif;
+        $allowUserModifications = $this->config->get('allow_modif', 'data') === 'all' || $this->allowModif;
+        $allowSubscriptionModifications = $this->config->get('allow_modif', 'data') !== 'none' || $this->allowModif;
 
         $user = new \stdClass();
         $connectedUser = $this->identify(true, 'userId', 'userKey');
@@ -1236,9 +1245,34 @@ class UserClass extends AcymClass
         $this->confirmationSentError = $mailerHelper->reportMessage;
     }
 
-    public function deactivate(int $userId): void
+    public function setInactive(array $elements): void
     {
-        acym_query('UPDATE `#__acym_user` SET `active` = 0 WHERE `id` = '.intval($userId));
+        $this->deactivate($elements);
+    }
+
+    public function deactivate(array $userIds): void
+    {
+        $userIds = array_map('intval', $userIds);
+        $userIds = array_filter($userIds);
+
+        if (empty($userIds)) return;
+
+        acym_query('UPDATE `#__acym_user` SET `active` = 0, `deactivation_date` = UTC_TIMESTAMP() WHERE `id` IN ('.implode(',', $userIds).')');
+    }
+
+    public function setActive(array $elements): void
+    {
+        $this->reactivate($elements);
+    }
+
+    public function reactivate(array $userIds): void
+    {
+        $userIds = array_map('intval', $userIds);
+        $userIds = array_filter($userIds);
+
+        if (empty($userIds)) return;
+
+        acym_query('UPDATE `#__acym_user` SET `active` = 1, `deactivation_date` = NULL WHERE `id` IN ('.implode(',', $userIds).')');
     }
 
     public function confirm(int $userId): void

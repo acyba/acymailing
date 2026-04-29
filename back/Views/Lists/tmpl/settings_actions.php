@@ -7,7 +7,7 @@ if ($data['currentTab'] === $data['tabs']['subscribers']) {
     }
 } elseif ($data['currentTab'] !== $data['tabs']['unsubscriptions']) {
     if (!empty($data['translation_languages'])) {
-        $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_list(acym_helperSelectionMultilingual.mainLanguage)"';
+        $beforeSave = 'data-before-action="languageList"';
     }
 }
 ?>

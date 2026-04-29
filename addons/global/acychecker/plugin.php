@@ -97,7 +97,7 @@ class plgAcymAcychecker extends AcymPlugin
 
         $this->loadAcychecker();
 
-        $cteConfig = new ConfigurationClass();
+        $cteConfig = ConfigurationClass::getConfiguration();
         $conditions = $cteConfig->get('registration_conditions');
 
         // If no condition is selected, return

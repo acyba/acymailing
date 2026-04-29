@@ -102,11 +102,11 @@ abstract class AcymController extends AcymObject
         }
     }
 
-    public function call(string $task): void
+    public function call(string $task, bool $isFront = false): void
     {
-        if (!acym_isAllowed($this->name)) {
+        if (!in_array($task, $this->publicFrontTasks, true) && !acym_isAllowed($this->name, $task) && $this->name !== 'dashboard') {
             acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'warning');
-            acym_redirect(acym_completeLink('dashboard'));
+            acym_redirect($isFront ? ACYM_LIVE : acym_completeLink('dashboard'));
 
             return;
         }

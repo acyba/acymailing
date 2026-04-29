@@ -17,8 +17,8 @@
         position: absolute;
         right: 10px;
         top: 12px;
-        @include transition-duration(.3s);
-        @include transition-property(opacity);
+        transition-duration: .3s;
+        transition-property: opacity;
 
         i.acymicon-close {
             font-size: 16px;

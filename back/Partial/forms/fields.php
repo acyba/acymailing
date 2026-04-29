@@ -38,5 +38,29 @@
 		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields > *{
 			margin: <?php echo in_array($form->type, [$form->formClass::SUB_FORM_TYPE_FOOTER, $form->formClass::SUB_FORM_TYPE_HEADER]) ? 'auto 10px' : '10px auto'; ?> !important;
 		}
+
+		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield{
+			width: 100%;
+			box-sizing: border-box
+		}
+
+		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
+		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield select,
+		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield textarea{
+			display: block;
+			width: <?php echo intval($form->settings['fields']['fields_width']) ?? 100; ?>%;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 1rem;
+			box-sizing: border-box
+		}
+
+		@media screen and (max-width: 768px){
+			<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
+			<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield select,
+			<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield textarea{
+				width: 100%
+			}
+		}
 	</style>
 </div>

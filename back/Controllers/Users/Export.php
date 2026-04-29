@@ -50,6 +50,9 @@ trait Export
 
         $fields = acym_getColumns('user');
 
+        // Never expose sensitive fields in the export UI
+        $fields = array_diff($fields, ['key', 'id']);
+
         // Get custom fields and exclude name and email as we already have them
         $fieldClass = new FieldClass();
         $customFields = $fieldClass->getAll();
@@ -125,6 +128,10 @@ trait Export
         $fieldClass = new FieldClass();
         $customFields = $fieldClass->getAll();
 
+        $forbiddenFields = ['key', 'id'];
+        $fieldsToExport = array_diff($fieldsToExport, $forbiddenFields);
+        $tableFields = array_diff($tableFields, $forbiddenFields);
+
         $customFieldsToExport = [];
         $specialFieldsToExport = [];
         foreach ($fieldsToExport as $i => $oneField) {
@@ -138,9 +145,6 @@ trait Export
         }
 
         $notAllowedFields = array_diff($fieldsToExport, $tableFields);
-        if (in_array('id', $fieldsToExport)) {
-            $notAllowedFields[] = 'id';
-        }
         if (!empty($notAllowedFields)) {
             $this->exportError(acym_translationSprintf('ACYM_NOT_ALLOWED_FIELDS', implode(', ', $notAllowedFields), implode(', ', $tableFields)));
         }

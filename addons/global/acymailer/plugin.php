@@ -11,9 +11,9 @@ class plgAcymAcymailer extends AcymPlugin
     const SENDING_METHOD_API_URL = 'https://api.acymailer.com/';
     const CREDITS_RELOAD_DELAY = 900;
     const TRANSLATIONS = [
-        0 => 'ACYM_ERROR_OCCURRED',
+        0 => 'ACYM_ERROR_SEE_LOGS',
         1 => 'ACYM_PLEASE_INSTALL_LATEST_VERSION',
-        2 => 'ACYM_ERROR_OCCURRED_WHEN_TRYING_TO_SEND_THE_EMAIL',
+        2 => 'ACYM_EMAIL_SEND_FAIL_SEE_LOGS',
         3 => 'ACYM_DOMAIN_NOT_ATTACHED_TO_THE_SITE',
         4 => 'ACYM_NOT_ALLOWED_TO_DELETE_THIS_DOMAIN',
         5 => 'ACYM_DOMAIN_DOES_NOT_EXIST',
@@ -232,7 +232,20 @@ class plgAcymAcymailer extends AcymPlugin
                                 <?php echo acym_translation('ACYM_NO_DOMAINS_YET'); ?>
 							</div>
                         <?php } else {
-                            foreach ($domains as $domain) {
+                            foreach ($domains as &$domain) {
+                                $isValid = true;
+                                foreach ($domain['CnameRecords'] as $i => $cnameRecord) {
+                                    $domain['CnameRecords'][$i]['isValid'] = $this->checkCnameEntry($cnameRecord['name'], $cnameRecord['value']);
+                                    $isValid = $isValid && $domain['CnameRecords'][$i]['isValid'];
+                                    $domain['CnameRecords'][$i]['tooltipMessages'] = $this->cnameErrors;
+									$this->cnameErrors = [];
+                                }
+
+                                if (!$isValid && $domain['status'] === 'SUCCESS') {
+                                    $domain['status'] = 'PENDING';
+                                    $this->config->saveConfig([self::SENDING_METHOD_ID.'_domains' => json_encode($domains)]);
+                                }
+
                                 $bounceRateParams = $this->getRateColor(
                                     empty($domain['bounce_rate']) ? 0 : $domain['bounce_rate'],
                                     empty($domain['allowed_bounce_rate']) ? 0 : $domain['allowed_bounce_rate'],
@@ -263,6 +276,7 @@ class plgAcymAcymailer extends AcymPlugin
                                                 $iconClass = 'acymicon-access-time acym__color__orange notValidated';
                                                 $tooltipText = acym_translation('ACYM_A_CNAME_MISSING');
                                         }
+
                                         echo acym_tooltip(
                                             [
                                                 'hoveredText' => '<i class="acym__config__acymailer__status__icon '.$iconClass.'"></i>',
@@ -311,16 +325,15 @@ class plgAcymAcymailer extends AcymPlugin
 													</div>
                                                     <?php
                                                     foreach ($domain['CnameRecords'] as $cnameRecord) {
-                                                        if ($this->checkCnameEntry($cnameRecord['name'], $cnameRecord['value'])) {
+                                                        if ($cnameRecord['isValid']) {
                                                             $cnameStatus = '<i class="acym__config__acymailer__status__icon acymicon-check-circle acym__color__green"></i>';
                                                         } else {
                                                             $cnameStatus = acym_tooltip(
                                                                 [
                                                                     'hoveredText' => '<i class="acym__config__acymailer__status__icon acymicon-close acym__color__red"></i>',
-                                                                    'textShownInTooltip' => implode('<br/>', $this->cnameErrors),
+                                                                    'textShownInTooltip' => implode('<br/>', $cnameRecord['tooltipMessages']),
                                                                 ]
                                                             );
-                                                            $this->cnameErrors = [];
                                                         }
                                                         ?>
 														<div class="cell grid-x grid-margin-x margin-left-0 align-middle acym__listing__row">
@@ -371,8 +384,10 @@ class plgAcymAcymailer extends AcymPlugin
                                         ?>
 									</div>
 								</div>
-                            <?php } ?>
-                        <?php } ?>
+                                <?php
+                            }
+                        }
+                        ?>
 					</div>
 					<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings padding-top-1">
 						<div class="cell grid-x">
@@ -598,12 +613,11 @@ class plgAcymAcymailer extends AcymPlugin
         }
 
         $remainingDomains = $this->checkDomainsDNS($domains);
-
         if (empty($remainingDomains)) {
             acym_sendAjaxResponse('', ['domains' => $domains]);
         }
 
-        $prepareDomains = array_map(
+        $preparedDomains = array_map(
             function ($domain) {
                 return $domain['domain'];
             },
@@ -612,7 +626,7 @@ class plgAcymAcymailer extends AcymPlugin
 
         $responseApi = $this->callApiSendingMethod(
             'getDomainStatus',
-            ['domains' => $prepareDomains],
+            ['domains' => $preparedDomains],
             [],
             'POST'
         );
@@ -633,7 +647,7 @@ class plgAcymAcymailer extends AcymPlugin
                 continue;
             }
 
-            if (empty($responseApi['data'][$domainName]['code'])) {
+            if (!isset($responseApi['data'][$domainName]['code'])) {
                 $domains[$key] = array_merge($domains[$key], $responseApi['data'][$domainName]);
                 continue;
             }
@@ -654,10 +668,6 @@ class plgAcymAcymailer extends AcymPlugin
                 ),
                 'error'
             );
-
-            if (!empty($responseApi['data'][$domainName]['logs'])) {
-                acym_logError($responseApi['data'][$domainName]['logs'], self::SENDING_METHOD_ID);
-            }
         }
 
         $this->config->saveConfig([self::SENDING_METHOD_ID.'_domains' => json_encode($domains)]);
@@ -1182,11 +1192,6 @@ class plgAcymAcymailer extends AcymPlugin
             // No DNS entries yet, we have to check the domain to get DNS entries
             if (empty($oneDomain['CnameRecords'])) {
                 $remainingDomains[] = $oneDomain;
-                continue;
-            }
-
-            // Domain already valid, do not check again
-            if ($oneDomain['status'] == 'SUCCESS') {
                 continue;
             }
 

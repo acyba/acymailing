@@ -156,7 +156,7 @@
                 height: 40px;
                 margin: 0;
                 width: 100%;
-                @include transition-duration(0.3s);
+                transition-duration: 0.3s;
                 position: relative;
 
                 @media only screen and (max-width: 639px) {
@@ -166,8 +166,8 @@
                 i {
                     font-size: 20px;
                     vertical-align: sub;
-                    @include transition-property(transform);
-                    @include transition-duration(0.3s);
+                    transition-property: transform;
+                    transition-duration: 0.3s;
                 }
 
                 &.acym__wysid__right__toolbar__p__open {

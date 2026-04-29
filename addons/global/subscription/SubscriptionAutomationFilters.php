@@ -7,13 +7,16 @@ trait SubscriptionAutomationFilters
     public function onAcymDeclareFilters(array &$filters): void
     {
         $listClass = new ListClass();
+        $allLists = $listClass->getAllForSelect(false);
+        $listsWithAny = ['' => acym_translation('ACYM_ANY_LIST')] + $allLists;
         $list = [
             'type' => [
                 'sub' => acym_translation('ACYM_SUBSCRIBED'),
                 'unsub' => acym_translation('ACYM_UNSUBSCRIBED'),
                 'notsub' => acym_translation('ACYM_NO_SUBSCRIPTION_STATUS'),
+                'notcurrentsub' => acym_translation('ACYM_NOT_CURRENTLY_SUBSCRIBED'),
             ],
-            'lists' => $listClass->getAllForSelect(),
+            'lists' => $listsWithAny,
             'date' => [
                 'subscription_date' => acym_translation('ACYM_SUBSCRIPTION_DATE'),
                 'unsubscribe_date' => acym_translation('ACYM_UNSUBSCRIPTION_DATE'),
@@ -87,6 +90,6 @@ trait SubscriptionAutomationFilters
 
     public function onAcymDeclareSummary_filters(&$automation)
     {
-        $this->onAcymDeclareSummary_conditionsFilters($automation, 'ACYM_FILTER_ACY_LIST_SUMMARY', 'ACYM_SUBSCRIBED', 'ACYM_UNSUBSCRIBED', 'ACYM_NOT_SUBSCRIBED');
+        $this->onAcymDeclareSummary_conditionsFilters($automation, 'ACYM_FILTER_ACY_LIST_SUMMARY', 'ACYM_SUBSCRIBED', 'ACYM_UNSUBSCRIBED', 'ACYM_NOT_SUBSCRIBED', 'ACYM_NOT_CURRENTLY_SUBSCRIBED');
     }
 }

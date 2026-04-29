@@ -58,7 +58,7 @@ class plgAcymSendgrid extends AcymPlugin
             if (!empty($response['error_curl'])) {
                 acym_sendAjaxResponse(acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response['error_curl']), [], false);
             } elseif (!empty($response['errors'])) {
-                $message = $response['errors'][0]['message'] == 'authorization required'
+                $message = $response['errors'][0]['message'] === 'authorization required'
                     ? acym_translation('ACYM_AUTHENTICATION_FAILS_WITH_API_KEY')
                     : acym_translationSprintf(
                         'ACYM_API_RETURN_THIS_ERROR',
@@ -144,7 +144,7 @@ class plgAcymSendgrid extends AcymPlugin
      */
     public function onAcymGetCredentialsSendingMethod(array &$credentials, string $sendingMethod, array $sendingMethodListParams = [])
     {
-        if ($sendingMethod != self::SENDING_METHOD_ID) return;
+        if ($sendingMethod !== self::SENDING_METHOD_ID) return;
 
         $key = self::SENDING_METHOD_ID.'_api_key';
 
@@ -156,7 +156,7 @@ class plgAcymSendgrid extends AcymPlugin
     public function onAcymGetCreditRemainingSendingMethod(&$html, $reloading = false)
     {
         $sendingMethod = $this->config->get('mailer_method', '');
-        if (empty($sendingMethod) || $sendingMethod != self::SENDING_METHOD_ID) return;
+        if (empty($sendingMethod) || $sendingMethod !== self::SENDING_METHOD_ID) return;
 
         $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
 
@@ -209,7 +209,7 @@ class plgAcymSendgrid extends AcymPlugin
 
     public function onAcymGetSettingsSendingMethodFromPlugin(&$data, $plugin, $method)
     {
-        if ($method != self::SENDING_METHOD_ID) return;
+        if ($method !== self::SENDING_METHOD_ID) return;
 
         //__START__wordpress_
         if (ACYM_CMS === 'wordpress' && $plugin === 'wp_mail_smtp') {

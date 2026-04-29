@@ -18,10 +18,10 @@
 		</div>
 		<div class="cell large-5 align-right grid-x grid-margin-x acym__segments__edit__info__actions margin-y margin-bottom-0">
             <?php echo acym_cancelButton(); ?>
-			<button acym-data-before="acym_helperSegments.beforeSave()" class="cell large-shrink medium-6 button acy_button_submit button-secondary" data-task="apply">
+			<button data-before-action="segmentSave" class="cell large-shrink medium-6 button acy_button_submit button-secondary" data-task="apply">
                 <?php echo acym_translation('ACYM_SAVE'); ?>
 			</button>
-			<button acym-data-before="acym_helperSegments.beforeSave()" class="cell large-shrink medium-6 button acy_button_submit" data-task="save">
+			<button data-before-action="segmentSave" class="cell large-shrink medium-6 button acy_button_submit" data-task="save">
                 <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 			</button>
 		</div>

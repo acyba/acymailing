@@ -112,7 +112,7 @@ trait Campaigns
                         }
 
                         if (isset($decodedData['start_date'])) {
-                            $sendingParams['start_date'] = acym_date($decodedData['start_date'], 'Y-m-d H:i:s', false);
+                            $campaign->next_trigger = (int)$decodedData['start_date'];
                         }
 
                         $sendingParams['need_confirm_to_send'] = 1;

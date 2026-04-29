@@ -176,10 +176,11 @@ trait SubscriberAutomationActions
             if (!empty($usersToDelete)) $userClass->delete($usersToDelete, true);
         } else {
             $fieldToUpdate = '';
-            if ($action['action'] == 'confirm') $fieldToUpdate = 'confirmed = 1';
-            if ($action['action'] == 'unconfirm') $fieldToUpdate = 'confirmed = 0';
-            if ($action['action'] == 'active') $fieldToUpdate = 'active = 1';
-            if ($action['action'] == 'block') $fieldToUpdate = 'active = 0';
+            if ($action['action'] === 'confirm') $fieldToUpdate = 'confirmed = 1';
+            if ($action['action'] === 'unconfirm') $fieldToUpdate = 'confirmed = 0';
+            if ($action['action'] === 'active') $fieldToUpdate = 'active = 1, deactivation_date = NULL';
+            if ($action['action'] === 'block') $fieldToUpdate = 'active = 0, deactivation_date = UTC_TIMESTAMP()';
+
 
             $queryToProcess = 'UPDATE #__acym_user AS `user` SET '.$fieldToUpdate.' WHERE ('.implode(') AND (', $query->where).')';
             $nbRows = acym_query($queryToProcess);

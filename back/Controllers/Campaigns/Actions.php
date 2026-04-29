@@ -48,6 +48,9 @@ trait Actions
             $idNewMail = $mailClass->save($mail);
 
             if (isset($campaign->sending_params['abtest']) && !empty($campaign->sending_params['abtest']['B'])) {
+                unset($campaign->sending_params['abtest']['abtest_finished']);
+                unset($campaign->sending_params['abtest']['final']);
+
                 $mailVersion = $mailClass->getOneById($campaign->sending_params['abtest']['B']);
                 if (!empty($mailVersion)) {
                     unset($mailVersion->id);

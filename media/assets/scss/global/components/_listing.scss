@@ -413,9 +413,9 @@
 
     // icon trash, Real "deleted" action
     .acym__listing__block__delete__submit {
-        --icon-background-color: $red-secondary;
-        --icon-color: $white;
-        --icon-background-color-hover: $red-secondary;
+        --icon-background-color: #{$red-secondary};
+        --icon-color: #{$white};
+        --icon-background-color-hover: #{$red-secondary};
         --icon-font-size: 1.1rem;
 
         width: 28px;

@@ -403,7 +403,7 @@ trait Edition
         $data['before-save'] = '';
 
         if ($data['editor']->editor === 'acyEditor') {
-            $data['before-save'] = 'acym-data-before="acym_editorWysidVersions.storeCurrentValues(true);acym_editorWysidFormAction.cleanMceInput();"';
+            $data['before-save'] = 'data-before-action="wysidSwitch"';
         }
 
         $data['menuClass'] = $this->menuClass;
@@ -1073,14 +1073,16 @@ trait Edition
 
         $campaign->isAuto = $campaign->sending_type === CampaignClass::SENDING_TYPE_AUTO;
 
-        $startDate = '';
+        $nextDate = '';
         if ($campaign->isAuto) {
             $textToDisplay = new stdClass();
             $textToDisplay->triggers = $campaign->sending_params;
             acym_trigger('onAcymDeclareSummary_triggers', [&$textToDisplay], 'plgAcymTime');
             $textToDisplay = $textToDisplay->triggers;
-            if (!empty($campaign->sending_params['start_date'])) {
-                $startDate = $campaign->sending_params['start_date'];
+            if (!empty($campaign->next_trigger)) {
+                $nextDate = $campaign->next_trigger;
+            } elseif (!empty($campaign->sending_params['start_date'])) {
+                $nextDate = $campaign->sending_params['start_date'];
             }
         }
 
@@ -1091,7 +1093,7 @@ trait Edition
                 : acym_translation('ACYM_THIS_WILL_GENERATE_CAMPAIGN_AUTOMATICALLY').' '.acym_strtolower(
                     $textToDisplay[$textToDisplay['trigger_type']]
                 ),
-            'startDate' => $startDate,
+            'nextDate' => $nextDate,
         ];
         $data['campaignInformation'] = $campaign;
         $data['mailId'] = $campaign->mail_id;
@@ -1157,7 +1159,7 @@ trait Edition
             } else {
                 // There may be segments
                 $campaignClass = new CampaignClass();
-                $nbSubscribers = $campaignClass->countUsersCampaign($data['campaignInformation']->id);
+                $nbSubscribers = $campaignClass->countUsersCampaign($data['campaignInformation']->id, true);
             }
         }
 

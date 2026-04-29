@@ -264,3 +264,8 @@ function acym_checkCaptcha(string $captchaPluginName, ?string $response = null):
 {
     return true;
 }
+
+function acym_getSiteSalt(): string
+{
+    return wp_salt('auth');
+}

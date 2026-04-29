@@ -46,16 +46,33 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		</form>
 	</div>
 </div>
+<?php
+$popupPosition = $form->settings['display']['popup_position'] ?? 'center';
+$positionMap = [
+    'top_left' => 'top: 20px; left: 20px;',
+    'top_center' => 'top: 20px; left: 50%; transform: translateX(-50%);',
+    'top_right' => 'top: 20px; right: 20px;',
+    'middle_left' => 'top: 50%; left: 20px; transform: translateY(-50%);',
+    'middle_right' => 'top: 50%; right: 20px; transform: translateY(-50%);',
+    'bottom_left' => 'bottom: 20px; left: 20px;',
+    'bottom_center' => 'bottom: 20px; left: 50%; transform: translateX(-50%);',
+    'bottom_right' => 'bottom: 20px; right: 20px;',
+];
+$positionCss = $positionMap[$popupPosition] ?? 'top: 50%; left: 50%; transform: translate(-50%, -50%);';
+?>
 <style>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__popup__overlay{
 		display: <?php echo $edition ? 'inline' : 'none'; ?>;
+	<?php if ($popupPosition === 'center') { ?>
 		position: fixed;
 		top: 0;
 		bottom: 0;
 		right: 0;
 		left: 0;
 		background-color: rgba(200, 200, 200, .5);
-		z-index: 999999;
+	<?php } else { ?>
+		position: static;
+	<?php } ?> z-index: 999999;
 	}
 
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup__close{
@@ -69,16 +86,15 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup{
 		position: fixed;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		top: 50%;
-		padding: <?php echo $form->settings['style']['padding']['height']; ?>px <?php echo $form->settings['style']['padding']['width']; ?>px;
+	<?php echo $positionCss; ?> padding: <?php echo $form->settings['style']['padding']['height']; ?>px <?php echo $form->settings['style']['padding']['width']; ?>px;
 		background-color: <?php echo $form->settings['style']['background_color']; ?>;
 		color: <?php echo $form->settings['style']['text_color']; ?> !important;
 		background-image: url("<?php echo $form->settings['style']['background_image']; ?>");
 		background-size: <?php echo $form->settings['style']['background_size']; ?>;
 		background-position: <?php echo str_replace('_', ' ', $form->settings['style']['background_position']); ?>;
 		background-repeat: <?php echo $form->settings['style']['background_repeat']; ?>;
+		border-radius: <?php echo intval($form->settings['style']['border_radius'] ?? 0); ?>px;
+		box-shadow: <?php echo intval($form->settings['style']['shadow_x'] ?? 0); ?>px <?php echo intval($form->settings['style']['shadow_y'] ?? 0); ?>px <?php echo intval($form->settings['style']['shadow_blur'] ?? 0); ?>px<?php echo $form->settings['style']['shadow_color'] ?? 'rgba(0,0,0,0.2)'; ?>;
 		z-index: 999999;
 		text-align: center;
 		display: flex;
@@ -173,11 +189,13 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                 document.cookie = 'acym_form_<?php echo $form->id; ?>=' + Date.now() + ';expires=' + expirationDate.toUTCString() + ';path=/';
             }
 
+            <?php if ($popupPosition === 'center') { ?>
             acym_popupForm.addEventListener('click', function (event) {
                 if (event.target.closest('.acym__subscription__form__popup') === null) {
                     acym_closePopupform<?php echo $form->form_tag_name; ?>(this);
                 }
             });
+            <?php } ?>
             document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?> .acym__subscription__form__popup__close').addEventListener('click', function (event) {
                 acym_closePopupform<?php echo $form->form_tag_name; ?>(event.target.closest('.acym__subscription__form__popup__overlay'));
             });

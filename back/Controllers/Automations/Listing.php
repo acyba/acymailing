@@ -95,6 +95,32 @@ trait Listing
         $this->listing();
     }
 
+    public function triggerAutomation(): void
+    {
+        acym_checkToken();
+
+        $automationIds = acym_getVar('int', 'elements_checked');
+
+        if (empty($automationIds)) {
+            $this->listing();
+
+            return;
+        }
+
+        $automationClass = new AutomationClass();
+        $result = $automationClass->triggerManual($automationIds);
+
+        if ($result['executed'] > 0) {
+            acym_enqueueMessage(acym_translationSprintf('ACYM_X_AUTOMATIONS_TRIGGERED', $result['executed']), 'info');
+        }
+
+        if ($result['skipped'] > 0) {
+            acym_enqueueMessage(acym_translationSprintf('ACYM_X_SKIPPED_USER_AUTOMATIONS', $result['skipped']), 'warning');
+        }
+
+        $this->listing();
+    }
+
     public function ajaxSetOrdering(): void
     {
         acym_checkToken();

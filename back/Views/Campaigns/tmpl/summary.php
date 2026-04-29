@@ -280,17 +280,17 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             ?>
 						</p>
 					</div>
-                    <?php if ($data['automatic']['isAuto'] && !empty($data['automatic']['startDate'])) { ?>
+                    <?php if ($data['automatic']['isAuto'] && !empty($data['automatic']['nextDate'])) { ?>
 						<div class="cell grid-x grid-margin-x">
-							<p class="cell large-2 medium-3"><b><?php echo acym_translation('ACYM_START_DATE'); ?>:</b></p>
-							<p class="cell auto"><?php echo acym_date($data['automatic']['startDate'], acym_getDateTimeFormat()); ?></p>
+							<p class="cell large-2 medium-3"><b><?php echo acym_translation('ACYM_NEXT_GENERATION_DATE'); ?>:</b></p>
+							<p class="cell auto"><?php echo acym_date($data['automatic']['nextDate'], acym_getDateTimeFormat()); ?></p>
 						</div>
                     <?php } ?>
 					<div class="cell grid-x grid-margin-x">
 						<p class="cell large-2 medium-3"><b><?php echo acym_translation('ACYM_TRACKING'); ?>:</b></p>
-						<p class="cell auto"><?php echo acym_translation(
-                                $data['campaignInformation']->tracking ? 'ACYM_THIS_CAMPAIGN_BEING_TRACKED' : 'ACYM_THIS_CAMPAIGN_NOT_BEING_TRACKED'
-                            ); ?></p>
+						<p class="cell auto">
+                            <?php echo acym_translation($data['campaignInformation']->tracking ? 'ACYM_THIS_CAMPAIGN_BEING_TRACKED' : 'ACYM_THIS_CAMPAIGN_NOT_BEING_TRACKED'); ?>
+						</p>
 					</div>
 				</div>
 				<div class="cell grid-x acym__campaign__summary__bottom-controls acym__campaign__summary__section">

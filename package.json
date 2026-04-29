@@ -12,7 +12,8 @@
         "gulp": "^4.0.2",
         "gulp-cached": "^1.1.1",
         "gulp-clean": "^0.4.0",
-        "gulp-compass": "^2.1.0",
+        "gulp-sass": "^5.1.0",
+        "sass": "^1.72.0",
         "gulp-concat": "^2.6.1",
         "gulp-cssmin": "^0.2.0",
         "gulp-file": "^0.4.0",
@@ -53,7 +54,7 @@
     "scripts": {
         "test": "echo $JETDOCKER_DOMAIN_NAME",
         "cypress:open": "cypress open",
-        "cypress:run": "cypress run --spec \"tools/cypress/integration/joomla,tools/cypress/integration/joomla5,tools/cypress/integration/wordpress\"",
+        "cypress:run": "cypress run --spec \"tools/cypress/integration/wordpress,tools/cypress/integration/joomla,tools/cypress/integration/joomla5\"",
         "cypress:run:joomla": "cypress run --spec tools/cypress/integration/joomla",
         "cypress:run:joomla5": "cypress run --spec tools/cypress/integration/joomla5",
         "cypress:run:wordpress": "cypress run --spec tools/cypress/integration/wordpress",

@@ -880,7 +880,7 @@ class MailerHelper extends Mailer
 
             if (strpos($trackingSystem, 'acymailing') !== false) {
                 $isAutologin = false;
-                $autologinParams = 'autoSubId=%7Bsubscriber:id%7D&amp;subKey=%7Bsubscriber:key%7Curlencode%7D';
+                $autologinParams = 'autoSubId=%7Bsubscriber:id%7D&amp;subKey=%7Bsubscriber:autologin_token%7Curlencode%7D';
                 if (strpos($url, $autologinParams) !== false) {
                     $isAutologin = true;
                     $url = str_replace(
@@ -1715,6 +1715,9 @@ class MailerHelper extends Mailer
     private function inlineCSS(int $mailId): void
     {
         $mail = empty($mailId) ? $this : $this->defaultMail[$mailId];
+        if (empty($mail->body)) {
+            return;
+        }
 
         global $emogrifiedMediaCSS;
         $emogrifiedMediaCSS = '';

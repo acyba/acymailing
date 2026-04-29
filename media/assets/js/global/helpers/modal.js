@@ -67,7 +67,7 @@ const acym_helperModal = {
         ajaxUrl += '&automation=' + automation;
         ajaxUrl += '&inmail=' + (jQuery('#editor_autoSave').length > 0 ? '1' : '0');
         ajaxUrl += '&id=' + (undefined === mailId ? 0 : mailId);
-        ajaxUrl += '&acym_pagination_element_per_page=' + jQuery('[name="acym_pagination_element_per_page"]').val();
+        ajaxUrl += '&acym_pagination_element_per_page=' + (jQuery('[name="acym_pagination_element_per_page"]').val() || '');
         if ($returnInput.length >= 1) ajaxUrl += '&return=' + encodeURIComponent($returnInput.val());
         if (jQuery('#acym__mail__list-id').length > 0) {
             ajaxUrl += '&list_id=' + jQuery('#acym__mail__list-id').val();

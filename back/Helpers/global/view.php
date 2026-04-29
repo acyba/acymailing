@@ -426,6 +426,7 @@ function acym_getJSMessages(): string
         'ACYM_SELECT_A_PAGE',
         'ACYM_DEDICATED_SENDING_PROCESS_WARNING',
         'ACYM_GET_MY_API_KEY',
+        'ACYM_DOMAIN_UNDER_REVIEW',
     ];
 
     foreach ($keysToLoad as $oneKey) {

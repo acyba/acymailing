@@ -15,7 +15,7 @@
 				data-acym-src="<?php echo $mediaUrl; ?>"
 				data-acym-src-image="<?php echo $mediaUrlImage; ?>"
 				data-acym-is-j4="<?php echo ACYM_J40 ? '1' : '0'; ?>"
-				src="<?php echo $mediaUrl; ?>"
+				src="about:blank"
 				frameborder="0">
 		</iframe>
 		<div id="acym__upload__modal__joomla-image__ui__actions" class="cell grid-x grid-margin-x align-right" style="display: none">

@@ -77,7 +77,7 @@ class DynamicsController extends AcymController
             $rawDefaultValues = $this->config->get('dcontent_default_'.$plugin);
 
             if (!empty($rawDefaultValues)) {
-                $defaultValues = json_decode($rawDefaultValues, true);
+                $defaultValues = is_string($rawDefaultValues) ? json_decode($rawDefaultValues, true) : $rawDefaultValues;
                 unset($defaultValues['id']);
                 unset($defaultValues['from']);
                 unset($defaultValues['to']);

@@ -23,13 +23,13 @@ echo acym_modalInclude(
 
 $beforeSave = '';
 if ($data['mail']->editor === 'acyEditor') {
-    $beforeSave .= 'acym_editorWysidFormAction.cleanMceInput();';
+    $beforeSave = 'editorApply';
     if (!empty($data['multilingual'])) {
-        $beforeSave .= 'acym_editorWysidVersions.storeCurrentValues(true);';
+        $beforeSave = 'editorApplyMultilingual';
     }
 }
 
-$attributeBeforeSave = empty($beforeSave) ? '' : 'acym-data-before="'.acym_escape($beforeSave).'"';
+$attributeBeforeSave = empty($beforeSave) ? '' : 'data-before-action="'.acym_escape($beforeSave).'"';
 ?>
 <button id="apply"
     <?php echo $attributeBeforeSave; ?>

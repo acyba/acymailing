@@ -213,9 +213,20 @@ class QueueClass extends AcymClass
             WHERE mail.type = '.acym_escapeDB(MailClass::TYPE_FOLLOWUP)
         );
 
-        $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY active', 'active');
-        $queuedActiveCampaigns = empty($elementsPerStatus[1]->number) ? 0 : $elementsPerStatus[1]->number;
-        $queuedPausedCampaigns = empty($elementsPerStatus[0]->number) ? 0 : $elementsPerStatus[0]->number;
+        $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY active');
+        $queuedActiveCampaigns = 0;
+        $queuedPausedCampaigns = 0;
+        foreach ($elementsPerStatus as $element) {
+            if (is_null($element->active)) {
+                continue;
+            }
+
+            if (!empty($element->active)) {
+                $queuedActiveCampaigns = intval($element->number);
+            } else {
+                $queuedPausedCampaigns = intval($element->number);
+            }
+        }
 
         $results['status'] = [
             'all' => $queuedActiveCampaigns + $queuedPausedCampaigns + $automationNumber + $followupNumber,
@@ -349,8 +360,18 @@ class QueueClass extends AcymClass
         $nbQueue = [];
 
         foreach ($mailReady as $mailId => $mail) {
-            $nbQueue[$mailId] = $this->queue($mail);
-            $this->messages[] = acym_translationSprintf('ACYM_ADDED_QUEUE_SCHEDULE', $nbQueue[$mailId], '<b>'.$mail->name.'</b>');
+            // A/B test campaigns are queued later by CampaignClass::send(), so skip queueing here
+            $sendingParams = $mail->sending_params ?? [];
+            if (is_string($sendingParams)) {
+                $sendingParams = json_decode($sendingParams, true) ?? [];
+            }
+
+            if (!empty($sendingParams['abtest']['repartition'])) {
+                $nbQueue[$mailId] = 0;
+            } else {
+                $nbQueue[$mailId] = $this->queue($mail);
+                $this->messages[] = acym_translationSprintf('ACYM_ADDED_QUEUE_SCHEDULE', $nbQueue[$mailId], '<b>'.$mail->name.'</b>');
+            }
         }
 
         $mailIds = array_keys($mailReady);

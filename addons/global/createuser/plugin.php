@@ -17,19 +17,16 @@ class plgAcymcreateuser extends AcymPlugin
     {
         parent::__construct();
         $this->cms = 'all';
+    }
 
-        $usergroups = acym_getGroups();
+    protected function initSettings(): void
+    {
         if ('joomla' === ACYM_CMS) {
             $joomlaUsersparams = ComponentHelper::getParams('com_users');
             $defaultUsergroup = $joomlaUsersparams->get('new_usertype');
         } else {
             $defaultUsergroup = get_option('default_role');
         }
-
-        $onlyFrontOptions = [
-            'front' => acym_translation('ACYM_FRONT'),
-            'both' => acym_translation('ACYM_FRONT_BACK'),
-        ];
 
         $this->settings = [
             'enableCreate' => [
@@ -41,7 +38,10 @@ class plgAcymcreateuser extends AcymPlugin
                 'type' => 'select',
                 'label' => 'ACYM_CREATE_FROM_SUB_ON',
                 'value' => 1,
-                'data' => $onlyFrontOptions,
+                'data' => [
+                    'front' => acym_translation('ACYM_FRONT'),
+                    'both' => acym_translation('ACYM_FRONT_BACK'),
+                ],
             ],
             'onModif' => [
                 'type' => 'switch',
@@ -52,7 +52,7 @@ class plgAcymcreateuser extends AcymPlugin
                 'type' => 'select',
                 'label' => 'ACYM_USER_GROUP',
                 'value' => $defaultUsergroup,
-                'data' => $usergroups,
+                'data' => acym_getGroups(),
             ],
         ];
     }

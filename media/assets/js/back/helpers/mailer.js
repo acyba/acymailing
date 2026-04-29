@@ -266,11 +266,16 @@ const acym_helperMailer = {
 
                 let iconClass = '';
                 let tooltip = '';
+
                 Object.entries(response.data.domains).forEach(([key, domain]) => {
                     switch (domain.status) {
                         case 'SUCCESS':
                             iconClass = 'acymicon-check-circle acym__color__green';
                             tooltip = ACYM_JS_TXT.ACYM_VALIDATED;
+                            break;
+                        case 'PENDING_APPROVAL':
+                            iconClass = 'acymicon-access-time acym__color__orange notValidated';
+                            tooltip = ACYM_JS_TXT.ACYM_DOMAIN_UNDER_REVIEW;
                             break;
                         case 'FAILED':
                             iconClass = 'acymicon-close acym__color__red notValidated';

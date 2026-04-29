@@ -253,15 +253,15 @@ class Router
             acym_setVar('task', $task);
         }
 
-        $controller->call($task);
+        $controller->call($task, $front);
     }
 
     public function autologin()
     {
         $subId = acym_getVar('int', 'autoSubId');
-        $subKey = acym_getVar('string', 'subKey');
+        $subToken = acym_getVar('string', 'subKey');
 
-        if (empty($subId) || empty($subKey)) {
+        if (empty($subId) || empty($subToken)) {
             return;
         }
 
@@ -273,20 +273,31 @@ class Router
             acym_redirect($cleanedUrl);
         }
 
-        $cmsId = acym_loadResult('SELECT `cms_id` FROM #__acym_user WHERE `id` = '.intval($subId).' AND `key` = '.acym_escapeDB($subKey));
-        if (empty($cmsId) || $cmsId === acym_currentUserId()) {
+        $subscriber = acym_loadObject('SELECT `cms_id`, `key` FROM #__acym_user WHERE `id` = '.intval($subId));
+        if (empty($subscriber->cms_id) || $subscriber->cms_id === acym_currentUserId()) {
             acym_redirect($cleanedUrl);
         }
 
-        $user = get_user_by('id', $cmsId);
-
-        if (!is_wp_error($user)) {
-            wp_clear_auth_cookie();
-            wp_set_current_user($user->ID);
-            wp_set_auth_cookie($user->ID);
-
+        if (!acym_verifyAutologinToken($subId, $subToken, $subscriber->key)) {
             acym_redirect($cleanedUrl);
         }
+
+        $user = get_user_by('id', $subscriber->cms_id);
+
+        if (is_wp_error($user) || !$user) {
+            acym_redirect($cleanedUrl);
+        }
+
+        // Never allow autologin for administrator accounts
+        if ($user->has_cap('manage_options')) {
+            acym_redirect($cleanedUrl);
+        }
+
+        wp_clear_auth_cookie();
+        wp_set_current_user($user->ID);
+        wp_set_auth_cookie($user->ID);
+
+        acym_redirect($cleanedUrl);
     }
 
     private function deactivateHookAdminFooter()

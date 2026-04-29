@@ -1,7 +1,7 @@
 <?php
 $beforeSave = '';
 if (!empty($data['translation_languages'])) {
-    $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_campaign(acym_helperSelectionMultilingual.mainLanguage)"';
+    $beforeSave = 'data-before-action="languageCampaign"';
 }
 ?>
 <div class="cell grid-x margin-top-1">

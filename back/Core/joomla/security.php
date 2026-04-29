@@ -196,6 +196,11 @@ function acym_loadCaptcha(string $captchaPluginName, string $id): string
     return empty($result[0]) ? '' : $result[0];
 }
 
+function acym_getSiteSalt(): string
+{
+    return Factory::getApplication()->get('secret', '');
+}
+
 function acym_checkCaptcha(string $captchaPluginName, ?string $response = null): bool
 {
     try {

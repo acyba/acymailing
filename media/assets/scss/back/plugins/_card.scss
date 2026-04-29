@@ -1,6 +1,3 @@
-@import "compass/css3";
-@import "compass/support";
-
 $perspective: 600px;
 
 #acym_wrapper {
@@ -264,7 +261,7 @@ $perspective: 600px;
             }
 
             &.acym__plugins__card__flip {
-                @include transform3d(perspective($perspective) rotateY(180deg));
+                transform: perspective($perspective) rotateY(180deg);
             }
 
             &.acym__plugins__card__flipped {

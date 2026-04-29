@@ -21,6 +21,8 @@ class ConfigurationController extends AcymController
     use License;
     use Language;
 
+    const CRON_TASK_NAME = 'acymailing_automated_tasks_cron_task';
+
     public function __construct()
     {
         parent::__construct();

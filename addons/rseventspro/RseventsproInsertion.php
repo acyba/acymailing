@@ -52,6 +52,10 @@ trait RseventsproInsertion
 
         acym_loadLanguageFile('com_rseventspro', JPATH_SITE);
         $this->categories = acym_loadObjectList('SELECT `id`, `parent_id`, `title` FROM `#__categories` WHERE published = 1 AND `extension` = "com_rseventspro"', 'id');
+        $locationValues = acym_loadObjectList('SELECT id, name FROM #__rseventspro_locations WHERE published = 1 ORDER BY name');
+        $speakerValues = acym_loadObjectList('SELECT id, name FROM #__rseventspro_speakers WHERE published = 1 ORDER BY name');
+        $tagValues = acym_loadObjectList('SELECT id, name FROM #__rseventspro_tags WHERE published = 1 ORDER BY name');
+        $sponsorValues = acym_loadObjectList('SELECT id, name FROM #__rseventspro_sponsors WHERE published = 1 ORDER BY name');
 
         $tabHelper = new TabHelper();
         $identifier = $this->name;
@@ -145,6 +149,67 @@ trait RseventsproInsertion
                 'defaultdir' => 'asc',
             ],
         ];
+
+        $locationOptions = [];
+        foreach ($locationValues as $loc) {
+            $locationOptions[$loc->id] = $loc->name;
+        }
+        if (!empty($locationOptions)) {
+            $catOptions[] = [
+                'title' => 'ACYM_LOCATION',
+                'type' => 'multiselect',
+                'name' => 'filter_location',
+                'options' => $locationOptions,
+                'default' => [],
+                'section' => 'ACYM_FILTER_BY',
+            ];
+        }
+
+        $speakerOptions = [];
+        foreach ($speakerValues as $speaker) {
+            $speakerOptions[$speaker->id] = $speaker->name;
+        }
+        if (!empty($speakerOptions)) {
+            $catOptions[] = [
+                'title' => 'ACYM_SPEAKERS',
+                'type' => 'multiselect',
+                'name' => 'filter_speaker',
+                'options' => $speakerOptions,
+                'default' => [],
+                'section' => 'ACYM_FILTER_BY',
+            ];
+        }
+
+        $tagOptions = [];
+        foreach ($tagValues as $oneTag) {
+            $tagOptions[$oneTag->id] = $oneTag->name;
+        }
+        if (!empty($tagOptions)) {
+            $catOptions[] = [
+                'title' => 'ACYM_TAGS',
+                'type' => 'multiselect',
+                'name' => 'filter_tag',
+                'options' => $tagOptions,
+                'default' => [],
+                'section' => 'ACYM_FILTER_BY',
+            ];
+        }
+
+        $sponsorOptions = [];
+        foreach ($sponsorValues as $sponsor) {
+            $sponsorOptions[$sponsor->id] = $sponsor->name;
+        }
+        if (!empty($sponsorOptions)) {
+            $catOptions[] = [
+                'title' => 'ACYM_SPONSORS',
+                'type' => 'multiselect',
+                'name' => 'filter_sponsor',
+                'options' => $sponsorOptions,
+                'default' => [],
+                'section' => 'ACYM_FILTER_BY',
+            ];
+        }
+
         $this->autoContentOptions($catOptions, 'event');
 
         $this->autoCampaignOptions($catOptions);
@@ -273,9 +338,32 @@ trait RseventsproInsertion
 
             $selectedArea = $this->getSelectedArea($parameter);
             if (!empty($selectedArea)) {
-                $query .= 'JOIN `#__rseventspro_taxonomy` AS cat ON event.id = cat.ide ';
-                $where[] = 'cat.id IN ('.implode(',', $selectedArea).')';
-                $where[] = 'cat.type = "category"';
+                $query .= 'JOIN `#__rseventspro_taxonomy` AS tax ON event.id = tax.ide ';
+                $where[] = 'tax.id IN ('.implode(',', $selectedArea).')';
+                $where[] = 'tax.type = "category"';
+            }
+
+            if (!empty($parameter->filter_location)) {
+                $locationIds = array_map('intval', explode(',', $parameter->filter_location));
+                $where[] = 'event.`location` IN ('.implode(',', $locationIds).')';
+            }
+
+            if (!empty($parameter->filter_speaker)) {
+                $speakerIds = array_map('intval', explode(',', $parameter->filter_speaker));
+                $query .= 'JOIN `#__rseventspro_taxonomy` AS tax_speaker ON event.id = tax_speaker.ide AND tax_speaker.type = "speaker" ';
+                $where[] = 'tax_speaker.id IN ('.implode(',', $speakerIds).')';
+            }
+
+            if (!empty($parameter->filter_tag)) {
+                $tagIds = array_map('intval', explode(',', $parameter->filter_tag));
+                $query .= 'JOIN `#__rseventspro_taxonomy` AS tax_tag ON event.id = tax_tag.ide AND tax_tag.type = "tag" ';
+                $where[] = 'tax_tag.id IN ('.implode(',', $tagIds).')';
+            }
+
+            if (!empty($parameter->filter_sponsor)) {
+                $sponsorIds = array_map('intval', explode(',', $parameter->filter_sponsor));
+                $query .= 'JOIN `#__rseventspro_taxonomy` AS tax_sponsor ON event.id = tax_sponsor.ide AND tax_sponsor.type = "sponsor" ';
+                $where[] = 'tax_sponsor.id IN ('.implode(',', $sponsorIds).')';
             }
 
             if ((empty($parameter->mindelay) || substr($parameter->mindelay, 0, 1) != '-') && (empty($parameter->delay) || substr($parameter->delay, 0, 1) != '-')) {
@@ -340,7 +428,7 @@ trait RseventsproInsertion
         $link = rseventsproHelper::route('index.php?option=com_rseventspro&layout=show&id='.rseventsproHelper::sef($element->id, $element->name).$language, true, $menuId);
         $link = str_replace('/administrator/', '/', $link);
         if (!empty($tag->autologin)) {
-            $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:key|urlencode}';
+            $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:autologin_token|urlencode}';
         }
         $varFields['{link}'] = $link;
 
