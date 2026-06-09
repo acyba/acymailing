@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\HtmlProcessor;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\HtmlProcessor;
 
 /**
  * Normalizes HTML:

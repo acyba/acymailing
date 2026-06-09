@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\Utilities;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\Utilities;
 
 /**
  * PHP's `preg_*` functions can return `false` on failure.

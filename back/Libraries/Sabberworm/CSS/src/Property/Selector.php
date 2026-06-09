@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Property;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Property;
 
-use Sabberworm\CSS\CSSList\CSSList;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Property\Selector\SpecificityCalculator;
-use Sabberworm\CSS\Renderable;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSList\CSSList;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Selector\SpecificityCalculator;
+use AcyMailing\Libraries\Sabberworm\CSS\Renderable;
 
 /**
  * Class representing a single CSS selector. Selectors have to be split by the comma prior to being passed into this

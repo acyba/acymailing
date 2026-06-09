@@ -318,7 +318,8 @@ trait EventBookingInsertion
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
-                    $where[] = 'event.publish_up > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    $lastDate = acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    $where[] = 'event.publish_up > '.$lastDate.' OR (event.publish_up = "0000-00-00 00:00:00" AND event.created_date > '.$lastDate.')';
                 }
             }
 

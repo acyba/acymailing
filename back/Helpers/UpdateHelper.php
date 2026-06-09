@@ -18,7 +18,7 @@ class UpdateHelper extends AcymObject
     use Update\Patchv10;
 
     const FIRST_EMAIL_NAME_KEY = 'ACYM_FIRST_EMAIL_NAME';
-    const BOUNCE_VERSION = 8;
+    const BOUNCE_VERSION = 9;
 
     private string $level = '{__LEVEL__}';
     private string $version = '{__VERSION__}';

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Position;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Position;
 
 /**
  * Provides a standard reusable implementation of `Positionable`.

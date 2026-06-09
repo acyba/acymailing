@@ -638,7 +638,7 @@ class plgSystemAcymtriggers extends CMSPlugin
         $cleanedUrl = acym_cleanUrl($currentUrl, ['autoSubId', 'subKey']);
 
         $config = acym_config();
-        if ($config->get('autologin_urls', 0) == 0) {
+        if ($config->get('autologin_urls', 0) != 1) {
             acym_redirect($cleanedUrl);
 
             return;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Parsing;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Parsing;
 
 /**
  * Thrown if the CSS parser encounters end of file it did not expect.

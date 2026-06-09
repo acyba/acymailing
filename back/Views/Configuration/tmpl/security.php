@@ -523,7 +523,7 @@
 				</div>
 				<div class="cell grid-x acym_vcenter">
 					<label class="cell large-3" for="allowed_files">
-                        <?php echo acym_translation('ACYM_ACTIVATE_AUTOLOGIN_URLS').acym_info(['textShownInTooltip' => 'ACYM_ACTIVATE_AUTOLOGIN_URLS_DESC']); ?>
+                        <?php echo acym_translation('ACYM_ACTIVATE_AUTOLOGIN_URLS').acym_info(['textShownInTooltip' => 'ACYM_ACTIVATE_AUTOLOGIN_URLS_DESCRIPTION']); ?>
 					</label>
 					<div class="cell grid-x large-9">
                         <?php

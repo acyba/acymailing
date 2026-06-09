@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS;
+namespace AcyMailing\Libraries\Sabberworm\CSS;
 
 /**
  * version 9.1.0

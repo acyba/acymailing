@@ -601,8 +601,14 @@ class FieldClass extends AcymClass
         } elseif ($field->id == 2) {
             $nameAttribute = ' name="user[email]"';
             $uniqueId = 'email_field_'.rand(100, 900);
-            $inputTmp = '<input autocomplete="email" id="'.$uniqueId.'" '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.$readonly.' required type="email" class="cell acym__user__edit__email"'.($displayFront && $cmsUser
-                    ? 'disabled' : '').'>';
+            $inputTmp = '<input 
+                    autocomplete="email" 
+                    id="'.$uniqueId.'" 
+                    '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.$readonly.' 
+                    required 
+                    type="email" 
+                    class="cell acym__user__edit__email"
+                    '.($cmsUser ? 'readonly="readonly"' : '').'>';
             if (!empty($readonly)) {
                 $inputTmp = acym_tooltip(
                     [

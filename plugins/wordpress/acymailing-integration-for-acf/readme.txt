@@ -1,8 +1,8 @@
 === AcyMailing integration for Advanced Custom Fields (ACF) ===
 Contributors: acyba
 Tags: newsletter, integration, acymailing, acf, advanced custom fields
-Tested up to: 6.9
-Stable tag: 2.2
+Tested up to: 7.0
+Stable tag: 2.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

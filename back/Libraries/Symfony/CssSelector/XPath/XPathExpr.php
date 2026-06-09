@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\XPath;
+namespace AcyMailing\Libraries\Symfony\CssSelector\XPath;
 
 /**
  * XPath expression translator interface.

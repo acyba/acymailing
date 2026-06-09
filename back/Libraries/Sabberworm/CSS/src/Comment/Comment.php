@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Comment;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Comment;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Renderable;
-use Sabberworm\CSS\Position\Position;
-use Sabberworm\CSS\Position\Positionable;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Renderable;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Position;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Positionable;
 
 class Comment implements Positionable, Renderable
 {

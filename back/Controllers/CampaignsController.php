@@ -140,7 +140,21 @@ class CampaignsController extends AcymController
         if (acym_isMultilingual()) {
             $translatedMails = $mailClass->getTranslationsById($campaign->mail_id, true, true);
         }
-        $testEmails = explode(',', acym_getVar('string', 'test_emails'));
+
+        $rawTestEmails = explode(',', acym_getVar('string', 'test_emails'));
+        $testEmails = [];
+        foreach ($rawTestEmails as $email) {
+            $email = trim($email);
+            if (!empty($email) && acym_isValidEmail($email)) {
+                $testEmails[] = $email;
+            }
+        }
+
+        if (empty($testEmails)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_NO_VALID_TEST_EMAILS'), [], false);
+
+            return;
+        }
 
         foreach ($testEmails as $oneAddress) {
             $mailId = $specificMailId;

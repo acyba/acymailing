@@ -169,6 +169,12 @@ function acym_isRobot(): bool
     if (empty($_SERVER)) {
         return false;
     }
+
+    // Real calls are made using GET
+    if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'HEAD') {
+        return true;
+    }
+
     // SpamBayes checks the images in the sent emails, so the stats image too... Don't count it as opened!
     if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'spambayes') !== false) {
         return true;

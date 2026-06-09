@@ -265,14 +265,24 @@ trait JdownloadsInsertion
 
         $element = $this->initIndividualContent($tag, $query);
 
-        if (empty($element)) return '';
+        if (empty($element->id)) {
+            return '';
+        }
 
         $varFields = $this->getCustomLayoutVars($element);
 
         $completeId = intval($element->id);
-        if (!empty($element->alias)) $completeId .= ':'.$element->alias;
+        if (!empty($element->alias)) {
+            $completeId .= ':'.$element->alias;
+        }
 
         $link = 'index.php?option=com_jdownloads&view=download&id='.$completeId.'&catid='.intval($element->catid);
+
+        $menuId = $this->getParam('itemid');
+        if (!empty($menuId)) {
+            $link .= '&Itemid='.intval($menuId);
+        }
+
         $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 

@@ -285,8 +285,34 @@ trait GlobalStats
             }
         }
 
-        $begin = new \DateTime(empty($campaignClicks) ? $campaignOpens[0]->open_date : min([$campaignOpens[0]->open_date, $campaignClicks[0]->date_click]));
-        $end = new \DateTime(empty($campaignClicks) ? end($campaignOpens)->open_date : max([end($campaignOpens)->open_date, end($campaignClicks)->date_click]));
+        $startDate = $campaignOpens[0]->open_date ?? null;
+        if (!empty($campaignClicks) && !empty($campaignClicks[0]->date_click)) {
+            $clickDate = $campaignClicks[0]->date_click;
+            if (!empty($startDate)) {
+                $startDate = min([$startDate, $clickDate]);
+            } else {
+                $startDate = $clickDate;
+            }
+        }
+
+        $lastOpen = end($campaignOpens);
+        $endDate = $lastOpen->open_date ?? null;
+        if (!empty($campaignClicks)) {
+            $lastClick = end($campaignClicks);
+            $clickDate = $lastClick->date_click ?? null;
+            if (!empty($endDate) && !empty($clickDate)) {
+                $endDate = max([$endDate, $clickDate]);
+            } elseif (!empty($clickDate)) {
+                $endDate = $clickDate;
+            }
+        }
+
+        if (empty($startDate) || empty($endDate)) {
+            return [];
+        }
+
+        $begin = new \DateTime($startDate);
+        $end = new \DateTime($endDate);
 
         $end->modify('+1 '.$modifier);
 
@@ -337,8 +363,10 @@ trait GlobalStats
 
         //those are the dates when the first was open and the last was open
         $statsCampaignSelected->startEndDateHour = [];
-        $statsCampaignSelected->startEndDateHour['start'] = $allHour[0];
-        $statsCampaignSelected->startEndDateHour['end'] = end($allHour);
+        if (!empty($allHour)) {
+            $statsCampaignSelected->startEndDateHour['start'] = $allHour[0];
+            $statsCampaignSelected->startEndDateHour['end'] = end($allHour);
+        }
     }
 
     public function exportGlobal(): void

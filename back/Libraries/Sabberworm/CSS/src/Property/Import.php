@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Property;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Property;
 
-use Sabberworm\CSS\Comment\CommentContainer;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Position\Position;
-use Sabberworm\CSS\Position\Positionable;
-use Sabberworm\CSS\Value\URL;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\CommentContainer;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Position;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Positionable;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\URL;
 
 /**
  * Class representing an `@import` rule.

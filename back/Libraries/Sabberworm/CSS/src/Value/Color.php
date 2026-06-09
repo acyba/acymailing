@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Value;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Value;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedTokenException;
 
 /**
  * `Color's can be input in the form #rrggbb, #rgb or schema(val1, val2, …) but are always stored as an array of

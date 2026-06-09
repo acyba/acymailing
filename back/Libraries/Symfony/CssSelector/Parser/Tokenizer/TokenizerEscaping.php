@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser\Tokenizer;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Parser\Tokenizer;
 
 /**
  * CSS selector tokenizer escaping applier.

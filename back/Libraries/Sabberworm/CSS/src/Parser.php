@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS;
+namespace AcyMailing\Libraries\Sabberworm\CSS;
 
-use Sabberworm\CSS\CSSList\Document;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSList\Document;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\SourceException;
 
 /**
  * This class parses CSS from text into a data structure.

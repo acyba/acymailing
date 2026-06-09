@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Node;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Node;
 
 /**
  * Represents a node specificity.

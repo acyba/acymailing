@@ -89,12 +89,12 @@ function acym_currentUserName(?int $userid = null): string
     if (!empty($userid)) {
         $special = get_user_by('id', $userid);
 
-        return $special->display_name;
+        return empty($special->display_name) ? '' : $special->display_name;
     }
 
     $current_user = wp_get_current_user();
 
-    return $current_user->display_name;
+    return empty($current_user->display_name) ? '' : $current_user->display_name;
 }
 
 function acym_currentUserEmail(int $userid = 0): string

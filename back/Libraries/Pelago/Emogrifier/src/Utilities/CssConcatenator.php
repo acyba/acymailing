@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\Utilities;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\Utilities;
 
 /**
  * Facilitates building a CSS string by appending rule blocks one at a time, checking whether the media query,

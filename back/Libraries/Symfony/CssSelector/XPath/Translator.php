@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\XPath;
+namespace AcyMailing\Libraries\Symfony\CssSelector\XPath;
 
-use Symfony\Component\CssSelector\Exception\ExpressionErrorException;
-use Symfony\Component\CssSelector\Node\FunctionNode;
-use Symfony\Component\CssSelector\Node\NodeInterface;
-use Symfony\Component\CssSelector\Node\SelectorNode;
-use Symfony\Component\CssSelector\Parser\Parser;
-use Symfony\Component\CssSelector\Parser\ParserInterface;
+use AcyMailing\Libraries\Symfony\CssSelector\Exception\ExpressionErrorException;
+use AcyMailing\Libraries\Symfony\CssSelector\Node\FunctionNode;
+use AcyMailing\Libraries\Symfony\CssSelector\Node\NodeInterface;
+use AcyMailing\Libraries\Symfony\CssSelector\Node\SelectorNode;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Parser;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\ParserInterface;
 
 /**
  * XPath expression translator interface.

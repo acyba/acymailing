@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Value;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Value;
 
-use Sabberworm\CSS\CSSElement;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Position\Position;
-use Sabberworm\CSS\Position\Positionable;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSElement;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\SourceException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Position;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Positionable;
 
 /**
  * Abstract base class for specific classes of CSS values: `Size`, `Color`, `CSSString` and `URL`, and another

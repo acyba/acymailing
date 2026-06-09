@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\RuleSet;
+namespace AcyMailing\Libraries\Sabberworm\CSS\RuleSet;
 
-use Sabberworm\CSS\Comment\CommentContainer;
-use Sabberworm\CSS\CSSElement;
-use Sabberworm\CSS\CSSList\CSSListItem;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Position\Position;
-use Sabberworm\CSS\Position\Positionable;
-use Sabberworm\CSS\Rule\Rule;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\CommentContainer;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSElement;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSList\CSSListItem;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Position;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Positionable;
+use AcyMailing\Libraries\Sabberworm\CSS\Rule\Rule;
 
 /**
  * This class is a container for individual 'Rule's.

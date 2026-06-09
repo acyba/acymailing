@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\XPath\Extension;
+namespace AcyMailing\Libraries\Symfony\CssSelector\XPath\Extension;
 
-use Symfony\Component\CssSelector\Node;
-use Symfony\Component\CssSelector\XPath\Translator;
-use Symfony\Component\CssSelector\XPath\XPathExpr;
+use AcyMailing\Libraries\Symfony\CssSelector\Node;
+use AcyMailing\Libraries\Symfony\CssSelector\XPath\Translator;
+use AcyMailing\Libraries\Symfony\CssSelector\XPath\XPathExpr;
 
 /**
  * XPath expression translator node extension.

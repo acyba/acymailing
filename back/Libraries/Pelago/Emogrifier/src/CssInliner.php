@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier;
+namespace AcyMailing\Libraries\Pelago\Emogrifier;
 
-use Pelago\Emogrifier\Css\CssDocument;
-use Pelago\Emogrifier\HtmlProcessor\AbstractHtmlProcessor;
-use Pelago\Emogrifier\Utilities\CssConcatenator;
-use Pelago\Emogrifier\Utilities\DeclarationBlockParser;
-use Pelago\Emogrifier\Utilities\Preg;
-use Symfony\Component\CssSelector\CssSelectorConverter;
-use Symfony\Component\CssSelector\Exception\ParseException;
+use AcyMailing\Libraries\Pelago\Emogrifier\Css\CssDocument;
+use AcyMailing\Libraries\Pelago\Emogrifier\HtmlProcessor\AbstractHtmlProcessor;
+use AcyMailing\Libraries\Pelago\Emogrifier\Utilities\CssConcatenator;
+use AcyMailing\Libraries\Pelago\Emogrifier\Utilities\DeclarationBlockParser;
+use AcyMailing\Libraries\Pelago\Emogrifier\Utilities\Preg;
+use AcyMailing\Libraries\Symfony\CssSelector\CssSelectorConverter;
+use AcyMailing\Libraries\Symfony\CssSelector\Exception\ParseException;
 
 /**
  * version 8.1.0

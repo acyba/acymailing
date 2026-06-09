@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\HtmlProcessor;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\HtmlProcessor;
 
-use Pelago\Emogrifier\Utilities\Preg;
+use AcyMailing\Libraries\Pelago\Emogrifier\Utilities\Preg;
 
 /**
  * Base class for HTML processor that e.g., can remove, add or modify nodes or attributes.

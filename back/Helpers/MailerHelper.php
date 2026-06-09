@@ -13,8 +13,8 @@ use AcyMailing\Classes\UserClass;
 use AcyMailerPhp\Exception;
 use AcyMailerPhp\OAuth;
 use AcyMailerPhp\Mailer;
-use Pelago\Emogrifier\CssInliner;
-use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
+use AcyMailing\Libraries\Pelago\Emogrifier\CssInliner;
+use AcyMailing\Libraries\Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
 
 class MailerHelper extends Mailer
 {
@@ -1519,7 +1519,8 @@ class MailerHelper extends Mailer
         }
 
         if ($this->config->get('multiple_part', false)) {
-            $this->altbody = $this->textVersion($this->Body);
+            $bodyForText = preg_replace('#<head\b[^>]*>.*?</head\s*>#is', '', $this->Body);
+            $this->altbody = $this->textVersion($bodyForText);
         }
 
         $this->replaceParams();

@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Parser;
 
-use Symfony\Component\CssSelector\Exception\SyntaxErrorException;
-use Symfony\Component\CssSelector\Node;
-use Symfony\Component\CssSelector\Parser\Tokenizer\Tokenizer;
+use AcyMailing\Libraries\Symfony\CssSelector\Exception\SyntaxErrorException;
+use AcyMailing\Libraries\Symfony\CssSelector\Node;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Tokenizer\Tokenizer;
 
 /**
  * CSS selector parser.

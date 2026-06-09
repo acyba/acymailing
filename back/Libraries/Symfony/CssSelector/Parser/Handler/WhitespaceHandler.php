@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser\Handler;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Parser\Handler;
 
-use Symfony\Component\CssSelector\Parser\Reader;
-use Symfony\Component\CssSelector\Parser\Token;
-use Symfony\Component\CssSelector\Parser\TokenStream;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Reader;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Token;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\TokenStream;
 
 /**
  * CSS selector whitespace handler.

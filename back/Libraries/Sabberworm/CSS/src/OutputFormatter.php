@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS;
+namespace AcyMailing\Libraries\Sabberworm\CSS;
 
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\Parsing\OutputException;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\Commentable;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\OutputException;
 
 /**
  * @internal since 8.8.0

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\CSSList;
+namespace AcyMailing\Libraries\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\Renderable;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\Commentable;
+use AcyMailing\Libraries\Sabberworm\CSS\Renderable;
 
 /**
  * Represents anything that can be in the `$contents` of a `CSSList`.

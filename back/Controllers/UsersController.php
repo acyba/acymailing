@@ -69,9 +69,15 @@ class UsersController extends AcymController
 
     /**
      * Search user emails to suggest (autocomplete on send a test)
+     * Users without access will not see autocomplete results, they can still type emails manually
      */
     public function searchTestReceiversAjax(): void
     {
+        if (!acym_isAllowed('users')) {
+            echo json_encode([]);
+            exit;
+        }
+
         $search = acym_getVar('string', 'search', '');
         $userClass = new UserClass();
         $users = $userClass->getUsersLikeEmail($search);

@@ -2,28 +2,28 @@
 
 declare(strict_types = 1);
 
-namespace Sabberworm\CSS\CSSList;
+namespace AcyMailing\Libraries\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\Comment\CommentContainer;
-use Sabberworm\CSS\CSSElement;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Position\Position;
-use Sabberworm\CSS\Position\Positionable;
-use Sabberworm\CSS\Property\AtRule;
-use Sabberworm\CSS\Property\Charset;
-use Sabberworm\CSS\Property\CSSNamespace;
-use Sabberworm\CSS\Property\Import;
-use Sabberworm\CSS\Property\Selector;
-use Sabberworm\CSS\RuleSet\AtRuleSet;
-use Sabberworm\CSS\RuleSet\DeclarationBlock;
-use Sabberworm\CSS\RuleSet\RuleSet;
-use Sabberworm\CSS\Value\CSSString;
-use Sabberworm\CSS\Value\URL;
-use Sabberworm\CSS\Value\Value;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\CommentContainer;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSElement;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\SourceException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Position;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Positionable;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\AtRule;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Charset;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\CSSNamespace;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Import;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Selector;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\AtRuleSet;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\DeclarationBlock;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\RuleSet;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\CSSString;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\URL;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\Value;
 
 /**
  * This is the most generic container available. It can contain `DeclarationBlock`s (rule sets with a selector),

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Property;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Property;
 
-use Sabberworm\CSS\CSSList\CSSListItem;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSList\CSSListItem;
 
 /**
  * Note that `CSSListItem` extends both `Commentable` and `Renderable`,

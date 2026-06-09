@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Parsing;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Parsing;
 
 /**
  * @internal since 8.7.0

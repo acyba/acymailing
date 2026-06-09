@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Property\Selector;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Property\Selector;
 
 /**
  * Utility class to calculate the specificity of a CSS selector.

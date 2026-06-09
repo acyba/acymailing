@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Parsing;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Parsing;
 
-use Sabberworm\CSS\Position\Position;
-use Sabberworm\CSS\Position\Positionable;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Position;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Positionable;
 
 class SourceException extends \Exception implements Positionable
 {

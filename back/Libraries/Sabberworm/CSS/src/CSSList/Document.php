@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\CSSList;
+namespace AcyMailing\Libraries\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
-use Sabberworm\CSS\Property\Selector;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\SourceException;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Selector;
 
 /**
  * This class represents the root of a parsed CSS file. It contains all top-level CSS contents: mostly declaration

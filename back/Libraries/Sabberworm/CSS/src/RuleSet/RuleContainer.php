@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\RuleSet;
+namespace AcyMailing\Libraries\Sabberworm\CSS\RuleSet;
 
-use Sabberworm\CSS\Rule\Rule;
+use AcyMailing\Libraries\Sabberworm\CSS\Rule\Rule;
 
 /**
  * Represents a CSS item that contains `Rules`, defining the methods to manipulate them.

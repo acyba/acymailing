@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\CSSList;
+namespace AcyMailing\Libraries\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Property\AtRule;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\AtRule;
 
 class KeyFrame extends CSSList implements AtRule
 {

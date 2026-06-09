@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Parsing;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Parsing;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\CSSList\CSSList;
-use Sabberworm\CSS\Settings;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\Comment;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSList\CSSList;
+use AcyMailing\Libraries\Sabberworm\CSS\Settings;
 
 /**
  * @internal since 8.7.0

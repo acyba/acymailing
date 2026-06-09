@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS;
+namespace AcyMailing\Libraries\Sabberworm\CSS;
 
 /**
  * Represents any entity in the CSS that is encapsulated by a class.

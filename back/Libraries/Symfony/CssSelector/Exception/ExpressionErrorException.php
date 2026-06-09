@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Exception;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Exception;
 
 /**
  * ParseException is thrown when a CSS selector syntax is not valid.

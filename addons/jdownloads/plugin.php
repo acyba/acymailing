@@ -71,6 +71,11 @@ class plgAcymJdownloads extends AcymPlugin
                         'hide' => 'ACYM_DONT_SHOW',
                     ],
                 ],
+                'itemid' => [
+                    'type' => 'text',
+                    'label' => 'ACYM_MENU_ID',
+                    'value' => '',
+                ],
             ];
         } else {
             $this->settings = [

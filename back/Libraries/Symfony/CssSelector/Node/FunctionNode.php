@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Node;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Node;
 
-use Symfony\Component\CssSelector\Parser\Token;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Token;
 
 /**
  * Represents a "<selector>:<name>(<arguments>)" node.

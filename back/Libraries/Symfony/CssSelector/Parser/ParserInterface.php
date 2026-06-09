@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Parser;
 
-use Symfony\Component\CssSelector\Node\SelectorNode;
+use AcyMailing\Libraries\Symfony\CssSelector\Node\SelectorNode;
 
 /**
  * CSS selector parser interface.

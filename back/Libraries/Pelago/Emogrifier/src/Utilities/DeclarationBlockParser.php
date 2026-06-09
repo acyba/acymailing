@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\Utilities;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\Utilities;
 
 /**
  * Provides a common method for parsing CSS declaration blocks.

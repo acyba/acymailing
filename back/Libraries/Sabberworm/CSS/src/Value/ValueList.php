@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Value;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Value;
 
-use Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
 
 /**
  * A `ValueList` represents a lists of `Value`s, separated by some separation character

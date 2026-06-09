@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\RuleSet;
+namespace AcyMailing\Libraries\Sabberworm\CSS\RuleSet;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Property\AtRule;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\AtRule;
 
 /**
  * This class represents rule sets for generic at-rules which are not covered by specific classes, i.e., not

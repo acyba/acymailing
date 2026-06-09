@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Value;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Value;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\SourceException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedTokenException;
 
 /**
  * A `CSSFunction` represents a special kind of value that also contains a function name and where the values are the

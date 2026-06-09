@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser\Shortcut;
+namespace AcyMailing\Libraries\Symfony\CssSelector\Parser\Shortcut;
 
-use Symfony\Component\CssSelector\Node\ElementNode;
-use Symfony\Component\CssSelector\Node\SelectorNode;
-use Symfony\Component\CssSelector\Parser\ParserInterface;
+use AcyMailing\Libraries\Symfony\CssSelector\Node\ElementNode;
+use AcyMailing\Libraries\Symfony\CssSelector\Node\SelectorNode;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\ParserInterface;
 
 /**
  * CSS selector element parser shortcut.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\Caching;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\Caching;
 
 /**
  * This cache caches string values with string keys. It is not PSR-6-compliant.

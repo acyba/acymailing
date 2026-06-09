@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Rule;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Rule;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\Comment\CommentContainer;
-use Sabberworm\CSS\CSSElement;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Position\Position;
-use Sabberworm\CSS\Position\Positionable;
-use Sabberworm\CSS\Value\RuleValueList;
-use Sabberworm\CSS\Value\Value;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\Comment;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\Commentable;
+use AcyMailing\Libraries\Sabberworm\CSS\Comment\CommentContainer;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSElement;
+use AcyMailing\Libraries\Sabberworm\CSS\OutputFormat;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\ParserState;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use AcyMailing\Libraries\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Position;
+use AcyMailing\Libraries\Sabberworm\CSS\Position\Positionable;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\RuleValueList;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\Value;
 
 /**
  * `Rule`s just have a string key (the rule) and a 'Value'.

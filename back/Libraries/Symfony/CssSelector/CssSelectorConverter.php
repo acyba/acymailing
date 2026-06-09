@@ -11,14 +11,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector;
+namespace AcyMailing\Libraries\Symfony\CssSelector;
 
-use Symfony\Component\CssSelector\Parser\Shortcut\ClassParser;
-use Symfony\Component\CssSelector\Parser\Shortcut\ElementParser;
-use Symfony\Component\CssSelector\Parser\Shortcut\EmptyStringParser;
-use Symfony\Component\CssSelector\Parser\Shortcut\HashParser;
-use Symfony\Component\CssSelector\XPath\Extension\HtmlExtension;
-use Symfony\Component\CssSelector\XPath\Translator;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Shortcut\ClassParser;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Shortcut\ElementParser;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Shortcut\EmptyStringParser;
+use AcyMailing\Libraries\Symfony\CssSelector\Parser\Shortcut\HashParser;
+use AcyMailing\Libraries\Symfony\CssSelector\XPath\Extension\HtmlExtension;
+use AcyMailing\Libraries\Symfony\CssSelector\XPath\Translator;
 
 /**
  * CssSelectorConverter is the main entry point of the component and can convert CSS

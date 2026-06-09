@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Comment;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Comment;
 
 /**
  * A standard implementation of this interface is available in the `CommentContainer` trait.

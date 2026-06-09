@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\CSSList;
+namespace AcyMailing\Libraries\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\CSSElement;
-use Sabberworm\CSS\Property\Selector;
-use Sabberworm\CSS\Rule\Rule;
-use Sabberworm\CSS\RuleSet\DeclarationBlock;
-use Sabberworm\CSS\RuleSet\RuleContainer;
-use Sabberworm\CSS\RuleSet\RuleSet;
-use Sabberworm\CSS\Value\CSSFunction;
-use Sabberworm\CSS\Value\Value;
-use Sabberworm\CSS\Value\ValueList;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSElement;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Selector;
+use AcyMailing\Libraries\Sabberworm\CSS\Rule\Rule;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\DeclarationBlock;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\RuleContainer;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\RuleSet;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\CSSFunction;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\Value;
+use AcyMailing\Libraries\Sabberworm\CSS\Value\ValueList;
 
 /**
  * A `CSSBlockList` is a `CSSList` whose `DeclarationBlock`s are guaranteed to contain valid declaration blocks or

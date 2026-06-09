@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabberworm\CSS\Position;
+namespace AcyMailing\Libraries\Sabberworm\CSS\Position;
 
 /**
  * Represents a CSS item that may have a position in the source CSS document (line number and possibly column number).

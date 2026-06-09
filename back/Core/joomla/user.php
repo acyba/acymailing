@@ -87,12 +87,12 @@ function acym_currentUserName(?int $userid = null): string
     if (!empty($userid)) {
         $special = Factory::getUser($userid);
 
-        return $special->name;
+        return empty($special->name) ? '' : $special->name;
     }
 
     $acymy = Factory::getUser();
 
-    return $acymy->name;
+    return empty($acymy->name) ? '' : $acymy->name;
 }
 
 function acym_currentUserEmail(int $userid = 0): string

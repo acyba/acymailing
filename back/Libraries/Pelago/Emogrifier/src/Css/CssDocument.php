@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\Css;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\Css;
 
-use Pelago\Emogrifier\Utilities\Preg;
-use Sabberworm\CSS\CSSList\AtRuleBlockList as CssAtRuleBlockList;
-use Sabberworm\CSS\CSSList\Document as SabberwormCssDocument;
-use Sabberworm\CSS\Parser as CssParser;
-use Sabberworm\CSS\Property\AtRule as CssAtRule;
-use Sabberworm\CSS\Property\Charset as CssCharset;
-use Sabberworm\CSS\Property\Import as CssImport;
-use Sabberworm\CSS\Renderable as CssRenderable;
-use Sabberworm\CSS\RuleSet\DeclarationBlock as CssDeclarationBlock;
-use Sabberworm\CSS\RuleSet\RuleSet as CssRuleSet;
-use Sabberworm\CSS\Settings as ParserSettings;
+use AcyMailing\Libraries\Pelago\Emogrifier\Utilities\Preg;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSList\AtRuleBlockList as CssAtRuleBlockList;
+use AcyMailing\Libraries\Sabberworm\CSS\CSSList\Document as SabberwormCssDocument;
+use AcyMailing\Libraries\Sabberworm\CSS\Parser as CssParser;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\AtRule as CssAtRule;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Charset as CssCharset;
+use AcyMailing\Libraries\Sabberworm\CSS\Property\Import as CssImport;
+use AcyMailing\Libraries\Sabberworm\CSS\Renderable as CssRenderable;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\DeclarationBlock as CssDeclarationBlock;
+use AcyMailing\Libraries\Sabberworm\CSS\RuleSet\RuleSet as CssRuleSet;
+use AcyMailing\Libraries\Sabberworm\CSS\Settings as ParserSettings;
 
 /**
  * Parses and stores a CSS document from a string of CSS, and provides methods to obtain the CSS in parts or as data

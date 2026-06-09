@@ -688,9 +688,6 @@ trait SubscriptionInsertion
             } else {
                 $unsubscribeLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';
                 $unsubClass = 'acym_unsubscribe_all_lists';
-                if (!empty($parameters->redirect)) {
-                    $unsubscribeLink .= '&redirectunsub='.urlencode($parameters->redirect);
-                }
             }
 
             $needToCompleteLink = true;
@@ -700,6 +697,10 @@ trait SubscriptionInsertion
             }
 
             $unsubscribeLink = acym_frontendLink($unsubscribeLink, $needToCompleteLink);
+
+            if ($parameters->id === 'unsubscribeall' && !empty($parameters->redirect)) {
+                $unsubscribeLink .= (strpos($unsubscribeLink, '?') === false ? '?' : '&').'redirectunsub='.urlencode($parameters->redirect);
+            }
 
             $this->unsubscribeLink[$email->id] = $unsubscribeLink;
 

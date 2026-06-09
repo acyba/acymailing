@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\HtmlProcessor;
+namespace AcyMailing\Libraries\Pelago\Emogrifier\HtmlProcessor;
 
-use Pelago\Emogrifier\CssInliner;
-use Pelago\Emogrifier\Utilities\ArrayIntersector;
-use Pelago\Emogrifier\Utilities\Preg;
+use AcyMailing\Libraries\Pelago\Emogrifier\CssInliner;
+use AcyMailing\Libraries\Pelago\Emogrifier\Utilities\ArrayIntersector;
+use AcyMailing\Libraries\Pelago\Emogrifier\Utilities\Preg;
 
 /**
  * This class can remove things from HTML.
