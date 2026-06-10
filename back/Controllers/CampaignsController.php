@@ -145,7 +145,7 @@ class CampaignsController extends AcymController
         $testEmails = [];
         foreach ($rawTestEmails as $email) {
             $email = trim($email);
-            if (!empty($email) && acym_isValidEmail($email)) {
+            if (acym_isValidEmail($email) || is_numeric($email)) {
                 $testEmails[] = $email;
             }
         }
