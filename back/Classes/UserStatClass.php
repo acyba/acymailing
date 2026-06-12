@@ -222,14 +222,31 @@ class UserStatClass extends AcymClass
     public function getOpenTimeStats(array $mailIds): array
     {
         acym_arrayToInteger($mailIds);
-        $where = empty($mailIds) ? '' : ' AND mail_id in ('.implode(',', $mailIds).')';
+        $specificMailsCondition = empty($mailIds) ? '' : ' AND mail_id in ('.implode(',', $mailIds).')';
+        $offsetSeconds = acym_getTimeOffsetCMS();
 
-        $query = 'SELECT SUM(`open`) AS open_total, DATE_FORMAT(open_date, "%w") AS day, FORMAT(CONVERT(DATE_FORMAT(open_date, "%H"), SIGNED INTEGER) / 3, 0) AS hour, CONCAT(DATE_FORMAT(open_date, "%w"), "_", FORMAT(CONVERT(DATE_FORMAT(open_date, "%H"), SIGNED INTEGER) / 3, 0)) AS date_id FROM `#__acym_user_stat` WHERE open_date IS NOT NULL '.$where.' GROUP BY date_id';
-
-        $return['total_open'] = acym_loadResult('SELECT SUM(`open`) FROM #__acym_user_stat WHERE open_date IS NOT NULL '.$where);
-        $return['stats'] = acym_loadObjectList($query, 'date_id');
-
-        return $return;
+        return [
+            'total_open' => acym_loadResult(
+                'SELECT SUM(`open`) 
+                FROM #__acym_user_stat 
+                WHERE open_date IS NOT NULL '.$specificMailsCondition
+            ),
+            'stats' => acym_loadObjectList(
+                'SELECT 
+                    SUM(`open`) AS `open_total`,
+                    DATE_FORMAT(DATE_ADD(open_date, INTERVAL '.$offsetSeconds.' SECOND), "%w") AS `day`,
+                    FORMAT(CONVERT(DATE_FORMAT(DATE_ADD(open_date, INTERVAL '.$offsetSeconds.' SECOND), "%H"), SIGNED INTEGER) / 3, 0) AS `hour`,
+                    CONCAT(
+                        DATE_FORMAT(DATE_ADD(open_date, INTERVAL '.$offsetSeconds.' SECOND), "%w"),
+                        "_",
+                        FORMAT(CONVERT(DATE_FORMAT(DATE_ADD(open_date, INTERVAL '.$offsetSeconds.' SECOND), "%H"), SIGNED INTEGER) / 3, 0)
+                    ) AS `date_id`
+                FROM `#__acym_user_stat`
+                WHERE open_date IS NOT NULL '.$specificMailsCondition.' 
+                GROUP BY date_id',
+                'date_id'
+            ),
+        ];
     }
 
     public function getDefaultStat(): array
@@ -272,7 +289,7 @@ class UserStatClass extends AcymClass
             return [];
         }
 
-        $date = acym_date(time() - $deleteAfterXSeconds, 'Y-m-d H:i');
+        $date = acym_date(time() - $deleteAfterXSeconds, 'Y-m-d H:i', false);
 
         $queries = [
             '#__acym_user_stat' => 'DELETE FROM #__acym_user_stat WHERE send_date < '.acym_escapeDB($date),

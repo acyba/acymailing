@@ -2,8 +2,8 @@
 	<div class="cell grid-x acym__users__display__history acym__content">
 		<div class="cell grid-x acym__users__history__toggle">
 			<button type="button"
-					class="cell small-6 acym__users__history__toggle-button acym__users__history__toggle-button-selected"
-					data-acym-toggle-history="mail"><?php echo acym_translation('ACYM_EMAIL_HISTORY'); ?></button>
+			        class="cell small-6 acym__users__history__toggle-button acym__users__history__toggle-button-selected"
+			        data-acym-toggle-history="mail"><?php echo acym_translation('ACYM_EMAIL_HISTORY'); ?></button>
 			<button type="button" class="cell small-6 acym__users__history__toggle-button" data-acym-toggle-history="user">
                 <?php echo acym_translation('ACYM_USER_HISTORY'); ?>
 			</button>
@@ -44,8 +44,8 @@
                                     ? '-'
                                     : acym_tooltip(
                                         [
-                                            'hoveredText' => acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'),
-                                            'textShownInTooltip' => acym_date(acym_getTime($oneMailHistory->send_date), acym_getDateTimeFormat()),
+                                            'hoveredText' => acym_date(acym_getTimeFromUTCDate($oneMailHistory->send_date), 'd F H:i'),
+                                            'textShownInTooltip' => acym_date(acym_getTimeFromUTCDate($oneMailHistory->send_date), acym_getDateTimeFormat()),
                                         ]
                                     ); ?>
 							</div>
@@ -57,8 +57,8 @@
                                     ? '-'
                                     : acym_tooltip(
                                         [
-                                            'hoveredText' => acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'),
-                                            'textShownInTooltip' => acym_date(acym_getTime($oneMailHistory->open_date), acym_getDateTimeFormat()),
+                                            'hoveredText' => acym_date(acym_getTimeFromUTCDate($oneMailHistory->open_date), 'd F H:i'),
+                                            'textShownInTooltip' => acym_date(acym_getTimeFromUTCDate($oneMailHistory->open_date), acym_getDateTimeFormat()),
                                         ]
                                     ); ?>
 							</div>

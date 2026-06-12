@@ -144,7 +144,7 @@ class UserHelper extends AcymObject
 
             $statisticsData[] = [
                 'name' => acym_translation('ACYM_SEND_DATE'),
-                'value' => acym_getDate($oneStatistics->send_date, '%Y-%m-%d %H:%M:%S'),
+                'value' => acym_getDate($oneStatistics->send_date, 'Y-m-d H:i:s'),
             ];
 
             $statisticsData[] = [
@@ -155,7 +155,7 @@ class UserHelper extends AcymObject
             if (!empty($oneStatistics->open_date)) {
                 $statisticsData[] = [
                     'name' => acym_translation('ACYM_OPEN_DATE'),
-                    'value' => acym_getDate($oneStatistics->open_date, '%Y-%m-%d %H:%M:%S'),
+                    'value' => acym_getDate($oneStatistics->open_date, 'Y-m-d H:i:s'),
                 ];
             }
 
@@ -203,7 +203,7 @@ class UserHelper extends AcymObject
 
             $statisticsData[] = [
                 'name' => acym_translation('ACYM_CLICK_DATE'),
-                'value' => acym_getDate($oneStatistics->date_click, '%Y-%m-%d %H:%M:%S'),
+                'value' => acym_getDate($oneStatistics->date_click, 'Y-m-d H:i:s'),
             ];
 
             $statisticsData[] = [

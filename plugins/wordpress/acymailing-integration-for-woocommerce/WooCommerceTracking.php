@@ -114,7 +114,10 @@ trait WooCommerceTracking
     {
         $userStatClass = new UserStatClass();
         $userStat = $userStatClass->getOneByMailAndUserId($formattedCookie['mailid'], $formattedCookie['userid']);
-        if (empty($userStat)) return;
+        if (empty($userStat)) {
+            return;
+        }
+
         unset($userStat->statusSending);
         unset($userStat->open);
         unset($userStat->open_date);

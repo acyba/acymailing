@@ -51,9 +51,9 @@ trait Detailed
         foreach ($columnsMailStat as $column) {
             if (in_array($column, ['user_id', 'mail_id'])) continue;
             $trad = acym_translation('ACYM_'.strtoupper($column).'_COLUMN_STAT');
-            if ($column == 'send_date') $trad = acym_translation('ACYM_SEND_DATE');
-            if ($column == 'open') $trad = acym_translation('ACYM_OPEN_TOTAL_COLUMN_STAT');
-            if ($column == 'bounce') $trad = acym_translation('ACYM_BOUNCE_UNIQUE_COLUMN_STAT');
+            if ($column === 'send_date') $trad = acym_translation('ACYM_SEND_DATE');
+            if ($column === 'open') $trad = acym_translation('ACYM_OPEN_TOTAL_COLUMN_STAT');
+            if ($column === 'bounce') $trad = acym_translation('ACYM_BOUNCE_UNIQUE_COLUMN_STAT');
             $columnsToExport['userstat.'.$column] = $trad;
         }
 

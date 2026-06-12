@@ -211,11 +211,15 @@ class ExportHelper extends AcymObject
             $oneLine = [];
             foreach ($columns as $key => $trad) {
                 $key = strpos($key, '.') !== false ? explode('.', $key) : $key;
-                if (is_array($key)) $key = $key[1];
+                if (is_array($key)) {
+                    $key = $key[1];
+                }
+
                 $line = in_array($key, $valueNeedNumber) && empty($mailStat->{$key}) ? 0 : $mailStat->{$key};
                 if (is_null($line)) {
                     $line = '';
                 }
+
                 if ($key === 'bounce_details' && !empty($line)) {
                     $line = @unserialize($line);
                     if ($line !== false) {
@@ -226,6 +230,11 @@ class ExportHelper extends AcymObject
                         $line = rtrim($formattedLine, '; ');
                     }
                 }
+
+                if (in_array($key, ['send_date', 'open_date', 'date_click']) && !empty($line)) {
+                    $line = acym_date(acym_getTimeFromUTCDate($line), 'Y-m-d H:i:s');
+                }
+
                 $oneLine[] = htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
             }
             //We delete the double quote so it won't break the CSV

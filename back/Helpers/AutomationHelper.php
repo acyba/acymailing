@@ -146,10 +146,10 @@ class AutomationHelper extends AcymObject
             $table = acym_secureDBColumn($table).'.';
         }
         if ($type === self::TYPE_DATETIME && in_array($operator, ['=', '!='])) {
-            return 'DATE_FORMAT('.$table.'`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' '.'DATE_FORMAT('.$value.', "%Y-%m-%d")';
+            return 'DATE_FORMAT('.$table.'`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' DATE_FORMAT('.$value.', "%Y-%m-%d")';
         }
         if ($type === self::TYPE_TIMESTAMP && in_array($operator, ['=', '!='])) {
-            return 'FROM_UNIXTIME('.$table.'`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' '.'FROM_UNIXTIME('.$value.', "%Y-%m-%d")';
+            return 'FROM_UNIXTIME('.$table.'`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' FROM_UNIXTIME('.$value.', "%Y-%m-%d")';
         }
 
         return $table.'`'.acym_secureDBColumn($column).'` '.$operator.' '.$value;

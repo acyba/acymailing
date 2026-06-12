@@ -37,8 +37,8 @@
 				</div>
 				<div class="cell auto align-right grid-x">
 					<button type="button"
-							class="cell shrink button primary acy_button_submit acym__stats__export__button "
-							data-task="exportUserLinksDetails"><?php echo acym_translation(
+					        class="cell shrink button primary acy_button_submit acym__stats__export__button "
+					        data-task="exportUserLinksDetails"><?php echo acym_translation(
                             'ACYM_EXPORT'
                         ); ?></button>
 				</div>
@@ -97,20 +97,15 @@
                             ?>
 						</div>
 						<div class="medium-auto small-12 cell acym__listing__user_links_details__content">
-							<span data-acym-tooltip="<?php echo acym_translationSprintf(
-                                'ACYM_MAIL_NAME_X',
-                                $userLinkDetails->mail_name
-                            ); ?>"><?php echo $userLinkDetails->mail_subject; ?></span>
+							<span data-acym-tooltip="<?php echo acym_translationSprintf('ACYM_MAIL_NAME_X', $userLinkDetails->mail_name); ?>">
+								<?php echo $userLinkDetails->mail_subject; ?>
+							</span>
 						</div>
 						<div class="large-2 medium-3 hide-for-small-only cell acym__listing__user_links_details__content acym__listing__user_links_details__click-date text-center">
-                            <?php
-                            echo empty($userLinkDetails->date_click) ? '-' : acym_date($userLinkDetails->date_click, acym_getDateTimeFormat(), false);
-                            ?>
+                            <?php echo empty($userLinkDetails->date_click) ? '-' : acym_date(acym_getTimeFromUTCDate($userLinkDetails->date_click), acym_getDateTimeFormat()); ?>
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__user_links_details__content text-center">
-                            <?php
-                            echo empty($userLinkDetails->click) ? 0 : $userLinkDetails->click;
-                            ?>
+                            <?php echo empty($userLinkDetails->click) ? 0 : $userLinkDetails->click; ?>
 						</div>
 					</div>
 				</div>

@@ -1700,12 +1700,17 @@ class UserClass extends AcymClass
 
     public function getMailHistory(int $userId)
     {
-        $query = 'SELECT user_stat.*, mail.id, mail.subject, SUM(url_click.click) as click FROM #__acym_user_stat AS user_stat
-                  JOIN #__acym_mail AS mail ON mail.id = user_stat.mail_id
-                  LEFT JOIN #__acym_url_click AS url_click ON user_stat.mail_id = url_click.mail_id AND url_click.user_id = '.intval($userId).'
-                  WHERE user_stat.user_id = '.intval($userId).' GROUP BY mail_id ORDER BY send_date DESC LIMIT 50';
-
-        $mailHistory = acym_loadObjectList($query, 'mail_id');
+        $mailHistory = acym_loadObjectList(
+            'SELECT user_stat.*, mail.id, mail.subject, SUM(url_click.click) as click 
+            FROM #__acym_user_stat AS user_stat
+            JOIN #__acym_mail AS mail ON mail.id = user_stat.mail_id
+            LEFT JOIN #__acym_url_click AS url_click ON user_stat.mail_id = url_click.mail_id AND url_click.user_id = '.intval($userId).'
+            WHERE user_stat.user_id = '.intval($userId).' 
+            GROUP BY mail_id 
+            ORDER BY send_date DESC 
+            LIMIT 50',
+            'mail_id'
+        );
         $mailClass = new MailClass();
 
         return $mailClass->decode($mailHistory);

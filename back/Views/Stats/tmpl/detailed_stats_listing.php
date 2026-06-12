@@ -127,8 +127,8 @@
                             <?php
                             echo acym_tooltip(
                                 [
-                                    'hoveredText' => '<p>'.acym_date(acym_getTime($detailed_stat->send_date), acym_translation('ACYM_DATE_FORMAT_LC5')).'</p>',
-                                    'textShownInTooltip' => acym_date(acym_getTime($detailed_stat->send_date), acym_getDateTimeFormat()),
+                                    'hoveredText' => '<p>'.acym_date(acym_getTimeFromUTCDate($detailed_stat->send_date), acym_translation('ACYM_DATE_FORMAT_LC5')).'</p>',
+                                    'textShownInTooltip' => acym_date(acym_getTimeFromUTCDate($detailed_stat->send_date), acym_getDateTimeFormat()),
                                 ]
                             );
                             ?>
@@ -178,8 +178,8 @@
                             if (!empty($detailed_stat->open_date)) {
                                 echo acym_tooltip(
                                     [
-                                        'hoveredText' => '<p>'.acym_date(acym_getTime($detailed_stat->open_date), acym_translation('ACYM_DATE_FORMAT_LC5')).'</p>',
-                                        'textShownInTooltip' => acym_date(acym_getTime($detailed_stat->open_date), acym_getDateTimeFormat()),
+                                        'hoveredText' => '<p>'.acym_date(acym_getTimeFromUTCDate($detailed_stat->open_date), acym_translation('ACYM_DATE_FORMAT_LC5')).'</p>',
+                                        'textShownInTooltip' => acym_date(acym_getTimeFromUTCDate($detailed_stat->open_date), acym_getDateTimeFormat()),
                                     ]
                                 );
                             }

@@ -276,7 +276,7 @@ trait StatisticsAutomationFilters
         if (!empty($where)) $query->where[] = $where;
 
         if (!empty($options['time']) && in_array($options['status'], ['opened', 'notopen'])) {
-            if ($options['status'] == 'notopen') {
+            if ($options['status'] === 'notopen') {
                 $query->where[] = $alias.'.open_date IS NULL OR '.$alias.'.open_date >= DATE_ADD('.$alias.'.send_date, INTERVAL '.intval($options['time']).' SECOND)';
             } else {
                 $query->where[] = $alias.'.open_date <= DATE_ADD('.$alias.'.send_date, INTERVAL '.intval($options['time']).' SECOND)';

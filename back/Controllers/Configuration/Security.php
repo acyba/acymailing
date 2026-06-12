@@ -308,7 +308,6 @@ trait Security
             );
 
             if (empty($currentTableColumns)) {
-                //TODO
                 return;
             }
         } catch (\Exception $e) {

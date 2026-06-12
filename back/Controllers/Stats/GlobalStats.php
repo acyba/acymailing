@@ -274,14 +274,14 @@ trait GlobalStats
         $opens = [];
         foreach ($campaignOpens as $one) {
             if (!empty($one->open_date)) {
-                $opens[acym_date(acym_getTime($one->open_date), $dateCode)] = $one->open;
+                $opens[acym_date(acym_getTimeFromUTCDate($one->open_date), $dateCode)] = $one->open;
             }
         }
 
         $clicks = [];
         foreach ($campaignClicks as $one) {
             if (!empty($one->date_click)) {
-                $clicks[acym_date(acym_getTime($one->date_click), $dateCode)] = $one->click;
+                $clicks[acym_date(acym_getTimeFromUTCDate($one->date_click), $dateCode)] = $one->click;
             }
         }
 
@@ -309,6 +309,12 @@ trait GlobalStats
 
         if (empty($startDate) || empty($endDate)) {
             return [];
+        }
+
+        // Apply timezone for chart by hour
+        if ($modifier === 'min') {
+            $startDate = acym_date(strtotime($startDate) + date('Z'), 'Y-m-d H:i:s');
+            $endDate = acym_date(strtotime($endDate) + date('Z'), 'Y-m-d H:i:s');
         }
 
         $begin = new \DateTime($startDate);
@@ -396,6 +402,7 @@ trait GlobalStats
 
             return;
         }
+
         $data['empty_open'] = false;
 
         $stats = [];
@@ -403,7 +410,7 @@ trait GlobalStats
         for ($day = 0; $day < 7; $day++) {
             $stats[$day] = [];
             for ($hour = 0; $hour < 8; $hour++) {
-                if (empty($statsDB['stats'][$day.'_'.$hour]) || empty($statsDB['total_open'])) {
+                if (empty($statsDB['stats'][$day.'_'.$hour])) {
                     $percentage = 0;
                 } else {
                     $percentage = ($statsDB['stats'][$day.'_'.$hour]->open_total * 100) / $statsDB['total_open'];

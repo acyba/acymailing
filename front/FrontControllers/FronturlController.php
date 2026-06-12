@@ -60,7 +60,7 @@ class FronturlController extends AcymController
         $urlClick->url_id = $urlObject->id;
         $urlClick->click = 1;
         $urlClick->user_id = $userId;
-        $urlClick->date_click = acym_date('now', 'Y-m-d H:i:s');
+        $urlClick->date_click = acym_date('now', 'Y-m-d H:i:s', false);
 
         $mailStatClass = new MailStatClass();
         $urlClickClass = new UrlClickClass();
@@ -71,7 +71,7 @@ class FronturlController extends AcymController
             $userStatToInsert->user_id = $userId;
             $userStatToInsert->mail_id = $mailId;
             $userStatToInsert->open = 1;
-            $userStatToInsert->open_date = acym_date('now', 'Y-m-d H:i:s');
+            $userStatToInsert->open_date = acym_date('now', 'Y-m-d H:i:s', false);
             $userStatClass->save($userStatToInsert);
 
             $mailStat = new \stdClass();
@@ -87,8 +87,8 @@ class FronturlController extends AcymController
         $userClass = new UserClass();
         $subscriber = $userClass->getOneById($userId);
         if (!empty($subscriber)) {
-            $subscriber->last_open_date = acym_date('now', 'Y-m-d H:i:s');
-            $subscriber->last_click_date = acym_date('now', 'Y-m-d H:i:s');
+            $subscriber->last_open_date = acym_date('now', 'Y-m-d H:i:s', false);
+            $subscriber->last_click_date = acym_date('now', 'Y-m-d H:i:s', false);
             $userClass->triggers = false;
             $userClass->sendConf = false;
             $userClass->save($subscriber);

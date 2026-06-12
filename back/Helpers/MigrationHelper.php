@@ -1274,7 +1274,7 @@ class MigrationHelper extends AcymObject
                 'mail_id' => acym_escapeDB($oneStat->mailid),
                 'total_subscribers' => acym_escapeDB($totalSent + $oneStat->fail),
                 'sent' => acym_escapeDB($totalSent),
-                'send_date' => empty($oneStat->senddate) ? 'NULL' : acym_escapeDB(acym_date($oneStat->senddate, 'Y-m-d H:i:s')),
+                'send_date' => empty($oneStat->senddate) ? 'NULL' : acym_escapeDB(acym_date($oneStat->senddate, 'Y-m-d H:i:s', false)),
                 'fail' => acym_escapeDB($oneStat->fail),
                 'open_unique' => intval($oneStat->openunique),
                 'open_total' => intval($oneStat->opentotal),
