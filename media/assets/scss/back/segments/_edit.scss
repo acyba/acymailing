@@ -13,5 +13,13 @@
 }
 
 .acym__segments__edit__filters {
+    .intext_select_automation {
+        .select2-selection__clear {
+            display: none;
+        }
+    }
+}
+
+.acym__segments__edit__filters {
     @import "filters";
 }

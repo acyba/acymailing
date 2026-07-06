@@ -28,101 +28,20 @@ function acym_escape($text, bool $addSlashes = true): string
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 
-/**
- * To secure URLs echoed in HTML attributes
- */
-function acym_escapeUrl(string $url): string
-{
-    if (empty($url)) {
-        return '';
-    }
-
-    $url = str_replace(' ', '%20', ltrim($url));
-    $url = preg_replace('|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\\x80-\\xff]|i', '', $url);
-
-    if (empty($url)) {
-        return '';
-    }
-
-    if (0 !== stripos($url, 'mailto:')) {
-        $strip = ['%0d', '%0a', '%0D', '%0A'];
-        $count = 1;
-        while ($count) {
-            $url = str_replace($strip, '', $url, $count);
-        }
-    }
-
-    $url = str_replace(';//', '://', $url);
-    if (strpos($url, ':') === false && !in_array($url[0], ['/', '#', '?'], true) && !preg_match('/^[a-z0-9-]+?\.php/i', $url)) {
-        $url = 'https://'.$url;
-    }
-
-    $url = str_replace('&amp;', '&#038;', $url);
-    $url = str_replace("'", '&#039;', $url);
-
-    if (strpos($url, '[') !== false || strpos($url, ']') !== false) {
-        $to_unset = [];
-
-        if (strpos($url, '//') === 0) {
-            $to_unset[] = 'scheme';
-            $url = 'placeholder:'.$url;
-        } elseif (strpos($url, '/') === 0) {
-            $to_unset[] = 'scheme';
-            $to_unset[] = 'host';
-            $url = 'placeholder://placeholder'.$url;
-        }
-
-        $parsed = parse_url($url);
-
-        if (!empty($parsed)) {
-            foreach ($to_unset as $key) {
-                unset($parsed[$key]);
-            }
-        }
-
-        $front = '';
-
-        if (isset($parsed['scheme'])) {
-            $front .= $parsed['scheme'].'://';
-        } elseif ('/' === $url[0]) {
-            $front .= '//';
-        }
-
-        if (isset($parsed['user'])) {
-            $front .= $parsed['user'];
-        }
-
-        if (isset($parsed['pass'])) {
-            $front .= ':'.$parsed['pass'];
-        }
-
-        if (isset($parsed['user']) || isset($parsed['pass'])) {
-            $front .= '@';
-        }
-
-        if (isset($parsed['host'])) {
-            $front .= $parsed['host'];
-        }
-
-        if (isset($parsed['port'])) {
-            $front .= ':'.$parsed['port'];
-        }
-
-        $end_dirty = str_replace($front, '', $url);
-        $end_clean = str_replace(['[', ']'], ['%5B', '%5D'], $end_dirty);
-        $url = str_replace($end_dirty, $end_clean, $url);
-    }
-
-    return $url;
-}
-
 function acym_arrayToInteger(array &$array): void
 {
     $array = @array_map('intval', $array);
 }
 
-function acym_getIP(): string
+function acym_getIP(bool $full = false): string
 {
+    $config = acym_config();
+    $ipCollection = $config->get('ip_collection', 'yes');
+
+    if (!$full && $ipCollection === 'no') {
+        return '';
+    }
+
     $map = [
         'HTTP_X_FORWARDED_IP',
         'X_FORWARDED_FOR',
@@ -148,8 +67,43 @@ function acym_getIP(): string
         $ipAddress = trim(end($addresses));
     }
 
-    // We add a strip tags here as the ip could be definitely be modified by something...
-    return strip_tags($ipAddress);
+    // We strip tags here as the ip could be modified by something
+    $ipAddress = strip_tags($ipAddress);
+
+    if ($full || $ipCollection === 'yes') {
+        return $ipAddress;
+    }
+
+    return acym_anonymizeIP($ipAddress);
+}
+
+function acym_anonymizeIP(string $ipAddress): string
+{
+    if (empty($ipAddress)) {
+        return '';
+    }
+
+    // IPv6
+    if (strpos($ipAddress, ':') !== false) {
+        $packed = inet_pton($ipAddress);
+        if ($packed === false) {
+            return '';
+        }
+
+        $anonymized = substr($packed, 0, 8).str_repeat("\x00", 8);
+
+        return inet_ntop($anonymized);
+    }
+
+    // IPv4
+    $parts = explode('.', $ipAddress);
+    if (count($parts) !== 4) {
+        return '';
+    }
+
+    $parts[3] = '0';
+
+    return implode('.', $parts);
 }
 
 function acym_generateKey(int $length): string

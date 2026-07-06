@@ -314,7 +314,7 @@ class CronHelper extends AcymObject
         // We update the next cron and the last cron dates
         $newConfig = [
             'cron_last' => $time,
-            'cron_fromip' => acym_getIP(),
+            'cron_fromip' => acym_getIP(true),
             'cron_next' => $nextCronTime + $cronFrequency,
         ];
 

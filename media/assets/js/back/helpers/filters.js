@@ -1,6 +1,7 @@
 const acym_helperFilter = {
     setFieldValue: function ($field, value) {
         if ($field.hasClass('acym_select2_ajax')) {
+            $field = $field.filter('select');
             let ctrl = $field.attr('data-ctrl');
             if (!ctrl) ctrl = 'dynamics';
             let task = $field.attr('data-task');

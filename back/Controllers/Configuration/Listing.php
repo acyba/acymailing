@@ -393,7 +393,7 @@ trait Listing
                 'name' => self::CRON_TASK_NAME,
                 'taskFrequency' => 'every_minute',
                 'taskId' => $currentTaskId,
-                'config' => $formData
+                'config' => $formData,
             ]
         );
 
@@ -414,7 +414,8 @@ trait Listing
 
     private function handleAcl(array &$formData): void
     {
-        if (ACYM_PRODUCTION) {
+        $aclPermissions = acym_cmsPermission();
+        if (ACYM_PRODUCTION && !empty($aclPermissions)) {
             $aclPages = array_keys(acym_getPagesForAcl());
             foreach ($aclPages as $page) {
                 if (empty($formData['acl_'.$page])) {
@@ -436,16 +437,21 @@ trait Listing
             'acy_notification_subform',
             'acy_notification_profile',
             'acy_notification_confirm',
-            'wp_access',
             'multilingual_languages',
             'allowed_hosts',
             'unsub_survey',
         ];
 
+        $aclPermissions = acym_cmsPermission();
+        if (!empty($aclPermissions)) {
+            $select2Fields[] = 'wp_access';
+        }
+
         foreach ($select2Fields as $oneField) {
             if ($oneField === 'unsub_survey' && !empty($formData[$oneField])) {
                 $formData[$oneField] = json_encode($formData[$oneField]);
             }
+
             if (empty($formData[$oneField])) {
                 $formData[$oneField] = [];
             }

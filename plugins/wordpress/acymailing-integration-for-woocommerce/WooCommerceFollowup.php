@@ -118,10 +118,12 @@ trait WooCommerceFollowup
         }
 
         $search = acym_getVar('string', 'search', '');
-        $cats = $this->getWooCategories([], $search);
         $categories = [];
-        foreach ($cats as $oneCat) {
-            $categories[] = [$oneCat->term_id, $oneCat->name];
+        if (!empty($search)) {
+            $cats = $this->getWooCategories([], $search);
+            foreach ($cats as $oneCat) {
+                $categories[] = [$oneCat->term_id, $oneCat->name];
+            }
         }
 
         echo wp_json_encode($categories);

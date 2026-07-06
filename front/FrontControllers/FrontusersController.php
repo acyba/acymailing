@@ -226,7 +226,8 @@ class FrontusersController extends UsersController
         if (!empty($mailId) && !empty($currentUser->id)) {
             $userStatClass = new UserStatClass();
             $userStat = $userStatClass->getOneByMailAndUserId($mailId, $currentUser->id);
-            if (acym_isRobot() || (!empty($userStat) && acym_getTimeFromUTCDate($userStat->send_date) > time() - 20)) {
+            $delay = $this->config->get('tracking_delay', 0);
+            if (acym_isRobot() || (!empty($userStat) && !empty($delay) && acym_getTimeFromUTCDate($userStat->send_date) > time() - $delay)) {
                 return;
             }
         }

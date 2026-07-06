@@ -193,8 +193,11 @@ class getAcymTab extends cbTabHandler
         $updateRegister = $this->getParam('updateonregister', 0);
         if (0 === intval($updateRegister) || empty($currentSubscription)) return;
 
+        $allvisiblelistsArray = [];
         $allvisiblelists = acym_getVar('string', 'visibleLists');
-        $allvisiblelistsArray = explode(',', $allvisiblelists);
+        if (!empty($allvisiblelists)) {
+            $allvisiblelistsArray = explode(',', $allvisiblelists);
+        }
         acym_arrayToInteger($allvisiblelistsArray);
 
         $checkedByUser = empty($postdata['acymcb']['list']) ? [] : $postdata['acymcb']['list'];
@@ -252,15 +255,13 @@ class getAcymTab extends cbTabHandler
 
     private function displayLists($mode, $acyUser, $lists)
     {
-        if (empty($acyUser->id)) {
-            return '';
-        }
-
         $listClass = new ListClass();
         $allLists = $listClass->getAllWithoutManagement(true);
 
-        $userClass = new UserClass();
-        $userLists = $userClass->getSubscriptionStatus($acyUser->id);
+        if (!empty($acyUser->id)) {
+            $userClass = new UserClass();
+            $userLists = $userClass->getSubscriptionStatus($acyUser->id);
+        }
 
         $visibleListsArray = [];
         $visibleLists = explode(',', $lists);

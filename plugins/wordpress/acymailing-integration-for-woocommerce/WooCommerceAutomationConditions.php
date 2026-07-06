@@ -264,6 +264,10 @@ trait WooCommerceAutomationConditions
 
         $return = [];
         $search = acym_getVar('string', 'search', '');
+        if (empty($search)) {
+            echo wp_json_encode([]);
+            exit;
+        }
         $variations = acym_getVar('boolean', 'variations', false);
 
         $productType = ['product'];

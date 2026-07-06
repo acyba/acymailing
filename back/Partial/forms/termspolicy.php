@@ -26,11 +26,11 @@ if (empty($termspolicy['terms_type']) || $termspolicy['terms_type'] === 'article
 }
 
 if (!empty($termspolicy['privacy_type']) && $termspolicy['privacy_type'] === 'url' && !empty($privacyURL)) {
-    $privacyURL = '<a href="'.acym_escapeUrl($privacyURL).'" target="_blank">'.acym_translation('ACYM_PRIVACY_POLICY').'</a>';
+    $privacyURL = '<a href="'.acym_escapeUrl($privacyURL).'" target="_blank">'.acym_escape(acym_translation('ACYM_PRIVACY_POLICY')).'</a>';
 }
 
 if (!empty($termspolicy['terms_type']) && $termspolicy['terms_type'] === 'url' && !empty($termsURL)) {
-    $termsURL = '<a href="'.acym_escapeUrl($termsURL).'" target="_blank">'.acym_translation('ACYM_TERMS_CONDITIONS').'</a>';
+    $termsURL = '<a href="'.acym_escapeUrl($termsURL).'" target="_blank">'.acym_escape(acym_translation('ACYM_TERMS_CONDITIONS')).'</a>';
 }
 
 

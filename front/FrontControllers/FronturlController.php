@@ -51,7 +51,8 @@ class FronturlController extends AcymController
         $userStat = $userStatClass->getOneByMailAndUserId($mailId, $userId);
 
         // The mail has been deleted, or we didn't send this email to this user, or it's a bot
-        if (empty($mail) || empty($userStat) || acym_getTimeFromUTCDate($userStat->send_date) > time() - 20 || acym_isRobot()) {
+        $delay = $this->config->get('tracking_delay', 0);
+        if (empty($mail) || empty($userStat) || acym_isRobot() || (!empty($delay) && acym_getTimeFromUTCDate($userStat->send_date) > time() - $delay)) {
             acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId));
         }
 

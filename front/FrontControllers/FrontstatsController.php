@@ -54,7 +54,8 @@ class FrontstatsController extends AcymController
         $userStat = $userStatClass->getOneByMailAndUserId($mailId, $userId);
 
         // Ignore opens within X seconds following the email sending to prevent bots from impacting statistics
-        if (empty($userStat) || acym_getTimeFromUTCDate($userStat->send_date) > time() - 20) {
+        $delay = $this->config->get('tracking_delay', 0);
+        if (empty($userStat) || acym_isRobot() || (!empty($delay) && acym_getTimeFromUTCDate($userStat->send_date) > time() - $delay)) {
             return;
         }
 

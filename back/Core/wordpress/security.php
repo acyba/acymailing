@@ -269,3 +269,15 @@ function acym_getSiteSalt(): string
 {
     return wp_salt('auth');
 }
+
+/**
+ * To secure URLs echoed in HTML attributes
+ */
+function acym_escapeUrl(string $url): string
+{
+    if (empty($url)) {
+        return '';
+    }
+
+    return esc_url($url);
+}

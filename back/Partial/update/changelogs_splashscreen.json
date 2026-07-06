@@ -1,5 +1,5 @@
 {
-    "max_version": "10.10.0",
+    "max_version": "10.11.0",
     "splash_content": [
         {
             "menu_title": "General",
@@ -7,16 +7,12 @@
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "Bot protection update",
-                    "desc": "The bot protection has been updated to prevent clicks to be recorded on URLs in sent emails when a bot verifies them."
+                    "title": "IP address collection",
+                    "desc": "A new option lets you toggle on/off the IP address collection on confirmation and subscription."
                 },
                 {
-                    "title": "Manual test emails",
-                    "desc": "Users allowed to build campaigns but not allowed to access users can now send tests to manually typed addresses."
-                },
-                {
-                    "title": "Gmail preview text",
-                    "desc": "The preview text on the Gmail listing does not contain the email subject anymore."
+                    "title": "Delay statistics recording",
+                    "desc": "A new option lets you configure a delay during which the statistics are not recorded."
                 }
             ]
         },
@@ -26,20 +22,12 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Improved security of subscription and unsubscription",
-                    "desc": "We reinforced the security of the subscription form and unsubscribe page to prevent modification of the confirmation status."
+                    "title": "Access rights reset",
+                    "desc": "The access rights could be reset when a user is granted access to the configuration and modifies it."
                 },
                 {
-                    "title": "URL redirection update",
-                    "desc": "We have updated the URL redirection option for the direct unsubscribe link and the \"unsubscribe from all lists\" link to improve usability and ensure the redirection is handled correctly."
-                },
-                {
-                    "title": "Deprecated messages",
-                    "desc": "We fixed some deprecated messages linked to the statistics to prepare for the future php versions."
-                },
-                {
-                    "title": "Email content replacement",
-                    "desc": "We fixed an issue that could prevent the replacement of email content, such as articles, in some rare cases."
+                    "title": "Monthly campaigns",
+                    "desc": "We fixed the next execution time calculation for monthly automations and monthly automatic campaigns that could be shifted by timezone."
                 }
             ]
         },
@@ -49,20 +37,23 @@
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "Timezone issue with REST API",
-                    "desc": "The REST API triggers (mainly used for Zapier and Make) had a timezone issue, preventing new data from being found."
+                    "title": "Community Builder list management",
+                    "desc": "Lists are now properly displayed in the Community Builder user management when creating a new user."
+                }
+            ]
+        },
+        {
+            "menu_title": "WordPress",
+            "menu_icon": "acymicon-wordpress",
+            "title": "WHAT CHANGED FOR WORDPRESS",
+            "articles": [
+                {
+                    "title": "Subscription form security",
+                    "desc": "Security has been improved on the subscription form options."
                 },
                 {
-                    "title": "EventBooking events detection",
-                    "desc": "[add-ons] The new EventBooking events are now detected by creation date if the publishing date is not used by the author."
-                },
-                {
-                    "title": "Better jDownloads links",
-                    "desc": "[add-ons] A new option lets you specify the menu item ID to use for jDownloads links."
-                },
-                {
-                    "title": "Name field visibility in subscription module",
-                    "desc": "The name field isn't shown by default anymore on subscription modules when it is not selected."
+                    "title": "WooCommerce filter display",
+                    "desc": "Fix the display of WooCommerce products and categories filters in automations, segments and follow-ups."
                 }
             ]
         }

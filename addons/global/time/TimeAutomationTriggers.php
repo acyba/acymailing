@@ -283,8 +283,8 @@ trait TimeAutomationTriggers
                     $execute = true;
                 }
 
-                // Set the next execution time
-                $nextExecutionDate[] = $execution + 2628000;
+                // Set the next execution time: recompute the real "next weekday of next month" occurrence.
+                $nextExecutionDate[] = acym_getTime($triggers['on_day_month']['number'].' '.$triggers['on_day_month']['day'].' of next month '.$hour.':'.$minutes);
             }
         }
 
@@ -296,7 +296,7 @@ trait TimeAutomationTriggers
                 $execute = true;
             } else {
                 if ($triggers['every']['type'] == 2628000) {
-                    $nextDate = new \DateTime(acym_date($step->last_execution, 'Y-m-d H:m:i', false), new \DateTimeZone('UTC'));
+                    $nextDate = new \DateTime(acym_date($step->last_execution, 'Y-m-d H:i:s', false), new \DateTimeZone('UTC'));
                     $nextDate = $nextDate->add(new \DateInterval('P'.$triggers['every']['number'].'M'));
                     $nextDate = $nextDate->getTimestamp();
                 } else {

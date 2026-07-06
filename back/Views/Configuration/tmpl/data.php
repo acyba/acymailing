@@ -22,6 +22,29 @@
                 'xlarge-3 medium-5 small-9'
             ); ?>
 		</div>
+		<div class="grid-x grid-margin-x margin-top-1">
+			<label class="cell large-3" for="security_key">
+                <?php echo acym_translation('ACYM_IP_COLLECTION').acym_info(['textShownInTooltip' => 'ACYM_IP_COLLECTION_DESC']); ?>
+			</label>
+			<div class="cell large-9">
+				<div>
+                    <?php
+                    echo acym_select(
+                        [
+                            'yes' => acym_translation('ACYM_YES'),
+                            'anonymised' => acym_translation('ACYM_ANONYMISED'),
+                            'no' => acym_translation('ACYM_NO'),
+                        ],
+                        'config[ip_collection]',
+                        $this->config->get('ip_collection', 'yes'),
+                        [
+                            'class' => 'acym__select intext_select',
+                        ]
+                    );
+                    ?>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="cell margin-bottom-2">
@@ -69,6 +92,32 @@
                 'external_config'
             );
             ?>
+		</div>
+		<div class="cell grid-x margin-y margin-top-1">
+			<div class="cell medium-3">
+				<label for="tracking_delay">
+                    <?php
+                    echo acym_escape(acym_translation('ACYM_TRACKING_DELAY'));
+                    echo acym_info(
+                        [
+                            'textShownInTooltip' => 'ACYM_TRACKING_DELAY_DESC',
+                        ]
+                    );
+                    ?>
+				</label>
+			</div>
+			<div class="cell medium-9 grid-x">
+				<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
+					<input
+							id="tracking_delay"
+							type="number"
+							class="intext_input"
+							min="0"
+							name="config[tracking_delay]"
+							value="<?php echo intval($this->config->get('tracking_delay', 0)); ?>"
+					/>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div class="cell margin-bottom-2">
@@ -201,16 +250,16 @@
 			<div class="cell xlarge-9 medium-7 small-12 acym_vcenter">
 				<label class="margin-right-1">
 					<input type="radio"
-						   name="config[csv_separator]"
-						   value=";"
+					       name="config[csv_separator]"
+					       value=";"
                         <?php echo $this->config->get('csv_separator', ',') === ';' ? 'checked="checked"' : ''; ?> />
 					;
 				</label>
 
 				<label>
 					<input type="radio"
-						   name="config[csv_separator]"
-						   value=","
+					       name="config[csv_separator]"
+					       value=","
                         <?php echo $this->config->get('csv_separator', ',') === ',' ? 'checked="checked"' : ''; ?> />
 					,
 				</label>

@@ -59,14 +59,12 @@ function acym_isValidEmail($email, bool $extended = false): bool
         }
     }
 
-    $object = new stdClass();
-    $object->IP = acym_getIP();
-    $object->emailAddress = $email;
+    $ip = acym_getIP();
 
     // Check IP to limit subscription to max 3 per 2 hours
-    if ($config->get('email_iptimecheck', 0)) {
+    if (!empty($ip) && $config->get('email_iptimecheck', 0)) {
         $lapseTime = time() - 7200;
-        $nbUsers = acym_loadResult('SELECT COUNT(*) FROM #__acym_user WHERE creation_date > '.intval($lapseTime).' AND ip = '.acym_escapeDB($object->IP));
+        $nbUsers = acym_loadResult('SELECT COUNT(*) FROM #__acym_user WHERE creation_date > '.intval($lapseTime).' AND ip = '.acym_escapeDB($ip));
         if ($nbUsers >= 3) {
             return false;
         }

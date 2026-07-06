@@ -222,7 +222,7 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
     // Customization
     $formClass = $params->get('formclass', '');
     $alignment = $params->get('alignment', 'none');
-    $style = $alignment == 'none' ? '' : 'style="text-align: '.$alignment.'"';
+    $style = $alignment === 'none' ? '' : 'style="text-align: '.acym_escape($alignment).'"';
 
     // Articles
     $termsURL = acym_getArticleURL($params->get('termscontent', 0), false, 'ACYM_TERMS_CONDITIONS');
@@ -231,14 +231,14 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
     if (empty($termsURL)) {
         $termsURL = $params->get('termscontentURL') ?? '';
         if (!empty($termsURL)) {
-            $termsURL = '<a href="'.acym_escape($termsURL).'" target="_blank">'.acym_translation('ACYM_TERMS_CONDITIONS').'</a>';
+            $termsURL = '<a href="'.acym_escapeUrl($termsURL).'" target="_blank">'.acym_escape(acym_translation('ACYM_TERMS_CONDITIONS')).'</a>';
         }
     }
 
     if (empty($privacyURL)) {
         $privacyURL = $params->get('privacypolicyURL') ?? '';
         if (!empty($privacyURL)) {
-            $privacyURL = '<a href="'.acym_escape($privacyURL).'" target="_blank">'.acym_translation('ACYM_PRIVACY_POLICY').'</a>';
+            $privacyURL = '<a href="'.acym_escapeUrl($privacyURL).'" target="_blank">'.acym_escape(acym_translation('ACYM_PRIVACY_POLICY')).'</a>';
         }
     }
 
@@ -269,12 +269,12 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
                 </script>';
 
     $buttonStyle = '';
-    if (!empty($params->get('button_background_color', ''))) $buttonStyle .= 'background-color: '.$params->get('button_background_color', '').';';
-    if (!empty($params->get('button_text_color', ''))) $buttonStyle .= 'color: '.$params->get('button_text_color', '').';';
-    if (strlen($params->get('button_border_size', '')) > 0) $buttonStyle .= 'border-width: '.$params->get('button_border_size', '').'px;';
-    if (!empty($params->get('button_border_type', ''))) $buttonStyle .= 'border-style: '.$params->get('button_border_type', '').';';
-    if (!empty($params->get('button_border_color', ''))) $buttonStyle .= 'border-color: '.$params->get('button_border_color', '').';';
-    if (strlen($params->get('button_border_radius', '')) > 0) $buttonStyle .= 'border-radius: '.$params->get('button_border_radius', '').'px;';
+    if (!empty($params->get('button_background_color', ''))) $buttonStyle .= 'background-color: '.acym_escape($params->get('button_background_color', '')).';';
+    if (!empty($params->get('button_text_color', ''))) $buttonStyle .= 'color: '.acym_escape($params->get('button_text_color', '')).';';
+    if (strlen($params->get('button_border_size', '')) > 0) $buttonStyle .= 'border-width: '.acym_escape($params->get('button_border_size', '')).'px;';
+    if (!empty($params->get('button_border_type', ''))) $buttonStyle .= 'border-style: '.acym_escape($params->get('button_border_type', '')).';';
+    if (!empty($params->get('button_border_color', ''))) $buttonStyle .= 'border-color: '.acym_escape($params->get('button_border_color', '')).';';
+    if (strlen($params->get('button_border_radius', '')) > 0) $buttonStyle .= 'border-radius: '.acym_escape($params->get('button_border_radius', '')).'px;';
 
     if (!empty($buttonStyle)) {
         acym_addStyle(true, '#acym_module_'.$formName.' .acysubbuttons .subbutton {'.$buttonStyle.'}');
@@ -290,24 +290,24 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
 
     ob_start();
     ?>
-	<div class="acym_module <?php echo acym_escape($formClass); ?>" id="acym_module_<?php echo $formName; ?>">
-		<div class="acym_fulldiv" id="acym_fulldiv_<?php echo $formName; ?>" <?php echo $style; ?>>
+	<div class="acym_module <?php echo acym_escape($formClass); ?>" id="acym_module_<?php echo acym_escape($formName); ?>">
+		<div class="acym_fulldiv" id="acym_fulldiv_<?php echo acym_escape($formName); ?>" <?php echo $style; ?>>
 			<form enctype="multipart/form-data"
-				  id="<?php echo acym_escape($formName); ?>"
-				  name="<?php echo acym_escape($formName); ?>"
-				  method="POST"
-				  action="<?php echo acym_escape($formAction); ?>"
-				  onsubmit="return submitAcymForm('subscribe','<?php echo $formName; ?>')">
+			      id="<?php echo acym_escape($formName); ?>"
+			      name="<?php echo acym_escape($formName); ?>"
+			      method="POST"
+			      action="<?php echo acym_escape($formAction); ?>"
+			      onsubmit="return submitAcymForm('subscribe','<?php echo acym_escape($formName); ?>')">
 				<div class="acym_module_form">
                     <?php
                     $introText = $params->get('introtext', '');
                     if (!empty($introText)) {
-                        echo '<div class="acym_introtext">'.$introText.'</div>';
+                        echo '<div class="acym_introtext">'.acym_escape($introText).'</div>';
                     }
-                    if ($params->get('mode', 'tableless') == 'tableless') {
+                    if ($params->get('mode', 'tableless') === 'tableless') {
                         include ACYM_FOLDER.'widgets'.DS.'subscriptionform'.DS.'tmpl'.DS.'tableless.php';
                     } else {
-                        $displayInline = $params->get('mode', 'tableless') != 'vertical';
+                        $displayInline = $params->get('mode', 'tableless') !== 'vertical';
                         include ACYM_FOLDER.'widgets'.DS.'subscriptionform'.DS.'tmpl'.DS.'default.php';
                     }
                     ?>
@@ -332,7 +332,7 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
                 <?php
                 $postText = $params->get('posttext', '');
                 if (!empty($postText)) {
-                    echo '<div class="acym_posttext">'.$postText.'</div>';
+                    echo '<div class="acym_posttext">'.acym_escape($postText).'</div>';
                 }
                 ?>
 			</form>
