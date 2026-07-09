@@ -116,7 +116,7 @@ class ActionClass extends AcymClass
                 ON `action`.`condition_id` = `condition`.`id` 
             JOIN `#__acym_step` AS `step` 
                 ON `condition`.`step_id` = `step`.`id` 
-            WHERE `step`.`automation_id` = '.$id
+            WHERE `step`.`automation_id` = '.intval($id)
         );
         array_map([$this, 'fixTypes'], $actions);
 

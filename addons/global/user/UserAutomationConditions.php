@@ -158,7 +158,7 @@ trait UserAutomationConditions
                 } else {
                     $lftrgt = acym_loadObject('SELECT lft, rgt FROM #__usergroups WHERE id = '.intval($options['group']));
                     $allSubGroups = acym_loadResultArray('SELECT id FROM #__usergroups WHERE lft > '.intval($lftrgt->lft).' AND rgt < '.intval($lftrgt->rgt));
-                    array_unshift($allSubGroups, $options['group']);
+                    array_unshift($allSubGroups, intval($options['group']));
                     $value = ' IN ('.implode(', ', $allSubGroups).')';
                 }
 

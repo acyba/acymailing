@@ -806,7 +806,7 @@ trait EasyDigitalDownloadsInsertion
                     'SELECT DISTINCT item.product_id 
 					 FROM `#__edd_order_items` as item 
     				 JOIN `#__edd_orders` as orders on item.order_id = orders.id 
-				 	 WHERE orders.user_id ='.$user->cms_id.' AND orders.status = '.acym_escapeDB('complete');
+				 	 WHERE orders.user_id = '.intval($user->cms_id).' AND orders.status = '.acym_escapeDB('complete');
 
                 if (!empty($parameter->min_date)) {
                     $query .= ' AND orders.date_completed >= '.acym_escapeDB($parameter->min_date);

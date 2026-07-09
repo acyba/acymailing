@@ -19,6 +19,7 @@ trait SubscriptionFollowup
                     }
                 }
             } else {
+                acym_arrayToInteger($followup->condition['lists']);
                 $lists = implode(',', $followup->condition['lists']);
                 $user = acym_loadObject('SELECT * FROM #__acym_user_has_list WHERE user_id = '.intval($userId).' AND status = 1 AND list_id IN ('.$lists.')');
             }

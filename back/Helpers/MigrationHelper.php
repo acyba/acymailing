@@ -50,7 +50,7 @@ class MigrationHelper extends AcymObject
 
             foreach ($fields as $key => $field) {
                 if (in_array($field, $columnUserTable)) {
-                    $fieldToCheck[$key] = '`'.$field.'`';
+                    $fieldToCheck[$key] = '`'.acym_secureDBColumn($field).'`';
                 }
             }
 

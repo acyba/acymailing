@@ -164,9 +164,14 @@ class MailClass extends AcymClass
         }
 
         if (!empty($settings['element_tab'])) {
-            $statJoin = ' LEFT JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id ';
-            $listJoin = acym_isAdmin() ? '' : ' LEFT JOIN #__acym_list AS list ON list.'.acym_escape($settings['element_tab']).'_id = mail.id';
-            $query = 'SELECT DISTINCT mail.*, mail_stat.sent as subscribers, mail_stat.open_unique FROM #__acym_mail AS mail'.$statJoin.$tagJoin.$listJoin;
+            $query = 'SELECT DISTINCT mail.*, mail_stat.sent as subscribers, mail_stat.open_unique FROM #__acym_mail AS mail';
+            $query .= ' LEFT JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id ';
+            if (!empty($settings['tag'])) {
+                $query .= ' JOIN #__acym_tag AS tag ON mail.id = tag.id_element ';
+            }
+            if (!acym_isAdmin()) {
+                $query .= ' LEFT JOIN #__acym_list AS list ON list.'.acym_secureDBColumn($settings['element_tab']).'_id = mail.id';
+            }
             $filters[] = 'mail.type = '.acym_escapeDB($settings['element_tab']);
         }
 

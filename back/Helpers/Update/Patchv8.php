@@ -298,6 +298,7 @@ trait Patchv8
         );
 
         if (!empty($mailsToClean)) {
+            acym_arrayToInteger($mailsToClean);
             $this->updateQuery('DELETE FROM #__acym_mail_archive WHERE mail_id IN ('.implode(',', $mailsToClean).')');
             $mailClass = new MailClass();
             $mailClass->delete($mailsToClean);

@@ -30,7 +30,7 @@ class ListClass extends AcymClass
                     unset($settings['columns'][$key]);
                     continue;
                 }
-                $settings['columns'][$key] = $key === 'join' ? $value : 'list.'.$value;
+                $settings['columns'][$key] = $key === 'join' ? acym_secureDBColumn($value) : 'list.'.acym_secureDBColumn($value);
             }
             $columns = implode(', ', $settings['columns']);
         }

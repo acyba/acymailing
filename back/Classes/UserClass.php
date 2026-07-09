@@ -64,7 +64,7 @@ class UserClass extends AcymClass
         $columns = '`user`.*';
         if (!empty($settings['columns'])) {
             foreach ($settings['columns'] as $key => $value) {
-                $settings['columns'][$key] = $key === 'join' ? $value : 'user.'.$value;
+                $settings['columns'][$key] = $key === 'join' ? acym_secureDBColumn($value) : 'user.'.acym_secureDBColumn($value);
             }
             $columns = implode(', ', $settings['columns']);
         }
@@ -471,6 +471,7 @@ class UserClass extends AcymClass
 
     public function getUsersSubscriptionsByIds(array $userIds, int $creatorId = 0): array
     {
+        acym_arrayToInteger($userIds);
         $query = 'SELECT `list`.`id`, `list`.`color`, `list`.`name`, `userlist`.`user_id`, `userlist`.`status`
                 FROM #__acym_list AS `list`
                 JOIN #__acym_user_has_list AS `userlist` 
@@ -480,8 +481,12 @@ class UserClass extends AcymClass
 
         if (!empty($creatorId)) {
             $userGroups = acym_getGroupsByUser($creatorId);
-            $groupCondition = '`list`.`access` LIKE "%,'.implode(',%" OR `list`.`access` LIKE "%,', $userGroups).',%"';
-            $query .= ' AND (`list`.`cms_user_id` = '.intval($creatorId).' OR '.$groupCondition.')';
+
+            $safeGroups = [];
+            foreach ($userGroups as $group) {
+                $safeGroups[] = acym_escapeDB('%,'.$group.',%');
+            }
+            $query .= ' AND (`list`.`cms_user_id` = '.intval($creatorId).' OR `list`.`access` LIKE '.implode(' OR `list`.`access` LIKE ', $safeGroups).')';
         }
         $query .= ' ORDER BY `userlist`.`status` DESC, `list`.`id` ASC';
 
@@ -561,11 +566,13 @@ class UserClass extends AcymClass
         if (empty($addLists)) {
             return false;
         }
+        acym_arrayToInteger($addLists);
 
         //TODO was previously shown as an int in the dev documentation, hence not adding the type yet
         if (!is_array($userIds)) {
             $userIds = [$userIds];
         }
+        acym_arrayToInteger($userIds);
 
         $listClass = new ListClass();
         $historyClass = new HistoryClass();
@@ -684,6 +691,8 @@ class UserClass extends AcymClass
         if (!is_array($userIds)) {
             $userIds = [$userIds];
         }
+        acym_arrayToInteger($userIds);
+        acym_arrayToInteger($lists);
 
         $listClass = new ListClass();
         $unsubscribedFromLists = false;
@@ -802,6 +811,7 @@ class UserClass extends AcymClass
             return;
         }
 
+        acym_arrayToInteger($userIds);
         acym_arrayToInteger($listIds);
 
         acym_query(
@@ -1180,9 +1190,10 @@ class UserClass extends AcymClass
         if (!acym_isAdmin()) {
             $hiddenlistsString = acym_getVar('string', 'hiddenlists', '');
             $hiddenlists = explode(',', $hiddenlistsString);
-            acym_arrayToInteger($hiddenlists);
             $visibleSubscription = acym_getVar('array', 'subscription', []);
             $subscribeLists = array_merge($hiddenlists, $visibleSubscription);
+            acym_arrayToInteger($subscribeLists);
+
             if (!empty($subscribeLists)) {
                 foreach ($subscribeLists as $oneListId) {
                     $formData['listsub'][$oneListId] = ['status' => 1];

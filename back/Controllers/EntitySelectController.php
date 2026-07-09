@@ -41,6 +41,10 @@ class EntitySelectController extends AcymController
             return ['error' => acym_translation('ACYM_MISSING_PARAMETERS')];
         }
 
+        if (!in_array($entity, ['list', 'user'])) {
+            return ['error' => acym_translation('ACYM_UNAUTHORIZED_ACCESS')];
+        }
+
         $entityParams = [
             'offset' => $offset,
             'elementsPerPage' => $perCalls,
@@ -49,8 +53,15 @@ class EntitySelectController extends AcymController
         if ($entity === 'list') {
             $entityParams['status'] = 'active';
         }
-        if (!empty($join)) $entityParams['join'] = $join;
-        if (!empty($columnsToDisplay)) $entityParams['columns'] = $columnsToDisplay;
+        if (!empty($join)) {
+            $entityParams['join'] = $join;
+        }
+        if (!empty($columnsToDisplay)) {
+            foreach ($columnsToDisplay as $column) {
+                acym_secureDBColumn($column);
+            }
+            $entityParams['columns'] = $columnsToDisplay;
+        }
 
         if ('list' === $entity) {
             $entityParams['columns'][] = 'description';

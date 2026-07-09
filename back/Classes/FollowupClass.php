@@ -573,7 +573,13 @@ class FollowupClass extends AcymClass
         $triggers = [];
         acym_trigger('onAcymGetFollowupDailyBases', [&$triggers]);
 
-        return acym_loadObjectList('SELECT * FROM #__acym_followup WHERE `trigger` IN ("'.implode('","', $triggers).'") AND active  = 1');
+        if (empty($triggers)) {
+            return [];
+        }
+
+        $safeTriggers = array_map('acym_escapeDB', $triggers);
+
+        return acym_loadObjectList('SELECT * FROM #__acym_followup WHERE `trigger` IN ('.implode(',', $safeTriggers).') AND active  = 1');
     }
 
     public function queueForSubscribers(int $emailId): bool

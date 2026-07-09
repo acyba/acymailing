@@ -130,9 +130,11 @@ class FieldClass extends AcymClass
     {
         $query = 'SELECT '.acym_secureDBColumn($fieldDB->value).' AS value, '.acym_secureDBColumn($fieldDB->title).' AS title
                     FROM `'.acym_secureDBColumn($fieldDB->database).'`.`'.acym_secureDBColumn($fieldDB->table).'`';
-        $query .= isset($fieldDB->where_value) && strlen($fieldDB->where_value) > 0 ? ' WHERE `'.acym_secureDBColumn($fieldDB->where).'` '.$fieldDB->where_sign.' '.acym_escapeDB(
-                $fieldDB->where_value
-            ) : '';
+        if (isset($fieldDB->where_value) && strlen($fieldDB->where_value) > 0) {
+            $allowedSigns = ['=', '!=', '>', '<', '>=', '<=', 'BEGINS', 'END', 'CONTAINS', 'NOTCONTAINS', 'LIKE', 'NOT LIKE', 'REGEXP', 'NOT REGEXP', 'IS NULL', 'IS NOT NULL'];
+            $whereSign = in_array($fieldDB->where_sign ?? '', $allowedSigns, true) ? $fieldDB->where_sign : '=';
+            $query .= ' WHERE `'.acym_secureDBColumn($fieldDB->where).'` '.$whereSign.' '.acym_escapeDB($fieldDB->where_value);
+        }
         if (!empty($fieldDB->order_by)) $query .= ' ORDER BY '.acym_secureDBColumn($fieldDB->order_by).' '.acym_secureDBColumn($fieldDB->sort_order);
 
         return acym_loadObjectList($query);

@@ -111,7 +111,7 @@ trait Edition
     public function ajaxGetTables(): void
     {
         $database = acym_getVar('string', 'database');
-        $allTables = acym_loadResultArray('SHOW TABLES FROM `'.$database.'`');
+        $allTables = acym_loadResultArray('SHOW TABLES FROM `'.acym_secureDBColumn($database).'`');
 
         acym_sendAjaxResponse('', ['tables' => $allTables]);
     }
@@ -121,7 +121,7 @@ trait Edition
         $table = acym_getVar('string', 'table');
         $database = acym_getVar('string', 'database');
 
-        $columns = acym_loadResultArray('SHOW COLUMNS FROM `'.$table.'` FROM `'.$database.'`');
+        $columns = acym_loadResultArray('SHOW COLUMNS FROM `'.acym_secureDBColumn($table).'` FROM `'.acym_secureDBColumn($database).'`');
         array_unshift($columns, 'ACYM_CHOOSE_COLUMN');
 
         acym_sendAjaxResponse('', ['columns' => $columns]);

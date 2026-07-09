@@ -48,7 +48,7 @@ trait SubscriptionAutomationActions
             $queryToProcess = 'INSERT IGNORE #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) ('.$query->getQuery(
                     [
                         'user.id',
-                        $action['list_id'],
+                        intval($action['list_id']),
                         '1',
                         acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')),
                     ]

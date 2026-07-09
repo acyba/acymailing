@@ -537,6 +537,7 @@ trait Patchv6
 
         $phoneFields = acym_loadResultArray('SELECT `id` FROM #__acym_field WHERE `type` = "phone"');
         if (!empty($phoneFields)) {
+            acym_arrayToInteger($phoneFields);
             $this->updateQuery('DELETE FROM #__acym_user_has_field WHERE `value` LIKE "%," AND `field_id` IN ('.implode(', ', $phoneFields).')');
         }
     }

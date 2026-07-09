@@ -65,7 +65,7 @@ class AcyplgContentCCK extends plgContentCCK
         $user = Factory::getUser();
         $authorizedViewLevels = $user->getAuthorisedViewLevels();
         acym_arrayToInteger($authorizedViewLevels);
-        $access = implode(',', $user->getAuthorisedViewLevels());
+        $access = implode(',', $authorizedViewLevels);
         foreach ($this->acyDisplays as $i => $oneDisplay) {
             $this->acyDisplays[$i] = acym_escapeDB($this->acyDisplays[$i]);
         }

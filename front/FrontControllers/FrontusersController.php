@@ -219,6 +219,7 @@ class FrontusersController extends UsersController
         $hiddenLists = trim(acym_getVar('string', 'hiddenlists', ''));
         $hiddenSubscription = empty($hiddenLists) ? [] : explode(',', $hiddenLists);
         $unsubscribeLists = array_merge($visibleSubscription, $hiddenSubscription);
+        acym_arrayToInteger($unsubscribeLists);
 
         $mailId = acym_getVar('int', 'mail_id', 0);
 

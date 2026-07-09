@@ -47,13 +47,18 @@ function acym_isValidEmail($email, bool $extended = false): bool
         if (!$checkDomain || empty($mxhosts)) {
             //Lets check with another function in case of...
             $dns = @dns_get_record($domain, DNS_A);
+            if (empty($dns)) {
+                return false;
+            }
+
             $domainChanged = true;
             foreach ($dns as $oneRes) {
                 if (strtolower($oneRes['host']) == strtolower($domain)) {
                     $domainChanged = false;
                 }
             }
-            if (empty($dns) || $domainChanged) {
+
+            if ($domainChanged) {
                 return false;
             }
         }

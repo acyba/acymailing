@@ -97,6 +97,7 @@ class CampaignClass extends AcymClass
                 $listClass = new ListClass();
                 $allowedLists = $listClass->getManageableLists();
                 if (!empty($allowedLists)) {
+                    acym_arrayToInteger($allowedLists);
                     $query .= ' LEFT JOIN #__acym_mail_has_list AS mailList ON campaign.mail_id = mailList.mail_id AND mailList.list_id IN ('.implode(',', $allowedLists).')';
                     $queryCount .= ' LEFT JOIN #__acym_mail_has_list AS mailList ON campaign.mail_id = mailList.mail_id AND mailList.list_id IN ('.implode(',', $allowedLists).')';
                     $condition .= ' OR mailList.list_id IS NOT NULL';
