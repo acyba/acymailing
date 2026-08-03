@@ -1,3 +1,7 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <input type="hidden" name="ctrl" value="frontusers" />
 <input type="hidden" name="task" value="notask" />
 <input type="hidden" name="page" value="acymailing_front" />
@@ -23,5 +27,5 @@ if (acym_isMultilingual() && !empty($form->settings['redirection']['langConfirm'
 <input type="hidden" name="redirect" value="<?php echo acym_escapeUrl($redirection); ?>">
 <input type="hidden" name="ajax" value="<?php echo acym_escape($ajax); ?>">
 <input type="hidden"
-	   name="confirmation_message"
-	   value="<?php echo acym_escape($confirmationMessage); ?>">
+       name="confirmation_message"
+       value="<?php echo acym_escape($confirmationMessage); ?>">

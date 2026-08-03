@@ -1,10 +1,13 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 include __DIR__.DS.'wordpress'.DS.'defines.php';
 require ACYM_FOLDER.'vendor'.DS.'autoload.php';
 
 include __DIR__.DS.'AcymPunycode.php';
 include __DIR__.DS.'wordpress'.DS.'language.php';
+include __DIR__.DS.'wordpress'.DS.'request.php';
 include __DIR__.DS.'wordpress'.DS.'database.php';
 include __DIR__.DS.'wordpress'.DS.'date.php';
 include __DIR__.DS.'wordpress'.DS.'file.php';

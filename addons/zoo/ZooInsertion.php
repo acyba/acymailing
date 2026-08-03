@@ -477,7 +477,7 @@ trait ZooInsertion
         }
 
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
-        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span>';
+        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escapeHtml(acym_translation('ACYM_READ_MORE')).'</span>';
         $varFields['{readmore}'] .= '</a>';
 
         if (!empty($tag->readmore)) {

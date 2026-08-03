@@ -25,7 +25,7 @@ class HistoryClass extends AcymClass
         }
         $history = new \stdClass();
         $history->user_id = intval($userId);
-        $history->action = strip_tags($action);
+        $history->action = acym_stripTags($action);
         $history->data = implode("\n", $data);
         $history->unsubscribe_reason = $unsubscribe_reason;
         //Avoid a memory issue when the data is way too big.
@@ -50,11 +50,20 @@ class HistoryClass extends AcymClass
 
         if (!empty($_SERVER)) {
             $source = [];
-            $vars = ['HTTP_REFERER', 'HTTP_USER_AGENT', 'HTTP_HOST', 'SERVER_ADDR', 'REMOTE_ADDR', 'REQUEST_URI', 'QUERY_STRING'];
+            $vars = [
+                'HTTP_REFERER',
+                'HTTP_USER_AGENT',
+                'HTTP_HOST',
+                'SERVER_ADDR',
+                'REMOTE_ADDR',
+                'REQUEST_URI',
+                'QUERY_STRING',
+            ];
 
             foreach ($vars as $oneVar) {
-                if (!empty($_SERVER[$oneVar])) {
-                    $source[] = $oneVar.'::'.strip_tags($_SERVER[$oneVar]);
+                $remoteIp = acym_getVar('string', $oneVar, '', 'SERVER');
+                if (!empty($remoteIp)) {
+                    $source[] = $oneVar.'::'.acym_stripTags($remoteIp);
                 }
             }
             $history->source = implode("\n", $source);

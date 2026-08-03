@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 class Message
 {
     public function __construct()
@@ -15,8 +17,21 @@ class Message
         $locale = acym_getVar('string', '_locale', '');
         if (!empty($locale)) return;
 
-        wp_enqueue_style('acy_front_messages_css', ACYM_CSS.'front/messages.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'front'.DS.'messages.min.css'));
-        wp_enqueue_script('acy_front_messages_js', ACYM_JS.'front/messages.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'front'.DS.'messages.min.js'));
+        wp_enqueue_style(
+            'acy_front_messages_css',
+            ACYM_CSS.'front/messages.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'front'.DS.'messages.min.css'),
+            [],
+            '{__VERSION__}'
+        );
+        wp_enqueue_script(
+            'acy_front_messages_js',
+            ACYM_JS.'front/messages.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'front'.DS.'messages.min.js'),
+            [],
+            '{__VERSION__}',
+            [
+                'in_footer' => false,
+            ]
+        );
         wp_add_inline_script(
             'acy_front_messages_js',
             'var ACYM_AJAX_START = "'.admin_url('admin-ajax.php').'";

@@ -19,7 +19,9 @@ class ModuleloaderController extends AcymController
 
     public function loadAjax(): void
     {
-        if ($this->config->get('security_key') !== acym_getVar('string', 'seckey')) {
+        $securityKey = $this->config->get('security_key');
+        $providedKey = acym_getVar('string', 'seckey');
+        if (empty($securityKey) || !hash_equals((string)$securityKey, (string)$providedKey)) {
             acym_sendAjaxResponse(acym_translation('ACYM_UNAUTHORIZED_ACCESS'), [], false);
         }
 
@@ -28,7 +30,12 @@ class ModuleloaderController extends AcymController
             acym_sendAjaxResponse(acym_translation('ACYM_MODULE_NOT_FOUND'), [], false);
         }
 
-        $module = acym_loadObject('SELECT * FROM #__modules WHERE id = '.intval($moduleId));
+        $module = acym_loadObject(
+            'SELECT * FROM #__modules
+            WHERE id = '.intval($moduleId).'
+                AND published = 1
+                AND client_id = 0'
+        );
         if (empty($module)) {
             acym_sendAjaxResponse(acym_translation('ACYM_MODULE_NOT_FOUND'), [], false);
         }

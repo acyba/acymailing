@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 use AcyMailing\Classes\PluginClass;
 

@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\RegacyHelper;
 
@@ -34,8 +36,28 @@ class UserSync
 
         ?>
 		<div class="acym__regacy">
-			<label class="acym__regacy__label"><?php echo $regacyHelper->label; ?></label>
-			<div class="acym__regacy__values"><?php echo $regacyHelper->listsHtml; ?></div>
+			<label class="acym__regacy__label"><?php echo esc_html($regacyHelper->label); ?></label>
+			<div class="acym__regacy__values">
+                <?php
+                echo wp_kses(
+                    $regacyHelper->listsHtml,
+                    [
+                        'table' => ['class' => [], 'style' => []],
+                        'tr' => ['style' => []],
+                        'td' => ['style' => []],
+                        'input' => [
+                            'type' => [],
+                            'name' => [],
+                            'id' => [],
+                            'value' => [],
+                            'class' => [],
+                            'checked' => [],
+                        ],
+                        'label' => ['for' => [], 'class' => []],
+                    ]
+                );
+                ?>
+			</div>
 		</div>
         <?php
     }
@@ -43,29 +65,32 @@ class UserSync
     public function addProfileFields()
     {
         $config = acym_config();
-        if (!$config->get('regacy', 0)) return;
+        if (!$config->get('regacy', 0)) {
+            return;
+        }
 
         $regacyHelper = new RegacyHelper();
-        if (!$regacyHelper->prepareLists([])) return;
+        if (!$regacyHelper->prepareLists([])) {
+            return;
+        }
         ?>
-		<h2><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></h2>
+		<h2><?php echo esc_html(acym_translation('ACYM_SUBSCRIPTION')); ?></h2>
 		<table class="form-table">
 			<tbody>
                 <?php
                 foreach ($regacyHelper->lists as $listId => $oneList) {
-                    $checked = $oneList['checked'] ? 'checked="checked"' : '';
                     ?>
 					<tr>
 						<th scope="row">
 							<label class="acym__regacy__lists__label" for="acym__regacy__lists-<?php echo intval($listId); ?>">
-                                <?php echo acym_escape($oneList['name']); ?>
+                                <?php echo esc_html($oneList['name']); ?>
 							</label>
 						</th>
 						<td>
 							<input name="regacy_visible_lists_checked[]"
-								   type="checkbox"
-								   id="acym__regacy__lists-<?php echo intval($listId); ?>"
-								   value="<?php echo intval($listId); ?>" <?php echo $checked; ?>>
+							       type="checkbox"
+							       id="acym__regacy__lists-<?php echo intval($listId); ?>"
+							       value="<?php echo intval($listId); ?>" <?php checked($oneList['checked']); ?>>
 						</td>
 					</tr>
                     <?php
@@ -73,7 +98,7 @@ class UserSync
                 ?>
 			</tbody>
 		</table>
-		<input type="hidden" value="<?php echo implode(',', array_keys($regacyHelper->lists)); ?>" name="regacy_visible_lists" />
+		<input type="hidden" value="<?php echo esc_attr(implode(',', array_keys($regacyHelper->lists))); ?>" name="regacy_visible_lists" />
 		<input type="hidden" value="WordPress user profile" name="acy_source" />
         <?php
     }

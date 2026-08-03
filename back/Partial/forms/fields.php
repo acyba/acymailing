@@ -1,52 +1,57 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <div class="acym__subscription__form__fields">
     <?php
     $config = acym_config();
     if ($form->settings['lists']['display_position'] === 'before') {
         if ($form->type === $form->formClass::SUB_FORM_TYPE_POPUP && !empty($form->settings['message']['text']) && $form->settings['message']['position'] === 'before-lists') {
-            echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->settings['message']['text']).'</p>';
+            echo '<p id="acym__subscription__form__popup-text">'.acym_escapeHtml(acym_translation($form->settings['message']['text'])).'</p>';
         }
         include acym_getPartial('forms', 'lists');
     }
     if ($form->type === $form->formClass::SUB_FORM_TYPE_POPUP && !empty($form->settings['message']['text']) && $form->settings['message']['position'] === 'before-fields') {
-        echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->settings['message']['text']).'</p>';
+        echo '<p id="acym__subscription__form__popup-text">'.acym_escapeHtml(acym_translation($form->settings['message']['text'])).'</p>';
     }
     foreach ($form->settings['fields']['displayed'] as $field) {
-        echo '<div class="onefield fieldacy'.$field->id.' acyfield_'.$field->type.'" id="field_'.$field->id.'">';
-        echo $form->fieldClass->displayField($field, $field->default_value, $field->valuesArray, $form->settings['fields']['display_mode'] === 'outside', true);
+        echo '<div class="onefield fieldacy'.acym_escape($field->id).' acyfield_'.acym_escape($field->type).'" id="field_'.acym_escape($field->id).'">';
+        $form->fieldClass->displayField($field, $field->default_value, $field->valuesArray, $form->settings['fields']['display_mode'] === 'outside', true);
         echo '</div>';
 
         if ($field->id == 2 && $config->get('email_confirmation')) {
-            echo $form->fieldClass->setEmailConfirmationField($form->settings['fields']['display_mode'] === 'outside', $field);
+            $form->fieldClass->setEmailConfirmationField($form->settings['fields']['display_mode'] === 'outside', $field);
         }
     }
     if ($form->settings['lists']['display_position'] === 'after') {
         if ($form->type === $form->formClass::SUB_FORM_TYPE_POPUP && !empty($form->settings['message']['text']) && $form->settings['message']['position'] === 'before-lists') {
-            echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->settings['message']['text']).'</p>';
+            echo '<p id="acym__subscription__form__popup-text">'.acym_escapeHtml(acym_translation($form->settings['message']['text'])).'</p>';
         }
         include acym_getPartial('forms', 'lists');
     }
     include acym_getPartial('forms', 'termspolicy');
+    include acym_getPartial('forms', 'tracking_consent');
     include acym_getPartial('forms', 'recaptcha');
     ?>
 	<style>
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields{
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields{
 			display: flex;
 			justify-content: center;
 			align-items: center
 		}
 
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields > *{
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields > *{
 			margin: <?php echo in_array($form->type, [$form->formClass::SUB_FORM_TYPE_FOOTER, $form->formClass::SUB_FORM_TYPE_HEADER]) ? 'auto 10px' : '10px auto'; ?> !important;
 		}
 
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield{
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields .onefield{
 			width: 100%;
 			box-sizing: border-box
 		}
 
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield select,
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield textarea{
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields .onefield input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields .onefield select,
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields .onefield textarea{
 			display: block;
 			width: <?php echo intval($form->settings['fields']['fields_width']) ?? 100; ?>%;
 			margin-left: auto;
@@ -56,9 +61,9 @@
 		}
 
 		@media screen and (max-width: 768px){
-			<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
-			<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield select,
-			<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields .onefield textarea{
+			<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields .onefield input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
+			<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields .onefield select,
+			<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__fields .onefield textarea{
 				width: 100%
 			}
 		}

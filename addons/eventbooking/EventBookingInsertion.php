@@ -508,7 +508,7 @@ trait EventBookingInsertion
         foreach ($categories as $i => $oneCat) {
             $categoryLink = $this->finalizeLink('index.php?option=com_eventbooking&view=category&id='.$oneCat->id.$menuId, $tag);
             $categories[$i] =
-                '<a target="_blank" href="'.$categoryLink.'">'.acym_escape(empty($oneCat->$languageMethod) ? $oneCat->name : $oneCat->$languageMethod).'</a>';
+                '<a target="_blank" href="'.$categoryLink.'">'.acym_escapeHtml(empty($oneCat->$languageMethod) ? $oneCat->name : $oneCat->$languageMethod).'</a>';
         }
         $varFields['{cats}'] = implode(', ', $categories);
         if (in_array('cats', $tag->display)) {

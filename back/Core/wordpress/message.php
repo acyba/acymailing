@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Helpers\HeaderHelper;
 
 /**
@@ -27,14 +29,17 @@ function acym_enqueueMessage($message, string $type = 'success', bool $addNotifi
     }
 
     if (in_array($type, $handledTypes) && $addHeaderNotification) {
-        acym_session();
-        if (empty($_SESSION['acymessage'.$type]) || !in_array($message, $_SESSION['acymessage'.$type])) {
+        $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION');
+
+        if (empty($messages) || !in_array($message, $messages)) {
             if (empty($notification->id)) {
-                $_SESSION['acymessage'.$type][] = $message;
+                $messages[] = $message;
             } else {
-                $_SESSION['acymessage'.$type][$notification->id] = $message;
+                $messages[$notification->id] = $message;
             }
         }
+
+        acym_setSession('acymessage'.$type, $messages);
     }
 
     if (!empty($addDashboardNotification)) {
@@ -70,11 +75,13 @@ function acym_enqueueMessage($message, string $type = 'success', bool $addNotifi
 function acym_displayMessages(): void
 {
     $types = ['success', 'info', 'warning', 'error'];
-    acym_session();
     foreach ($types as $type) {
-        if (empty($_SESSION['acymessage'.$type])) continue;
+        $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION');
+        if (empty($messages)) {
+            continue;
+        }
 
-        acym_display($_SESSION['acymessage'.$type], $type);
-        unset($_SESSION['acymessage'.$type]);
+        acym_display($messages, $type);
+        acym_setSession('acymessage'.$type, null, true);
     }
 }

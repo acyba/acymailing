@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Core\AcymPunycode;
 
 global $acymCmsUserVars;
@@ -20,7 +22,7 @@ function acym_getGroupsByUser(?int $userid = null, ?bool $recursive = null, bool
         $user = new WP_User($userid);
     }
 
-    if (is_multisite() && is_super_admin()) {
+    if (is_multisite() && is_super_admin($user->ID)) {
         return ['administrator'];
     }
 

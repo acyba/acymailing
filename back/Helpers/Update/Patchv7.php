@@ -453,7 +453,7 @@ trait Patchv7
             return;
         }
 
-        unlink(ACYM_ADDONS_FOLDER_PATH.'couryeah');
+        acym_deleteFile(ACYM_ADDONS_FOLDER_PATH.'couryeah');
         $this->updateQuery('UPDATE #__acym_configuration SET `name` = "acymailer_domains" WHERE `name` = "couryeah_domains"');
     }
 

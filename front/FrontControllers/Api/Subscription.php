@@ -26,7 +26,7 @@ trait Subscription
     {
         $listIds = acym_getVar('array', 'listIds', []);
         $offset = acym_getVar('int', 'offset', 0);
-        $limit = acym_getVar('int', 'limit', 100);
+        $limit = $this->getRequestedLimit(100);
         $connector = acym_getVar('bool', 'connector', false);
 
         if (empty($listIds)) {
@@ -71,7 +71,7 @@ trait Subscription
     {
         $listIds = acym_getVar('array', 'listIds', []);
         $offset = acym_getVar('int', 'offset', 0);
-        $limit = acym_getVar('int', 'limit', 100);
+        $limit = $this->getRequestedLimit(100);
         $connector = acym_getVar('bool', 'connector', false);
 
         if (empty($listIds)) {

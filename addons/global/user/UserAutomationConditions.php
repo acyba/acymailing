@@ -30,11 +30,13 @@ trait UserAutomationConditions
         $conditions['user']['acy_group']->option .= '</div>';
         if (ACYM_CMS === 'joomla') {
             $conditions['user']['acy_group']->option .= '<div class="cell grid-x medium-3">';
-            $conditions['user']['acy_group']->option .= acym_switch(
-                'acym_condition[conditions][__numor__][__numand__][acy_group][subgroup]',
-                1,
-                acym_translation('ACYM_INCLUDE_SUB_GROUPS')
-            );
+            ob_start();
+            acym_switch([
+                'name' => 'acym_condition[conditions][__numor__][__numand__][acy_group][subgroup]',
+                'value' => 1,
+                'label' => acym_translation('ACYM_INCLUDE_SUB_GROUPS'),
+            ]);
+            $conditions['user']['acy_group']->option .= ob_get_clean();
             $conditions['user']['acy_group']->option .= '</div>';
         }
 
@@ -106,7 +108,7 @@ trait UserAutomationConditions
 
     public function onAcymProcessCondition_acy_toss(&$query, $option, $num, &$conditionNotValid)
     {
-        if (!mt_rand(0, 1)) $conditionNotValid++;
+        if (!acym_rand(0, 1)) $conditionNotValid++;
     }
 
     public function onAcymProcessCondition_acy_totaluser(&$query, $option, $num, &$conditionNotValid)
@@ -210,7 +212,7 @@ trait UserAutomationConditions
                     $options['value'] = strtotime($options['value']);
                 }
                 if (is_numeric($options['value'])) {
-                    $options['value'] = date('Y-m-d H:i:s', $options['value']);
+                    $options['value'] = gmdate('Y-m-d H:i:s', $options['value']);
                 }
             }
 

@@ -1,4 +1,8 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm">
     <?php
     $isEmpty = empty($data['allCampaigns']) && empty($data['search']);
     if (!$isEmpty) {
@@ -8,7 +12,7 @@
 	<div id="acym__campaigns" class="acym__content">
         <?php
         $workflow = $data['workflowHelper'];
-        echo $workflow->displayTabs($this->tabs, 'followup');
+        $workflow->displayTabs($this->tabs, 'followup');
 
         if (acym_level(ACYM_ENTERPRISE)) {
         } else {

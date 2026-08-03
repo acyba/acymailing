@@ -1,25 +1,52 @@
-<h5 class="cell auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title margin-bottom-0"><?php echo acym_translation('ACYM_LIST'); ?></h5>
-<?php echo acym_cancelButton();
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+
+use AcyMailing\Helpers\EntitySelectHelper;
+
+?>
+<h5 class="cell auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title margin-bottom-0">
+    <?php echo acym_escapeHtml(acym_translation('ACYM_LIST')); ?>
+</h5>
+<?php acym_cancelButton();
 $beforeSave = '';
 if ($data['currentTab'] === $data['tabs']['subscribers']) {
     if (!empty($data['listInformation']->id) && !empty($data['subscribersEntitySelect'])) {
-        echo $data['subscribersEntitySelect'];
+        $entityHelper = new EntitySelectHelper();
+        acym_modal(
+            acym_translation('ACYM_MANAGE_SUBSCRIBERS'),
+            $entityHelper->entitySelect(
+                [
+                    'entity' => 'user',
+                    'entityParams' => ['join' => 'join_list-'.$data['subscribersEntitySelect']],
+                    'columnsToDisplay' => $entityHelper->getColumnsForUser('userlist.user_id'),
+                    'buttonSubmit' => [
+                        'text' => acym_translation('ACYM_CONFIRM'),
+                        'action' => 'saveSubscribers',
+                    ],
+                    'displayedName' => 'subscriber',
+                ]
+            ),
+            'acym__lists__settings__subscribers__entity__modal',
+            [],
+            ['class' => 'cell medium-6 large-shrink button button-secondary']
+        );
     }
 } elseif ($data['currentTab'] !== $data['tabs']['unsubscriptions']) {
     if (!empty($data['translation_languages'])) {
-        $beforeSave = 'data-before-action="languageList"';
+        $beforeSave = 'languageList';
     }
 }
 ?>
-<button <?php echo $beforeSave; ?>
-		type="submit"
-		data-task="apply"
-		class="cell acy_button_submit button-secondary button medium-6 large-shrink">
-    <?php echo acym_translation('ACYM_SAVE'); ?>
+<button data-before-action="<?php echo acym_escape($beforeSave); ?>"
+        type="submit"
+        data-task="apply"
+        class="cell acy_button_submit button-secondary button medium-6 large-shrink">
+    <?php echo acym_escapeHtml(acym_translation('ACYM_SAVE')); ?>
 </button>
-<button <?php echo $beforeSave; ?>
-		type="submit"
-		data-task="save"
-		class="cell acy_button_submit button medium-6 large-shrink margin-right-0">
-    <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
+<button data-before-action="<?php echo acym_escape($beforeSave); ?>"
+        type="submit"
+        data-task="save"
+        class="cell acy_button_submit button medium-6 large-shrink margin-right-0">
+    <?php echo acym_escapeHtml(acym_translation('ACYM_SAVE_EXIT')); ?>
 </button>

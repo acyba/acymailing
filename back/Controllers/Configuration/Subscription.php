@@ -9,6 +9,8 @@ trait Subscription
 {
     public function removeNotification(): void
     {
+        acym_checkToken();
+
         $whichNotification = acym_getVar('string', 'id');
 
         if ($whichNotification !== '0' && empty($whichNotification)) {
@@ -33,7 +35,7 @@ trait Subscription
         $this->config->saveConfig(['notifications' => json_encode($notifications)]);
         $this->config->saveConfig(['dashboard_notif' => json_encode($dashboardNotifications)], false);
 
-        $helperHeader = new HeaderHelper();
+        $headerHelper = new HeaderHelper();
         $dashboardController = new DashboardController();
 
         $data = [
@@ -41,10 +43,15 @@ trait Subscription
         ];
         $dashboardController->getDashboardNotifications($data);
 
+
+        ob_start();
+        $headerHelper->displayNotificationCenterInner($notifications);
+        $notificationCenter = ob_get_clean();
+
         acym_sendAjaxResponse(
             '',
             [
-                'headerHtml' => $helperHeader->getNotificationCenterInner($notifications),
+                'headerHtml' => $notificationCenter,
                 'dashboardHtml' => $data['dashboardNotifications'],
             ]
         );
@@ -52,6 +59,8 @@ trait Subscription
 
     public function markNotificationRead(): void
     {
+        acym_checkToken();
+
         $which = acym_getVar('string', 'id');
 
         $notifications = json_decode($this->config->get('notifications', '[]'), true);
@@ -78,6 +87,8 @@ trait Subscription
 
     public function addNotification(): void
     {
+        acym_checkToken();
+
         $message = acym_getVar('string', 'message');
         $level = acym_getVar('string', 'level');
 
@@ -85,7 +96,7 @@ trait Subscription
             acym_sendAjaxResponse(acym_translation('ACYM_ERROR'), [], false);
         }
 
-        $helperHeader = new HeaderHelper();
+        $headerHelper = new HeaderHelper();
 
         $newNotification = new \stdClass();
         $newNotification->message = $message;
@@ -93,9 +104,13 @@ trait Subscription
         $newNotification->read = false;
         $newNotification->date = time();
 
-        $helperHeader->addNotification($newNotification);
+        $headerHelper->addNotification($newNotification);
 
-        acym_sendAjaxResponse('', ['notificationCenter' => $helperHeader->getNotificationCenter()]);
+        ob_start();
+        $headerHelper->displayNotificationCenter();
+        $notificationCenter = ob_get_clean();
+
+        acym_sendAjaxResponse('', ['notificationCenter' => $notificationCenter]);
     }
 
     private function loadSurveyAnswers(array &$data): void

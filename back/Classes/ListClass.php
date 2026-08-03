@@ -417,7 +417,7 @@ class ListClass extends AcymClass
         foreach ($list as $oneAttribute => $value) {
             if (empty($value)) continue;
 
-            $list->$oneAttribute = strip_tags($value);
+            $list->$oneAttribute = acym_stripTags($value);
         }
 
         if (empty($list->description)) {
@@ -759,11 +759,11 @@ class ListClass extends AcymClass
     public function getYearSubEvolutionPerList(int $listId): array
     {
         // Get next month from 1 year ago
-        $month = date('n') + 1;
-        $year = date('Y') - 1;
+        $month = gmdate('n') + 1;
+        $year = gmdate('Y') - 1;
         $initDate = $year.'-'.$month.'-01';
         if ($month == 13) {
-            $initDate = date('Y').'-01-01';
+            $initDate = gmdate('Y').'-01-01';
         }
 
         // Get new subscribers per month
@@ -827,7 +827,7 @@ class ListClass extends AcymClass
 
     public function hasUserAccess(int $listId): bool
     {
-        if (acym_isAdmin()) {
+        if (acym_isAdmin() && acym_isAllowed('lists')) {
             return true;
         }
 

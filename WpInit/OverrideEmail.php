@@ -13,6 +13,16 @@ class OverrideEmail
 
     public function overrideEmailFunction($args)
     {
+        // A previous email in the same request may have registered the "blockEmailSending" and "blockEmailSendingPostSMTP" hooks below.
+        // We remove them systematically so each email is evaluated independently and we never missblock an email
+        remove_action('phpmailer_init', [$this, 'blockEmailSending']);
+        remove_filter('post_smtp_do_send_email', [$this, 'blockEmailSendingPostSMTP']);
+
+        // Let integrators exclude specific emails from AcyMailing's handling
+        if (!apply_filters('acym_override_wp_mail', true, $args)) {
+            return $args;
+        }
+
         if (empty($args['to'])) {
             return $args;
         }
@@ -106,7 +116,7 @@ class OverrideEmail
 
     public function blockEmailSending(&$phpmailer)
     {
-        $phpmailer = new FakePhpMailer();
+        $phpmailer = new MailDisabler();
     }
 
     public function blockEmailSendingPostSMTP($shouldSend)

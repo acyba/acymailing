@@ -187,11 +187,11 @@ class plgAcymContactform7 extends AcymPlugin
                     <?php echo esc_html(acym_translation('ACYM_MAIL_FIELD_CONTACT')); ?>
 				</legend>
 				<input type="text"
-					   data-tag-part="option"
-					   data-tag-option="acymmail:"
-					   pattern="[A-Za-z0-9_\-\s]*"
-					   placeholder="your-email"
-					   aria-labelledby="<?php echo esc_attr($tgg->ref('acymmail-legend')); ?>" />
+				       data-tag-part="option"
+				       data-tag-option="acymmail:"
+				       pattern="[A-Za-z0-9_\-\s]*"
+				       placeholder="your-email"
+				       aria-labelledby="<?php echo esc_attr($tgg->ref('acymmail-legend')); ?>" />
 			</fieldset>
 
 			<fieldset>
@@ -199,11 +199,11 @@ class plgAcymContactform7 extends AcymPlugin
                     <?php echo esc_html(acym_translation('ACYM_NAME_FIELD_CONTACT')); ?>
 				</legend>
 				<input type="text"
-					   data-tag-part="option"
-					   data-tag-option="acymname:"
-					   pattern="[A-Za-z0-9_\-\s]*"
-					   placeholder="your-name"
-					   aria-labelledby="<?php echo esc_attr($tgg->ref('acymname-legend')); ?>" />
+				       data-tag-part="option"
+				       data-tag-option="acymname:"
+				       pattern="[A-Za-z0-9_\-\s]*"
+				       placeholder="your-name"
+				       aria-labelledby="<?php echo esc_attr($tgg->ref('acymname-legend')); ?>" />
 			</fieldset>
             <?php
             foreach ($data['propertyLabels'] as $key => $label) {
@@ -213,7 +213,7 @@ class plgAcymContactform7 extends AcymPlugin
                         <?php echo esc_html($label); ?>
 					</legend>
                     <?php
-                    echo acym_selectMultiple(
+                    acym_selectMultiple(
                         $data['lists'],
                         $key,
                         [],
@@ -221,13 +221,14 @@ class plgAcymContactform7 extends AcymPlugin
                             'class' => 'acym-cf7',
                         ],
                         'id',
-                        'name'
+                        'name',
+                        true
                     );
                     ?>
 					<input type="hidden"
-						   aria-labelledby="<?php echo esc_attr($tgg->ref($key.'-legend')); ?>"
-						   data-tag-part="option"
-						   data-tag-option="<?php echo esc_attr($key); ?>:" />
+					       aria-labelledby="<?php echo esc_attr($tgg->ref($key.'-legend')); ?>"
+					       data-tag-part="option"
+					       data-tag-option="<?php echo esc_attr($key); ?>:" />
 				</fieldset>
                 <?php
             }
@@ -242,11 +243,11 @@ class plgAcymContactform7 extends AcymPlugin
                         <?php echo esc_html(acym_translation($field->name)); ?>
 					</legend>
 					<input type="text"
-						   data-tag-part="option"
-						   data-tag-option="acycf<?php echo intval($field->id); ?>:"
-						   pattern="[A-Za-z0-9_\-\s]*"
-						   placeholder="form-field-name"
-						   aria-labelledby="<?php echo esc_attr($tgg->ref('acycf'.$field->id.'-legend')); ?>" />
+					       data-tag-part="option"
+					       data-tag-option="acycf<?php echo intval($field->id); ?>:"
+					       pattern="[A-Za-z0-9_\-\s]*"
+					       placeholder="form-field-name"
+					       aria-labelledby="<?php echo esc_attr($tgg->ref('acycf'.$field->id.'-legend')); ?>" />
 				</fieldset>
                 <?php
             }
@@ -307,7 +308,7 @@ class plgAcymContactform7 extends AcymPlugin
 
             $customFields[$fieldId] = [
                 'type' => $field->type,
-				'values' => empty($field->value) ? [] : json_decode($field->value, true),
+                'values' => empty($field->value) ? [] : json_decode($field->value, true),
                 'matchingFieldName' => $fieldOptions[1],
             ];
         }

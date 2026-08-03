@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Helpers;
 
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Core\AcymObject;
 
 class WorkflowHelper extends AcymObject
@@ -14,95 +15,99 @@ class WorkflowHelper extends AcymObject
      * The steps are defined in the Main view class
      * Put acym_formOptions(true, 'edit', 'CURRENT STEP') at the end of each step
      */
-    public function display(array $steps, string $currentStep, bool $editionMode = true, bool $needTabs = false, string $linkParameters = '', string $idName = 'id'): string
-    {
+    public function display(
+        array  $steps,
+        string $currentStep,
+        bool   $editionMode = true,
+        bool   $needTabs = false,
+        string $linkParameters = '',
+        string $idName = 'id'
+    ): void {
         $ctrl = acym_getVar('cmd', 'ctrl');
         $id = acym_getVar('int', $idName, 0);
 
-        $workflow = [];
+        echo '<ul id="workflow">';
+
         $disableTabs = false;
+        $step = 0;
         foreach ($steps as $task => $title) {
-            $title = acym_translation($title);
-
             $class = 'step';
-            if ($disableTabs) $class .= ' disabled_step';
-            if ($currentStep === $task) $class .= ' current_step';
-
-            if (!$disableTabs) {
-                if ($editionMode) {
-                    $link = $ctrl.'&task=edit&step='.$task.'&'.$idName.'='.$id;
-                } else {
-                    $link = $ctrl.'&task='.$task;
-                }
-                $title = '<a href="'.acym_completeLink($link.$linkParameters).'">'.$title.'</a>';
+            if ($disableTabs) {
+                $class .= ' disabled_step';
+            }
+            if ($currentStep === $task) {
+                $class .= ' current_step';
             }
 
-            $workflow[] = '<li class="'.$class.'">'.$title.'</li>';
-            $workflow[] = '<li class="step_separator '.($needTabs ? '' : 'acymicon-keyboard-arrow-right').'"></li>';
+            if ($step !== 0) {
+                echo '<li class="step_separator '.acym_escape($needTabs ? '' : 'acymicon-keyboard-arrow-right').'"></li>';
+            }
+            echo '<li class="'.acym_escape($class).'">';
+
+            if (!$disableTabs) {
+                $link = $editionMode ? $ctrl.'&task=edit&step='.$task.'&'.$idName.'='.$id : $ctrl.'&task='.$task;
+                echo '<a href="'.acym_escapeUrl(acym_completeLink($link.$linkParameters)).'">';
+            }
+            echo acym_escapeHtml(acym_translation($title));
+            if (!$disableTabs) {
+                echo '</a>';
+            }
+            echo '</li>';
 
             if ($task === $this->disabledAfter) {
                 $disableTabs = true;
             }
+
+            $step++;
         }
 
-        array_pop($workflow);
-
-        $result = '<ul id="workflow">';
-        $result .= implode('', $workflow);
-        $result .= '</ul>';
-
-        return $result;
+        echo '</ul>';
     }
 
-    public function displayNew(array $steps, string $currentStep, bool $edition = true, string $linkParameters = '', string $idName = 'id'): string
+    public function displayNew(array $steps, string $currentStep, bool $edition = true, string $linkParameters = '', string $idName = 'id'): void
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
         $id = acym_getVar('int', $idName, 0);
 
-        $workflow = [];
+        echo '<div class="acym__workflow">';
+
         $disableTabs = false;
         foreach ($steps as $task => $title) {
             if ($disableTabs) {
                 continue;
             }
-            $title = acym_translation($title);
 
             $classCurrentStep = $currentStep === $task ? 'acym__workflow__step__active' : '';
             $classDisabled = $disableTabs ? 'acym__workflow__step__disabled' : '';
 
-            $label = $title;
+            echo '<div class="acym__workflow__step '.acym_escape($classDisabled.' '.$classCurrentStep).'">';
             if (!$disableTabs) {
-                if ($edition) {
-                    $link = $ctrl.'&task=edit&step='.$task.'&'.$idName.'='.$id;
-                } else {
-                    $link = $ctrl.'&task='.$task;
-                }
-                $label = '<a href="'.acym_completeLink($link.$linkParameters).'">'.$title.'</a>';
+                $link = $edition ? $ctrl.'&task=edit&step='.$task.'&'.$idName.'='.$id : $ctrl.'&task='.$task;
+                echo '<a href="'.acym_escapeUrl(acym_completeLink($link.$linkParameters)).'">';
             }
-
-            $step = '<div class="acym__workflow__step '.$classDisabled.' '.$classCurrentStep.'">'.$label.'</div>';
-
-            $workflow[] = $step;
+            echo acym_escapeHtml(acym_translation($title));
+            if (!$disableTabs) {
+                echo '</a>';
+            }
+            echo '</div>';
 
             if ($task === $this->disabledAfter) {
                 $disableTabs = true;
             }
         }
 
-        $result = '<div class="acym__workflow">';
-        $result .= implode('', $workflow);
-        $result .= '</div>';
-
-        return $result;
+        echo '</div>';
     }
 
-    public function displayTabs(array $steps, string $currentStep, array $options = []): string
+    public function displayTabs(array $steps, string $currentStep, array $options = []): void
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
 
+        echo '<ul class="tabs" id="workflow">';
+
+        $mailClass = new MailClass();
         $mailTypes = ['mailbox_action'];
 
-        $workflow = [];
         foreach ($steps as $task => $title) {
             if (in_array($task, $mailTypes)) {
                 $searchSettings = [
@@ -110,16 +115,12 @@ class WorkflowHelper extends AcymObject
                     'mailsPerPage' => 1,
                     'key' => '',
                 ];
-                $mailClass = new \AcyMailing\Classes\MailClass();
                 $existingMailbox = $mailClass->getMailsByType($task, $searchSettings);
+
                 if (empty($existingMailbox['mails'])) {
                     continue;
                 }
             }
-
-            $title = acym_translation($title);
-
-            $linkAttribute = $currentStep === $task ? 'aria-selected="true"' : '';
 
             if (!empty($options['query'])) {
                 $link = $ctrl.$options['query'].$task;
@@ -129,20 +130,22 @@ class WorkflowHelper extends AcymObject
 
             if (!empty($options['disableTabs']) && in_array($task, $options['disableTabs'])) {
                 $link = '';
-                $linkAttribute = 'aria-disabled="true"';
             }
 
-            $hrefAttribute = $link ? 'href="'.acym_completeLink($link).'"' : '';
-
-            $title = '<a class="acym_tab acym__color__medium-gray" '.$linkAttribute.' '.$hrefAttribute.'>'.$title.'</a>';
-
-            $workflow[] = '<li class="tabs-title">'.$title.'</li>';
+            echo '<li class="tabs-title"><a class="acym_tab acym__color__medium-gray"';
+            if (!empty($link)) {
+                echo ' href="'.acym_escapeUrl(acym_completeLink($link)).'"';
+                if ($currentStep === $task) {
+                    echo ' aria-selected="true"';
+                }
+            } else {
+                echo ' aria-disabled="true"';
+            }
+            echo '>';
+            echo acym_escapeHtml(acym_translation($title));
+            echo '</a></li>';
         }
 
-        $result = '<ul class="tabs" id="workflow">';
-        $result .= implode('', $workflow);
-        $result .= '</ul>';
-
-        return $result;
+        echo '</ul>';
     }
 }

@@ -32,9 +32,14 @@ class plgSystemJceacym extends CMSPlugin
         if (!empty($params) && (bool)$params->get('replace_media_manager', 1) === true) {
             // Prevent JCE redirection
             if ($app->input->getCmd('author') === 'acymailing') {
-                $sessionID = session_id();
-                if (empty($sessionID)) @session_start();
-                $_SESSION['acyJCERedirectionPrevented'] = true;
+                $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);
+                if (version_compare($jversion, '4.0.0', '>=')) {
+                    $session = Joomla\CMS\Factory::getApplication()->getSession();
+                    $session->set('acyJCERedirectionPrevented', true);
+                } else {
+                    $session = JFactory::getSession();
+                    $session->set('acyJCERedirectionPrevented', true);
+                }
 
                 $params->set('replace_media_manager', 0);
             }
@@ -43,11 +48,25 @@ class plgSystemJceacym extends CMSPlugin
 
     public function onAfterRender()
     {
-        $sessionID = session_id();
-        if (empty($sessionID)) @session_start();
-        if (empty($_SESSION['acyJCERedirectionPrevented'])) return;
+        $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);
 
-        unset($_SESSION['acyJCERedirectionPrevented']);
+        if (version_compare($jversion, '4.0.0', '>=')) {
+            $result = Joomla\CMS\Factory::getApplication()->getSession()->get('acyJCERedirectionPrevented', false);
+        } else {
+            $result = JFactory::getSession()->get('acyJCERedirectionPrevented', false);
+        }
+
+        if (empty($result)) {
+            return;
+        }
+
+        if (version_compare($jversion, '4.0.0', '>=')) {
+            $session = Joomla\CMS\Factory::getApplication()->getSession();
+            $session->remove('acyJCERedirectionPrevented');
+        } else {
+            $session = JFactory::getSession();
+            $session->clear('acyJCERedirectionPrevented');
+        }
 
         $params = ComponentHelper::getParams('com_jce');
         if (!empty($params)) {

@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 function acym_getTimeOffsetCMS(): int
 {
     static $timeoffset = null;
@@ -18,7 +20,7 @@ function acym_getTimeOffsetCMS(): int
 
 function acym_dateTimeCMS(int $time)
 {
-    return date('Y-m-d H:i:s', $time);
+    return gmdate('Y-m-d H:i:s', $time);
 }
 
 function acym_getDateTimeFormat(string $default = ''): string

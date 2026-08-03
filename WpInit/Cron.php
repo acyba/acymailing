@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Controllers\ConfigurationController;
 use AcyMailing\Helpers\CronHelper;
 
@@ -39,7 +41,8 @@ class Cron
         }
 
         //removeIf(development)
-        if (!acym_isLicenseValidWeekly() && (empty($_SERVER['HTTP_REFERER']) || strpos($_SERVER['HTTP_REFERER'], 'api.acymailing.com') === false)) {
+        $httpReferer = acym_getVar('string', 'HTTP_REFERER', '', 'SERVER');
+        if (!acym_isLicenseValidWeekly() && (empty($httpReferer) || strpos($httpReferer, 'api.acymailing.com') === false)) {
             acym_deleteScheduledTask(['name' => ConfigurationController::CRON_TASK_NAME]);
 
             return;

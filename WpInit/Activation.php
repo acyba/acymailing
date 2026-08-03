@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Helpers\UpdateHelper;
 
 class Activation
@@ -10,14 +12,16 @@ class Activation
     public function install(): void
     {
         $file_name = rtrim(dirname(__DIR__), DS).DS.'back'.DS.'tables.sql';
-        $handle = fopen($file_name, 'r');
-        $queries = fread($handle, filesize($file_name));
-        fclose($handle);
+        $queries = acym_getInternalFileContents($file_name);
+
+        if ($queries === false) {
+            return;
+        }
 
         // If it is a network activation (activate on all websites)
         if (is_multisite() && is_network_admin()) {
             $currentBlog = get_current_blog_id();
-            $sites = function_exists('get_sites') ? get_sites() : wp_get_sites();
+            $sites = get_sites();
 
             // Install on all websites
             foreach ($sites as $site) {
@@ -35,7 +39,7 @@ class Activation
         }
 
         if (file_exists(ACYM_FOLDER.'update.php')) {
-            unlink(ACYM_FOLDER.'update.php');
+            acym_deleteFile(ACYM_FOLDER.'update.php');
         }
     }
 
@@ -52,6 +56,7 @@ class Activation
                 continue;
             }
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- DDL schema creation during plugin install, caching and abstraction are not applicable here.
             $wpdb->query('CREATE TABLE IF NOT EXISTS'.$oneTable);
         }
 

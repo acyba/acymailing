@@ -28,7 +28,8 @@ class FrontservicesController extends AcymController
     {
         // Check security key
         $securityKey = acym_getVar('string', 'seckey');
-        if (empty($securityKey) || $securityKey !== $this->config->get('sendinblue_webhooks_seckey')) exit;
+        $storedKey = $this->config->get('sendinblue_webhooks_seckey');
+        if (empty($securityKey) || empty($storedKey) || !hash_equals((string)$storedKey, (string)$securityKey)) exit;
 
         // Check if sending method is sendinblue
         $mailerMethod = $this->config->get('mailer_method');

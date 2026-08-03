@@ -25,7 +25,7 @@ class UrlClass extends AcymClass
                 continue;
             }
 
-            $url->$oneAttribute = strip_tags($value);
+            $url->$oneAttribute = acym_stripTags($value);
         }
 
         return parent::save($url);

@@ -1,18 +1,17 @@
 {
-    "max_version": "10.11.0",
+    "max_version": "11.0.0",
     "splash_content": [
         {
-            "menu_title": "General",
-            "menu_icon": "acymicon-star",
-            "title": "SEE THE GENERAL CHANGES",
+            "menu_title": "Top feature 🔥",
+            "title": "DISCOVER THE BEST FEATURES OF THIS VERSION",
             "articles": [
                 {
-                    "title": "IP address collection",
-                    "desc": "A new option lets you toggle on/off the IP address collection on confirmation and subscription."
+                    "title": "Full security rework",
+                    "desc": "The code base has been completely reworked to improve security throughout the whole extension."
                 },
                 {
-                    "title": "Delay statistics recording",
-                    "desc": "A new option lets you configure a delay during which the statistics are not recorded."
+                    "title": "GDPR pixel tracking",
+                    "desc": "We added a new option to handle the pixel tracking according to the new GDPR regulation."
                 }
             ]
         },
@@ -22,23 +21,12 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Access rights reset",
-                    "desc": "The access rights could be reset when a user is granted access to the configuration and modifies it."
+                    "title": "404 after data deletion",
+                    "desc": "We fixed a redirection to a 404 page that occurred after a user deleted their data from the profile page."
                 },
                 {
-                    "title": "Monthly campaigns",
-                    "desc": "We fixed the next execution time calculation for monthly automations and monthly automatic campaigns that could be shifted by timezone."
-                }
-            ]
-        },
-        {
-            "menu_title": "Joomla",
-            "menu_icon": "acymicon-joomla",
-            "title": "WHAT CHANGED FOR JOOMLA",
-            "articles": [
-                {
-                    "title": "Community Builder list management",
-                    "desc": "Lists are now properly displayed in the Community Builder user management when creating a new user."
+                    "title": "Tracked link redirection",
+                    "desc": "We fixed an issue where clicking a tracked link in an email could redirect to the unsubscribe URL when a subscriber custom field containing HTML was inserted in the email body."
                 }
             ]
         },
@@ -48,12 +36,20 @@
             "title": "WHAT CHANGED FOR WORDPRESS",
             "articles": [
                 {
-                    "title": "Subscription form security",
-                    "desc": "Security has been improved on the subscription form options."
+                    "title": "Events Manager timezone",
+                    "desc": "[add-on] The event dates for Events Manager now use the correct timezone."
                 },
                 {
-                    "title": "WooCommerce filter display",
-                    "desc": "Fix the display of WooCommerce products and categories filters in automations, segments and follow-ups."
+                    "title": "Transactional emails blocked",
+                    "desc": "We fixed an issue that caused transactional WordPress emails to be silently blocked and not sent when AcyMailing had already handled another email during the same request."
+                },
+                {
+                    "title": "Events in emails timezone",
+                    "desc": "[add-ons] A better timezone management is made for Events Manager events inserted in emails."
+                },
+                {
+                    "title": "Multiple Contact Form 7 forms",
+                    "desc": "[add-ons] A conflict has been fixed when multiple Contact Form 7 forms are shown on the same page and use the same field identifiers."
                 }
             ]
         }

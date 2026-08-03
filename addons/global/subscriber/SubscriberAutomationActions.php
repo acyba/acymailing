@@ -88,42 +88,6 @@ trait SubscriberAutomationActions
         $fieldClass = new FieldClass();
         $customFields = $fieldClass->getAllFieldsForUser();
         $customFieldValues = [];
-        foreach ($customFields as $field) {
-            if (in_array($field->type, ['single_dropdown', 'radio', 'checkbox', 'multiple_dropdown']) && !empty($field->value)) {
-                $values = [];
-                $field->value = json_decode($field->value, true);
-                foreach ($field->value as $value) {
-                    $valueTmp = new stdClass();
-                    $valueTmp->text = $value['title'];
-                    $valueTmp->value = $value['value'];
-                    if ($value['disabled'] == 'y') $valueTmp->disable = true;
-                    $values[$value['value']] = $valueTmp;
-                }
-                $customFieldValues[$field->id] = '<div class="acym__automation__one-field intext_select_automation cell" style="display: none">';
-                $customFieldValues[$field->id] .= acym_select(
-                    $values,
-                    '[actions][__and__][acy_user_value][value]',
-                    null,
-                    [
-                        'class' => 'acym__select acym__automation__actions__fields__select',
-                        'data-action-field' => $field->id,
-                    ]
-                );
-                $customFieldValues[$field->id] .= '</div>';
-            } elseif ('date' == $field->type) {
-                $customFieldValues[$field->id] = acym_tooltip(
-                    [
-                        'hoveredText' => '<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" 
-                                            type="text" 
-                                            name="[actions][__and__][acy_user_value][value]" 
-                                            style="display: none" 
-                                            data-action-field="'.intval($field->id).'">',
-                        'textShownInTooltip' => acym_translation('ACYM_DATE_FORMAT_FILTER'),
-                        'classContainer' => 'intext_select_automation cell',
-                    ]
-                );
-            }
-        }
 
         $actions['acy_user_value'] = new stdClass();
         $actions['acy_user_value']->name = acym_translation('ACYM_SET_USER_VALUE');

@@ -88,9 +88,14 @@ trait Configuration
         $allPref['uploadfolder'] = str_replace('\\', '/', ACYM_UPLOAD_FOLDER);
         $allPref['last_import'] = '';
         $allPref['security_key'] = acym_generateKey(30);
+        $allPref['api_key'] = acym_generateKey(30);
+        $allPref['cron_security'] = 1;
+        $allPref['cron_key'] = acym_generateKey(30);
         $allPref['export_excelsecurity'] = 1;
         $allPref['gdpr_export'] = 0;
         $allPref['gdpr_delete'] = 0;
+        $allPref['dont_track_by_default'] = 0;
+        $allPref['user_tracking_control'] = 0;
         $allPref['trackingsystem'] = 'acymailing';
         $allPref['trackingsystemexternalwebsite'] = 1;
         $allPref['generate_name'] = 1;
@@ -145,7 +150,7 @@ trait Configuration
         }
 
         if ($results === null) {
-            acym_display(isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200).'...', 'error');
+            acym_display(isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200).'...', 'error');
 
             return false;
         }

@@ -1,11 +1,15 @@
-<input type="hidden" id="acym__config__mail__embed__image__blocked" value="<?php echo acym_escape($data['embedImage']); ?>">
-<input type="hidden" id="acym__config__mail__embed__attachment__blocked" value="<?php echo acym_escape($data['embedAttachment']); ?>">
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+<input type="hidden" id="acym__config__mail__embed__image__blocked" value="<?php echo acym_escape(json_encode($data['embedImage'])); ?>">
+<input type="hidden" id="acym__config__mail__embed__attachment__blocked" value="<?php echo acym_escape(json_encode($data['embedAttachment'])); ?>">
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2">
 	<div class="cell acym__config__mail-default">
-		<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_DEFAULT_SENDER'); ?></div>
+		<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_DEFAULT_SENDER')); ?></div>
         <?php
         if (!empty($data['translation_languages'])) {
-            echo acym_displayLanguageRadio(
+            acym_displayLanguageRadio(
                 $data['translation_languages'],
                 'config[sender_info_translation]',
                 $this->config->get('sender_info_translation', ''),
@@ -17,127 +21,137 @@
 		<div class="grid-x grid-margin-x margin-y">
 			<div class="cell large-6 xlarge-4">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_FROM_NAME').acym_info(['textShownInTooltip' => 'ACYM_FROM_DESC']); ?></span>
+					<span class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_FROM_NAME'));
+                        acym_info(['textShownInTooltip' => 'ACYM_FROM_DESC']); ?></span>
 					<input type="text"
-						   name="config[from_name]"
-						   placeholder="<?php echo acym_translation('ACYM_FROM_NAME_PLACEHOLDER'); ?>"
-						   value="<?php echo acym_escape($this->config->get('from_name')); ?>" />
+					       name="config[from_name]"
+					       placeholder="<?php echo acym_escape(acym_translation('ACYM_FROM_NAME_PLACEHOLDER')); ?>"
+					       value="<?php echo acym_escape($this->config->get('from_name')); ?>" />
 				</label>
 			</div>
 			<div class="cell large-6 xlarge-4">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_FROM_EMAIL').acym_info(['textShownInTooltip' => 'ACYM_FROM_DESC']); ?></span>
+					<span class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_FROM_EMAIL'));
+                        acym_info(['textShownInTooltip' => 'ACYM_FROM_DESC']); ?></span>
 					<input type="email"
-						   name="config[from_email]"
-						   placeholder="<?php echo acym_translation('ACYM_FROM_EMAIL_PLACEHOLDER'); ?>"
-						   value="<?php echo acym_escape($this->config->get('from_email')); ?>" />
+					       name="config[from_email]"
+					       placeholder="<?php echo acym_escape(acym_translation('ACYM_FROM_EMAIL_PLACEHOLDER')); ?>"
+					       value="<?php echo acym_escape($this->config->get('from_email')); ?>" />
 				</label>
 			</div>
-            <?php if (!empty($data['button_copy_settings_from'])) echo $data['button_copy_settings_from']; ?>
+            <?php
+            if (!empty($data['wp_mail_smtp_installed'])) {
+                $pluginClass = new AcymPlugin();
+                $pluginClass->getCopySettingsButton($data, 'from_options', 'wp_mail_smtp');
+            }
+            ?>
 			<div class="cell margin-bottom-1 acym_vcenter">
 				<input type="hidden" id="from_as_replyto_value" name="config[from_as_replyto]" value="<?php echo acym_escape($this->config->get('from_as_replyto', 1)); ?>" />
 				<input id="from_as_replyto" data-toggle="acy_toggle_replyto" data-value="from_as_replyto_value" class="acym_toggle" type="checkbox" <?php
-                if ($this->config->get('from_as_replyto', 1) == 1) {
-                    echo 'checked="checked"';
-                }
+                acym_checked($this->config->get('from_as_replyto', 1) == 1);
                 ?>/>
 				<label for="from_as_replyto">
-                    <?php echo acym_translation('ACYM_FROM_AS_REPLYTO'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_FROM_AS_REPLYTO')); ?>
 				</label>
 			</div>
 
 			<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_NAME').acym_info(['textShownInTooltip' => 'ACYM_REPLYTO_DESC']); ?></span>
+					<span class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_REPLYTO_NAME'));
+                        acym_info(['textShownInTooltip' => 'ACYM_REPLYTO_DESC']); ?></span>
 					<input type="text"
-						   name="config[replyto_name]"
-						   placeholder="<?php echo acym_translation('ACYM_REPLYTO_NAME_PLACEHOLDER'); ?>"
-						   value="<?php echo acym_escape($this->config->get('replyto_name')); ?>" />
+					       name="config[replyto_name]"
+					       placeholder="<?php echo acym_escape(acym_translation('ACYM_REPLYTO_NAME_PLACEHOLDER')); ?>"
+					       value="<?php echo acym_escape($this->config->get('replyto_name')); ?>" />
 				</label>
 			</div>
 			<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 				<label class="cell grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_EMAIL').acym_info(['textShownInTooltip' => 'ACYM_REPLYTO_DESC']); ?></span>
+					<span class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_REPLYTO_EMAIL'));
+                        acym_info(['textShownInTooltip' => 'ACYM_REPLYTO_DESC']); ?></span>
 					<input type="email"
-						   name="config[replyto_email]"
-						   placeholder="<?php echo acym_translation('ACYM_REPLYTO_EMAIL_PLACEHOLDER'); ?>"
-						   value="<?php echo acym_escape($this->config->get('replyto_email')); ?>" />
+					       name="config[replyto_email]"
+					       placeholder="<?php echo acym_escape(acym_translation('ACYM_REPLYTO_EMAIL_PLACEHOLDER')); ?>"
+					       value="<?php echo acym_escape($this->config->get('replyto_email')); ?>" />
 				</label>
 			</div>
 
 			<div class="cell grid-x">
 				<div class="cell medium-6 large-4 xlarge-3 grid-x">
-                    <?php echo acym_switch(
-                        'config[add_names]',
-                        $this->config->get('add_names'),
-                        acym_translation('ACYM_ADD_NAMES').acym_info(['textShownInTooltip' => 'ACYM_ADD_NAMES_DESC'])
-                    ); ?>
+                    <?php
+                    acym_switch([
+                        'name' => 'config[add_names]',
+                        'value' => $this->config->get('add_names'),
+                        'label' => acym_translation('ACYM_ADD_NAMES'),
+                        'tip' => ['textShownInTooltip' => 'ACYM_ADD_NAMES_DESC'],
+                    ]); ?>
 				</div>
 			</div>
 
 			<div class="cell grid-x">
 				<label class="cell large-6 xlarge-4 grid-x">
-					<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL').acym_info(['textShownInTooltip' => 'ACYM_BOUNCE_ADDRESS_DESC']); ?></span>
+					<span class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCE_EMAIL'));
+                        acym_info(['textShownInTooltip' => 'ACYM_BOUNCE_ADDRESS_DESC']); ?></span>
 					<input type="text"
-						   name="config[bounce_email]"
-						   placeholder="<?php echo acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER'); ?>"
-						   value="<?php echo acym_escape($this->config->get('bounce_email')); ?>"
-						   id="bounceAddress1" />
+					       name="config[bounce_email]"
+					       placeholder="<?php echo acym_escape(acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER')); ?>"
+					       value="<?php echo acym_escape($this->config->get('bounce_email')); ?>"
+					       id="bounceAddress1" />
 				</label>
 			</div>
 		</div>
 	</div>
 
 	<div class="cell acym__configuration__mail-settings">
-		<div class="acym__title acym__title__secondary margin-top-3"><?php echo acym_translation('ACYM_CONFIGURATION_MAIL').acym_info(
-                    ['textShownInTooltip' => 'ACYM_INTRO_MAIL_SETTINGS']
-                ); ?></div>
+		<div class="acym__title acym__title__secondary margin-top-3"><?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_MAIL'));
+            acym_info(
+                ['textShownInTooltip' => 'ACYM_INTRO_MAIL_SETTINGS']
+            ); ?></div>
         <?php include acym_getPartial('configuration', 'sending_methods'); ?>
 	</div>
 </div>
 
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2">
-	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_EMAIL_EDITOR'); ?></div>
+	<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL_EDITOR')); ?></div>
 	<div class="grid-x margin-y">
 		<div class="cell grid-x grid-margin-x">
             <?php
-            echo acym_switch(
-                'config[save_thumbnail]',
-                $this->config->get('save_thumbnail', 1),
-                acym_translation('ACYM_SAVE_TEMPLATE_THUMBNAIL').acym_info(['textShownInTooltip' => 'ACYM_SAVE_TEMPLATE_THUMBNAIL_DESC']),
-                [],
-                'xlarge-3 medium-5 small-9'
-            );
+            acym_switch([
+                'name' => 'config[save_thumbnail]',
+                'value' => $this->config->get('save_thumbnail', 1),
+                'label' => acym_translation('ACYM_SAVE_TEMPLATE_THUMBNAIL'),
+                'tip' => ['textShownInTooltip' => 'ACYM_SAVE_TEMPLATE_THUMBNAIL_DESC'],
+                'labelClass' => 'xlarge-3 medium-5 small-9',
+            ]);
             ?>
 		</div>
         <?php if ($this->config->get('built_by_update', 0) == 1 || acym_level(ACYM_ESSENTIAL)) { ?>
 			<div class="cell grid-x grid-margin-x">
                 <?php
-                echo acym_switch(
-                    'config[display_built_by]',
-                    $this->config->get('display_built_by', 0),
-                    acym_translation('ACYM_ADD_BUILT_BY_FOOTER_UNSUB_PAGE'),
-                    [],
-                    'xlarge-3 medium-5 small-9'
-                );
+                acym_switch([
+                    'name' => 'config[display_built_by]',
+                    'value' => $this->config->get('display_built_by', 0),
+                    'label' => html_entity_decode(acym_translation('ACYM_ADD_BUILT_BY_FOOTER_UNSUB_PAGE')),
+                    'labelClass' => 'xlarge-3 medium-5 small-9',
+                ]);
                 ?>
 			</div>
         <?php } ?>
 		<div class="cell grid-x grid-margin-x">
             <?php
-            echo acym_switch(
-                'config[add_play_button_video]',
-                $this->config->get('add_play_button_video', 1),
-                acym_translation('ACYM_ADD_PLAY_BUTTON'),
-                [],
-                'xlarge-3 medium-5 small-9'
-            );
+            acym_switch([
+                'name' => 'config[add_play_button_video]',
+                'value' => $this->config->get('add_play_button_video', 1),
+                'label' => acym_translation('ACYM_ADD_PLAY_BUTTON'),
+                'labelClass' => 'xlarge-3 medium-5 small-9',
+            ]);
             ?>
 		</div>
 		<div class="cell grid-x">
 			<label class="cell medium-6 grid-x">
 				<span class="cell medium-6">
-					<?php echo acym_translation('ACYM_UNSPLASH_ACCESS_KEY').acym_info(['textShownInTooltip' => 'ACYM_UNSPLASH_ACCESS_KEY_DESC']); ?>
+					<?php echo acym_escapeHtml(acym_translation('ACYM_UNSPLASH_ACCESS_KEY'));
+                    acym_info(['textShownInTooltip' => 'ACYM_UNSPLASH_ACCESS_KEY_DESC']); ?>
 				</span>
                 <?php
                 $unsplashKey = $this->config->get('unsplash_key');
@@ -146,15 +160,16 @@
                 }
                 ?>
 				<input type="text"
-					   name="config[unsplash_key]"
-					   value="<?php echo acym_escape($unsplashKey); ?>"
-					   class="cell medium-auto" />
+				       name="config[unsplash_key]"
+				       value="<?php echo acym_escape($unsplashKey); ?>"
+				       class="cell medium-auto" />
 			</label>
 		</div>
 		<div class="cell grid-x">
 			<label class="cell medium-6 grid-x">
 				<span class="cell medium-6">
-					<?php echo acym_translation('ACYM_GIPHY_API_KEY').acym_info(['textShownInTooltip' => 'ACYM_GIPHY_API_KEY_DESC']); ?>
+					<?php echo acym_escapeHtml(acym_translation('ACYM_GIPHY_API_KEY'));
+                    acym_info(['textShownInTooltip' => 'ACYM_GIPHY_API_KEY_DESC']); ?>
 				</span>
                 <?php
                 $giphyKey = $this->config->get('giphy_key');
@@ -163,9 +178,9 @@
                 }
                 ?>
 				<input type="text"
-					   name="config[giphy_key]"
-					   value="<?php echo acym_escape($giphyKey); ?>"
-					   class="cell medium-auto" />
+				       name="config[giphy_key]"
+				       value="<?php echo acym_escape($giphyKey); ?>"
+				       class="cell medium-auto" />
 			</label>
 		</div>
 	</div>
@@ -174,17 +189,17 @@
 <div class="acym__content acym_area grid-x grid-margin-y padding-horizontal-2 acym__configuration__advanced">
 	<div class="cell grid-x acym__configuration__showmore-head">
 		<div class="acym__title acym__title__secondary cell auto margin-bottom-0">
-            <?php echo acym_translation('ACYM_CONFIGURATION_ADVANCED'); ?>
+            <?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_ADVANCED')); ?>
 		</div>
 		<div class="cell shrink">
-            <?php echo acym_showMore('acym__configuration__mail__advanced__content'); ?>
+            <?php acym_showMore('acym__configuration__mail__advanced__content'); ?>
 		</div>
 	</div>
 	<div id="acym__configuration__mail__advanced__content" style="display:none;">
 		<div class="grid-x grid-margin-x margin-y">
 			<div class="cell medium-6 grid-x">
 				<div class="cell large-6">
-					<label for="config_encoding"><?php echo acym_translation('ACYM_CONFIGURATION_ENCODING'); ?></label>
+					<label for="config_encoding"><?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_ENCODING')); ?></label>
 				</div>
 				<div class="cell large-6">
                     <?php
@@ -196,14 +211,15 @@
 
 			<div class="cell medium-6 grid-x">
 				<div class="cell large-6">
-					<label for="config_charset"><?php echo acym_translation('ACYM_CONFIGURATION_CHARSET'); ?></label>
+					<label for="config_charset"><?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_CHARSET')); ?></label>
 				</div>
 				<div class="cell large-6">
                     <?php
-                    echo $encodingHelper->charsetField(
+                    $encodingHelper->charsetField(
                         'config[charset]',
                         $this->config->get('charset'),
-                        ['class' => 'acym__select']
+                        ['class' => 'acym__select'],
+                        true
                     );
                     ?>
 				</div>
@@ -244,42 +260,46 @@
 
                 $description = $label.'_DESC';
                 $translatedDescription = acym_translation($description);
-                $label = acym_translation($label);
                 if ($translatedDescription !== $description) {
                     $info .= $translatedDescription;
                 }
 
-                if (!empty($info)) {
-                    $info = acym_info(['textShownInTooltip' => $info]);
-                }
-
                 $default = empty($option['default']) ? 0 : $option['default'];
 
-                echo acym_switch(
-                    'config['.$oneOption.']',
-                    $this->config->get($oneOption, $default),
-                    $label.$info
-                );
+                acym_switch([
+                    'name' => 'config['.$oneOption.']',
+                    'value' => $this->config->get($oneOption, $default),
+                    'label' => acym_translation($label),
+                    'tip' => empty($info) ? null : ['textShownInTooltip' => $info],
+                ]);
 
                 echo '</div>';
             }
-
-            $style = $this->config->get('embed_files', 0) ? 'style="display:none;"' : '';
             ?>
-			<div class="cell medium-6 grid-x" id="attachments_position" <?php echo $style; ?>>
+			<div class="cell medium-6 grid-x" id="attachments_position" <?php echo $this->config->get('embed_files', 0) ? 'style="display:none;"' : ''; ?>>
 				<div class="cell large-6">
-                    <?php echo acym_translation('ACYM_CONFIGURATION_ATTACHMENTS_POSITION').acym_info(['textShownInTooltip' => 'ACYM_CONFIGURATION_ATTACHMENTS_POSITION_DESC']); ?>
+                    <?php
+                    echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_ATTACHMENTS_POSITION'));
+                    acym_info(
+                        ['textShownInTooltip' => 'ACYM_CONFIGURATION_ATTACHMENTS_POSITION_DESC']
+                    );
+                    ?>
 				</div>
 				<div class="cell large-6">
                     <?php
-                    echo acym_select(
+                    acym_select(
                         [
                             'top' => acym_translation('ACYM_TOP_OF_EMAIL_CONTENT'),
                             'bottom' => acym_translation('ACYM_BOTTOM_OF_EMAIL_CONTENT'),
                         ],
                         'config[attachments_position]',
                         $this->config->get('attachments_position', 'bottom'),
-                        ['class' => 'acym__select']
+                        ['class' => 'acym__select'],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
                     );
                     ?>
 				</div>
@@ -287,33 +307,32 @@
 			<div class="cell medium-6 grid-x">
 				<label class="cell grid-x">
 				<span class="cell medium-6">
-					<?php echo acym_translation('ACYM_MAIL_MAX_LINE_LENGTH').acym_info(['textShownInTooltip' => 'ACYM_MAIL_MAX_LINE_LENGTH_DESC']); ?>
+					<?php echo acym_escapeHtml(acym_translation('ACYM_MAIL_MAX_LINE_LENGTH'));
+                    acym_info(['textShownInTooltip' => 'ACYM_MAIL_MAX_LINE_LENGTH_DESC']); ?>
 				</span>
 					<input type="number"
-						   name="config[mailer_wordwrap]"
-						   value="<?php echo acym_escape($this->config->get('mailer_wordwrap', 0)); ?>"
-						   min="0"
-						   max="998"
-						   class="cell medium-auto" />
+					       name="config[mailer_wordwrap]"
+					       value="<?php echo acym_escape($this->config->get('mailer_wordwrap', 0)); ?>"
+					       min="0"
+					       max="998"
+					       class="cell medium-auto" />
 				</label>
 			</div>
 			<div class="cell medium-6 grid-x">
-                <?php echo acym_switch(
-                    'config[dkim]',
-                    $this->config->get('dkim'),
-                    acym_translation('ACYM_CONFIGURATION_DKIM').acym_info(['textShownInTooltip' => 'ACYM_INTRO_DKIM']),
-                    [],
-                    'medium-6 small-9',
-                    'auto',
-                    '',
-                    'dkim_config'
-                ); ?>
+                <?php
+                acym_switch([
+                    'name' => 'config[dkim]',
+                    'value' => $this->config->get('dkim'),
+                    'label' => acym_translation('ACYM_CONFIGURATION_DKIM'),
+                    'tip' => ['textShownInTooltip' => 'ACYM_INTRO_DKIM'],
+                    'toggle' => 'dkim_config',
+                ]); ?>
 			</div>
 		</div>
 
 
 		<div class="cell acym__configuration__dkim padding-vertical-1 margin-y" id="dkim_config">
-			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_DKIM_SETTINGS'); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_SETTINGS')); ?></div>
             <?php
             $domain = $this->config->get('dkim_domain', '');
             if (empty($domain)) {
@@ -328,50 +347,50 @@
 				<div class="grid-x grid-margin-x">
 					<div class="cell large-6 grid-x grid-margin-x margin-y">
 						<label for="dkim_domain_name" class="cell large-2 medium-3">
-                            <?php echo acym_translation('ACYM_DKIM_DOMAIN'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_DOMAIN')); ?>
 						</label>
 						<div class="cell large-10 medium-9">
 							<input id="dkim_domain_name" type="text" name="config[dkim_domain]" value="<?php echo acym_escape($domain); ?>">
 						</div>
 
 						<label for="dkim_selector" class="cell large-2 medium-3">
-                            <?php echo acym_translation('ACYM_DKIM_SELECTOR'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_SELECTOR')); ?>
 						</label>
 						<div class="cell large-10 medium-9">
 							<input id="dkim_selector" type="text" name="config[dkim_selector]" value="<?php echo acym_escape($this->config->get('dkim_selector', 'acy')); ?>">
 						</div>
 
 						<label for="dkim_private" class="cell large-2 medium-3">
-                            <?php echo acym_translation('ACYM_DKIM_PRIVATE'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_PRIVATE')); ?>
 						</label>
 						<div class="cell large-10 medium-9">
-							<textarea id="dkim_private" name="config[dkim_private]"><?php echo $this->config->get('dkim_private', ''); ?></textarea>
+							<textarea id="dkim_private" name="config[dkim_private]"><?php echo acym_escapeHtml($this->config->get('dkim_private', '')); ?></textarea>
 						</div>
 					</div>
 
 					<div class="cell large-6 grid-x grid-margin-x margin-y">
 						<label for="dkim_passphrase" class="cell large-2 medium-3">
-                            <?php echo acym_translation('ACYM_DKIM_PASSPHRASE'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_PASSPHRASE')); ?>
 						</label>
 						<div class="cell large-10 medium-9">
 							<input id="dkim_passphrase"
-								   type="text"
-								   name="config[dkim_passphrase]"
-								   value="<?php echo acym_escape($this->config->get('dkim_passphrase', '')); ?>">
+							       type="text"
+							       name="config[dkim_passphrase]"
+							       value="<?php echo acym_escape($this->config->get('dkim_passphrase', '')); ?>">
 						</div>
 
 						<label for="dkim_identity" class="cell large-2 medium-3">
-                            <?php echo acym_translation('ACYM_DKIM_IDENTITY'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_IDENTITY')); ?>
 						</label>
 						<div class="cell large-10 medium-9">
 							<input id="dkim_identity" type="text" name="config[dkim_identity]" value="<?php echo acym_escape($this->config->get('dkim_identity', '')); ?>">
 						</div>
 
 						<label for="dkim_public" class="cell large-2 medium-3">
-                            <?php echo acym_translation('ACYM_DKIM_PUBLIC'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_PUBLIC')); ?>
 						</label>
 						<div class="cell large-10 medium-9">
-							<textarea id="dkim_public" name="config[dkim_public]"><?php echo $this->config->get('dkim_public', ''); ?></textarea>
+							<textarea id="dkim_public" name="config[dkim_public]"><?php echo acym_escapeHtml($this->config->get('dkim_public', '')); ?></textarea>
 						</div>
 					</div>
 				</div>
@@ -380,33 +399,45 @@
                 //Be compatible with what we used to have:
                 $publicKey = 'v=DKIM1;s=email;t=s;p='.trim($this->config->get('dkim_public', ''), '"');
 
-                echo acym_translationSprintf(
-                    'ACYM_DKIM_CONFIGURE',
-                    '<input class="margin-bottom-0" type="text" id="dkim_domain" name="config[dkim_domain]" value="'.acym_escape($domain).'" />'
+                echo acym_escapeHtmlWithAllowedTags(
+                    acym_translationSprintf(
+                        'ACYM_DKIM_CONFIGURE',
+                        '<input class="margin-bottom-0" type="text" id="dkim_domain" name="config[dkim_domain]" value="'.acym_escape($domain).'" />'
+                    ),
+                    [
+                        'input' => [
+                            'class' => true,
+                            'type' => true,
+                            'id' => true,
+                            'name' => true,
+                            'value' => true,
+                        ],
+                    ]
                 );
                 ?>
 				<div class="cell">
-                    <?php echo acym_translation('ACYM_DKIM_KEY'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_KEY')); ?>
 					<input id="dkim_key" class="acym_autoselect margin-bottom-0" type="text" readonly="readonly" value="acy._domainkey" />
 				</div>
 				<div class="cell">
-                    <?php echo acym_translation('ACYM_DKIM_VALUE'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_VALUE')); ?>
 					<input id="dkim_value" class="acym_autoselect margin-bottom-0" type="text" readonly="readonly" value="<?php echo acym_escape($publicKey); ?>" />
 				</div>
 				<div class="cell">
 					<input type="checkbox" value="1" id="dkimletme" name="dkimletme" />
-					<label for="dkimletme"><?php echo acym_translation('ACYM_DKIM_LET_ME'); ?></label>
+					<label for="dkimletme"><?php echo acym_escapeHtml(acym_translation('ACYM_DKIM_LET_ME')); ?></label>
 				</div>
                 <?php
             }
             ?>
 
 			<div class="cell">
-				<a class="button button-secondary margin-bottom-0 margin-top-1" target="_blank" href="<?php echo ACYM_DOCUMENTATION; ?>setup/configuration/mail-configuration/dkim">
-                    <?php echo acym_translation('ACYM_HELP'); ?>
+				<a class="button button-secondary margin-bottom-0 margin-top-1"
+				   target="_blank"
+				   href="<?php echo acym_escapeUrl(ACYM_DOCUMENTATION); ?>setup/configuration/mail-configuration/dkim">
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_HELP')); ?>
 				</a>
 			</div>
 		</div>
 	</div>
-
 </div>

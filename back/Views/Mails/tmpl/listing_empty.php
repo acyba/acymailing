@@ -1,16 +1,19 @@
+<?php
+// context verification
+?>
 <div class="xlarge-4 medium-auto cell text-center cell grid-x">
 	<div class="cell">
 		<div class="grid-x grid-margin-x">
 			<div class="cell margin-bottom-1">
                 <?php
-                echo acym_externalLink(
+                acym_externalLink(
                     'ACYM_SEE_OUR_TEMPLATES_PACK',
                     ACYM_ACYMAILING_WEBSITE.'pack-templates-newsletter/?utm_source=acymailing_plugin&utm_campaign=purchase_templates_pack&utm_medium=button_template_listing'
                 );
                 ?>
 			</div>
             <?php
-            echo acym_modal(
+            acym_modal(
                 acym_translation('ACYM_IMPORT'),
                 $data['templateImportView'],
                 null,
@@ -23,10 +26,10 @@
             );
             ?>
 			<button type="button" id="acym__mail__install-default" class="button cell auto button-secondary acy_button_submit" data-task="installDefaultTmpl">
-                <?php echo acym_translation('ACYM_ADD_DEFAULT_TMPL'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_ADD_DEFAULT_TMPL')); ?>
 			</button>
             <?php
-            echo acym_modal(
+            acym_modal(
                 acym_translation('ACYM_CREATE_TEMPLATE'),
                 '<div class="cell grid-x grid-margin-x">
 								<button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_translation(

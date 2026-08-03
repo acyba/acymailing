@@ -14,7 +14,7 @@ const acym_helperImport = {
         });
 
         jQuery('#acym__users__import__skip__button').off('click').on('click', function () {
-            jQuery('[name="acym__entity_select__selected"]').attr('value', '');
+            jQuery('[name="acym__entity_select__selected"]').val('');
             acym_helperImport.getSubmitButton().trigger('click');
         });
     },
@@ -42,15 +42,15 @@ const acym_helperImport = {
 
         jQuery('#acym__users__generic__import__skip__button').off('click').on('click', function () {
             if (acym_helperImport.verifyGenericImport()) {
-                jQuery('[name="acym__entity_select__selected"]').attr('value', '');
+                jQuery('[name="acym__entity_select__selected"]').val('');
                 $submitButton.trigger('click');
             }
         });
     },
     verifyGenericImport: function () {
         if (jQuery(this).attr('id') === 'no-list') {
-            jQuery('#acym__modal__lists-selected').attr('value', '');
-            jQuery('#acym__import__new-list').attr('value', '');
+            jQuery('#acym__modal__lists-selected').val('');
+            jQuery('#acym__import__new-list').val('');
         }
 
         let subval = true;

@@ -29,14 +29,14 @@ trait TimeAutomationTriggers
         $triggers['classic']['day']->option .= '<div class="cell medium-shrink">'.acym_select(
                 $hour,
                 '[triggers][classic][day][hour]',
-                empty($defaultValues['day']) ? date('H') : $defaultValues['day']['hour'],
+                empty($defaultValues['day']) ? acym_date('now', 'H') : $defaultValues['day']['hour'],
                 ['data-class' => 'intext_select acym__select']
             ).'</div>';
         $triggers['classic']['day']->option .= '<div class="cell medium-shrink acym_vcenter">:</div>';
         $triggers['classic']['day']->option .= '<div class="cell medium-auto">'.acym_select(
                 $minutes,
                 '[triggers][classic][day][minutes]',
-                empty($defaultValues['day']) ? date('i') : $defaultValues['day']['minutes'],
+                empty($defaultValues['day']) ? acym_date('now', 'i') : $defaultValues['day']['minutes'],
                 ['data-class' => 'intext_select acym__select']
             ).'</div>';
         $triggers['classic']['day']->option .= '</div>';

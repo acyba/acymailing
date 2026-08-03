@@ -9,7 +9,6 @@ use AcyMailing\Classes\UserClass;
 use AcyMailing\Controllers\SegmentsController;
 use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\EncodingHelper;
-use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Helpers\ExportHelper;
 
 trait Export
@@ -57,15 +56,8 @@ trait Export
         $fieldClass = new FieldClass();
         $customFields = $fieldClass->getAll();
 
-        $entityHelper = new EntitySelectHelper();
         $encodingHelper = new EncodingHelper();
         $userClass = new UserClass();
-
-        if ($preselectList) {
-            $entitySelect = $entityHelper->entitySelect('list', ['join' => 'join_lists-'.implode(',', $checkedElements)], $entityHelper->getColumnsForList('lists.list_id', true));
-        } else {
-            $entitySelect = $entityHelper->entitySelect('list', ['join' => ''], $entityHelper->getColumnsForList('', true));
-        }
 
         $data = [
             'lists' => $lists,
@@ -74,7 +66,6 @@ trait Export
             'customfields' => $customFields,
             'coreFields' => [1, 2, $fieldClass->getLanguageFieldId()],
             'isPreselectedList' => $preselectList,
-            'entitySelect' => $entitySelect,
             'exportListStatus' => $filtersListing['list_status'],
             'encodingHelper' => $encodingHelper,
             'userClass' => $userClass,

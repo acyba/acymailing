@@ -30,17 +30,15 @@ trait Ajax
         $entityHelper = new EntitySelectHelper();
         $importHelper = new ImportHelper();
 
-
-        $return = $entityHelper->entitySelect(
-            'list',
-            ['join' => 'join_lists-'.implode(',', $selectedListsIds)],
-            $entityHelper->getColumnsForList('lists.list_id', true),
-            [],
-            true,
-            $importHelper->additionalDataUsersImport($genericImport)
+        $entityHelper->entitySelect(
+            [
+                'display' => true,
+                'entity' => 'list',
+                'entityParams' => ['join' => 'join_lists-'.implode(',', $selectedListsIds)],
+                'columnsToDisplay' => $entityHelper->getColumnsForList('lists.list_id', true),
+                'additionalData' => $importHelper->additionalDataUsersImport($genericImport),
+            ]
         );
-
-        echo $return;
         exit;
     }
 
@@ -108,20 +106,20 @@ trait Ajax
 
             $return .= '<div class="cell shrink"><input type="checkbox" id="modal__pagination__listing__lists__list'.acym_escape($list->id).'" value="'.acym_escape(
                     $list->id
-                ).'" class="modal__pagination__listing__lists__list--checkbox" name="lists_checked[]"';
-
-            if (!empty($matchingListsData->idsSelected) && in_array($list->id, $matchingListsData->idsSelected)) {
-                $return .= 'checked';
-            }
+                ).'" class="modal__pagination__listing__lists__list--checkbox" name="lists_checked[]"'.acym_checked(
+                    !empty($matchingListsData->idsSelected) && in_array($list->id, $matchingListsData->idsSelected),
+                    true,
+                    false
+                );
 
             $return .= '></div><i class="cell shrink acymicon-circle" style="color:'.acym_escape(
                     $list->color
                 ).'"></i><label class="cell auto" for="modal__pagination__listing__lists__list'.acym_escape($list->id).'"> ';
 
-            $return .= '<span class="modal__pagination__listing__lists__list-name">'.acym_escape($list->name).'</span>';
+            $return .= '<span class="modal__pagination__listing__lists__list-name">'.acym_escapeHtml($list->name).'</span>';
 
             if (!empty($matchingListsData->needDisplaySub)) {
-                $return .= '<span class="modal__pagination__listing__lists__list-subscribers">('.acym_escape($list->subscribers).')</span>';
+                $return .= '<span class="modal__pagination__listing__lists__list-subscribers">('.acym_escapeHtml($list->subscribers).')</span>';
             }
 
             $return .= '</label></div>';

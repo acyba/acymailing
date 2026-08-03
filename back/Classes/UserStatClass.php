@@ -37,8 +37,8 @@ class UserStatClass extends AcymClass
         $query = 'INSERT INTO #__acym_user_stat ('.implode(',', $column).') VALUE ('.implode(', ', $valueColumn).')';
         $onDuplicate = [];
 
-        if (!empty($userStat['statusSending'])) {
-            $onDuplicate[] = $userStat['statusSending'] == 0 ? 'fail = fail + 1' : 'sent = sent + 1';
+        if (isset($userStat['statusSending'])) {
+            $onDuplicate[] = empty($userStat['statusSending']) ? 'fail = fail + 1' : 'sent = sent + 1';
         }
 
         if ($overrideSendDate && !empty($userStat['send_date'])) {
@@ -332,7 +332,7 @@ class UserStatClass extends AcymClass
             7 => [0, 2],
         ];
 
-        $percentage = rand($randoms[$hour][0], $randoms[$hour][1]);
+        $percentage = acym_rand($randoms[$hour][0], $randoms[$hour][1]);
 
         if ($percentageRemaining - $percentage < 0) {
             return 0;
@@ -341,5 +341,17 @@ class UserStatClass extends AcymClass
         $percentageRemaining -= $percentage;
 
         return $percentage;
+    }
+
+    public function hasUserReceivedMail(int $mailId, int $userId): bool
+    {
+        $sentToRecipient = acym_loadResult(
+            'SELECT COUNT(*)
+            FROM #__acym_user_stat AS userStat
+            WHERE userStat.mail_id = '.intval($mailId).'
+                AND userStat.user_id = '.intval($userId)
+        );
+
+        return !empty($sentToRecipient);
     }
 }

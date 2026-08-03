@@ -1,4 +1,7 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm"
+<?php
+// context verification
+?>
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm"
     <?php echo !empty($data['menuClass']) ? 'class="'.acym_escape($data['menuClass']).'"' : ''; ?> >
 
 	<input type="hidden" value="<?php echo acym_escape($data['campaignID']); ?>" name="campaignId" id="acym__campaign__choose__campaign">
@@ -6,7 +9,7 @@
 	<div id="acym__templates__choose" class="acym__content">
         <?php
         if (empty($data['campaignID'])) $data['workflowHelper']->disabledAfter = 'chooseTemplate';
-        echo $data['workflowHelper']->display($this->steps, $this->step);
+        $data['workflowHelper']->display($this->steps, $this->step);
 
         include acym_getView('frontcampaigns', 'choose_template');
         ?>

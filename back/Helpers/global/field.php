@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 /**
  * @param ?mixed $selected
@@ -10,9 +11,8 @@ function acym_radio(
     array  $attributes = [],
     array  $params = [],
     bool   $frontDisplay = false,
-    array  $disabledOptions = [],
-    bool   $escapeLabels = true
-): string {
+    array  $disabledOptions = []
+): void {
     $id = preg_replace(
         '#[^a-zA-Z0-9_]+#mi',
         '_',
@@ -32,7 +32,7 @@ function acym_radio(
         $params['containerClass'] = '';
     }
 
-    $return = '<div class="acym_radio_group '.acym_escape($params['containerClass']).'">';
+    echo '<div class="acym_radio_group '.acym_escape($params['containerClass']).'">';
     $k = 0;
     foreach ($options as $value => $label) {
         $currentAttributes = $attributes;
@@ -64,33 +64,50 @@ function acym_radio(
             $currentAttributes['class'] .= $extraClass;
         }
 
-        if ((string)$value === (string)$selected) {
-            $currentAttributes['checked'] = 'checked';
-        }
-        $formattedAttributes = acym_getFormattedAttributes($currentAttributes);
-
         if (!empty($params['required'])) {
-            $formattedAttributes .= ' required';
+            $currentAttributes['required'] = 'required';
             unset($params['required']);
         }
 
-        $currentOption = '';
-        if (!$frontDisplay) {
-            $currentOption .= '<i data-radio="'.acym_escape($currentId).'" class="acymicon-radio-button-checked acym_radio_checked'.acym_escape($extraClass).'"></i>';
-            $currentOption .= '<i data-radio="'.acym_escape($currentId).'" class="acymicon-radio-button-unchecked acym_radio_unchecked'.acym_escape($extraClass).'"></i>';
+        if (!empty($disabledOptions[$value]['tooltipTxt'])) {
+            ob_start();
         }
 
-        $currentOption .= '<input '.$formattedAttributes.' />';
-        $currentOption .= '<label for="'.acym_escape($currentId).'" id="'.acym_escape($currentId).'-lbl" class="'.acym_escape($extraClass).'">';
-        if ($escapeLabels) {
-            $currentOption .= acym_escape(acym_translation($label));
-        } else {
-            $currentOption .= acym_translation($label);
+        if (!$frontDisplay) {
+            echo '<i data-radio="'.acym_escape($currentId).'" class="acymicon-radio-button-checked acym_radio_checked'.acym_escape($extraClass).'"></i>';
+            echo '<i data-radio="'.acym_escape($currentId).'" class="acymicon-radio-button-unchecked acym_radio_unchecked'.acym_escape($extraClass).'"></i>';
         }
-        $currentOption .= '</label>';
+
+        echo '<input ';
+        acym_checked((string)$value === (string)$selected);
+        foreach ($currentAttributes as $oneAttribute => $oneValue) {
+            if (is_array($oneValue) || is_object($oneValue)) {
+                $oneValue = json_encode($oneValue);
+            } elseif ($oneValue === true) {
+                $oneValue = $oneAttribute;
+            }
+
+            echo ' '.acym_escape($oneAttribute).'="'.acym_escape($oneValue).'"';
+        }
+        echo ' />';
+
+        echo '<label for="'.acym_escape($currentId).'" id="'.acym_escape($currentId).'-lbl" class="'.acym_escape($extraClass).'">';
+        echo acym_escapeHtmlWithAllowedTags(
+            acym_translation($label),
+            [
+                'input' => [
+                    'type' => true,
+                    'value' => true,
+                    'name' => true,
+                    'placeholder' => true,
+                ],
+            ]
+        );
+        echo '</label>';
 
         if (!empty($disabledOptions[$value]['tooltipTxt'])) {
-            $currentOption = acym_tooltip(
+            $currentOption = ob_get_clean();
+            acym_tooltip(
                 [
                     'hoveredText' => $currentOption,
                     'textShownInTooltip' => $disabledOptions[$value]['tooltipTxt'],
@@ -98,16 +115,12 @@ function acym_radio(
             );
         }
 
-        $return .= $currentOption;
-
         if (!empty($params['pluginMode'])) {
-            $return .= '<br />';
+            echo '<br />';
         }
         $k++;
     }
-    $return .= '</div>';
-
-    return $return;
+    echo '</div>';
 }
 
 function acym_boolean(
@@ -117,7 +130,7 @@ function acym_boolean(
     array   $attributes = [],
     string  $yes = 'ACYM_YES',
     string  $no = 'ACYM_NO'
-): string {
+): void {
     $options = [
         '1' => acym_translation($yes),
         '0' => acym_translation($no),
@@ -129,7 +142,7 @@ function acym_boolean(
         unset($attributes['containerClass']);
     }
 
-    return acym_radio(
+    acym_radio(
         $options,
         $name,
         $selected ? 1 : 0,
@@ -150,7 +163,8 @@ function acym_select(
     string  $optKey = 'value',
     string  $optText = 'text',
     ?string $idtag = null,
-    bool    $translate = false
+    bool    $translate = false,
+    bool    $display = false
 ): string {
     if (empty($attribs)) {
         $attribs = [];
@@ -158,9 +172,22 @@ function acym_select(
 
     $attribs['name'] = $name;
     $attribs['id'] = str_replace(['[', ']', ' '], '', empty($idtag) ? $name : $idtag);
-    $attributes = acym_getFormattedAttributes($attribs);
 
-    $dropdown = '<select '.$attributes.'>';
+    if (!$display) {
+        ob_start();
+    }
+
+    echo '<select ';
+    foreach ($attribs as $oneAttribute => $oneValue) {
+        if (is_array($oneValue) || is_object($oneValue)) {
+            $oneValue = json_encode($oneValue);
+        } elseif ($oneValue === true) {
+            $oneValue = $oneAttribute;
+        }
+
+        echo ' '.acym_escape($oneAttribute).'="'.acym_escape($oneValue).'"';
+    }
+    echo '>';
 
     foreach ($data as $key => $oneOption) {
         $disabled = false;
@@ -180,18 +207,24 @@ function acym_select(
         }
 
         if (strtolower($value) === '<optgroup>') {
-            $dropdown .= '<optgroup label="'.acym_escape($text).'">';
+            echo '<optgroup label="'.acym_escape($text).'">';
         } elseif (strtolower($value) === '</optgroup>') {
-            $dropdown .= '</optgroup>';
+            echo '</optgroup>';
         } else {
-            $dropdown .= '<option value="'.acym_escape($value).'"'.(strval($value) === strval($selected) ? ' selected="selected"' : '').($disabled ? ' disabled="disabled"'
-                    : '').'>'.acym_escape($text).'</option>';
+            echo '<option value="'.acym_escape($value).'"';
+            acym_selected(strval($value) === strval($selected));
+            acym_disabled($disabled);
+            echo '>'.acym_escapeHtml($text).'</option>';
         }
     }
 
-    $dropdown .= '</select>';
+    echo '</select>';
 
-    return $dropdown;
+    if (!$display) {
+        return ob_get_clean();
+    }
+
+    return '';
 }
 
 function acym_selectMultiple(
@@ -201,52 +234,61 @@ function acym_selectMultiple(
     array  $attribs = [],
     string $optValue = 'value',
     string $optText = 'text',
-    bool   $translate = false
+    bool   $display = false
 ): string {
-
     if (substr($name, -2) !== '[]') {
         $name .= '[]';
     }
     $baseName = substr($name, 0, -2);
 
+    $attribs['name'] = $name;
     $attribs['multiple'] = 'multiple';
 
-    $parameters = acym_getFormattedAttributes($attribs);
+    if (!$display) {
+        ob_start();
+    }
 
-    $dropdown = '<input type="hidden" name="'.acym_escape($baseName).'" value="">';
-    $dropdown .= '<select name="'.acym_escape($name).'"'.$parameters.'>';
+    echo '<input type="hidden" name="'.acym_escape($baseName).'" value="">';
+    echo '<select ';
+    foreach ($attribs as $oneAttribute => $oneValue) {
+        if (is_array($oneValue) || is_object($oneValue)) {
+            $oneValue = json_encode($oneValue);
+        } elseif ($oneValue === true) {
+            $oneValue = $oneAttribute;
+        }
+
+        echo ' '.acym_escape($oneAttribute).'="'.acym_escape($oneValue).'"';
+    }
+    echo '>';
 
     foreach ($data as $oneDataKey => $oneDataValue) {
-        $disabled = '';
-
         if (is_object($oneDataValue)) {
             $value = $oneDataValue->$optValue;
             $text = $oneDataValue->$optText;
-
-            if (!empty($oneDataValue->disable)) {
-                $disabled = ' disabled="disabled"';
-            }
         } else {
             $value = $oneDataKey;
             $text = $oneDataValue;
         }
 
-        if ($translate) {
-            $text = acym_translation($text);
-        }
-
         if (strtolower($value) === '<optgroup>') {
-            $dropdown .= '<optgroup label="'.acym_escape($text).'">';
+            echo '<optgroup label="'.acym_escape($text).'">';
         } elseif (strtolower($value) === '</optgroup>') {
-            $dropdown .= '</optgroup>';
+            echo '</optgroup>';
         } else {
-            $dropdown .= '<option value="'.acym_escape($value).'"'.(in_array($value, $selected) ? ' selected="selected"' : '').$disabled.'>'.acym_escape($text).'</option>';
+            echo '<option value="'.acym_escape($value).'"';
+            acym_selected(in_array($value, $selected));
+            acym_disabled(is_object($oneDataValue) && !empty($oneDataValue->disable));
+            echo '>'.acym_escapeHtml($text).'</option>';
         }
     }
 
-    $dropdown .= '</select>';
+    echo '</select>';
 
-    return $dropdown;
+    if (!$display) {
+        return ob_get_clean();
+    }
+
+    return '';
 }
 
 /**
@@ -268,78 +310,135 @@ function acym_selectOption(
 }
 
 /**
- * @param mixed $value
+ * @param string|array $options The string name or the new options in an array
+ * @param mixed        $value
  */
 function acym_switch(
-    string  $name,
-            $value,
+    $options,
+    $value = '',
     ?string $label = null,
-    array   $attrInput = [],
-    string  $labelClass = 'medium-6 small-9',
-    string  $switchContainerClass = 'auto',
-    string  $switchClass = '',
-    ?string $toggle = null,
-    bool    $toggleOpen = true,
-    string  $vModel = '',
-    bool    $disabled = false,
-    string  $disabledMessage = ''
-): string {
+    array $attrInput = [],
+    string $labelClass = 'medium-6 small-9',
+    string $switchContainerClass = 'auto',
+    string $switchClass = '',
+    ?string $toggle = null
+): void {
     static $occurrence = 100;
     $occurrence++;
 
     $id = 'switch_'.$occurrence;
-    $checked = $value == 1 ? 'checked="checked"' : '';
+
+    //TODO remove old parameters in January 2027 (only used in WC, Hika, VM and ultimate member plugins, which were updated in July 2026
+    if (!is_array($options)) {
+        $options = [
+            'name' => $options,
+            'value' => $value,
+            'label' => $label,
+            'attributes' => $attrInput,
+            'labelClass' => $labelClass,
+            'switchContainerClass' => $switchContainerClass,
+            'switchClass' => $switchClass,
+            'toggle' => $toggle,
+            'toggleOpen' => true,
+            'disabled' => false,
+        ];
+    } else {
+        $options['attributes'] = $options['attributes'] ?? [];
+        $options['labelClass'] = $options['labelClass'] ?? 'medium-6 small-9';
+        $options['switchContainerClass'] = $options['switchContainerClass'] ?? 'auto';
+        $options['switchClass'] = $options['switchClass'] ?? '';
+        $options['toggleOpen'] = $options['toggleOpen'] ?? true;
+        $options['disabled'] = $options['disabled'] ?? false;
+    }
 
     $checkboxAriaLabel = '';
-    if (!empty($attrInput['aria-label'])) {
-        $checkboxAriaLabel = ' aria-label="'.acym_escape($attrInput['aria-label']).'"';
-        unset($attrInput['aria-label']);
+    if (!empty($options['attributes']['aria-label'])) {
+        $checkboxAriaLabel = $options['attributes']['aria-label'];
+        unset($options['attributes']['aria-label']);
     }
 
-    $attrInput['name'] = $name;
-    $attrInput['data-switch'] = $id;
-    $attrInput['value'] = $value;
+    $options['attributes']['name'] = $options['name'];
+    $options['attributes']['data-switch'] = $id;
+    $options['attributes']['value'] = $options['value'];
 
-    if (!empty($toggle)) {
-        $attrInput['data-toggle-switch'] = $toggle;
-        $attrInput['data-toggle-switch-open'] = $toggleOpen ? 'show' : 'hide';
-    }
-    $inputParameters = acym_getFormattedAttributes($attrInput);
-
-    $switch = '
-    <div class="switch '.acym_escape($switchClass).'">
-        <input type="hidden" '.$vModel.' '.$inputParameters.'>';
-
-    $labelSwitchDisabled = !$disabled ? '' : ' disabled';
-    $inputSwitchDisabled = !$disabled ? '' : ' disabled="disabled"';
-    $disabledTooltip = !$disabled || empty($disabledMessage) ? '' : ' data-acym-tooltip="'.acym_escape($disabledMessage).'"';
-    $switch .= '
-        <input class="switch-input" type="checkbox" id="'.acym_escape($id).'" value="1" tabindex="0" role="switch" '.$checked.$inputSwitchDisabled.$checkboxAriaLabel.'>
-        <label class="switch-paddle switch-label'.$labelSwitchDisabled.'" '.$disabledTooltip.' for="'.acym_escape($id).'">
-            <span class="switch-active" aria-hidden="true">1</span>
-            <span class="switch-inactive" aria-hidden="true">0</span>
-        </label>
-    </div>';
-
-    if (!empty($label)) {
-        //TODO $label may contain an HTML tooltip, escape without breaking it
-        $label = '<label for="'.acym_escape($id).'" class="cell '.acym_escape($labelClass).' switch-label">'.$label.'</label>';
-        $switch = $label.'<div class="cell '.acym_escape($switchContainerClass).'">'.$switch.'</div>';
+    if (!empty($options['toggle'])) {
+        $options['attributes']['data-toggle-switch'] = $options['toggle'];
+        $options['attributes']['data-toggle-switch-open'] = $options['toggleOpen'] ? 'show' : 'hide';
     }
 
-    return $switch;
+    if (!empty($options['label']) || !empty($options['tooltip'])) {
+        echo '<label for="'.acym_escape($id).'" class="cell '.acym_escape($options['labelClass']).' switch-label">';
+        if (!empty($options['label'])) {
+            echo acym_escapeHtml($options['label']);
+        }
+
+        if (!empty($options['tooltip'])) {
+            acym_tooltip($options['tooltip']);
+        }
+
+        if (!empty($options['tip'])) {
+            acym_info($options['tip']);
+        }
+        echo '</label>';
+        echo '<div class="cell '.acym_escape($options['switchContainerClass']).'">';
+    }
+
+    $labelSwitchDisabled = !$options['disabled'] ? '' : ' disabled';
+    ?>
+
+	<div class="switch <?php echo acym_escape($options['switchClass']); ?>">
+		<input type="hidden"
+            <?php
+            foreach ($options['attributes'] as $oneAttribute => $oneValue) {
+                if (is_array($oneValue) || is_object($oneValue)) {
+                    $oneValue = json_encode($oneValue);
+                } elseif ($oneValue === true) {
+                    $oneValue = $oneAttribute;
+                }
+
+                echo ' '.acym_escape($oneAttribute).'="'.acym_escape($oneValue).'"';
+            }
+            ?>
+		>
+
+		<input class="switch-input"
+		       type="checkbox"
+		       id="<?php echo acym_escape($id); ?>"
+		       value="1"
+		       tabindex="0"
+		       role="switch"
+            <?php
+            acym_checked($options['value'] == 1);
+            acym_disabled($options['disabled']);
+            if (!empty($checkboxAriaLabel)) {
+                echo ' aria-label="'.acym_escape($checkboxAriaLabel).'"';
+            }
+            ?>
+		>
+		<label class="switch-paddle switch-label <?php echo acym_escape($labelSwitchDisabled); ?>" for="<?php echo acym_escape($id); ?>">
+			<span class="switch-active" aria-hidden="true">1</span>
+			<span class="switch-inactive" aria-hidden="true">0</span>
+		</label>
+	</div>
+
+    <?php
+    if (!empty($options['label']) || !empty($options['tooltip'])) {
+        echo '</div>';
+    }
 }
 
-function acym_showMore(string $toggle, string $text = 'ACYM_SHOW_MORE', string $class = ''): string
+function acym_showMore(string $toggle, string $text = 'ACYM_SHOW_MORE', string $class = ''): void
 {
-    $showMore = '<div class="showmore '.acym_escape($class).'" data-toggle-showmore="'.acym_escape($toggle).'">';
-    $showMore .= '<label>'.acym_escape(acym_translation($text)).'<i class="acymicon-keyboard-arrow-down"></i></label>';
-    $showMore .= '</div>';
-
-    return $showMore;
+    ?>
+	<div class="showmore <?php echo acym_escape($class); ?>" data-toggle-showmore="<?php echo acym_escape($toggle); ?>">
+		<label>
+            <?php echo acym_escapeHtml(acym_translation($text)); ?><i class="acymicon-keyboard-arrow-down"></i>
+		</label>
+	</div>
+    <?php
 }
 
-function acym_generateCountryNumber(string $name, string $defaultvalue = ''): string
+function acym_generateCountryNumber(string $name, string $defaultvalue = ''): void
 {
     $country = [
         '' => acym_translation('ACYM_PHONE_NOCOUNTRY'),
@@ -581,24 +680,29 @@ function acym_generateCountryNumber(string $name, string $defaultvalue = ''): st
         $countryCodeForSelect[$key] = '+'.$key.' ('.$one.')';
     }
 
-    return acym_select(
+    acym_select(
         $countryCodeForSelect,
         $name,
         empty($defaultvalue) ? '' : $defaultvalue,
         [
             'class' => 'acym__select__country acym__select',
             'autocomplete' => 'tel-country-code',
-        ]
+        ],
+        'value',
+        'text',
+        null,
+        false,
+        true
     );
 }
 
-function acym_cancelButton(string $text = 'ACYM_CANCEL', string $url = '', string $class = 'button medium-6 large-shrink'): string
+function acym_cancelButton(string $text = 'ACYM_CANCEL', string $url = '', string $class = 'button medium-6 large-shrink'): void
 {
     if (empty($url)) {
         $url = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=listing');
     }
 
-    return '<a href="'.$url.'" class="cell '.$class.' acym__button__cancel">'.acym_escape(acym_translation($text)).'</a>';
+    echo '<a href="'.acym_escapeUrl($url).'" class="cell '.acym_escape($class).' acym__button__cancel">'.acym_escapeHtml(acym_translation($text)).'</a>';
 }
 
 /**
@@ -611,7 +715,7 @@ function acym_cancelButton(string $text = 'ACYM_CANCEL', string $url = '', strin
  *    link                => URL to redirect on click to the hovered text
  *    classLink           => Classes applied on the link element if any
  */
-function acym_tooltip(array $options): string
+function acym_tooltip(array $options): void
 {
     if (!isset($options['classContainer'])) $options['classContainer'] = '';
     if (!isset($options['classText'])) $options['classText'] = '';
@@ -620,39 +724,47 @@ function acym_tooltip(array $options): string
     if (!isset($options['hoveredText'])) $options['hoveredText'] = '';
     if (!isset($options['classLink'])) $options['classLink'] = '';
 
-    if (!empty($options['link'])) {
-        $options['hoveredText'] = '<a href="'.$options['link'].'" title="'.acym_escape($options['titleShownInTooltip']).'" target="_blank" class="'.acym_escape(
-                $options['classLink']
-            ).'">'.$options['hoveredText'].'</a>';
-    }
+    echo '<span class="acym__tooltip '.acym_escape($options['classContainer']).'">';
+    echo '<span class="acym__tooltip__text '.acym_escape($options['classText']).'">';
 
     if (!empty($options['titleShownInTooltip'])) {
-        $options['titleShownInTooltip'] = '<span class="acym__tooltip__title">'.$options['titleShownInTooltip'].'</span>';
+        echo '<span class="acym__tooltip__title">';
+    }
+    echo acym_escapeHtml($options['titleShownInTooltip']);
+    if (!empty($options['titleShownInTooltip'])) {
+        echo '</span>';
     }
 
-    $tooltip = '<span class="acym__tooltip '.$options['classContainer'].'">';
-    $tooltip .= '<span class="acym__tooltip__text '.$options['classText'].'">';
-    $tooltip .= $options['titleShownInTooltip'].$options['textShownInTooltip'].'</span>'.$options['hoveredText'].'</span>';
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Text escaped by caller, too many possible inputs.
+    echo $options['textShownInTooltip'];
+    echo '</span>';
 
-    return $tooltip;
+    if (!empty($options['link'])) {
+        echo '<a 
+                href="'.acym_escapeUrl($options['link']).'" 
+                title="'.acym_escape($options['titleShownInTooltip']).'" 
+                target="_blank" 
+                class="'.acym_escape($options['classLink']).'">';
+    }
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Text escaped by caller, too many possible inputs.
+    echo $options['hoveredText'];
+    if (!empty($options['link'])) {
+        echo '</a>';
+    }
+    echo '</span>';
 }
 
 /**
- * @param array $options
+ * Options:
+ *    textShownInTooltip => Text shown inside the tooltip box
+ *    classContainer     => Classes applied on the main container
+ *    classText          => Classes applied to the hovered icon container
+ *    classIcon          => Classes applied to the hovered icon
+ *    isWarning          => Is the tooltip icon should be more visible
+ *    classLink          => Classes applied on the link element if any
  */
-function acym_info($options, string $class = '', string $containerClass = '', string $classText = '', bool $warningInfo = false): string
+function acym_info(array $options): void
 {
-    //TODO Places using deprecated parameters have been cleaned on October 2025
-    if (!is_array($options)) {
-        $options = [
-            'textShownInTooltip' => $options,
-            'classContainer' => $containerClass,
-            'classIcon' => $class,
-            'classText' => $classText,
-            'isWarning' => $warningInfo,
-        ];
-    }
-
     if (!isset($options['textShownInTooltip'])) $options['textShownInTooltip'] = '';
     if (!isset($options['classContainer'])) $options['classContainer'] = '';
     if (!isset($options['classText'])) $options['classText'] = '';
@@ -661,7 +773,7 @@ function acym_info($options, string $class = '', string $containerClass = '', st
 
     $classWarning = $options['isWarning'] ? 'acym__tooltip__info__warning' : '';
 
-    return acym_tooltip(
+    acym_tooltip(
         [
             'hoveredText' => '<span class="acym__tooltip__info__container '.$options['classIcon'].'"><i class="acym__tooltip__info__icon acymicon-info-circle '.acym_escape(
                     $classWarning
@@ -673,7 +785,7 @@ function acym_info($options, string $class = '', string $containerClass = '', st
     );
 }
 
-function acym_sortBy(array $options, string $listing, string $default = '', string $defaultSortOrdering = 'desc'): string
+function acym_sortBy(array $options, string $listing, string $default = '', string $defaultSortOrdering = 'desc'): void
 {
     $default = empty($default) ? reset($options) : $default;
 
@@ -681,28 +793,31 @@ function acym_sortBy(array $options, string $listing, string $default = '', stri
     $orderingSortOrder = acym_getVar('string', $listing.'_ordering_sort_order', $defaultSortOrdering);
     $classSortOrder = $orderingSortOrder === 'asc' ? 'acymicon-sort-amount-asc' : 'acymicon-sort-amount-desc';
 
-    $display = '<span class="acym__color__dark-gray">'.acym_translation('ACYM_SORT_BY').'</span>';
-    $display .= acym_select(
+    echo '<span class="acym__color__dark-gray">'.acym_escapeHtml(acym_translation('ACYM_SORT_BY')).'</span>';
+    acym_select(
         $options,
         $listing.'_ordering',
         $selected,
         [
             'id' => 'acym__listing__ordering',
             'class' => 'acym__select acym__select__sort',
-        ]
+        ],
+        'value',
+        'text',
+        null,
+        false,
+        true
     );
 
     $tooltipText = $orderingSortOrder === 'asc' ? acym_translation('ACYM_SORT_ASC') : acym_translation('ACYM_SORT_DESC');
-    $display .= acym_tooltip(
+    acym_tooltip(
         [
             'hoveredText' => '<i class="'.$classSortOrder.' acym__listing__ordering__sort-order" aria-hidden="true"></i>',
             'textShownInTooltip' => $tooltipText,
         ]
     );
 
-    $display .= '<input type="hidden" id="acym__listing__ordering__sort-order--input" name="'.$listing.'_ordering_sort_order" value="'.$orderingSortOrder.'">';
-
-    return $display;
+    echo '<input type="hidden" id="acym__listing__ordering__sort-order--input" name="'.acym_escape($listing).'_ordering_sort_order" value="'.acym_escape($orderingSortOrder).'">';
 }
 
 function acym_checkbox(
@@ -714,17 +829,22 @@ function acym_checkbox(
     string $labelClass = '',
     array  $dataAttr = []
 ): void {
-    echo '<div class="'.acym_escape($parentClass).'"><div class="cell acym__label '.acym_escape($labelClass).'">'.$label.'</div><div class="cell auto grid-x">';
+    echo '<div class="'.acym_escape($parentClass).'"><div class="cell acym__label '.acym_escape($labelClass).'">'.acym_escapeHtml($label).'</div><div class="cell auto grid-x">';
     foreach ($values as $key => $value) {
-        $dtAttr = '';
-        if (!empty($dataAttr[$key])) {
-            $dtAttr = 'data-attr="'.acym_escape($dataAttr[$key]).'"';
-        }
-
-        echo '<label class="cell grid-x margin-top-1"><input type="checkbox" name="'.acym_escape($name).'" value="'.acym_escape($key).'" '.(in_array(
-                $key,
-                $selected
-            ) ? 'checked="checked"' : '').' '.$dtAttr.'>'.$value.'</label>';
+        ?>
+		<label class="cell grid-x margin-top-1">
+			<input type="checkbox"
+			       name="<?php echo acym_escape($name); ?>"
+			       value="<?php echo acym_escape($key); ?>"
+                <?php acym_checked(in_array($key, $selected)); ?>
+                <?php
+                if (!empty($dataAttr[$key])) {
+                    echo 'data-attr="'.acym_escape($dataAttr[$key]).'"';
+                }
+                ?>>
+            <?php echo $value; ?>
+		</label>
+        <?php
     }
     echo '</div></div>';
 }
@@ -738,39 +858,36 @@ function acym_switchFilter(array $switchOptions, string $selected, string $name,
             $class .= ' is-active';
         }
         $class .= ' '.$addClass;
-        $return .= '<button class="'.acym_escape($class).'" type="button" data-type="'.acym_escape($value).'">'.acym_escape(acym_translation($text)).'</button>';
+        $return .= '<button class="'.acym_escape($class).'" type="button" data-type="'.acym_escape($value).'">'.acym_escapeHtml(acym_translation($text)).'</button>';
     }
 
     return $return;
 }
 
-function acym_filterStatus(array $options, string $selected, string $name): string
+function acym_filterStatus(array $options, string $selected, string $name): void
 {
-    $filterStatus = '<input type="hidden" id="acym_filter_status" name="'.acym_escape($name).'" value="'.acym_escape($selected).'"/>';
+    echo '<input type="hidden" id="acym_filter_status" name="'.acym_escape($name).'" value="'.acym_escape($selected).'"/>';
 
     foreach ($options as $value => $text) {
-        $class = 'acym__filter__status ';
-        if ($value === $selected) {
-            $class .= ' font-bold acym__status__select';
-        }
+        ?>
+		<button type="button"
+		        acym-data-status="<?php echo acym_escape($value); ?>"
+		        class="acym__filter__status<?php echo $value === $selected ? ' font-bold acym__status__select' : ''; ?>"
+            <?php acym_disabled(!is_null($text[1]) && empty($text[1])); ?>
+		>
+            <?php echo acym_escapeHtml(acym_translation($text[0])); ?>
+            <?php
+            if (!empty($text[2]) && 'pending' == $text[2]) {
+                echo ' <i class="acymicon-exclamation-triangle acym__color__orange" style="font-size: 15px;"></i>';
+            }
 
-        $extraIcon = '';
-        if (!empty($text[2]) && 'pending' == $text[2]) {
-            $extraIcon = ' <i class="acymicon-exclamation-triangle acym__color__orange" style="font-size: 15px;"></i>';
-        }
-
-        if (is_null($text[1])) {
-            $disabled = '';
-            $userCount = '';
-        } else {
-            $disabled = empty($text[1]) ? ' disabled="disabled"' : '';
-            $userCount = ' ('.$text[1].')';
-        }
-        $filterStatus .= '<button type="button" acym-data-status="'.acym_escape($value).'" class="'.acym_escape($class).'"'.$disabled.'>';
-        $filterStatus .= acym_escape(acym_translation($text[0])).$extraIcon.'<span class="acym__filter__status__number">'.acym_escape($userCount).'</span></button>';
+            if (!is_null($text[1])) {
+                echo '<span class="acym__filter__status__number"> ('.acym_escapeHtml($text[1]).')</span>';
+            }
+            ?>
+		</button>
+        <?php
     }
-
-    return $filterStatus;
 }
 
 function acym_filterSearch(
@@ -779,29 +896,31 @@ function acym_filterSearch(
     string $placeholder = 'ACYM_SEARCH',
     bool   $showClearBtn = true,
     string $additionalClasses = ''
-): string {
-    $searchField = '<div class="input-group acym__search-area '.acym_escape($additionalClasses).'">
-        <div class="input-group-button">
-            <button class="button acym__search__button"><i class="acymicon-search"></i></button>
-        </div>
-        <input class="input-group-field acym__search-field" type="text" name="'.acym_escape($name).'" placeholder="'.acym_escape(
-            acym_translation($placeholder)
-        ).'" value="'.acym_escape($search).'">';
-    if ($showClearBtn) {
-        $searchField .= '<span class="acym__search-clear"><i class="acymicon-close"></i></span>';
-    }
-    $searchField .= '</div>';
-
-    return $searchField;
+): void {
+    ?>
+	<div class="input-group acym__search-area <?php echo acym_escape($additionalClasses); ?>">
+		<div class="input-group-button">
+			<button class="button acym__search__button"><i class="acymicon-search"></i></button>
+		</div>
+		<input class="input-group-field acym__search-field"
+		       type="text"
+		       name="<?php echo acym_escape($name); ?>"
+		       placeholder="<?php echo acym_escape(acym_translation($placeholder)); ?>"
+		       value="<?php echo acym_escape($search); ?>">
+        <?php if ($showClearBtn) { ?>
+			<span class="acym__search-clear"><i class="acymicon-close"></i></span>
+        <?php } ?>
+	</div>
+    <?php
 }
 
 /**
  * @param mixed $value
  */
-function acym_displayParam(string $type, $value, string $name): string
+function acym_displayParam(string $type, $value, string $name): void
 {
     if (!include_once ACYM_FRONT.'Params'.DS.$type.'.php') {
-        return '';
+        return;
     }
 
     $class = 'JFormField'.ucfirst($type);
@@ -810,7 +929,7 @@ function acym_displayParam(string $type, $value, string $name): string
     $field->value = $value;
     $field->name = $name;
 
-    return $field->getInput();
+    echo $field->getInput();
 }
 
 function acym_externalLink(
@@ -819,15 +938,26 @@ function acym_externalLink(
     bool   $displayIcon = true,
     bool   $openInNewTab = true,
     array  $classesA = []
-): string {
-    $target = $openInNewTab ? 'target="_blank"' : '';
-    $link = 'href="'.acym_escapeUrl($link).'"';
-    $icon = $displayIcon ? ' <i class="acymicon-external-link"></i>' : '';
-    $translatedText = acym_translation($text);
+): void {
     $classesA[] = 'acym__external__link';
-    $classesAHtml = 'class="'.acym_escape(implode(' ', $classesA)).'"';
-
-    return '<a '.$target.' '.$link.' '.$classesAHtml.'>'.acym_escape($translatedText).$icon.'</a>';
+    ?>
+	<a
+			href="<?php echo acym_escapeUrl($link); ?>"
+			class="<?php echo acym_escape(implode(' ', $classesA)); ?>"
+        <?php
+        if ($openInNewTab) {
+            echo 'target="_blank"';
+        }
+        ?>
+	>
+        <?php echo acym_escapeHtml(acym_translation($text)); ?>
+        <?php
+        if ($displayIcon) {
+            echo ' <i class="acymicon-external-link"></i>';
+        }
+        ?>
+	</a>
+    <?php
 }
 
 function acym_getFormattedAttributes(array $attributes): string

@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 function acym_getEmailOverrides(): array
 {
     $emailOverrides = [

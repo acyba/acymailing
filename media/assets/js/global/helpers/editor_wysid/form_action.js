@@ -190,26 +190,24 @@ const acym_editorWysidFormAction = {
         jQuery('#acym__wysid__warning__thumbnail').css('bottom', '-' + heightOverlay + 'px').toggle();
         jQuery('#acym__wysid__template').find('[id^="mce_"]').removeAttr('id');
 
-        acym_helper.config_get('save_thumbnail').done((resConfig) => {
-            if (resConfig.error || resConfig.data.value != 1) {
-                acym_editorWysidFormAction.saveEmail(false, saveAsTmpl, false);
-                return;
-            }
-            setTimeout(() => {
-                acym_editorWysidFormAction.setThumbnailPreSave()
-                                          .then(function (dataUrl) {
-                                              // Copy img content in hidden input
-                                              if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
-                                                  jQuery('#editor_thumbnail').attr('value', dataUrl);
-                                              }
-                                              acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
-                                          })
-                                          .catch(function (err) {
-                                              console.error('Error generating template thumbnail: ' + err);
-                                              acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
-                                          });
-            }, 10);
-        });
+        if (typeof ACYM_SAVE_THUMBNAIL === 'undefined' || ACYM_SAVE_THUMBNAIL !== 1) {
+            acym_editorWysidFormAction.saveEmail(false, saveAsTmpl, false);
+            return;
+        }
+        setTimeout(() => {
+            acym_editorWysidFormAction.setThumbnailPreSave()
+                                      .then(function (dataUrl) {
+                                          // Copy img content in hidden input
+                                          if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
+                                              jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                          }
+                                          acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
+                                      })
+                                      .catch(function (err) {
+                                          console.error('Error generating template thumbnail: ' + err);
+                                          acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
+                                      });
+        }, 10);
     },
     setThumbnailPreSave: function () {
         jQuery('#acym__wysid__template').css({

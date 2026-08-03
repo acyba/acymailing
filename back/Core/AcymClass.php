@@ -111,7 +111,7 @@ abstract class AcymClass extends AcymObject
         }
 
         if (empty($status)) {
-            $dbError = strip_tags(isset($e) ? $e->getMessage() : acym_getDBError());
+            $dbError = acym_stripTags(isset($e) ? $e->getMessage() : acym_getDBError());
             if (!empty($dbError)) {
                 if (strlen($dbError) > 203) $dbError = substr($dbError, 0, 200).'...';
                 $this->errors[] = $dbError;

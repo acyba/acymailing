@@ -48,7 +48,7 @@ function acym_isLeftMenuNecessary(): bool
     return !ACYM_J40 && acym_isAdmin() && !acym_isNoTemplate();
 }
 
-function acym_getLeftMenu(string $name): string
+function acym_displayLeftMenu(string $name): void
 {
     $pluginClass = new PluginClass();
     $nbPluginNotUptodate = count($pluginClass->getNotUptoDatePlugins());
@@ -76,23 +76,22 @@ function acym_getLeftMenu(string $name): string
     }
 
 
-    $leftMenu = '<div id="acym__joomla__left-menu--show"><i class="acym-logo"></i><i id="acym__joomla__left-menu--burger" class="acymicon-menu"></i></div>
-                    <div id="acym__joomla__left-menu" class="'.$isCollapsed.'">
-                        <i class="acymicon-close" id="acym__joomla__left-menu--close"></i>';
+    echo '<div id="acym__joomla__left-menu--show"><i class="acym-logo"></i><i id="acym__joomla__left-menu--burger" class="acymicon-menu"></i></div>
+            <div id="acym__joomla__left-menu" class="'.acym_escape($isCollapsed).'">
+                <i class="acymicon-close" id="acym__joomla__left-menu--close"></i>';
     foreach ($menus as $oneMenu => $menuOption) {
-        if (!acym_isAllowed($oneMenu)) continue;
+        if (!acym_isAllowed($oneMenu)) {
+            continue;
+        }
 
-        $class = $name == $oneMenu ? 'acym__joomla__left-menu--current' : '';
-        $leftMenu .= '<a href="'.acym_completeLink(
-                $oneMenu
-            ).'" class="'.$class.'"><i class="'.$menuOption['class-i'].'"></i><span class="'.$menuOption['span-class'].'">'.acym_translation($menuOption['title']).'</span></a>';
+        $class = $name === $oneMenu ? 'acym__joomla__left-menu--current' : '';
+        echo '<a href="'.acym_escapeUrl(acym_completeLink($oneMenu)).'" class="'.acym_escape($class).'"><i class="'.acym_escape($menuOption['class-i']).'"></i>
+            <span class="'.acym_escape($menuOption['span-class']).'">'.acym_escapeHtml(acym_translation($menuOption['title'])).'</span>
+        </a>';
     }
 
-    $leftMenu .= '<a href="#" id="acym__joomla__left-menu--toggle"><i class="acymicon-keyboard-arrow-left"></i><span>'.acym_translation('ACYM_COLLAPSE').'</span></a>';
-
-    $leftMenu .= '</div>';
-
-    return $leftMenu;
+    echo '<a href="#" id="acym__joomla__left-menu--toggle"><i class="acymicon-keyboard-arrow-left"></i><span>'.acym_escapeHtml(acym_translation('ACYM_COLLAPSE')).'</span></a>';
+    echo '</div>';
 }
 
 function acym_isPluginActive(string $plugin, string $family = 'system'): bool
@@ -204,4 +203,13 @@ function acym_deleteScheduledTask(array $options): bool
     $table = $model->getTable();
 
     return (bool)$table->delete($options['taskId']);
+}
+
+function acym_rand(int $min, int $max): int
+{
+    try {
+        return random_int($min, $max);
+    } catch (\Exception $e) {
+        return mt_rand($min, $max);
+    }
 }

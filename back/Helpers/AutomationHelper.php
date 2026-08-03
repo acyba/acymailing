@@ -121,14 +121,14 @@ class AutomationHelper extends AcymObject
                 return '0 = 1';
             }
         } elseif (!in_array($operator, ['IS NULL', 'IS NOT NULL', 'NOT LIKE', 'LIKE', '=', '!=', '>', '<', '>=', '<='])) {
-            die(acym_translationSprintf('ACYM_UNKNOWN_OPERATOR', $operator));
+            die(acym_escapeHtml(acym_translationSprintf('ACYM_UNKNOWN_OPERATOR', $operator)));
         }
 
         //Is the value a time field?
         //If so, we replace it properly and we convert it into the right time field
         if (strpos($value, '[time]') !== false) {
             $value = acym_replaceDate($value);
-            $value = date('Y-m-d H:i:s', $value);
+            $value = gmdate('Y-m-d H:i:s', $value);
         }
 
         $value = acym_replaceDateTags($value);

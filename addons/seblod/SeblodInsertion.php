@@ -197,7 +197,7 @@ trait SeblodInsertion
         $rows = $this->getElements();
         foreach ($rows as $i => $row) {
             if (strpos($row->created, ': ') != false) {
-                $rows[$i]->created = str_replace('/', '', strrchr(strip_tags($row->created), '/'));
+                $rows[$i]->created = str_replace('/', '', strrchr(acym_stripTags($row->created), '/'));
             }
         }
 
@@ -335,7 +335,7 @@ trait SeblodInsertion
         if (in_array('fulltext', $tag->display)) $contentText .= $varFields['{fulltext}'];
 
         //if there are parameters from seblod in the description, we do not display it
-        if (strlen(strip_tags($contentText)) < 3) {
+        if (strlen(acym_stripTags($contentText)) < 3) {
             $contentText = '';
         }
 

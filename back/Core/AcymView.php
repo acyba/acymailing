@@ -2,6 +2,8 @@
 
 namespace AcyMailing\Core;
 
+use AcyMailing\Helpers\HeaderHelper;
+
 abstract class AcymView extends AcymObject
 {
     public string $name = '';
@@ -48,6 +50,7 @@ abstract class AcymView extends AcymObject
         }
         $getCleanView = ($name !== 'archive' && $view !== 'listing') && ($name !== 'frontusers' || $view !== 'profile');
         if (ACYM_CMS === 'wordpress' && $getCleanView) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress generated content temporary held to allow redirections (headers sent).
             echo ob_get_clean();
         }
 
@@ -64,31 +67,36 @@ abstract class AcymView extends AcymObject
         }
 
         // Display enqueued messages
-        if (!empty($_SESSION['acynotif'])) {
-            echo implode('', $_SESSION['acynotif']);
-            $_SESSION['acynotif'] = [];
+        $notifications = acym_getVar('array', 'acynotif', [], 'SESSION');
+        if (!empty($notifications)) {
+            echo implode('', $notifications);
+            acym_setSession('acynotif', []);
         }
 
         // On pages with the editor, we need to put the wrapper inside the form
         $outsideForm = (strpos($name, 'mails') !== false && $view === 'edit') || (strpos($name, 'campaigns') !== false && $view === 'edit_email');
         if ($outsideForm) {
-            echo '<form id="acym_form" action="'.acym_completeLink(
-                    acym_getVar('cmd', 'ctrl')
+            echo '<form id="acym_form" action="'.acym_escapeUrl(
+                    acym_completeLink(
+                        acym_getVar('cmd', 'ctrl')
+                    )
                 ).'" class="acym__form__mail__edit" method="post" name="acyForm" data-abide novalidate enctype="multipart/form-data">';
         }
 
         // Open wrapper and display the header
         if (acym_getVar('cmd', 'task') !== 'ajaxEncoding') {
-            echo '<div id="acym_wrapper" class="'.$name.'_'.$view.' cms_'.ACYM_CMS.' cms_v_'.substr(ACYM_CMSV, 0, 1).'">';
+            echo '<div id="acym_wrapper" class="'.acym_escape($name).'_'.acym_escape($view).' cms_'.acym_escape(ACYM_CMS).' cms_v_'.acym_escape(substr(ACYM_CMSV, 0, 1)).'">';
         }
 
         //if joomla we add the left menu and a div for the content
         if (acym_isLeftMenuNecessary()) {
-            echo acym_getLeftMenu($name).'<div id="acym_content">';
+            acym_displayLeftMenu($name);
+            echo '<div id="acym_content">';
         }
 
-        if (!empty($data['header'])) {
-            echo $data['header'];
+        if (!empty($data['breadcrumb'])) {
+            $headerHelper = new HeaderHelper();
+            $headerHelper->display($data['breadcrumb']);
         }
 
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
@@ -97,7 +105,7 @@ abstract class AcymView extends AcymObject
                 if (!in_array('multilingual', $remindme) && acym_level(ACYM_ESSENTIAL) && $this->config->get('multilingual', '0') === '0') {
                     if (count(acym_getLanguages(false, true)) > 1) {
                         $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
-                        $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';
+                        $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'&'.acym_getFormToken().'">'.acym_translation('ACYM_YES').'</a>';
                         $message .= ' / <a href="#" title="multilingual" class="acym__do__not__remindme__multilingual">'.acym_translation('ACYM_NO').'</a>';
                         acym_display($message, 'info', false);
                     } else {
@@ -146,10 +154,22 @@ abstract class AcymView extends AcymObject
 
         if (!in_array('reviews', $remind) && $installationDate < $sevenDaysAgo) {
             echo '<div id="acym__reviews__footer" style="margin: 0 0 30px 30px;">';
-            echo acym_translationSprintf(
-                'ACYM_REVIEW_FOOTER',
-                '<a title="reviews" id="acym__reviews__footer__link" target="_blank" href="https://wordpress.org/support/plugin/acymailing/reviews/?rate=5#new-post">
+            echo acym_escapeHtmlWithAllowedTags(
+                acym_translationSprintf(
+                    'ACYM_REVIEW_FOOTER',
+                    '<a title="reviews" id="acym__reviews__footer__link" target="_blank" href="https://wordpress.org/support/plugin/acymailing/reviews/?rate=5#new-post">
                 '.str_repeat('<i class="acymicon-star"></i>', 5).'</a>'
+                ),
+                [
+                    'a' => [
+                        'title' => true,
+                        'id' => true,
+                        'href' => true,
+                    ],
+                    'i' => [
+                        'class' => true,
+                    ],
+                ]
             );
             echo '</div>';
         }

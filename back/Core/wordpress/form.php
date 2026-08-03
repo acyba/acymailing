@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
@@ -7,9 +9,9 @@ use AcyMailing\Core\AcymParameter;
 use AcyMailing\FrontControllers\FrontusersController;
 use AcyMailing\FrontControllers\ArchiveController;
 
-function acym_formToken(): string
+function acym_formToken(): void
 {
-    return '<input type="hidden" name="_wpnonce" value="'.wp_create_nonce('acymnonce').'">';
+    echo '<input type="hidden" name="_wpnonce" value="'.esc_attr(wp_create_nonce('acymnonce')).'">';
 }
 
 /**
@@ -56,16 +58,16 @@ function acym_setNoTemplate(bool $status = true): void
 function acym_formOptions(bool $token = true, string $task = '', string $currentStep = '', string $currentCtrl = '', bool $addPage = true): void
 {
     if (!empty($currentStep)) {
-        echo '<input type="hidden" name="step" value="'.acym_escape($currentStep).'"/>';
+        echo '<input type="hidden" name="step" value="'.esc_attr($currentStep).'"/>';
     }
     echo '<input type="hidden" name="nextstep" value=""/>';
-    echo '<input type="hidden" name="task" value="'.acym_escape($task).'"/>';
+    echo '<input type="hidden" name="task" value="'.esc_attr($task).'"/>';
     if ($addPage) {
-        echo '<input type="hidden" name="page" value="'.acym_escape(acym_getVar('cmd', 'page', '')).'"/>';
+        echo '<input type="hidden" name="page" value="'.esc_attr(acym_getVar('cmd', 'page', '')).'"/>';
     }
-    echo '<input type="hidden" name="ctrl" value="'.acym_escape(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
+    echo '<input type="hidden" name="ctrl" value="'.esc_attr(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
     if ($token) {
-        echo acym_formToken();
+        acym_formToken();
     }
     echo '<button type="submit" class="is-hidden" id="formSubmit"></button>';
 }
@@ -93,9 +95,9 @@ function acym_head_wp(): void
     if (!empty($acymMetaData)) {
         foreach ($acymMetaData as $metadata) {
             if (empty($metadata->data)) {
-                echo '<meta '.acym_escape($metadata->name).'="'.acym_escape($metadata->meta).'"/>';
+                echo '<meta '.esc_attr($metadata->name).'="'.esc_attr($metadata->meta).'"/>';
             } else {
-                echo '<meta '.acym_escape($metadata->name).'="'.acym_escape($metadata->meta).'" content="'.acym_escape($metadata->data).'"/>';
+                echo '<meta '.esc_attr($metadata->name).'="'.esc_attr($metadata->meta).'" content="'.esc_attr($metadata->data).'"/>';
             }
         }
     }
@@ -112,17 +114,23 @@ function acym_getOptionRegacyPosition(): void
 {
 }
 
-function acym_renderForm(AcymParameter $params, array $args = []): string
+function acym_renderForm(AcymParameter $params, array $args = []): void
 {
     acym_initModule($params);
 
-    $return = !empty($args['before_widget']) ? $args['before_widget'] : '';
+    if (!empty($args['before_widget'])) {
+        echo wp_kses_post($args['before_widget']);
+    }
 
     $title = apply_filters('widget_title', $params->get('title'));
     if (!empty($title)) {
-        if (!empty($args['before_title'])) $return .= $args['before_title'];
-        $return .= $title;
-        if (!empty($args['after_title'])) $return .= $args['after_title'];
+        if (!empty($args['before_title'])) {
+            echo wp_kses_post($args['before_title']);
+        }
+        echo esc_html($title);
+        if (!empty($args['after_title'])) {
+            echo wp_kses_post($args['after_title']);
+        }
     }
 
     $identifiedUser = null;
@@ -211,6 +219,8 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
     $listPosition = $params->get('listposition', 'before');
     $displayOutside = $params->get('textmode') == '0';
 
+    $showTrackingConsent = $params->get('trackingconsent', '0') == '1';
+
     // Display success message
     $successMode = $params->get('successmode', 'replace');
 
@@ -222,7 +232,6 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
     // Customization
     $formClass = $params->get('formclass', '');
     $alignment = $params->get('alignment', 'none');
-    $style = $alignment === 'none' ? '' : 'style="text-align: '.acym_escape($alignment).'"';
 
     // Articles
     $termsURL = acym_getArticleURL($params->get('termscontent', 0), false, 'ACYM_TERMS_CONDITIONS');
@@ -231,14 +240,14 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
     if (empty($termsURL)) {
         $termsURL = $params->get('termscontentURL') ?? '';
         if (!empty($termsURL)) {
-            $termsURL = '<a href="'.acym_escapeUrl($termsURL).'" target="_blank">'.acym_escape(acym_translation('ACYM_TERMS_CONDITIONS')).'</a>';
+            $termsURL = '<a href="'.esc_url($termsURL).'" target="_blank">'.esc_html(acym_translation('ACYM_TERMS_CONDITIONS')).'</a>';
         }
     }
 
     if (empty($privacyURL)) {
         $privacyURL = $params->get('privacypolicyURL') ?? '';
         if (!empty($privacyURL)) {
-            $privacyURL = '<a href="'.acym_escapeUrl($privacyURL).'" target="_blank">'.acym_escape(acym_translation('ACYM_PRIVACY_POLICY')).'</a>';
+            $privacyURL = '<a href="'.esc_url($privacyURL).'" target="_blank">'.esc_html(acym_translation('ACYM_PRIVACY_POLICY')).'</a>';
         }
     }
 
@@ -255,26 +264,13 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
     $formName = acym_getModuleFormName();
     $formAction = htmlspecialchars_decode(acym_frontendLink('frontusers'));
 
-    $js = "window.addEventListener('DOMContentLoaded', (event) => {";
-    $js .= "\n"."acymModule['excludeValues".$formName."'] = [];";
-    $fieldsToDisplay = [];
-    foreach ($fields as $field) {
-        $fieldsToDisplay[$field->id] = $field->name;
-        $js .= "\n".'acymModule["excludeValues'.$formName.'"]["'.$field->id.'"] = "'.acym_translation($field->name, true).'";';
-    }
-    $js .= "  });";
-    // Exclude default values from fields, if the user didn't fill them in
-    $return .= '<script type="text/javascript">
-                '.$js.'
-                </script>';
-
     $buttonStyle = '';
-    if (!empty($params->get('button_background_color', ''))) $buttonStyle .= 'background-color: '.acym_escape($params->get('button_background_color', '')).';';
-    if (!empty($params->get('button_text_color', ''))) $buttonStyle .= 'color: '.acym_escape($params->get('button_text_color', '')).';';
-    if (strlen($params->get('button_border_size', '')) > 0) $buttonStyle .= 'border-width: '.acym_escape($params->get('button_border_size', '')).'px;';
-    if (!empty($params->get('button_border_type', ''))) $buttonStyle .= 'border-style: '.acym_escape($params->get('button_border_type', '')).';';
-    if (!empty($params->get('button_border_color', ''))) $buttonStyle .= 'border-color: '.acym_escape($params->get('button_border_color', '')).';';
-    if (strlen($params->get('button_border_radius', '')) > 0) $buttonStyle .= 'border-radius: '.acym_escape($params->get('button_border_radius', '')).'px;';
+    if (!empty($params->get('button_background_color', ''))) $buttonStyle .= 'background-color: '.esc_attr($params->get('button_background_color', '')).';';
+    if (!empty($params->get('button_text_color', ''))) $buttonStyle .= 'color: '.esc_attr($params->get('button_text_color', '')).';';
+    if (strlen($params->get('button_border_size', '')) > 0) $buttonStyle .= 'border-width: '.esc_attr($params->get('button_border_size', '')).'px;';
+    if (!empty($params->get('button_border_type', ''))) $buttonStyle .= 'border-style: '.esc_attr($params->get('button_border_type', '')).';';
+    if (!empty($params->get('button_border_color', ''))) $buttonStyle .= 'border-color: '.esc_attr($params->get('button_border_color', '')).';';
+    if (strlen($params->get('button_border_radius', '')) > 0) $buttonStyle .= 'border-radius: '.esc_attr($params->get('button_border_radius', '')).'px;';
 
     if (!empty($buttonStyle)) {
         acym_addStyle(true, '#acym_module_'.$formName.' .acysubbuttons .subbutton {'.$buttonStyle.'}');
@@ -288,21 +284,31 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
         acym_addStyle(true, '#acym_module_'.$formName.', #acym_module_'.$formName.' td {'.$globalStyle.'}');
     }
 
-    ob_start();
+    // Exclude default values from fields, if the user didn't fill them in
     ?>
-	<div class="acym_module <?php echo acym_escape($formClass); ?>" id="acym_module_<?php echo acym_escape($formName); ?>">
-		<div class="acym_fulldiv" id="acym_fulldiv_<?php echo acym_escape($formName); ?>" <?php echo $style; ?>>
+	<script type="text/javascript">
+        window.addEventListener('DOMContentLoaded', (event) => {
+            window.acymModule[<?php echo json_encode('excludeValues'.$formName); ?>] = [];
+            <?php
+            foreach ($fields as $field) {
+                echo 'window.acymModule["excludeValues'.esc_attr($formName).'"]["'.esc_attr($field->id).'"] = '.json_encode(acym_translation($field->name)).';';
+            }
+            ?>
+        });
+	</script>
+	<div class="acym_module <?php echo esc_attr($formClass); ?>" id="acym_module_<?php echo esc_attr($formName); ?>">
+		<div class="acym_fulldiv" id="acym_fulldiv_<?php echo esc_attr($formName); ?>" <?php echo $alignment === 'none' ? '' : 'style="text-align: '.esc_attr($alignment).'"'; ?>>
 			<form enctype="multipart/form-data"
-			      id="<?php echo acym_escape($formName); ?>"
-			      name="<?php echo acym_escape($formName); ?>"
+			      id="<?php echo esc_attr($formName); ?>"
+			      name="<?php echo esc_attr($formName); ?>"
 			      method="POST"
-			      action="<?php echo acym_escape($formAction); ?>"
-			      onsubmit="return submitAcymForm('subscribe','<?php echo acym_escape($formName); ?>')">
+			      action="<?php echo esc_attr($formAction); ?>"
+			      onsubmit="return submitAcymForm('subscribe','<?php echo esc_attr($formName); ?>')">
 				<div class="acym_module_form">
                     <?php
                     $introText = $params->get('introtext', '');
                     if (!empty($introText)) {
-                        echo '<div class="acym_introtext">'.acym_escape($introText).'</div>';
+                        echo '<div class="acym_introtext">'.esc_html($introText).'</div>';
                     }
                     if ($params->get('mode', 'tableless') === 'tableless') {
                         include ACYM_FOLDER.'widgets'.DS.'subscriptionform'.DS.'tmpl'.DS.'tableless.php';
@@ -315,35 +321,33 @@ function acym_renderForm(AcymParameter $params, array $args = []): string
 
 				<input type="hidden" name="ctrl" value="frontusers" />
 				<input type="hidden" name="task" value="notask" />
-				<input type="hidden" name="option" value="<?php echo acym_escape(ACYM_COMPONENT); ?>" />
+				<input type="hidden" name="option" value="<?php echo esc_attr(ACYM_COMPONENT); ?>" />
 
                 <?php
-                if (!empty($redirectURL)) echo '<input type="hidden" name="redirect" value="'.acym_escape($redirectURL).'"/>';
-                if (!empty($unsubRedirectURL)) echo '<input type="hidden" name="redirectunsub" value="'.acym_escape($unsubRedirectURL).'"/>';
+                if (!empty($redirectURL)) echo '<input type="hidden" name="redirect" value="'.esc_url($redirectURL).'"/>';
+                if (!empty($unsubRedirectURL)) echo '<input type="hidden" name="redirectunsub" value="'.esc_url($unsubRedirectURL).'"/>';
                 ?>
-				<input type="hidden" name="ajax" value="<?php echo acym_escape($ajax); ?>" />
-				<input type="hidden" name="successmode" value="<?php echo acym_escape($successMode); ?>" />
-				<input type="hidden" name="acy_source" value="<?php echo acym_escape($params->get('source', '')); ?>" />
-				<input type="hidden" name="hiddenlists" value="<?php echo implode(',', $hiddenLists); ?>" />
-				<input type="hidden" name="acyformname" value="<?php echo acym_escape($formName); ?>" />
+				<input type="hidden" name="ajax" value="<?php echo esc_attr($ajax); ?>" />
+				<input type="hidden" name="successmode" value="<?php echo esc_attr($successMode); ?>" />
+				<input type="hidden" name="acy_source" value="<?php echo esc_attr($params->get('source', '')); ?>" />
+				<input type="hidden" name="hiddenlists" value="<?php echo esc_attr(implode(',', $hiddenLists)); ?>" />
+				<input type="hidden" name="acyformname" value="<?php echo esc_attr($formName); ?>" />
 				<input type="hidden" name="acysubmode" value="widget_acym" />
-				<input type="hidden" name="confirmation_message" value="<?php echo acym_escape($params->get('confirmation_message', '')); ?>" />
+				<input type="hidden" name="confirmation_message" value="<?php echo esc_attr($params->get('confirmation_message', '')); ?>" />
 
                 <?php
                 $postText = $params->get('posttext', '');
                 if (!empty($postText)) {
-                    echo '<div class="acym_posttext">'.acym_escape($postText).'</div>';
+                    echo '<div class="acym_posttext">'.esc_html($postText).'</div>';
                 }
                 ?>
 			</form>
 		</div>
 	</div>
     <?php
-    $return .= ob_get_clean();
-
-    if (!empty($args['after_widget'])) $return .= $args['after_widget'];
-
-    return $return;
+    if (!empty($args['after_widget'])) {
+        echo wp_kses_post($args['after_widget']);
+    }
 }
 
 function acym_renderFormProfile(AcymParameter $params, array $args = []): string
@@ -369,7 +373,9 @@ function acym_renderFormProfile(AcymParameter $params, array $args = []): string
     ];
 
     $title = apply_filters('widget_title', $instance['title']);
-    if (!empty($title)) $title = '<span class="gamma widget-title">'.$title.'</span>';
+    if (!empty($title)) {
+        $title = '<span class="gamma widget-title">'.esc_html($title).'</span>';
+    }
     $return = $title;
 
     ob_start();
@@ -415,7 +421,9 @@ function acym_renderFormArchive(AcymParameter $params, array $args = []): string
     ];
 
     $title = apply_filters('widget_title', $instance['title']);
-    if (!empty($title)) $title = '<span class="gamma widget-title">'.$title.'</span>';
+    if (!empty($title)) {
+        $title = '<span class="gamma widget-title">'.esc_html($title).'</span>';
+    }
     $return = $title;
     ob_start();
     acym_setVar('page', 'front');
@@ -439,4 +447,19 @@ function acym_renderFormArchive(AcymParameter $params, array $args = []): string
     $return .= ob_get_clean();
 
     return $return;
+}
+
+function acym_checked(bool $checked, bool $current = true, bool $display = true): string
+{
+    return checked($checked, $current, $display);
+}
+
+function acym_selected(bool $selected, bool $current = true, bool $display = true): string
+{
+    return selected($selected, $current, $display);
+}
+
+function acym_disabled(bool $disabled, bool $current = true, bool $display = true): string
+{
+    return disabled($disabled, $current, $display);
 }

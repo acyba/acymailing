@@ -1,4 +1,8 @@
-<form id="acym_form" enctype="multipart/form-data" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm"
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+<form id="acym_form" enctype="multipart/form-data" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm"
     <?php echo !empty($data['menuClass']) ? 'class="'.acym_escape($data['menuClass']).'"' : ''; ?> >
 	<div class="acym__content acym__content__tab">
         <?php
@@ -15,18 +19,18 @@
 	</div>
     <?php
     $modalData = $data['entitySelect']->entitySelect(
-        'list',
-        ['join' => ''],
-        $data['entitySelect']->getColumnsForList(),
         [
-            'text' => acym_translation('ACYM_IMPORT_SUBSCRIBERS'),
-            'class' => 'acym__users__import__button',
-        ],
-        true,
-        $data['importHelper']->additionalDataUsersImport(true)
+            'entity' => 'list',
+            'columnsToDisplay' => $data['entitySelect']->getColumnsForList(),
+            'buttonSubmit' => [
+                'text' => acym_translation('ACYM_IMPORT_SUBSCRIBERS'),
+                'class' => 'acym__users__import__button',
+            ],
+            'additionalData' => $data['importHelper']->additionalDataUsersImport(true),
+        ]
     );
 
-    echo acym_modal(
+    acym_modal(
         acym_translation('ACYM_IMPORT_SUBSCRIBERS'),
         $modalData,
         'acym__user__import__add-subscription__modal',

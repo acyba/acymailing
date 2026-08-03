@@ -31,6 +31,8 @@ trait Detailed
 
     public function exportDetailed(): void
     {
+        acym_checkToken();
+
         $exportHelper = new ExportHelper();
         $data = [];
         $this->prepareDefaultPageInfo($data);

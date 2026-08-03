@@ -53,7 +53,7 @@ trait Statistics
                 [
                     'mail_id' => $oneMail->id,
                     'offset' => acym_getVar('int', 'offset', 0),
-                    'limit' => acym_getVar('int', 'limit', 100),
+                    'limit' => $this->getRequestedLimit(100),
                 ]
             );
         }
@@ -105,7 +105,7 @@ trait Statistics
             [
                 'mail_ids' => $variationIds,
                 'offset' => acym_getVar('int', 'offset', 0),
-                'detailedStatsPerPage' => acym_getVar('int', 'limit', 100),
+                'detailedStatsPerPage' => $this->getRequestedLimit(100),
             ]
         );
 

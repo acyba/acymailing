@@ -1,36 +1,44 @@
-<div id="acym__campaign__edit_email" <?php echo !empty($data['menuClass']) ? 'class="'.acym_escape($data['menuClass']).'"' : ''; ?> >
-	<input type="hidden" value="<?php echo acym_escape($data['campaignID']); ?>" name="campaignId" id="acym__campaign__recipients__form__campaign">
-	<input type="hidden" id="acym__mail__edit__editor__social__icons" value="<?php echo empty($data['social_icons']) ? '{}' : acym_escape($data['social_icons']); ?>">
-
-	<!-- Needed for the "Save as template" action -->
-	<input type="hidden" class="acym__wysid__hidden__save__thumbnail" id="editor_thumbnail" name="editor_thumbnail" value="" />
-
-    <?php echo $data['needDisplayStylesheet']; ?>
-	<input type="hidden" name="editor_headers" value="<?php echo acym_escape($data['mailInformation']->headers); ?>">
-	<input type="hidden" name="from_email" value="<?php echo acym_escape($data['mailInformation']->from_email); ?>">
-	<input type="hidden" name="from_name" value="<?php echo acym_escape($data['mailInformation']->from_name); ?>">
-	<input type="hidden" name="reply_to_email" value="<?php echo acym_escape($data['mailInformation']->reply_to_email); ?>">
-	<input type="hidden" name="reply_to_name" value="<?php echo acym_escape($data['mailInformation']->reply_to_name); ?>">
-	<div class="grid-x">
-		<div class="cell medium-auto"></div>
-		<div class="cell <?php echo $data['containerClass']; ?> grid-x grid-margin-x acym__content acym__editor__area margin-y margin-bottom-1">
-            <?php
-            $this->addSegmentStep($data['displaySegmentTab']);
-            $workflow = $data['workflowHelper'];
-            if (empty($data['campaignID'])) {
-                $workflow->disabledAfter = 'editEmail';
-            }
-            $abTestParameter = '&abtest='.acym_getVar('string', 'abtest', 0);
-            echo $workflow->display($this->steps, $this->step, true, false, $abTestParameter, 'campaignId');
-            include acym_getView('campaigns', 'edit_email_info');
-            include acym_getPartial('editor', 'attachments');
-            include acym_getView('campaigns', 'edit_email_actions', true);
-            ?>
-		</div>
-		<div class="cell medium-auto"></div>
-	</div>
-	<input type="hidden" name="campaign_type" value="<?php echo $data['campaign_type']; ?>">
-    <?php acym_formOptions(true, 'edit', 'editEmail'); ?>
-</div>
 <?php
-echo $data['editor']->display();
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+	<div id="acym__campaign__edit_email" <?php echo !empty($data['menuClass']) ? 'class="'.acym_escape($data['menuClass']).'"' : ''; ?> >
+		<input type="hidden" value="<?php echo acym_escape($data['campaignID']); ?>" name="campaignId" id="acym__campaign__recipients__form__campaign">
+		<input type="hidden" id="acym__mail__edit__editor__social__icons" value="<?php echo empty($data['social_icons']) ? '{}' : acym_escape($data['social_icons']); ?>">
+
+		<!-- Needed for the "Save as template" action -->
+		<input type="hidden" class="acym__wysid__hidden__save__thumbnail" id="editor_thumbnail" name="editor_thumbnail" value="" />
+
+        <?php
+        if (!empty($data['needDisplayStylesheet'])) {
+            echo '<input type="hidden" name="editor_stylesheet" value="'.acym_escape($data['needDisplayStylesheet']).'">';
+        }
+        ?>
+		<input type="hidden" name="editor_headers" value="<?php echo acym_escape($data['mailInformation']->headers); ?>">
+		<input type="hidden" name="from_email" value="<?php echo acym_escape($data['mailInformation']->from_email); ?>">
+		<input type="hidden" name="from_name" value="<?php echo acym_escape($data['mailInformation']->from_name); ?>">
+		<input type="hidden" name="reply_to_email" value="<?php echo acym_escape($data['mailInformation']->reply_to_email); ?>">
+		<input type="hidden" name="reply_to_name" value="<?php echo acym_escape($data['mailInformation']->reply_to_name); ?>">
+		<div class="grid-x">
+			<div class="cell medium-auto"></div>
+			<div class="cell <?php echo acym_escape($data['containerClass']); ?> grid-x grid-margin-x acym__content acym__editor__area margin-y margin-bottom-1">
+                <?php
+                $this->addSegmentStep($data['displaySegmentTab']);
+                $workflow = $data['workflowHelper'];
+                if (empty($data['campaignID'])) {
+                    $workflow->disabledAfter = 'editEmail';
+                }
+                $abTestParameter = '&abtest='.acym_getVar('string', 'abtest', 0);
+                $workflow->display($this->steps, $this->step, true, false, $abTestParameter, 'campaignId');
+                include acym_getView('campaigns', 'edit_email_info');
+                include acym_getPartial('editor', 'attachments');
+                include acym_getView('campaigns', 'edit_email_actions', true);
+                ?>
+			</div>
+			<div class="cell medium-auto"></div>
+		</div>
+		<input type="hidden" name="campaign_type" value="<?php echo acym_escape($data['campaign_type']); ?>">
+        <?php acym_formOptions(true, 'edit', 'editEmail'); ?>
+	</div>
+<?php
+$data['editor']->display();

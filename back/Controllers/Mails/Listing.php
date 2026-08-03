@@ -89,35 +89,37 @@ trait Listing
         $toolbarHelper->addSearchBar($data['search'], 'mails_search', 'ACYM_SEARCH');
         $toolbarHelper->addFilterByTag($data, 'mails_tag', 'acym__templates__filter__tags acym__select');
         $toolbarHelper->addButton(acym_translation('ACYM_ADD_DEFAULT_TMPL'), ['data-task' => 'installDefaultTmpl', 'id' => 'acym__mail__install-default'], 'content_copy');
-        $otherContent = acym_modal(
-            '<i class="acymicon-download"></i>'.acym_translation('ACYM_IMPORT'),
-            $data['templateImportView'],
-            'acym__template__import__reveal',
-            [],
+
+        $toolbarHelper->addModalButton(
             [
-                'class' => 'button button-secondary cell medium-6 large-shrink',
-                'data-reload' => 'true',
-                'data-ajax' => 'false',
+                'button' => '<i class="acymicon-download"></i>'.acym_escapeHtml(acym_translation('ACYM_IMPORT')),
+                'modalContent' => $data['templateImportView'],
+                'id' => 'acym__template__import__reveal',
+                'attributesButton' => [
+                    'class' => 'button button-secondary cell medium-6 large-shrink',
+                    'data-reload' => 'true',
+                    'data-ajax' => 'false',
+                ],
             ]
         );
 
-        $otherContent .= acym_modal(
-            '<i class="acymicon-add"></i>'.acym_translation('ACYM_CREATE'),
-            '<div class="cell grid-x grid-margin-x">
-                <button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_translation(
-                'ACYM_HTML_EDITOR'
-            ).'</button>
-                <button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_translation(
-                'ACYM_DD_EDITOR'
-            ).'</button>
+        $toolbarHelper->addModalButton(
+            [
+                'button' => '<i class="acymicon-add"></i>'.acym_escapeHtml(acym_translation('ACYM_CREATE')),
+                'modalContent' => '<div class="cell grid-x grid-margin-x">
+                <button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_escapeHtml(
+                        acym_translation('ACYM_HTML_EDITOR')
+                    ).'</button>
+                <button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_escapeHtml(
+                        acym_translation('ACYM_DD_EDITOR')
+                    ).'</button>
             </div>',
-            '',
-            [],
-            ['class' => 'acym_vcenter button cell medium-6 large-shrink'],
-            true,
-            false
+                'attributesButton' => [
+                    'class' => 'acym_vcenter button cell medium-6 large-shrink',
+                ],
+                'isLarge' => false,
+            ]
         );
-        $toolbarHelper->addOtherContent($otherContent);
 
         $data['toolbar'] = $toolbarHelper;
     }
@@ -159,6 +161,8 @@ trait Listing
 
     public function installDefaultTmpl(): void
     {
+        acym_checkToken();
+
         $updateHelper = new UpdateHelper();
         $updateHelper->installTemplates();
 
@@ -167,6 +171,8 @@ trait Listing
 
     public function favorite(): void
     {
+        acym_checkToken();
+
         $templateId = acym_getVar('int', 'templateId', 0);
 
         if (empty($templateId)) {
@@ -184,6 +190,8 @@ trait Listing
 
     public function massDuplicate(): void
     {
+        acym_checkToken();
+
         $ids = acym_getVar('array', 'elements_checked', []);
         if (!empty($ids)) {
             $this->duplicate($ids);
@@ -193,6 +201,8 @@ trait Listing
 
     public function oneDuplicate(): void
     {
+        acym_checkToken();
+
         $templateId = acym_getVar('int', 'templateId', 0);
 
         if (empty($templateId)) {

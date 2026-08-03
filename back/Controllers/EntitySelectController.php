@@ -87,13 +87,19 @@ class EntitySelectController extends AcymController
             foreach ($availableEntity['elements'] as $key => $element) {
                 $availableEntity['elements'][$key]->color = '<i style="color: '.$element->color.'" class="acym_subscription acymicon-circle">';
                 if (!empty($element->description)) {
-                    $availableEntity['elements'][$key]->name = $element->name.acym_info(['textShownInTooltip' => $element->description]);
+                    ob_start();
+                    acym_info(['textShownInTooltip' => $element->description]);
+                    $tooltip = ob_get_clean();
+                    $availableEntity['elements'][$key]->name = $element->name.$tooltip;
                 }
             }
         } elseif ($entity === 'user') {
             foreach ($availableEntity['elements'] as $key => $element) {
-                $availableEntity['elements'][$key]->email = $element->email.'<span class="acym__hover__user_info" data-id="'.$availableEntity['elements'][$key]->id.'">
-                '.acym_info(['textShownInTooltip' => '<i class="acymicon-circle-o-notch acymicon-spin"></i>']).'
+                ob_start();
+                acym_info(['textShownInTooltip' => '<i class="acymicon-circle-o-notch acymicon-spin"></i>']);
+                $tooltip = ob_get_clean();
+                $availableEntity['elements'][$key]->email = $element->email.'<span class="acym__hover__user_info" data-id="'.acym_escape($availableEntity['elements'][$key]->id).'">
+                '.$tooltip.'
                 </span>';
             }
         }

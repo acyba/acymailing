@@ -1,3 +1,7 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <div id="acym__upload__modal__joomla-image">
 	<div id="acym__upload__modal__joomla-image__bg" class="acym__upload__modal__joomla-image--close"></div>
 	<div id="acym__upload__modal__joomla-image__ui" class="float-center cell">
@@ -12,18 +16,18 @@
         ?>
 		<iframe
 				id="acym__upload__modal__joomla-image__ui__iframe"
-				data-acym-src="<?php echo $mediaUrl; ?>"
-				data-acym-src-image="<?php echo $mediaUrlImage; ?>"
+				data-acym-src="<?php echo acym_escapeUrl($mediaUrl); ?>"
+				data-acym-src-image="<?php echo acym_escapeUrl($mediaUrlImage); ?>"
 				data-acym-is-j4="<?php echo ACYM_J40 ? '1' : '0'; ?>"
 				src="about:blank"
 				frameborder="0">
 		</iframe>
 		<div id="acym__upload__modal__joomla-image__ui__actions" class="cell grid-x grid-margin-x align-right" style="display: none">
 			<button id="acym__upload__modal__joomla-image__ui__actions__cancel" type="button" class="button button-secondary cell shrink margin-bottom-0">
-                <?php echo acym_translation('ACYM_CANCEL'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_CANCEL')); ?>
 			</button>
 			<button id="acym__upload__modal__joomla-image__ui__actions__select" type="button" class="button button-secondary cell shrink margin-bottom-0">
-                <?php echo acym_translation('ACYM_SELECT'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_SELECT')); ?>
 			</button>
 		</div>
 	</div>

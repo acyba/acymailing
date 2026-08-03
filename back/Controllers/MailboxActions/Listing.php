@@ -58,6 +58,8 @@ trait Listing
 
     public function duplicateMailboxAction(): void
     {
+        acym_checkToken();
+
         $mailboxActionSelected = acym_getVar('int', 'elements_checked');
         if (empty($mailboxActionSelected)) {
             return;
@@ -71,6 +73,8 @@ trait Listing
 
     public function deleteMailboxAction(): void
     {
+        acym_checkToken();
+
         $mailboxActionSelected = acym_getVar('array', 'elements_checked');
         if (empty($mailboxActionSelected)) {
             return;

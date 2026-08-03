@@ -39,7 +39,8 @@ trait SubscriberAutomationConditions
                 );
                 $customFieldValues[$field->id] .= '</div>';
             } elseif ('date' === $field->type) {
-                $customFieldValues[$field->id] = acym_tooltip(
+                ob_start();
+                acym_tooltip(
                     [
                         'hoveredText' => '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" 
                                             type="text" 
@@ -50,6 +51,7 @@ trait SubscriberAutomationConditions
                         'classContainer' => 'intext_select_automation cell',
                     ]
                 );
+                $customFieldValues[$field->id] = ob_get_clean();
             }
         }
 

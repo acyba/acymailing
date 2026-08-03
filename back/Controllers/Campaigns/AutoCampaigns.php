@@ -108,7 +108,7 @@ trait AutoCampaigns
         $this->prepareMultilingual($data, false);
         $this->prepareAllMailsForMultilingual($data);
 
-        $this->breadcrumb[acym_escape($mail->name)] = acym_completeLink('campaigns&task=summaryGenerated&campaignId='.$campaign->id);
+        $this->breadcrumb[$mail->name] = acym_completeLink('campaigns&task=summaryGenerated&campaignId='.$campaign->id);
         parent::display($data);
     }
 
@@ -157,11 +157,15 @@ trait AutoCampaigns
 
     public function disableGeneratedCampaign(): void
     {
+        acym_checkToken();
+
         $this->changeStatusGeneratedCampaign();
     }
 
     public function enableGeneratedCampaign(): void
     {
+        acym_checkToken();
+
         $this->changeStatusGeneratedCampaign('enable');
     }
 

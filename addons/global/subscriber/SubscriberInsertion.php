@@ -21,7 +21,7 @@ trait SubscriberInsertion
 
                 selectedSubscriberDText = tagname;
 
-                let baseTag = '<?php echo $this->name; ?>';
+                let baseTag = '<?php echo acym_escapeHtml($this->name); ?>';
                 const $inputType = jQuery('input[name="typeInfoSubscriber"]:checked');
                 if ($inputType.length > 0 && $inputType.val() === 'current') {
                     baseTag = 'user';
@@ -70,23 +70,25 @@ trait SubscriberInsertion
             $typeinfo = [];
             $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
             $typeinfo[] = acym_selectOption('current', $textTrigger);
-            echo acym_radio(
+            acym_radio(
                 $typeinfo,
                 'typeInfoSubscriber',
                 'receiver',
                 ['onclick' => 'changeSubscriberTag(selectedSubscriberDText, jQuery(this))']
             );
         }
-        echo '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_RECEIVER_INFORMATION').'</h1>';
+        echo '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_escapeHtml(acym_translation('ACYM_RECEIVER_INFORMATION')).'</h1>';
 
         $others = [];
         $others['name|part:first|ucfirst'] = ['name' => acym_translation('ACYM_USER_FIRSTPART'), 'desc' => acym_translation('ACYM_USER_FIRSTPART_DESC')];
         $others['name|part:last|ucfirst'] = ['name' => acym_translation('ACYM_USER_LASTPART'), 'desc' => acym_translation('ACYM_USER_LASTPART_DESC')];
 
         foreach ($others as $tagname => $tag) {
-            echo '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.$tagname.'\', jQuery(this));">
-					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['name'].'</div>
-					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['desc'].'</div>
+            echo '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.acym_escape(
+                    $tagname
+                ).'\', jQuery(this));">
+					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escapeHtml($tag['name']).'</div>
+					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escapeHtml($tag['desc']).'</div>
 				</div>';
         }
 
@@ -102,9 +104,11 @@ trait SubscriberInsertion
                 $type = '|type:time';
             }
 
-            echo '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.$fieldKey.$type.'\', jQuery(this));">
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($fieldName).'</div>
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($descriptions[$fieldKey]).'</div>
+            echo '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.acym_escape(
+                    $fieldKey.$type
+                ).'\', jQuery(this));">
+                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escapeHtml($fieldName).'</div>
+                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escapeHtml($descriptions[$fieldKey]).'</div>
                      </div>';
         }
 

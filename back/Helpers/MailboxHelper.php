@@ -73,7 +73,7 @@ class MailboxHelper extends BounceHelper
             }
         }
 
-        if ($conditions['sender'] === 'group') {
+        if ($conditions['sender'] === 'groups') {
             $cmsUserId = acym_getCmsUserIdByEmail($fromEmail);
             if (empty($cmsUserId)) {
                 $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_CMS', $fromEmail, ACYM_CMS_TITLE), self::MESSAGE_TYPE_INFO);
@@ -83,7 +83,7 @@ class MailboxHelper extends BounceHelper
 
             $groups = acym_getGroupsByUser($cmsUserId, false);
 
-            if (!in_array($conditions['groups'], $groups)) {
+            if (empty(array_intersect((array)$conditions['groups'], $groups))) {
                 $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_GROUP', $fromEmail, implode(', ', $conditions['groups'])), self::MESSAGE_TYPE_INFO);
 
                 return false;
@@ -122,7 +122,7 @@ class MailboxHelper extends BounceHelper
             $passSubject = false;
         } elseif ($conditions['subject'] == 'begins' && strpos($subject, $conditions['subject_text']) !== 0) {
             $passSubject = false;
-        } elseif ($conditions['subject'] == 'ends' && strpos($subject, $conditions['subject_text']) !== strlen($subject) - strlen($conditions['subjectvalue'])) {
+        } elseif ($conditions['subject'] == 'ends' && strpos($subject, $conditions['subject_text']) !== strlen($subject) - strlen($conditions['subject_text'])) {
             $passSubject = false;
         } elseif ($conditions['subject'] == 'contains' && strpos($subject, $conditions['subject_text']) === false) {
             $passSubject = false;
@@ -167,7 +167,9 @@ class MailboxHelper extends BounceHelper
             }
 
             /*This is to avoid the blank page... and it apparently works! ;) */
+            // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Disabled to prevent blank output pages.
             @ini_set('output_buffering', 'off');
+            // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Disabled to prevent blank output pages.
             @ini_set('zlib.output_compression', 0);
 
             if (!headers_sent()) {
@@ -175,20 +177,20 @@ class MailboxHelper extends BounceHelper
                     @ob_end_flush();
                 }
             }
-
-            //We prepare the area where we will add informations...
-            $disp = "<div style='position:fixed; top:3px;left:3px;background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
-            $disp .= acym_translation('ACYM_MAILBOX_ACTIONS');
-            $disp .= ':  <span id="counter">0</span> / '.$maxMessages;
-            $disp .= '</div>';
-            $disp .= '<script type="text/javascript" language="javascript">';
-            $disp .= 'var mycounter = document.getElementById("counter");';
-            $disp .= 'function setCounter(val){ mycounter.innerHTML=val;}';
-            $disp .= '</script>';
-            echo $disp;
+            ?>
+			<div style="position:fixed; top:3px; left:3px; background-color: white; border: 1px solid grey; padding: 3px; font-size:14px">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_MAILBOX_ACTIONS')); ?> : <span id="counter">0</span> / <?php echo acym_escape($maxMessages); ?>
+			</div>
+			<script type="text/javascript" language="javascript">
+                function setCounter(val) {
+                    document.getElementById('counter').innerHTML = val;
+                }
+			</script>
+            <?php
             if (function_exists('ob_flush')) {
                 @ob_flush();
             }
+
             if (!$this->mod_security2) {
                 @flush();
             }
@@ -198,7 +200,7 @@ class MailboxHelper extends BounceHelper
 
         while (($msgNB > 0) && ($this->_message = $this->getMessage($msgNB))) {
             if ($this->report) {
-                echo '<script type="text/javascript" language="javascript">setCounter('.($maxMessages - $msgNB + 1).')</script>';
+                echo '<script type="text/javascript" language="javascript">setCounter('.acym_escapeHtml($maxMessages - $msgNB + 1).')</script>';
                 if (function_exists('ob_flush')) {
                     @ob_flush();
                 }
@@ -222,10 +224,10 @@ class MailboxHelper extends BounceHelper
             if (empty($this->_message->html)) {
                 $this->_message->html = nl2br($this->_message->text);
             }
-            $stripedHtml = strip_tags($this->_message->html);
+            $stripedHtml = acym_stripTags($this->_message->html);
 
             if (strlen($stripedHtml) < 3) {
-                $this->display(acym_translation('ACYM_EMPTY_EMAIL_X', acym_escape($this->_message->subject)), self::MESSAGE_TYPE_ERROR);
+                $this->display(acym_translation('ACYM_EMPTY_EMAIL_X', acym_escapeHtml($this->_message->subject)), self::MESSAGE_TYPE_ERROR);
                 if ($this->action->delete_wrong_emails) {
                     $this->deleteMessage($this->_message->messageNB);
                 }

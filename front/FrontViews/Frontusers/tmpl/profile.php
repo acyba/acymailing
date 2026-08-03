@@ -1,25 +1,27 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 $formName = acym_getModuleFormName();
 ?>
-<div id="acym_fulldiv_<?php echo $formName; ?>" class="acym_front_page <?php echo empty($data['suffix']) ? '' : $data['suffix']; ?>">
+<div id="acym_fulldiv_<?php echo acym_escape($formName); ?>" class="acym_front_page <?php echo empty($data['suffix']) ? '' : acym_escape($data['suffix']); ?>">
     <?php
     if (!empty($data['show_page_heading'])) {
-        echo '<h1 class="contentheading'.$data['suffix'].'">'.$data['page_heading'].'</h1>';
+        echo '<h1 class="contentheading'.acym_escape($data['suffix']).'">'.acym_escapeHtml($data['page_heading']).'</h1>';
     }
 
     if (!empty($data['introtext'])) {
-        echo '<span class="acym_introtext">'.$data['introtext'].'</span>';
+        echo '<span class="acym_introtext">'.acym_escapeHtml($data['introtext']).'</span>';
     }
     ?>
 
 	<form enctype="multipart/form-data"
-		  action="<?php echo acym_frontendLink('frontusers'.(acym_isNoTemplate() ? '&'.acym_noTemplate() : '')); ?>"
-		  method="post"
-		  name="<?php echo $formName; ?>"
-		  id="<?php echo $formName; ?>"
-		  onsubmit="this.querySelector('input[type=submit]').click(); return false;" novalidate>
+	      action="<?php echo acym_escapeUrl(acym_frontendLink('frontusers'.(acym_isNoTemplate() ? '&'.acym_noTemplate() : ''))); ?>"
+	      method="post"
+	      name="<?php echo acym_escape($formName); ?>"
+	      id="<?php echo acym_escape($formName); ?>"
+	      onsubmit="this.querySelector('input[type=submit]').click(); return false;" novalidate>
 		<fieldset class="adminform acy_user_info">
-			<legend><span><?php echo acym_translation('ACYM_USER_INFORMATION'); ?></span></legend>
+			<legend><span><?php echo acym_escapeHtml(acym_translation('ACYM_USER_INFORMATION')); ?></span></legend>
 			<div id="acyuserinfo">
                 <?php
                 foreach ($data['fields'] as $field) {
@@ -44,19 +46,30 @@ $formName = acym_getModuleFormName();
                             $valuesArray[$value->value] = $value->title;
                         }
                     }
-                    echo '<span class="onefield fieldacy'.$field->id.'" id="field_'.$field->id.'">';
+                    echo '<span class="onefield fieldacy'.acym_escape($field->id).'" id="field_'.acym_escape($field->id).'">';
 
-                    echo $data['fieldClass']->displayField($field, $field->default_value, $valuesArray, true, true, $data['user']);
+                    $data['fieldClass']->displayField($field, $field->default_value, $valuesArray, true, true, $data['user']);
                     echo '</span>';
 
                     if ($field->id == 2 && $this->config->get('email_confirmation')) {
-                        echo $data['fieldClass']->setEmailConfirmationField(true, $field, 'span', false);
+                        $data['fieldClass']->setEmailConfirmationField(true, $field, 'span', false);
                     }
                 }
                 ?>
 			</div>
 
             <?php
+            if ($this->config->get('user_tracking_control', 0) && !empty($data['user']->id)) {
+                echo '<div class="onefield fieldacytracking" id="field_tracking_'.acym_escape($formName).'">';
+                echo '<label for="mailingdata_tracking_'.acym_escape($formName).'">';
+                echo '<input type="hidden" name="user[tracking]" value="0"/>';
+                echo '<input id="mailingdata_tracking_'.acym_escape($formName).'" class="checkbox" type="checkbox" name="user[tracking]" value="1" '.((int)$data['user']->tracking === 1 ? 'checked="checked"' : '').'/> '.acym_escapeHtml(
+                        acym_translation('ACYM_ALLOW_TRACKING')
+                    );
+                echo '</label>';
+                echo '</div>';
+            }
+
             $exportButton = $this->config->get('gdpr_export', 0);
             $deleteButton = $this->config->get('gdpr_delete', 0);
             if (!empty($data['user']->id) && !(empty($exportButton) && empty($deleteButton))) {
@@ -71,7 +84,7 @@ $formName = acym_getModuleFormName();
                                     echo 'style="padding-right: 10px;"';
                                 } ?>>
 									<button class="btn btn-secondary button" onclick="this.form.task.value='exportdata'; this.form.submit(); return false;">
-                                        <?php echo acym_translation('ACYM_EXPORT_MY_DATA'); ?>
+                                        <?php echo acym_escapeHtml(acym_translation('ACYM_EXPORT_MY_DATA')); ?>
 									</button>
 								</td>
                                 <?php
@@ -80,8 +93,8 @@ $formName = acym_getModuleFormName();
                                 ?>
 								<td id="acybutton_subscriber_delete_data">
 									<button class="btn btn-secondary button"
-											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'gdprDelete'; this.form.submit(); } return false;">
-                                        <?php echo acym_translation('ACYM_DELETE_MY_DATA'); ?>
+									        onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'gdprDelete'; this.form.submit(); } return false;">
+                                        <?php echo acym_escapeHtml(acym_translation('ACYM_DELETE_MY_DATA')); ?>
 									</button>
 								</td>
                                 <?php
@@ -96,7 +109,7 @@ $formName = acym_getModuleFormName();
         if ($data['displayLists']) {
             ?>
 			<fieldset class="adminform acy_subscription_list margin-bottom-1">
-				<legend><span><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></span></legend>
+				<legend><span><?php echo acym_escapeHtml(acym_translation('ACYM_SUBSCRIPTION')); ?></span></legend>
 
 				<div id="acyusersubscription">
                     <?php
@@ -117,15 +130,17 @@ $formName = acym_getModuleFormName();
                             }
 
                             echo '<div class="acym_list">
-                                    <div class="acystatus">'.acym_radio(
-                                    $values,
-                                    'data[listsub]['.$row->id.'][status]',
-                                    $row->status,
-                                    [],
-                                    ['id' => 'status'.$k++],
-                                    true
-                                ).'</div>
-                                    <div class="list_name">'.(!empty($row->display_name) ? $row->display_name : $row->name).'</div>
+                                    <div class="acystatus">';
+                            acym_radio(
+                                $values,
+                                'data[listsub]['.$row->id.'][status]',
+                                $row->status,
+                                [],
+                                ['id' => 'status'.$k++],
+                                true
+                            );
+                            echo '</div>
+                                    <div class="list_name">'.acym_escapeHtml(!empty($row->display_name) ? $row->display_name : $row->name).'</div>
                                 </div>';
                         }
                     } else {
@@ -143,12 +158,12 @@ $formName = acym_getModuleFormName();
                                 $value = 1;
                                 $selectedIndex = $k;
                             }
-                            echo '<input type="hidden" class="listsub-dropdown" name="data[listsub]['.$row->id.'][status]" value="'.$value.'">';
+                            echo '<input type="hidden" class="listsub-dropdown" name="data[listsub]['.acym_escape($row->id).'][status]" value="'.acym_escape($value).'">';
 
                             $k++;
                         }
 
-                        echo acym_select($dropdownOpts, 'data[listsubdropdown]', $selectedIndex);
+                        acym_select($dropdownOpts, 'data[listsubdropdown]', $selectedIndex, null, 'value', 'text', null, false, true);
                     }
                     ?>
 				</div>
@@ -158,7 +173,7 @@ $formName = acym_getModuleFormName();
 
         if (empty($data['user']->id) && $data['config']->get('captcha', 'none') !== 'none' && !empty($data['captchaHelper'])) {
             echo '<div id="trcaptcha" class="acy_onefield">';
-            echo $data['captchaHelper']->display($formName);
+            $data['captchaHelper']->display($formName);
             echo '</div>';
         }
 
@@ -185,7 +200,7 @@ $formName = acym_getModuleFormName();
         }
         ?>
 
-		<input type="hidden" name="hiddenlists" value="<?php echo implode(',', $data['hiddenlists']); ?>" />
+		<input type="hidden" name="hiddenlists" value="<?php echo acym_escape(implode(',', $data['hiddenlists'])); ?>" />
 		<input type="hidden" name="user[id]" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="userId" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="userKey" value="<?php echo acym_escape($data['user']->key); ?>" />
@@ -194,13 +209,13 @@ $formName = acym_getModuleFormName();
 
 		<p class="acymodifybutton">
 			<button class="btn btn-primary"
-					type="submit"
-					onclick="<?php echo $actionClick; ?>">
-                <?php echo acym_escape(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>
+			        type="submit"
+			        onclick="<?php echo acym_escape($actionClick); ?>">
+                <?php echo acym_escapeHtml(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>
 			</button>
 		</p>
 	</form>
     <?php if (!empty($data['posttext'])) {
-        echo '<span class="acym_posttext">'.$data['posttext'].'</span>';
+        echo '<span class="acym_posttext">'.acym_escapeHtml($data['posttext']).'</span>';
     } ?>
 </div>

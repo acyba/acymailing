@@ -17,23 +17,25 @@ class TabHelper extends AcymObject
     {
         parent::__construct();
 
-        $this->identifier = (string)rand(1000, 9000);
+        $this->identifier = (string)acym_rand(1000, 9000);
     }
 
-    public function startTab(string $title, bool $selected = false, string $attributes = '', bool $clickable = true): string
+    public function startTab(string $title, bool $selected = false, bool $clickable = true): string
     {
         if ($this->opened) {
             $this->endTab();
         }
+
         $this->opened = true;
+        $this->identifier = preg_replace('#[^a-z0-9]#is', '_', strtolower($title));
 
-        $attributes .= $clickable ? '' : 'data-empty="true"';
-        $attributes .= $selected ? 'data-selected="true"' : '';
-        $classLi = $clickable ? '' : 'tabs-title-empty';
-
-        $this->identifier = preg_replace('#[^a-z0-9]#is', '_', strtolower((string)$title));
-
-        $this->titles[] = '<li class="tabs-title '.$classLi.'"><a class="acym_tab acym__color__medium-gray" '.$attributes.' href="#" data-tab-identifier="'.$this->identifier.'" data-tabs-target="tab_'.$this->identifier.'_'.$this->tabNumber.'">'.$title.'</a></li>';
+        $this->titles[] = [
+            'title' => $title,
+            'clickable' => $clickable,
+            'selected' => $selected,
+            'identifier' => $this->identifier,
+            'tabNumber' => $this->tabNumber,
+        ];
 
         ob_start();
 
@@ -47,14 +49,14 @@ class TabHelper extends AcymObject
         }
 
         $this->opened = false;
-        $this->content[] = '<div class="tabs-panel" id="tab_'.$this->identifier.'_'.$this->tabNumber.'">'.ob_get_clean().'</div>';
+        $this->content[] = '<div class="tabs-panel" id="tab_'.acym_escape($this->identifier.'_'.$this->tabNumber).'">'.ob_get_clean().'</div>';
         $this->tabNumber++;
     }
 
-    public function addElementInBar(string $element, string $identifier = ''): void
+    public function addCallbackElement(callable $callable, string $identifier = ''): void
     {
         $this->inBarElements[] = [
-            'element' => $element,
+            'callable' => $callable,
             'identifier' => $identifier,
         ];
     }
@@ -65,27 +67,37 @@ class TabHelper extends AcymObject
             $this->endTab();
         }
 
-        $tabSystem = '<ul class="tabs" data-tabs id="'.acym_escape($tabId).'">';
-        $tabSystem .= implode('', $this->titles);
-
-        if (!empty($this->inBarElements)) {
-            $tabSystem .= '<div class="acym__tabs__inbar">';
-            foreach ($this->inBarElements as $oneElement) {
-                $displayOptions = '';
-                if (!empty($oneElement['identifier'])) {
-                    $displayOptions = 'acym-data-identifier="'.acym_escape($oneElement['identifier']).'" style="display: none;"';
-                }
-                $tabSystem .= '<div class="acym__tabs__inbar__element" '.$displayOptions.'>'.$oneElement['element'].'</div>';
-            }
-            $tabSystem .= '</div>';
+        echo '<ul class="tabs" data-tabs id="'.acym_escape($tabId).'">';
+        foreach ($this->titles as $title) {
+            echo '<li class="tabs-title '.acym_escape($title['clickable'] ? '' : 'tabs-title-empty').'">
+                    <a class="acym_tab acym__color__medium-gray" 
+                    '.($title['clickable'] ? '' : 'data-empty="true"').' 
+                    '.($title['selected'] ? 'data-selected="true"' : '').' 
+                        href="#" 
+                        data-tab-identifier="'.acym_escape($title['identifier']).'" 
+                        data-tabs-target="tab_'.acym_escape($title['identifier'].'_'.$title['tabNumber']).'">'.acym_escapeHtml($title['title']).'</a>
+                </li>';
         }
 
-        $tabSystem .= '</ul>';
+        if (!empty($this->inBarElements)) {
+            echo '<div class="acym__tabs__inbar">';
+            foreach ($this->inBarElements as $oneElement) {
+                echo '<div class="acym__tabs__inbar__element" ';
+                if (!empty($oneElement['identifier'])) {
+                    echo 'acym-data-identifier="'.acym_escape($oneElement['identifier']).'" style="display: none;"';
+                }
+                echo '>';
+                $oneElement['callable']();
+                echo '</div>';
+            }
+            echo '</div>';
+        }
 
-        $tabSystem .= '<div class="tabs-content margin-bottom-1" data-tabs-content="'.acym_escape($tabId).'">';
-        $tabSystem .= implode('', $this->content);
-        $tabSystem .= '</div>';
+        echo '</ul>';
 
-        echo $tabSystem;
+        echo '<div class="tabs-content margin-bottom-1" data-tabs-content="'.acym_escape($tabId).'">';
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Content escaped from the add-on/plugin side.
+        echo implode('', $this->content);
+        echo '</div>';
     }
 }

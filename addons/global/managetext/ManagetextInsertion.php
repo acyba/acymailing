@@ -20,16 +20,17 @@ trait ManagetextInsertion
 
         $this->removeText($email);
         $this->ifStatement($email, $user);
-        $this->replaceConstant($email, $user);
+        $this->replaceTranslations($email, $user);
+        $this->replaceConfigValues($email);
     }
 
     /**
-     * Replaces tags such as {const:CONSTANT_NAME} or {trans:MY_TRANSLATION}
+     * Replaces tags such as {trans:ACYM_MY_TRANSLATION}
      */
-    private function replaceConstant(&$email, $user)
+    private function replaceTranslations(&$email, $user)
     {
         //load the tags
-        $tags = $this->pluginHelper->extractTags($email, '(?:const|trans|config)');
+        $tags = $this->pluginHelper->extractTags($email, 'trans');
         if (empty($tags)) {
             return;
         }
@@ -41,7 +42,7 @@ trait ManagetextInsertion
             $arrayVal = [];
             foreach ($oneTag as $valname => $oneValue) {
                 if ($valname == 'id') {
-                    $val = trim(strip_tags($oneValue));
+                    $val = trim(acym_stripTags($oneValue));
                 } elseif ($valname != 'default') {
                     // Recreate tags (not before to prevent premature end of tag when parsing)
                     $arrayVal[] = '{'.$valname.'}';
@@ -51,57 +52,64 @@ trait ManagetextInsertion
             if (empty($val)) {
                 continue;
             }
-            $tagValues = explode(':', $i);
-            $type = ltrim($tagValues[0], '{');
-            if ($type === 'const') {
-                $tagsReplaced[$i] = defined($val) ? constant($val) : 'Constant not defined : '.$val;
-            } elseif ($type === 'config') {
-                //We do not allow all config values... for now only sitename.
-                if ($val === 'sitename') {
-                    $tagsReplaced[$i] = acym_getCMSConfig($val);
-                }
+            if (!empty($user->language)) {
+                $language = $user->language;
+            } elseif (!empty($email->language)) {
+                $language = $email->language;
             } else {
-                if (!empty($user->language)) {
-                    $language = $user->language;
-                } elseif (!empty($email->language)) {
-                    $language = $email->language;
-                } else {
-                    $language = acym_getLanguageTag();
-                }
-
-                $previousLanguage = acym_setLanguage($language);
-                acym_loadLanguage($language);
-
-                static $done = false;
-                if (!$done && strpos($val, 'COM_USERS') !== false) {
-                    $done = true;
-                    //Com_users? Let's load the com_users language file then!
-
-                    acym_loadLanguageFile('com_users');
-                }
-                if (!empty($arrayVal)) {
-                    $translation = acym_translation($val);
-                    $paramsIncluded = vsprintf($translation, $arrayVal);
-                    if ($translation === $paramsIncluded) {
-                        $translation = preg_replace(
-                            '/\{[A-Z_]+\}/',
-                            '%s',
-                            $translation
-                        );
-                        $paramsIncluded = vsprintf($translation, $arrayVal);
-                    }
-                    $tagsReplaced[$i] = nl2br($paramsIncluded);
-                } else {
-                    $tagsReplaced[$i] = acym_translation($val);
-                }
-
-                if (empty($previousLanguage)) $previousLanguage = acym_getLanguageTag();
-                acym_setLanguage($previousLanguage);
-                acym_loadLanguage($previousLanguage);
+                $language = acym_getLanguageTag();
             }
+
+            $previousLanguage = acym_setLanguage($language);
+            acym_loadLanguage($language);
+
+            static $done = false;
+            if (!$done && strpos($val, 'COM_USERS') !== false) {
+                $done = true;
+                //Com_users? Let's load the com_users language file then!
+
+                acym_loadLanguageFile('com_users');
+            }
+            if (!empty($arrayVal)) {
+                $translation = acym_translation($val);
+                $paramsIncluded = vsprintf($translation, $arrayVal);
+                if ($translation === $paramsIncluded) {
+                    $translation = preg_replace(
+                        '/\{[A-Z_]+\}/',
+                        '%s',
+                        $translation
+                    );
+                    $paramsIncluded = vsprintf($translation, $arrayVal);
+                }
+                $tagsReplaced[$i] = nl2br($paramsIncluded);
+            } else {
+                $tagsReplaced[$i] = acym_translation($val);
+            }
+
+            if (empty($previousLanguage)) $previousLanguage = acym_getLanguageTag();
+            acym_setLanguage($previousLanguage);
+            acym_loadLanguage($previousLanguage);
         }
 
         //We replace standard tags
+        $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
+    }
+
+    private function replaceConfigValues(&$email)
+    {
+        $tags = $this->pluginHelper->extractTags($email, 'config');
+        if (empty($tags)) {
+            return;
+        }
+
+        $tagsReplaced = [];
+        foreach ($tags as $i => $oneTag) {
+            if (trim($oneTag->id) === 'sitename') {
+                // We do not allow all config values for now only sitename.
+                $tagsReplaced[$i] = acym_getCMSConfig('sitename');
+            }
+        }
+
         $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
     }
 
@@ -113,7 +121,7 @@ trait ManagetextInsertion
         }
         foreach ($randTag as $oneRandTag) {
             $results[$oneRandTag->id] = explode(';', $oneRandTag->id);
-            $randNumber = rand(0, count($results[$oneRandTag->id]) - 1);
+            $randNumber = acym_rand(0, count($results[$oneRandTag->id]) - 1);
             $results[$oneRandTag->id][count($results[$oneRandTag->id])] = $results[$oneRandTag->id][$randNumber];
         }
 
@@ -255,7 +263,7 @@ trait ManagetextInsertion
 
                 $tags[$oneTag] = '';
                 $val = strtolower(trim($operators[3]));
-                $prop = strip_tags($prop);
+                $prop = acym_stripTags($prop);
                 //We can handle several propositions in one if it contains ; such as {if:category=34;214;53}...
                 if ($operators[2] === '=' && ($prop == $val || in_array($prop, explode(';', $val)) || in_array($val, explode(';', $prop)))) {
                     $tags[$oneTag] = $allresults[3][$i];

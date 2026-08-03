@@ -281,12 +281,14 @@ class plgAcymPost extends AcymPlugin
         $rows = $this->getElements();
         foreach ($rows as $i => $row) {
             if (str_replace(['wp:core-embed', 'wp:shortcode'], '', $row->post_content) !== $row->post_content) {
-                $rows[$i]->post_title = acym_tooltip(
-                        [
-                            'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
-                            'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
-                        ]
-                    ).$rows[$i]->post_title;
+                ob_start();
+                acym_tooltip(
+                    [
+                        'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
+                        'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
+                    ]
+                );
+                $rows[$i]->post_title = ob_get_clean().$rows[$i]->post_title;
             }
         }
 
@@ -470,7 +472,7 @@ class plgAcymPost extends AcymPlugin
             ];
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.esc_html(
                 acym_translation('ACYM_READ_MORE')
             ).'</span></a>';
         if (in_array('readmore', $tag->display)) {
@@ -593,6 +595,7 @@ class plgAcymPost extends AcymPlugin
             }
         } elseif ($translationTool === 'wpml') {
             if (acym_isExtensionActive('sitepress-multilingual-cms/sitepress.php')) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook for integration.
                 $elementId = apply_filters('wpml_object_id', $elementId, 'post', true, $languageCode);
             }
         }
@@ -630,9 +633,7 @@ class plgAcymPost extends AcymPlugin
             if (empty($value['link'])) {
                 $value = '';
             } else {
-                $alt = acym_escape($value['alt']);
-
-                $value = '<img alt="'.$alt.'" src="'.$value['link'].'" />';
+                $value = '<img alt="'.esc_attr($value['alt']).'" src="'.esc_url($value['link']).'" />';
             }
         } elseif (in_array($field['type'], ['checkbox', 'select'])) {
             if (is_array($value)) {
@@ -644,7 +645,7 @@ class plgAcymPost extends AcymPlugin
             if (empty($value['link'])) {
                 $value = '';
             } else {
-                $value = '<a href="'.$value['link'].'" target="_blank">'.acym_escape(
+                $value = '<a href="'.$value['link'].'" target="_blank">'.esc_html(
                         $value['filename']
                     ).'</a>';
             }
@@ -652,10 +653,10 @@ class plgAcymPost extends AcymPlugin
             $value = nl2br($value);
         } elseif (in_array($field['type'], ['time_picker', 'date_picker', 'date_time_picker'])) {
             if ($field['display_format'] !== $field['return_format']) {
-                $value = date($field['display_format'], strtotime($value));
+                $value = gmdate($field['display_format'], strtotime($value));
             }
         } else {
-            $value = acym_escape($value);
+            $value = esc_html($value);
         }
 
         return $value;

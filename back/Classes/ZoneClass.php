@@ -17,7 +17,7 @@ class ZoneClass extends AcymClass
     public function save(object $element): ?int
     {
         $zone = clone $element;
-        $zone->name = strip_tags($zone->name);
+        $zone->name = acym_stripTags($zone->name);
         $zone->content = base64_encode($zone->content);
 
         return parent::save($zone);
@@ -58,7 +58,7 @@ class ZoneClass extends AcymClass
         foreach ($elements as $oneElementId) {
             $zone = $this->getOneById($oneElementId);
             if (!empty($zone->image) && file_exists(ACYM_ROOT.$zone->image)) {
-                unlink(ACYM_ROOT.$zone->image);
+                acym_deleteFile(ACYM_ROOT.$zone->image);
             }
         }
 

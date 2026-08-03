@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\PluginClass;
 
 function acym_isExtensionActive(string $extension): bool

@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 function acym_getEmailCssFixes(): string
 {

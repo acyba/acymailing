@@ -8,21 +8,26 @@ trait MassAction
 {
     public function setFilterMassAction(): void
     {
+        acym_checkToken();
+
         $this->setSaveFilters(true);
         $this->summary();
     }
 
     public function setActionMassAction(): void
     {
+        acym_checkToken();
+
         $this->getSaveActions(true);
         $this->filter();
     }
 
     public function processMassAction(): void
     {
-        acym_session();
+        acym_checkToken();
+
         $automationClass = new AutomationClass();
-        $massAction = empty($_SESSION['massAction']) ? '' : $_SESSION['massAction'];
+        $massAction = acym_getVar('array', 'massAction', [], 'SESSION');
         if (!empty($massAction)) {
             $automation = new \stdClass();
             $automation->filters = json_encode($massAction['filters']);

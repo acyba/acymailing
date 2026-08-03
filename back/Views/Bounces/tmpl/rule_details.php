@@ -1,17 +1,21 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <div class="acym__content cell grid-x" id="acy_bounces_details" style="<?php echo !empty($data['ruleId']) ? 'display: none;' : ''; ?>">
-	<div class="acym__title acym__title__secondary cell"><?php echo acym_translation('ACYM_BOUNCE_RULE_CONDITION'); ?></div>
+	<div class="acym__title acym__title__secondary cell"><?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCE_RULE_CONDITION')); ?></div>
 
 	<div class="cell grid-x large-6 padding-left-1">
 		<label class="cell grid-x">
 			<span class="cell medium-5 acym__label">
-				<?php echo acym_translation('ACYM_REGEX');
-                echo acym_info(['textShownInTooltip' => 'ACYM_BOUNCES_REGEX_DESC']); ?>
+				<?php echo acym_escapeHtml(acym_translation('ACYM_REGEX'));
+                acym_info(['textShownInTooltip' => 'ACYM_BOUNCES_REGEX_DESC']); ?>
 			</span>
 			<span class="cell medium-7 acym__label">
 				# <input class="intext_input_large intext_input"
-						 type="text"
-						 name="bounce[regex]"
-						 value="<?php echo acym_escape((empty($data['rule']) || empty($data['rule']->regex)) ? '' : $data['rule']->regex); ?>"> #ims
+				         type="text"
+				         name="bounce[regex]"
+				         value="<?php echo acym_escape((empty($data['rule']) || empty($data['rule']->regex)) ? '' : $data['rule']->regex); ?>"> #ims
 			</span>
 		</label>
 
@@ -30,27 +34,37 @@
             'medium-5 margin-right-1'
         ); ?>
 		<div class="cell grid-x margin-top-1">
-            <?php echo acym_switch(
-                'bounce[increment_stats]',
-                !empty($data['rule']) ? $data['rule']->increment_stats : 1,
-                acym_translation('ACYM_INCREMENT_BOUNCE_STATISTICS_IF_RULE_MATCHES'),
-                [],
-                'medium-5'
-            ); ?>
+            <?php acym_switch([
+                'name' => 'bounce[increment_stats]',
+                'value' => !empty($data['rule']) ? $data['rule']->increment_stats : 1,
+                'label' => acym_translation('ACYM_INCREMENT_BOUNCE_STATISTICS_IF_RULE_MATCHES'),
+                'labelClass' => 'medium-5',
+            ]); ?>
 		</div>
 	</div>
 
 	<div class="cell">
 		<div class="acym__title acym__title__secondary margin-top-1">
-            <?php echo acym_translation('ACYM_ACTION_ON_USER');
-            echo acym_info(['textShownInTooltip' => 'ACYM_BOUNCES_ACTION_USER_DESC']); ?></div>
+            <?php echo acym_escapeHtml(acym_translation('ACYM_ACTION_ON_USER'));
+            acym_info(['textShownInTooltip' => 'ACYM_BOUNCES_ACTION_USER_DESC']); ?></div>
 		<div class="cell grid-x padding-left-1">
 			<p class="acym__label">
-                <?php echo acym_translationSprintf(
-                    'ACYM_EXECUTE_ACTIONS_AFTER',
-                    '<input type="number" min="0" name="bounce[execute_action_after]" value="'.acym_escape(
-                        !empty($data['rule']) ? $data['rule']->execute_action_after : '0'
-                    ).'" class="intext_input">'
+                <?php echo acym_escapeHtmlWithAllowedTags(
+                    acym_translationSprintf(
+                        'ACYM_EXECUTE_ACTIONS_AFTER',
+                        '<input type="number" min="0" name="bounce[execute_action_after]" value="'.acym_escape(
+                            !empty($data['rule']) ? $data['rule']->execute_action_after : '0'
+                        ).'" class="intext_input">'
+                    ),
+                    [
+                        'input' => [
+                            'type' => true,
+                            'min' => true,
+                            'name' => true,
+                            'value' => true,
+                            'class' => true,
+                        ],
+                    ]
                 ); ?>
 			</p>
             <?php
@@ -95,8 +109,8 @@
 
 	<div class="cell">
 		<div class="acym__title acym__title__secondary margin-top-1">
-            <?php echo acym_translation('ACYM_ACTION_ON_EMAIL');
-            echo acym_info(['textShownInTooltip' => 'ACYM_BOUNCES_ACTION_MSG_DESC']); ?></div>
+            <?php echo acym_escapeHtml(acym_translation('ACYM_ACTION_ON_EMAIL'));
+            acym_info(['textShownInTooltip' => 'ACYM_BOUNCES_ACTION_MSG_DESC']); ?></div>
 		<div class="cell grid-x padding-left-1">
             <?php
             $forwardMsg = '<div class="cell grid-x"><span class="medium-4 cell acym__label">'.acym_translation('ACYM_FORWARD_EMAIL').'</span>';

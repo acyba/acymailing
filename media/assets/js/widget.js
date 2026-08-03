@@ -50,7 +50,8 @@ if (typeof acym_widget === 'undefined') {
                                 ctrl: 'dynamics',
                                 task: 'trigger',
                                 plugin: 'plgAcymPost',
-                                trigger: 'getPosts'
+                                trigger: 'getPosts',
+                                _wpnonce: (typeof acym_widget_nonce !== 'undefined' ? acym_widget_nonce : '')
                             };
                         },
                         processResults: function (data) {

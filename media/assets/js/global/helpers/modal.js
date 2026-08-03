@@ -46,9 +46,9 @@ const acym_helperModal = {
         let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=getTemplateAjax';
 
         let $returnInput = jQuery('input[name="return"]');
-        let automation = ($returnInput.length > 0 && $returnInput.val().indexOf('automation') !== -1) || jQuery('#acym__automation__actions__json').length > 0
-                         ? '1'
-                         : '0';
+        let automation = (
+                             $returnInput.length > 0 && $returnInput.val().indexOf('automation') !== -1
+                         ) || jQuery('[id^="acym__automation__actions__template__"]').length > 0 ? '1' : '0';
         let mailId = jQuery('input[name="id"]').val();
         let $followupinput = jQuery('input[name="followup[id]"]');
         if ($followupinput.length > 0) {
@@ -65,16 +65,23 @@ const acym_helperModal = {
         ajaxUrl += '&pagination_page_ajax=' + jQuery('#acym_pagination__ajax').val();
         ajaxUrl += '&editor=' + jQuery('#acym__mail__edit__editor').val();
         ajaxUrl += '&automation=' + automation;
-        ajaxUrl += '&inmail=' + (jQuery('#editor_autoSave').length > 0 ? '1' : '0');
-        ajaxUrl += '&id=' + (undefined === mailId ? 0 : mailId);
-        ajaxUrl += '&acym_pagination_element_per_page=' + (jQuery('[name="acym_pagination_element_per_page"]').val() || '');
+        ajaxUrl += '&inmail=' + (
+            jQuery('#editor_autoSave').length > 0 ? '1' : '0'
+        );
+        ajaxUrl += '&id=' + (
+            undefined === mailId ? 0 : mailId
+        );
+        ajaxUrl += '&acym_pagination_element_per_page=' + (
+            jQuery('[name="acym_pagination_element_per_page"]').val() || ''
+        );
         if ($returnInput.length >= 1) ajaxUrl += '&return=' + encodeURIComponent($returnInput.val());
         if (jQuery('#acym__mail__list-id').length > 0) {
             ajaxUrl += '&list_id=' + jQuery('#acym__mail__list-id').val();
         }
 
         jQuery.post(ajaxUrl, function (response) {
-            jQuery('.acym__template__choose__ajax').html(response);
+            response = acym_helper.parseJson(response);
+            jQuery('.acym__template__choose__ajax').html(response.data.pagination);
             acym_helperModal.setSearchAjaxModalChooseTemplateStartFrom();
             acym_helperModal.setPaginationAjaxStartFrom();
             acym_helperModal.setStartFromHtmlEditor();
@@ -85,7 +92,7 @@ const acym_helperModal = {
     setPaginationAjaxStartFrom: function () {
         jQuery('.acym__template__choose__ajax .acym__pagination__page__ajax').off('click').on('click', function (e) {
             e.preventDefault();
-            jQuery('#acym_pagination__ajax').attr('value', jQuery(this).attr('page'));
+            jQuery('#acym_pagination__ajax').val(jQuery(this).attr('page'));
             acym_helperModal.setAjaxCallStartFrom();
         });
 
@@ -151,23 +158,25 @@ const acym_helperModal = {
         jQuery('input[name="mailchoose_search__ajax"]').off('keydown').on('keydown', function (event) {
             let searchList = jQuery(this);
             let searchValue = searchList.val();
-            if ((searchValue || event.key === 'Backspace') && !acym_helper.empty(searchValue) && searchValue.length >= 2) {
+            if ((
+                    searchValue || event.key === 'Backspace'
+                ) && !acym_helper.empty(searchValue) && searchValue.length >= 2) {
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(function () {
-                    jQuery('#acym_search_template_choose__ajax').attr('value', searchValue);
+                    jQuery('#acym_search_template_choose__ajax').val(searchValue);
                     acym_helperModal.setAjaxAndResetPaginationStartFrom();
                 }, 1500);
             }
             if (event.key === 'Enter') {
                 event.preventDefault();
                 clearTimeout(typingTimer);
-                jQuery('#acym_search_template_choose__ajax').attr('value', searchValue);
+                jQuery('#acym_search_template_choose__ajax').val(searchValue);
                 acym_helperModal.setAjaxAndResetPaginationStartFrom();
                 return false;
             }
             if (event.key === 'Backspace' && searchList.val() == '') {
                 clearTimeout(typingTimer);
-                jQuery('#acym_search_template_choose__ajax').attr('value', '');
+                jQuery('#acym_search_template_choose__ajax').val('');
                 acym_helperModal.setAjaxAndResetPaginationStartFrom();
             }
         });
@@ -175,17 +184,17 @@ const acym_helperModal = {
         jQuery('#acym__template__choose__modal .acym__search__button').off('click').on('click', function (e) {
             e.preventDefault();
             clearTimeout(typingTimer);
-            jQuery('#acym_search_template_choose__ajax').attr('value', jQuery('input[name="mailchoose_search__ajax"]').attr('value'));
+            jQuery('#acym_search_template_choose__ajax').val(jQuery('input[name="mailchoose_search__ajax"]').val());
             acym_helperModal.setAjaxAndResetPaginationStartFrom();
         });
     },
     setAjaxAndResetPaginationStartFrom: function () {
-        jQuery('#acym_pagination__ajax').attr('value', 1);
+        jQuery('#acym_pagination__ajax').val(1);
         acym_helperModal.setAjaxCallStartFrom();
     },
     setSelectTagStartFrom: function () {
         jQuery('#mailchoose_tag__ajax').on('change', function (e) {
-            jQuery('#acym_tag_template_choose__ajax').attr('value', jQuery(this).val());
+            jQuery('#acym_tag_template_choose__ajax').val(jQuery(this).val());
             acym_helperModal.setAjaxAndResetPaginationStartFrom();
         });
     },
@@ -262,13 +271,13 @@ const acym_helperModal = {
             if (buttonShowSelected.hasClass('selected')) {
                 buttonShowAll.show();
                 buttonShowSelected.hide().removeClass('selected');
-                jQuery('#modal__pagination__show-information').attr('value', 'true');
-                jQuery('#acym_pagination__ajax').attr('value', 1);
+                jQuery('#modal__pagination__show-information').val('true');
+                jQuery('#acym_pagination__ajax').val(1);
             } else {
                 buttonShowAll.hide();
                 buttonShowSelected.show().addClass('selected');
-                jQuery('#modal__pagination__show-information').attr('value', 'false');
-                jQuery('#acym_pagination__ajax').attr('value', 1);
+                jQuery('#modal__pagination__show-information').val('false');
+                jQuery('#acym_pagination__ajax').val(1);
             }
 
             acym_helperModal.getContentAjaxModalPaginationLists();
@@ -361,13 +370,15 @@ const acym_helperModal = {
         $inputSearch.off('keyup').on('keyup', function (event) {
             let searchList = jQuery(this);
             let searchValue = searchList.val();
-            if ((searchValue || event.key === 'Backspace') && searchValue != '' && searchValue.length >= 2) {
+            if ((
+                    searchValue || event.key === 'Backspace'
+                ) && searchValue != '' && searchValue.length >= 2) {
                 jQuery('#modal__pagination__search__spinner').show();
                 $modalShowSelected.hide();
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(function () {
-                    $listsSearchInput.attr('value', searchValue);
-                    jQuery('#acym_pagination__ajax').attr('value', 1);
+                    $listsSearchInput.val(searchValue);
+                    jQuery('#acym_pagination__ajax').val(1);
                     acym_helperModal.getContentAjaxModalPaginationLists();
                 }, 1000);
 
@@ -378,8 +389,8 @@ const acym_helperModal = {
             if (searchList.val() == '') {
                 clearTimeout(typingTimer);
                 $modalShowSelected.show();
-                $listsSearchInput.attr('value', '');
-                jQuery('#acym_pagination__ajax').attr('value', 1);
+                $listsSearchInput.val('');
+                jQuery('#acym_pagination__ajax').val(1);
                 acym_helperModal.getContentAjaxModalPaginationLists();
             }
         });
@@ -392,8 +403,8 @@ const acym_helperModal = {
         jQuery('.modal__pagination__search .acym__search-clear').off('click').on('click', function (e) {
             e.preventDefault();
             clearTimeout(typingTimer);
-            $listsSearchInput.attr('value', '');
-            $inputSearch.attr('value', '');
+            $listsSearchInput.val('');
+            $inputSearch.val('');
             $modalShowSelected.show();
             acym_helperModal.getContentAjaxModalPaginationLists();
         });
@@ -415,13 +426,13 @@ const acym_helperModal = {
             if (buttonShowSelected.hasClass('selected')) {
                 buttonShowAll.show();
                 buttonShowSelected.hide().removeClass('selected');
-                jQuery('#modal__pagination__users__show-information').attr('value', 'true');
-                jQuery('#acym_pagination__ajax').attr('value', 1);
+                jQuery('#modal__pagination__users__show-information').val('true');
+                jQuery('#acym_pagination__ajax').val(1);
             } else {
                 buttonShowAll.hide();
                 buttonShowSelected.show().addClass('selected');
-                jQuery('#modal__pagination__users__show-information').attr('value', 'false');
-                jQuery('#acym_pagination__ajax').attr('value', 1);
+                jQuery('#modal__pagination__users__show-information').val('false');
+                jQuery('#acym_pagination__ajax').val(1);
             }
         });
     },
@@ -440,13 +451,15 @@ const acym_helperModal = {
 
         $inputSearch.off('keyup').on('keyup', function (event) {
             let searchValue = jQuery(this).val();
-            if ((searchValue || event.key === 'Backspace') && searchValue != '' && searchValue.length >= 2) {
+            if ((
+                    searchValue || event.key === 'Backspace'
+                ) && searchValue != '' && searchValue.length >= 2) {
                 jQuery('#modal__pagination__users__search__spinner').show();
                 $modalShowSelected.hide();
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(function () {
-                    $userSearchInput.attr('value', searchValue);
-                    jQuery('#acym_pagination__ajax').attr('value', 1);
+                    $userSearchInput.val(searchValue);
+                    jQuery('#acym_pagination__ajax').val(1);
                 }, 1000);
 
             } else {
@@ -456,8 +469,8 @@ const acym_helperModal = {
             if (searchValue == '') {
                 clearTimeout(typingTimer);
                 $modalShowSelected.show();
-                $userSearchInput.attr('value', '');
-                jQuery('#acym_pagination__ajax').attr('value', 1);
+                $userSearchInput.val('');
+                jQuery('#acym_pagination__ajax').val(1);
             }
         });
 
@@ -469,22 +482,22 @@ const acym_helperModal = {
         jQuery('.modal__pagination__users__search .acym__search-clear').off('click').on('click', function (e) {
             e.preventDefault();
             clearTimeout(typingTimer);
-            $userSearchInput.attr('value', '');
-            $inputSearch.attr('value', '');
+            $userSearchInput.val('');
+            $inputSearch.val('');
             $modalShowSelected.show();
         });
     },
     setSearchUsers: function (typingTimer) {
         clearTimeout(typingTimer);
         jQuery('.modal__pagination__show').hide();
-        jQuery('#acym_pagination__ajax').attr('value', 1);
-        jQuery('#modal__pagination__users__search__input').attr('value', jQuery('input[name="modal_search_users"]').attr('value'));
+        jQuery('#acym_pagination__ajax').val(1);
+        jQuery('#modal__pagination__users__search__input').val(jQuery('input[name="modal_search_users"]').val());
     },
     setSearchLists: function (typingTimer) {
         clearTimeout(typingTimer);
         jQuery('.modal__pagination__show').hide();
-        jQuery('#acym_pagination__ajax').attr('value', 1);
-        jQuery('#modal__pagination__search__lists').attr('value', jQuery('input[name="modal_search_lists"]').attr('value'));
+        jQuery('#acym_pagination__ajax').val(1);
+        jQuery('#modal__pagination__search__lists').val(jQuery('input[name="modal_search_lists"]').val());
         acym_helperModal.getContentAjaxModalPaginationLists();
     },
     setButtonModalPaginationLists: function () {

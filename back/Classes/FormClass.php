@@ -199,6 +199,16 @@ class FormClass extends AcymClass
                         'default' => '',
                         'conditional' => ['privacy_type' => 'url'],
                     ],
+                    'tracking_consent' => [
+                        'label' => 'ACYM_DISPLAY_TRACKING_CONSENT',
+                        'description' => 'ACYM_DISPLAY_TRACKING_CONSENT_DESC',
+                        'type' => 'select',
+                        'options' => [
+                            'no' => acym_translation('ACYM_NO'),
+                            'yes' => acym_translation('ACYM_YES'),
+                        ],
+                        'default' => 'no',
+                    ],
                 ],
                 'message' => [
                     'text' => [
@@ -649,7 +659,9 @@ class FormClass extends AcymClass
 
                 $label = '<label class="cell" for="'.$id.'">'.acym_translation($option['label']);
                 if (!empty($option['description'])) {
-                    $label .= acym_info(['textShownInTooltip' => $option['description']]);
+                    ob_start();
+                    acym_info(['textShownInTooltip' => $option['description']]);
+                    $label .= ob_get_clean();
                 }
                 $label .= '</label>';
 

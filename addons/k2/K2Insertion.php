@@ -327,7 +327,7 @@ trait K2Insertion
         $customFields = [];
         $category = acym_loadObject('SELECT * FROM #__k2_categories WHERE id = '.intval($element->catid));
         $linkCat = $this->finalizeLink('index.php?option=com_k2&view=itemlist&layout=category&task=category&id='.$category->id, $tag);
-        $varFields['{cat}'] = '<a href="'.$linkCat.'" target="_blank">'.acym_escape($category->name).'</a>';
+        $varFields['{cat}'] = '<a href="'.$linkCat.'" target="_blank">'.acym_escapeHtml($category->name).'</a>';
         if (in_array('cat', $tag->display)) {
             $customFields[] = [
                 $varFields['{cat}'],
@@ -336,7 +336,7 @@ trait K2Insertion
         }
 
         $readMoreText = acym_translation('ACYM_READ_MORE');
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escapeHtml(
                 $readMoreText
             ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];

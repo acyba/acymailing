@@ -810,7 +810,7 @@ trait HikashopInsertion
 
         $afterArticle = '';
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
-        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span></a>';
+        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escapeHtml(acym_translation('ACYM_READ_MORE')).'</span></a>';
         if (empty($tag->type) && in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 
 

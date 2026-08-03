@@ -6,34 +6,35 @@ use AcyMailing\Core\AcymObject;
 
 class ToolbarHelper extends AcymObject
 {
-    private string $leftPart = '';
-    private string $rightPart = '';
-    private array $moreOptionsPart = [];
+    private array $searchBarInformation = [];
+    private array $actionButtons = [];
+    private array $filteringOptions = [];
+
+    public function addSearchBar(string $search, string $name, string $placeholder = 'ACYM_SEARCH', bool $showClearBtn = true): void
+    {
+        $this->searchBarInformation = [
+            'search' => $search,
+            'name' => $name,
+            'placeholder' => $placeholder,
+            'showClearBtn' => $showClearBtn,
+        ];
+    }
 
     public function addButton(string $textContent, array $attributes, string $icon = '', bool $isPrimary = false): void
     {
-        $data = [
+        $this->actionButtons[] = [
+            'type' => 'button',
             'icon' => $icon,
             'content' => acym_translation($textContent),
             'attributes' => $attributes,
             'isPrimary' => $isPrimary,
         ];
-
-        ob_start();
-        include acym_getPartial('toolbar', 'button_main');
-        $this->rightPart .= ob_get_clean();
     }
 
-    public function addOtherContent(string $content, string $side = 'right'): void
+    public function addModalButton(array $options): void
     {
-        if (in_array($side, ['left', 'right'])) {
-            $this->{$side.'Part'} .= $content;
-        }
-    }
-
-    public function addSearchBar(string $search, string $name, string $placeholder = 'ACYM_SEARCH', bool $showClearBtn = true): void
-    {
-        $this->leftPart .= acym_filterSearch($search, $name, $placeholder, $showClearBtn, 'acym__toolbar__search-field margin-bottom-0');
+        $options['type'] = 'modal';
+        $this->actionButtons[] = $options;
     }
 
     public function addFilterByTag(array &$data, string $name, string $class): void
@@ -47,7 +48,7 @@ class ToolbarHelper extends AcymObject
             acym_select(
                 $data['allTags'],
                 $name,
-                acym_escape($data['tag']),
+                $data['tag'],
                 [
                     'class' => $class,
                 ],
@@ -59,14 +60,49 @@ class ToolbarHelper extends AcymObject
 
     public function addOptionSelect(string $title, string $select): void
     {
-        $this->moreOptionsPart[] = '<div class="cell grid-x shrink acym__toolbar__filters__select"><label class="cell">'.$title.'</label>'.$select.'</div>';
+        $this->filteringOptions[] = [
+            'title' => $title,
+            'select' => $select,
+        ];
     }
 
     public function displayToolbar(array $data): void
     {
-        $data['leftPart'] = $this->leftPart;
-        $data['rightPart'] = $this->rightPart;
-        $data['moreOptionsPart'] = $this->moreOptionsPart;
+        $data['toolbarHelper'] = $this;
+        $data['searchBarInformation'] = $this->searchBarInformation;
+        $data['actionButtons'] = $this->actionButtons;
+        $data['filteringOptions'] = $this->filteringOptions;
         include acym_getPartial('toolbar', 'toolbar');
+    }
+
+    public function displaySearchBar(): void
+    {
+        acym_filterSearch(
+            $this->searchBarInformation['search'],
+            $this->searchBarInformation['name'],
+            $this->searchBarInformation['placeholder'],
+            $this->searchBarInformation['showClearBtn'],
+            'acym__toolbar__search-field margin-bottom-0'
+        );
+    }
+
+    public function displayActionButtons(): void
+    {
+        foreach ($this->actionButtons as $data) {
+            if ($data['type'] === 'button') {
+                include acym_getPartial('toolbar', 'button_main');
+            } else {
+                acym_modal(
+                    $data['button'],
+                    $data['modalContent'] ?? '',
+                    $data['id'] ?? null,
+                    $data['attributesModal'] ?? [],
+                    $data['attributesButton'] ?? [],
+                    $data['isButton'] ?? true,
+                    $data['isLarge'] ?? true,
+                    $data['classesModal'] ?? '',
+                );
+            }
+        }
     }
 }

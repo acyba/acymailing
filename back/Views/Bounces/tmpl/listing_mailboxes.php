@@ -1,5 +1,8 @@
-<?php if (empty($data['allMailboxes'])) { ?>
-	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+if (empty($data['allMailboxes'])) { ?>
+	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_escapeHtml(acym_translation('ACYM_NO_RESULTS_FOUND')); ?></h1>
 <?php } else { ?>
 	<div class="cell margin-bottom-1 acym__listing__actions grid-x">
         <?php
@@ -7,7 +10,7 @@
             'duplicateMailboxAction' => acym_translation('ACYM_DUPLICATE'),
             'deleteMailboxAction' => acym_translation('ACYM_DELETE'),
         ];
-        echo acym_listingActions($actions);
+        acym_listingActions($actions);
         ?>
 	</div>
 	<div class="cell grid-x align-justify">
@@ -19,12 +22,12 @@
                     'active' => ['ACYM_ACTIVE', $data['allStatusFilters']['active']],
                     'inactive' => ['ACYM_INACTIVE', $data['allStatusFilters']['inactive']],
                 ];
-                echo acym_filterStatus($options, $data['status'], 'mailboxes_status');
+                acym_filterStatus($options, $data['status'], 'mailboxes_status');
                 ?>
 			</div>
 		</div>
 		<div class="cell large-shrink acym_listing_sort-by">
-            <?php echo acym_sortBy(
+            <?php acym_sortBy(
                 [
                     'name' => acym_translation('ACYM_NAME'),
                     'username' => acym_translation('ACYM_USERNAME'),
@@ -43,19 +46,19 @@
 			</div>
 			<div class="grid-x medium-auto small-11 cell acym__listing__header__title__container">
 				<div class="large-4 medium-4 cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_NAME'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_NAME')); ?>
 				</div>
 				<div class="large-2 medium-2 hide-for-small-only cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_EMAIL'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL')); ?>
 				</div>
 				<div class="auto hide-for-small-only cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ACTIONS'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIONS')); ?>
 				</div>
 				<div class="large-1 medium-1 text-center hide-for-small-only cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ACTIVE'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIVE')); ?>
 				</div>
 				<div class="large-1 medium-1 text-center hide-for-small-only cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ID'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ID')); ?>
 				</div>
 			</div>
 		</div>
@@ -68,33 +71,33 @@
 				</div>
 				<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 					<div class="grid-x large-4 medium-4 small-11 cell acym__listing__title">
-						<a class="cell" href="<?php echo acym_completeLink('bounces&task=mailboxAction&mailboxId='.intval($mailbox->id)); ?>">
-							<h6 class="acym__listing__title__important"><?php echo acym_escape($mailbox->name); ?></h6>
+						<a class="cell" href="<?php echo acym_escapeUrl(acym_completeLink('bounces&task=mailboxAction&mailboxId='.intval($mailbox->id))); ?>">
+							<h6 class="acym__listing__title__important"><?php echo acym_escapeHtml($mailbox->name); ?></h6>
 						</a>
 					</div>
 					<div class="cell large-2 medium-2 hide-for-small-only">
-                        <?php echo $mailbox->username; ?>
+                        <?php echo acym_escapeHtml($mailbox->username); ?>
 					</div>
 					<div class="cell auto hide-for-small-only grid-x">
                         <?php foreach ($mailbox->actionsRendered as $actionRendered) { ?>
-							<span class="cell acym_text_ellipsis"><?php echo $actionRendered; ?></span>
+							<span class="cell acym_text_ellipsis"><?php echo acym_escapeHtml($actionRendered); ?></span>
                         <?php } ?>
 					</div>
 					<div class="cell small-1 acym__listing__controls text-center">
                         <?php
-                        $class = $mailbox->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
-                            : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                        $class = $mailbox->active == 1 ? 'acymicon-check-circle acym__color__green' : 'acymicon-times-circle acym__color__red';
+                        $newvalue = $mailbox->active == 1 ? 0 : 1;
                         echo '<i data-acy-table="mailbox_action" data-acy-field="active" data-acy-elementid="'.acym_escape(
                                 $mailbox->id
-                            ).'" class="acym_toggleable '.$class.'"></i>';
+                            ).'" data-acy-newvalue="'.acym_escape($newvalue).'" class="acym_toggleable '.acym_escape($class).'"></i>';
                         ?>
 					</div>
 					<div class="cell medium-1 hide-for-small-only text-center">
-                        <?php echo acym_escape($mailbox->id); ?>
+                        <?php echo acym_escapeHtml($mailbox->id); ?>
 					</div>
 				</div>
 			</div>
         <?php } ?>
 	</div>
-    <?php echo $data['pagination']->display('mailboxes');
+    <?php $data['pagination']->display('mailboxes');
 }

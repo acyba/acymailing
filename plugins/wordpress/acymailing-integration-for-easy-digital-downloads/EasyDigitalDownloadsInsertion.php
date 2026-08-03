@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailing\Helpers\SecurityHelper;
 use AcyMailing\Helpers\TabHelper;
 
 trait EasyDigitalDownloadsInsertion
@@ -374,8 +375,11 @@ trait EasyDigitalDownloadsInsertion
 		<div class="cell grid-x">
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
                 <?php
+                ob_start();
+                acym_info(['textShownInTooltip' => 'ACYM_MIN_NUMBER_OF_PRODUCTS_DESC']);
+                $tooltip = ob_get_clean();
                 echo wp_kses(
-                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MIN_NUMBER_OF_PRODUCTS_DESC']),
+                    acym_translation('ACYM_MIN_NB_ELEMENTS').$tooltip,
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -384,18 +388,21 @@ trait EasyDigitalDownloadsInsertion
                 ?>
 			</label>
 			<input type="number"
-				   id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>"
-				   class="cell medium-6"
-				   value="<?php echo esc_attr($this->defaultValues->min); ?>"
-				   name="min"
-				   min="0"
-				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
+			       id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>"
+			       class="cell medium-6"
+			       value="<?php echo esc_attr($this->defaultValues->min); ?>"
+			       name="min"
+			       min="0"
+			       onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
 		</div>
 		<div class="cell grid-x">
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
                 <?php
+                ob_start();
+                acym_info(['textShownInTooltip' => 'ACYM_MAX_NUMBER_OF_PRODUCTS_DESC']);
+                $tooltip = ob_get_clean();
                 echo wp_kses(
-                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MAX_NUMBER_OF_PRODUCTS_DESC']),
+                    acym_translation('ACYM_MAX_NB_ELEMENTS').$tooltip,
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -404,18 +411,21 @@ trait EasyDigitalDownloadsInsertion
                 ?>
 			</label>
 			<input type="number"
-				   id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>"
-				   class="cell medium-6"
-				   value="<?php echo esc_attr($this->defaultValues->max); ?>"
-				   name="max"
-				   min="0"
-				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
+			       id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>"
+			       class="cell medium-6"
+			       value="<?php echo esc_attr($this->defaultValues->max); ?>"
+			       name="max"
+			       min="0"
+			       onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
 		</div>
 		<div class="cell grid-x">
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
                 <?php
+                ob_start();
+                acym_info(['textShownInTooltip' => 'ACYM_CATEGORY_FILTER_DESC']);
+                $tooltip = ob_get_clean();
                 echo wp_kses(
-                    acym_translation('ACYM_CATEGORY_FILTER').acym_info(['textShownInTooltip' => 'ACYM_CATEGORY_FILTER_DESC']),
+                    acym_translation('ACYM_CATEGORY_FILTER').$tooltip,
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -449,7 +459,7 @@ trait EasyDigitalDownloadsInsertion
 			</div>
 		</div>
 		<script type="text/javascript">
-			window._additionalInfo<?php echo esc_html($identifier); ?> = window._additionalInfo<?php echo esc_html($identifier); ?> || {};
+            window._additionalInfo<?php echo esc_html($identifier); ?> = window._additionalInfo<?php echo esc_html($identifier); ?> || {};
             <?php
             echo 'window._additionalInfo'.esc_attr($identifier).'.min = '.intval($this->defaultValues->min).';';
             echo 'window._additionalInfo'.esc_attr($identifier).'.max = '.intval($this->defaultValues->max).';';
@@ -461,8 +471,11 @@ trait EasyDigitalDownloadsInsertion
 			<div class="cell grid-x">
 				<label class="cell medium-6">
                     <?php
+                    ob_start();
+                    acym_info(['textShownInTooltip' => 'ACYM_START_DATE_PURCHASED_PRODUCT_DESC']);
+                    $tooltip = ob_get_clean();
                     echo wp_kses(
-                        acym_translation('ACYM_START_DATE').acym_info(['textShownInTooltip' => 'ACYM_START_DATE_PURCHASED_PRODUCT_DESC']),
+                        acym_translation('ACYM_START_DATE').$tooltip,
                         [
                             'span' => ['class' => []],
                             'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -478,39 +491,7 @@ trait EasyDigitalDownloadsInsertion
                         'cell medium-6',
                         'onchange="addAdditionalInfo'.esc_attr($identifier).'(\'min_date\', this.value)"'
                     ),
-                    [
-                        'div' => ['class' => [], 'style' => []],
-                        'input' => [
-                            'type' => [],
-                            'name' => [],
-                            'id' => [],
-                            'value' => [],
-                            'class' => [],
-                            'data-open' => [],
-                            'readonly' => [],
-                            'data-acym-translate' => [],
-                            'data-rs' => [],
-                            'onchange' => [],
-                            'data-reveal' => [],
-                            'data-reveal-larger' => [],
-                        ],
-                        'span' => ['class' => [], 'aria-hidden' => []],
-                        'button' => [
-                            'type' => [],
-                            'class' => [],
-                            'data-close' => [],
-                            'data-type' => [],
-                            'aria-label' => [],
-                            'data-open' => [],
-                        ],
-                        'select' => [
-                            'id' => [],
-                            'name' => [],
-                            'class' => [],
-                        ],
-                        'optgroup' => ['label' => []],
-                        'option' => ['value' => [], 'selected' => [], 'disabled' => []],
-                    ]
+                    SecurityHelper::ALLOWED_HTML_DATE
                 );
                 ?>
 			</div>
@@ -705,7 +686,7 @@ trait EasyDigitalDownloadsInsertion
     public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): array
     {
         if (empty($user)) {
-			return [];
+            return [];
         }
 
         $this->replaceCoupons($email, $user, $send);
@@ -727,10 +708,10 @@ trait EasyDigitalDownloadsInsertion
         }
 
         if ($generated == 1 || $generatedCart == 1) {
-			return ['send' => true, 'emogrifier' => true];
+            return ['send' => true, 'emogrifier' => true];
         }
 
-		return [];
+        return [];
     }
 
     private function replaceLastPurchased(&$email, $user, $send)
@@ -848,7 +829,6 @@ trait EasyDigitalDownloadsInsertion
             }
             if (!empty($tag)) {
                 $emptyTags = false;
-                break;
             }
         }
 
@@ -895,11 +875,13 @@ trait EasyDigitalDownloadsInsertion
                 $selectedArea = $this->getSelectedArea($parameter);
                 if (!empty($selectedArea)) {
                     $download_ids = array_unique($download_ids);
+                    acym_arrayToInteger($selectedArea);
                     $query .= ' JOIN #__term_relationships AS cat ON download.ID = cat.object_id 
-                    AND cat.term_taxonomy_id = '.implode(' OR cat.term_taxonomy_id = ', $selectedArea).'';
+                    AND cat.term_taxonomy_id IN ('.implode(',', $selectedArea).')';
                 }
             }
 
+            acym_arrayToInteger($download_ids);
             $query .= ' WHERE download.ID IN ('.implode(',', $download_ids).')';
 
             if ($send) {
@@ -923,7 +905,6 @@ trait EasyDigitalDownloadsInsertion
             }
             if (!empty($tag)) {
                 $emptyTags = false;
-                break;
             }
         }
 

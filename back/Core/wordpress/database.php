@@ -1,4 +1,19 @@
 <?php
+/**
+ * Database abstraction layer.
+ *
+ * Queries are built internally with table prefix substitution via prepareQuery().
+ * Dynamic values are escaped upstream via escapeDB() / esc_sql() before being
+ * passed here. Direct $wpdb calls and absence of per-query caching are intentional
+ * in this low-level layer — caching is handled at the business logic level.
+ *
+ * phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+ * phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
+ * phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+ * phpcs:disable PluginCheck.Security.DirectDB.UnescapedDBParameter
+ */
+
+defined('ABSPATH') || die('Restricted Access');
 
 function acym_escapeDB(?string $value): string
 {

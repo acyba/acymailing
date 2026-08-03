@@ -9,7 +9,7 @@ jQuery(function ($) {
                 activeMenu: null
             },
             mounted: function () {
-                this.menus = JSON.parse($('#splashScreenJsonInfos').val());
+                this.menus = window.acymailingSplash;
                 this.menus = this.menus.splash_content;
                 this.toggleMenu(this.menus[0]);
             },

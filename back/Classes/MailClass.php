@@ -484,7 +484,7 @@ class MailClass extends AcymClass
                 //Remove tinyMce content edit
                 $mail->$oneAttribute = str_replace(' contenteditable="true"', '', $mail->$oneAttribute);
             } else {
-                $mail->$oneAttribute = strip_tags($mail->$oneAttribute);
+                $mail->$oneAttribute = acym_stripTags($mail->$oneAttribute);
             }
         }
 
@@ -598,7 +598,7 @@ class MailClass extends AcymClass
         $thumbnailToDelete = array_diff($thumbnails, $stillUsedThumbnails);
         foreach ($thumbnailToDelete as $one) {
             if (!empty($one) && file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one)) {
-                unlink(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one);
+                acym_deleteFile(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one);
             }
         }
     }
@@ -736,9 +736,9 @@ class MailClass extends AcymClass
 
         $uploadPath = acym_cleanPath(ACYM_ROOT.ACYM_MEDIA_FOLDER.'templates');
 
-        if (!is_writable($uploadPath)) {
-            @chmod($uploadPath, '0755');
-            if (!is_writable($uploadPath)) {
+        if (!acym_isWritable($uploadPath)) {
+            acym_chmod($uploadPath, 0755);
+            if (!acym_isWritable($uploadPath)) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_WRITABLE_FOLDER', $uploadPath), 'warning');
             }
         }
@@ -1537,24 +1537,56 @@ class MailClass extends AcymClass
         );
     }
 
-    public function hasUserAccess(int $mailId): bool
+    public function hasUserAccess(int $mailId, bool $write = false): bool
     {
         $userId = acym_currentUserId();
         if (empty($userId)) {
             return false;
         }
 
+        $mail = acym_loadObject('SELECT `creator_id`, `type` FROM #__acym_mail WHERE id = '.intval($mailId));
+        if (empty($mail)) {
+            return false;
+        }
+
         if (acym_isAdmin()) {
+            return $this->isTypeAllowed($mail->type);
+        }
+
+        if ($mail->creator_id == $userId) {
             return true;
         }
 
-        return acym_loadResult(
-                'SELECT COUNT(*) 
-                FROM #__acym_mail 
-                WHERE id = '.intval($mailId).' 
-                AND (creator_id = '.intval($userId).' 
-                    OR type = '.acym_escapeDB(self::TYPE_TEMPLATE).')'
-            ) > 0;
+        return !$write && $mail->type === self::TYPE_TEMPLATE;
+    }
+
+    private function isTypeAllowed(?string $type): bool
+    {
+        $aclByType = [
+            self::TYPE_NOTIFICATION => ['configuration'],
+            self::TYPE_OVERRIDE => ['override'],
+            self::TYPE_MAILBOX_ACTION => ['bounces'],
+            self::TYPE_AUTOMATION => ['automation'],
+            self::TYPE_SCENARIO => ['scenarios'],
+            self::TYPE_STANDARD => ['campaigns'],
+            self::TYPE_FOLLOWUP => ['campaigns'],
+            self::TYPE_WELCOME => ['lists', 'campaigns'],
+            self::TYPE_UNSUBSCRIBE => ['lists', 'campaigns'],
+            self::TYPE_TEMPLATE => ['mails', 'campaigns'],
+        ];
+
+        // An add-on type is not mapped to a feature, don't lock it
+        if (empty($aclByType[$type])) {
+            return true;
+        }
+
+        foreach ($aclByType[$type] as $oneAcl) {
+            if (acym_isAllowed($oneAcl)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getVersionsById(int $mailId, bool $includeParent = false): array
@@ -1639,6 +1671,21 @@ class MailClass extends AcymClass
 
     public function getMailType(int $mailId): string
     {
-        return acym_loadResult('SELECT type FROM #__acym_mail WHERE id = '.intval($mailId));
+        return (string)acym_loadResult('SELECT type FROM #__acym_mail WHERE id = '.intval($mailId));
+    }
+
+    public function isPublicArchive(int $mailId): bool
+    {
+        $publicCampaign = acym_loadResult(
+            'SELECT COUNT(campaign.id)
+            FROM #__acym_campaign AS campaign
+            JOIN #__acym_mail AS mail ON campaign.mail_id = mail.id
+            WHERE campaign.mail_id = '.intval($mailId).'
+                AND campaign.active = 1
+                AND campaign.sent = 1
+                AND mail.type = '.acym_escapeDB(MailClass::TYPE_STANDARD)
+        );
+
+        return !empty($publicCampaign);
     }
 }

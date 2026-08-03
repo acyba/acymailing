@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 use Joomla\CMS\Factory;
 

@@ -26,12 +26,20 @@ class AclType extends AcymObject
         array_unshift($this->groups, $allGroups);
     }
 
-    public function display(string $page): string
+    public function display(string $page): void
     {
         $name = 'acl_'.$page;
 
         $selected = explode(',', $this->config->get($name, ACYM_ADMIN_GROUP));
 
-        return acym_selectMultiple($this->groups, 'config['.$name.']', $selected, ['class' => 'acym__select']);
+        acym_selectMultiple(
+            $this->groups,
+            'config['.$name.']',
+            $selected,
+            ['class' => 'acym__select'],
+            'value',
+            'text',
+            true
+        );
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 function acym_cmsModal(
     bool    $isIframe,
     string  $content,
@@ -16,14 +18,16 @@ function acym_cmsModal(
     $class = $isButton ? ' button' : '';
 
     if ($isIframe) {
-        return '<a href="'.$content.'&TB_iframe=true&width='.$width.'&height='.$height.'" class="thickbox'.$class.'">'.acym_translation($buttonText).'</a>';
+        return '<a href="'.$content.'&TB_iframe=true&width='.$width.'&height='.$height.'" class="thickbox'.esc_attr($class).'">'.esc_html(acym_translation($buttonText)).'</a>';
     } else {
         if (empty($identifier)) {
-            $identifier = 'identifier_'.rand(1000, 9000);
+            $identifier = 'identifier_'.acym_rand(1000, 9000);
         }
 
-        return '<div id="'.$identifier.'" style="display:none;">'.$content.'</div>
-                <a href="#TB_inline?width='.$width.'&height='.$height.'&inlineId='.$identifier.'" class="thickbox'.$class.'">'.acym_translation($buttonText).'</a>';
+        return '<div id="'.esc_attr($identifier).'" style="display:none;">'.$content.'</div>
+                <a href="#TB_inline?width='.$width.'&height='.$height.'&inlineId='.esc_attr($identifier).'" class="thickbox'.esc_attr($class).'">'.esc_html(
+                acym_translation($buttonText)
+            ).'</a>';
     }
 }
 

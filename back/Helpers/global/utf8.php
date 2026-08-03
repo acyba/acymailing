@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 // utf8_encode is deprecated in PHP 8.2
 function acym_utf8Encode(string $string): string

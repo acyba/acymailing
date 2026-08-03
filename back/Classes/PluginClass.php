@@ -109,7 +109,7 @@ class PluginClass extends AcymClass
         $plugin = $this->getOnePluginByFolderName($folderName);
         if (empty($plugin)) return;
 
-        parent::delete($plugin->id);
+        parent::delete([$plugin->id]);
     }
 
     public function updateAddon(string $addon): ?int
@@ -159,7 +159,7 @@ class PluginClass extends AcymClass
             return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
         }
 
-        if (!unlink($tmpZipDownload)) {
+        if (!acym_deleteFile($tmpZipDownload)) {
             return $this->handleError('ACYM_ERROR_FILE_DELETION', false);
         }
 

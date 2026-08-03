@@ -17,6 +17,8 @@ trait Available
         $data['level'] = $this->level;
         $data['workflowHelper'] = new WorkflowHelper();
 
+        acym_addScript(true, 'window.acymailingAvailableAddons = '.json_encode(ACYM_AVAILABLE_PLUGINS).';');
+
         parent::display($data);
     }
 
@@ -25,6 +27,7 @@ trait Available
         $plugin = [];
 
         if (empty($pluginFromUpdate)) {
+            acym_checkToken();
             $this->isLatestAcyMailingVersion();
             $plugin = acym_getVar('array', 'plugin');
         } else {
@@ -78,10 +81,11 @@ trait Available
 
     public function getAllPluginsAjax(): void
     {
+        acym_checkToken();
         acym_sendAjaxResponse('', $this->getAllPlugins());
     }
 
-    public function getAllPlugins(): array
+    private function getAllPlugins(): array
     {
         $pluginClass = new PluginClass();
         $plugins = $pluginClass->getMatchingElements(['ordering' => 'title']);

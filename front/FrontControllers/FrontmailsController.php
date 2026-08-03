@@ -66,7 +66,7 @@ class FrontmailsController extends MailsController
 
         $mailClass = new MailClass();
         foreach ($ids as $id) {
-            if (!$mailClass->hasUserAccess($id)) {
+            if (!$mailClass->hasUserAccess($id, true)) {
                 die('Access denied for mail deletion');
             }
         }

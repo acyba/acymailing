@@ -167,8 +167,9 @@ class EditorHelper extends AcymObject
             }
         }
 
+        // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Displaying the CMS editor, cannot be escaped. For Joomla editors.
         if (empty($this->editorContent)) {
-            $this->content = acym_escape($this->content);
+            $this->content = acym_escapeHtml($this->content);
             ob_start();
 
             echo $this->myEditor->display(
@@ -193,6 +194,7 @@ class EditorHelper extends AcymObject
         }
 
         echo $this->editorContent;
+        // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
     }
 
     private function displayWordPress(): void
@@ -231,12 +233,10 @@ class EditorHelper extends AcymObject
         static $instance = 0;
         ++$instance;
 
-        $img = '<i class="acymicon-chevrons"></i> ';
-
         printf(
-            '<button type="button" class="button" id="acym__dtext__button" data-editor="%s">%s</button>',
-            esc_attr($editor_id),
-            $img.acym_translation('ACYM_INSERT_DYNAMIC_TEXT')
+            '<button type="button" class="button" id="acym__dtext__button" data-editor="%s"><i class="acymicon-chevrons"></i> %s</button>',
+            acym_escape($editor_id),
+            acym_escapeHtml(acym_translation('ACYM_INSERT_DYNAMIC_TEXT'))
         );
     }
 

@@ -121,7 +121,7 @@ trait EasyprofileInsertion
 
         foreach ($this->epfields as $field) {
             if ($field->type == '' || in_array($field->alias, $this->bannedFields)) continue;
-            $selected = (rand(0, 1) == 1);
+            $selected = (acym_rand(0, 1) == 1);
             $this->displayOptions[$field->alias] = [acym_translation($field->title), $selected];
         }
     }

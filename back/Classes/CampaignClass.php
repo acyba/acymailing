@@ -396,7 +396,7 @@ class CampaignClass extends AcymClass
                 $campaign->$oneAttribute = json_encode(empty($value) ? [] : $value);
             } else {
                 if (empty($value)) continue;
-                $campaign->$oneAttribute = strip_tags($value);
+                $campaign->$oneAttribute = acym_stripTags($value);
             }
         }
 
@@ -433,11 +433,11 @@ class CampaignClass extends AcymClass
             return false;
         }
 
-        if (acym_isAdmin()) {
+        if (acym_isAdmin() && acym_isAllowed('campaigns')) {
             return true;
         }
 
-        $query = 'SELECT COUNT(*) FROM #__acym_campaign AS campaign 
+        $query = 'SELECT COUNT(*) FROM #__acym_campaign AS campaign
             JOIN #__acym_mail AS mail ON campaign.mail_id = mail.id ';
 
         $condition = 'mail.creator_id = '.intval($userId);
@@ -674,7 +674,7 @@ class CampaignClass extends AcymClass
 
                 // If we have an odd number of users to send, we send one more to the first mail
                 $numberOfUsersToSend2 = $numberOfUsersToSend1 * 2 > $numberOfUsersToSend ? $numberOfUsersToSend1 - 1 : $numberOfUsersToSend1;
-                $automationHelper->limit = $numberOfUsersToSend.', '.$numberOfUsersToSend2;
+                $automationHelper->limit = $numberOfUsersToSend1.', '.$numberOfUsersToSend2;
                 $select2 = [intval($campaign->sending_params['abtest']['B']), 'ul.`user_id`', acym_escapeDB($date)];
                 $numberUsersInsertedByMailId[intval($campaign->sending_params['abtest']['B'])] = acym_query(
                     'INSERT IGNORE INTO `#__acym_queue` (`mail_id`, `user_id`, `sending_date`) '.$automationHelper->getQuery($select2)

@@ -159,7 +159,8 @@ const acym_subscriptionBlock = {
             ctrl: 'dynamics',
             task: 'trigger',
             plugin: 'plgAcymPost',
-            trigger: 'getPosts'
+            trigger: 'getPosts',
+            _wpnonce: (typeof acym_subscription_nonce !== 'undefined' ? acym_subscription_nonce : '')
         }).then(response => {
             const posts = JSON.parse(response);
 
@@ -262,7 +263,8 @@ const acym_subscriptionBlock = {
                 self.selectEdit(ACYM_JS_TXT.ACYM_TERMS_CONDITIONS, props, 'termscontent', 'posts'),
                 self.textEdit(ACYM_JS_TXT.ACYM_TERMS_CONDITIONS_URL, props, 'termscontentURL'),
                 self.selectEdit(ACYM_JS_TXT.ACYM_PRIVACY_POLICY, props, 'privacypolicy', 'posts'),
-                self.textEdit(ACYM_JS_TXT.ACYM_PRIVACY_POLICY_URL, props, 'privacypolicyURL')),
+                self.textEdit(ACYM_JS_TXT.ACYM_PRIVACY_POLICY_URL, props, 'privacypolicyURL'),
+                self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_TRACKING_CONSENT, props, 'trackingconsent', 'subscriberInfo')),
             self.el(PanelBody,
                 {
                     title: ACYM_JS_TXT.ACYM_SUBSCRIBE_OPTIONS,

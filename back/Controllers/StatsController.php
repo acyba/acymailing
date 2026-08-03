@@ -46,8 +46,6 @@ class StatsController extends AcymController
 
     private function storeAndGetTask(string $task): string
     {
-        acym_session();
-
         $tasksToStore = [
             'globalStats',
             'detailedStats',
@@ -57,22 +55,23 @@ class StatsController extends AcymController
             'statsByList',
         ];
 
-        if ($this->taskCalled === 'listing' && empty($_SESSION['stats_task'])) {
+        $statsTask = acym_getVar('string', 'stats_task', '', 'SESSION');
+        if ($this->taskCalled === 'listing' && empty($statsTask)) {
             return 'globalStats';
         }
 
-        if ((empty($this->taskCalled) || $this->taskCalled === 'listing') && !empty($_SESSION['stats_task']) && in_array($_SESSION['stats_task'], $tasksToStore)) {
-            return $_SESSION['stats_task'];
+        if ((empty($this->taskCalled) || $this->taskCalled === 'listing') && !empty($statsTask) && in_array($statsTask, $tasksToStore)) {
+            return $statsTask;
         }
 
         if (!empty($this->taskCalled) && !in_array($this->taskCalled, $tasksToStore) && method_exists($this, $this->taskCalled)) {
             return $this->taskCalled;
         } elseif (!empty($this->taskCalled) && $this->taskCalled != 'listing' && in_array($this->taskCalled, $tasksToStore)) {
-            $_SESSION['stats_task'] = $this->taskCalled;
+            acym_setSession('stats_task', $this->taskCalled);
 
             return $task;
-        } elseif (!empty($_SESSION['stats_task']) && method_exists($this, $_SESSION['stats_task'])) {
-            return $_SESSION['stats_task'];
+        } elseif (!empty($statsTask) && method_exists($this, $statsTask)) {
+            return $statsTask;
         } else {
             return $this->defaulttask;
         }

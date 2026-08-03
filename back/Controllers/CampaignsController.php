@@ -93,13 +93,15 @@ class CampaignsController extends AcymController
 
     public function deleteAttachmentAjax(): void
     {
+        acym_checkToken();
+
         $mailId = acym_getVar('int', 'mail', 0);
         $attachmentId = acym_getVar('int', 'id', 0);
 
         if (!empty($mailId) && $attachmentId >= 0) {
             $mailClass = new MailClass();
 
-            if (!$mailClass->hasUserAccess($mailId)) {
+            if (!$mailClass->hasUserAccess($mailId, true)) {
                 acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DELETE_ATTACHMENT'), [], false);
             }
 
@@ -113,6 +115,8 @@ class CampaignsController extends AcymController
 
     public function test(): void
     {
+        acym_checkToken();
+
         $campaignId = acym_getVar('int', 'campaignId', 0);
         $specificMailId = acym_getVar('int', 'mailId', 0);
 
@@ -121,6 +125,15 @@ class CampaignsController extends AcymController
 
         if (empty($campaign)) {
             acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), [], false);
+        }
+
+        if (!$campaignClass->hasUserAccess($campaignId)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_ACCESS_DENIED'), [], false);
+        }
+
+        $mailClassAccess = new MailClass();
+        if (!empty($specificMailId) && $mailClassAccess->getMainMailId($specificMailId) !== (int)$campaign->mail_id) {
+            acym_sendAjaxResponse(acym_translation('ACYM_ACCESS_DENIED'), [], false);
         }
 
         $mailerHelper = new MailerHelper();
@@ -203,7 +216,7 @@ class CampaignsController extends AcymController
 
     public function saveAsTmplAjax(): void
     {
-        if (!acym_isAdmin()) {
+        if (!acym_isAdmin() || (!acym_isAllowed('campaigns') && !acym_isAllowed('mails'))) {
             die('Access denied');
         }
 

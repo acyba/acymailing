@@ -31,12 +31,26 @@ class OperatorType extends AcymObject
         $this->values[] = acym_selectOption('IS NOT NULL', 'IS NOT NULL');
     }
 
-    public function display(string $name, string $valueSelected = '', string $class = 'acym__select'): string
-    {
+    public function display(
+        string $name,
+        string $valueSelected = '',
+        string $class = 'acym__select',
+        bool   $display = false
+    ): string {
         if (empty($this->attributes['class'])) {
             $this->attributes['class'] = $class;
         }
 
-        return acym_select($this->values, $name, $valueSelected, $this->attributes);
+        return acym_select(
+            $this->values,
+            $name,
+            $valueSelected,
+            $this->attributes,
+            'value',
+            'text',
+            null,
+            false,
+            $display
+        );
     }
 }

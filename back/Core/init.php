@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 use AcyMailing\Core\AcymParameter;
 use AcyMailing\Core\AcymPlugin;
@@ -30,16 +31,10 @@ define('ACYM_SOCIAL_MEDIA', json_encode(['facebook', 'twitter', 'instagram', 'li
 define('ACYM_ENTERPRISE_PRICE', '7.4');
 define('ACYM_ESSENTIAL_PRICE', '2.4');
 
-//Avoid date warnings...
-if (is_callable('date_default_timezone_set')) {
-    date_default_timezone_set(@date_default_timezone_get());
-}
-
 include_once ACYM_HELPER_GLOBAL.'acl.php';
 include_once ACYM_HELPER_GLOBAL.'addon.php';
 include_once ACYM_HELPER_GLOBAL.'ajax.php';
 include_once ACYM_HELPER_GLOBAL.'chart.php';
-include_once ACYM_HELPER_GLOBAL.'curl.php';
 include_once ACYM_HELPER_GLOBAL.'date.php';
 include_once ACYM_HELPER_GLOBAL.'email.php';
 include_once ACYM_HELPER_GLOBAL.'field.php';

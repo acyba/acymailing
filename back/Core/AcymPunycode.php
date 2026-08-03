@@ -180,7 +180,7 @@ class AcymPunycode
             if ($this->_strict_mode) {
                 return false;
             }
-            $parsed = parse_url($input);
+            $parsed = acym_parseUrl($input);
             if (isset($parsed['host'])) {
                 $arr = explode('.', $parsed['host']);
                 foreach ($arr as $k => $v) {

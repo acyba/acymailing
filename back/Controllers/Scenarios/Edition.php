@@ -197,7 +197,7 @@ trait Edition
         $triggersFormatted = [];
         foreach ($triggers['user'] as $key => $trigger) {
             $trigger->key = $key;
-            $trigger->name = strip_tags($trigger->name);
+            $trigger->name = acym_stripTags($trigger->name);
             $triggersFormatted[] = $trigger;
         }
 
@@ -212,7 +212,7 @@ trait Edition
         $conditionsFormatted = [];
         foreach ($conditions['user'] as $key => $condition) {
             $condition->key = $key;
-            $condition->name = strip_tags($condition->name);
+            $condition->name = acym_stripTags($condition->name);
             $conditionsFormatted[] = $condition;
         }
 
@@ -227,7 +227,7 @@ trait Edition
         $actionsFormatted = [];
         foreach ($actions as $key => $action) {
             $action->key = $key;
-            $action->name = strip_tags($action->name);
+            $action->name = acym_stripTags($action->name);
             $actionsFormatted[] = $action;
         }
 
@@ -260,12 +260,16 @@ trait Edition
 
     public function saveExit(): void
     {
+        acym_checkToken();
+
         $this->saveInner();
         $this->listing();
     }
 
     public function save(): void
     {
+        acym_checkToken();
+
         $scenarioId = $this->saveInner();
 
         acym_setVar('scenarioId', $scenarioId);
@@ -275,6 +279,8 @@ trait Edition
 
     public function createMail(): void
     {
+        acym_checkToken();
+
         $options = acym_getVar('array', 'send_mail', []);
 
         if (empty($options['step_id'])) {

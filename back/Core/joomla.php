@@ -1,9 +1,15 @@
 <?php
 
+// Avoid date warnings
+if (is_callable('date_default_timezone_set')) {
+    date_default_timezone_set(@date_default_timezone_get());
+}
+
 include __DIR__.DS.'joomla'.DS.'defines.php';
 require ACYM_BACK.'vendor'.DS.'autoload.php';
 
 include __DIR__.DS.'joomla'.DS.'language.php';
+include __DIR__.DS.'joomla'.DS.'request.php';
 include __DIR__.DS.'joomla'.DS.'database.php';
 include __DIR__.DS.'joomla'.DS.'date.php';
 include __DIR__.DS.'joomla'.DS.'file.php';

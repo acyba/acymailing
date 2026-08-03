@@ -8,6 +8,8 @@ trait Subscription
 {
     public function resetSubscription(): void
     {
+        acym_checkToken();
+
         $userId = acym_getVar('int', 'userId');
 
         if (empty($userId)) {
@@ -32,6 +34,8 @@ trait Subscription
 
     public function unsubscribeUser(): void
     {
+        acym_checkToken();
+
         $userId = acym_getVar('int', 'userId');
         if (empty($userId)) {
             $this->listing();
@@ -55,6 +59,8 @@ trait Subscription
 
     public function unsubscribeUserFromAll(): void
     {
+        acym_checkToken();
+
         $userId = acym_getVar('int', 'userId');
 
         if (empty($userId)) {
@@ -83,6 +89,8 @@ trait Subscription
 
     public function resubscribeUserToAll(): void
     {
+        acym_checkToken();
+
         $userId = acym_getVar('int', 'userId');
         if (empty($userId)) {
             $this->listing();
@@ -110,6 +118,11 @@ trait Subscription
 
     public function subscribeUser(bool $returnOnEdit = true, array $lists = [], bool $frontCreation = false): void
     {
+        // Called as a task (no argument) → require a CSRF token. Internal calls from apply() are already token-checked.
+        if (func_num_args() === 0) {
+            acym_checkToken();
+        }
+
         $userId = acym_getVar('int', 'userId');
         if (empty($userId)) {
             $this->listing();

@@ -131,19 +131,15 @@ const acym_helperScenario = {
         acym_helper.setSubmitButtonGlobal();
     },
     setTranslation: function () {
-        const rawTrigger = JSON.parse(document.getElementById('acym_scenario_triggers_data').value);
-        const rawCondition = JSON.parse(document.getElementById('acym_scenario_conditions_data').value);
-        const rawAction = JSON.parse(document.getElementById('acym_scenario_actions_data').value);
-
-        rawTrigger.forEach((trigger) => {
+        acymailingScenarioTriggers.forEach((trigger) => {
             this.translation.trigger[trigger.key] = trigger.name.toLowerCase();
         });
 
-        rawCondition.forEach((condition) => {
+        acymailingScenarioConditions.forEach((condition) => {
             this.translation.condition[condition.key] = condition.name.toLowerCase();
         });
 
-        rawAction.forEach((action) => {
+        acymailingScenarioActions.forEach((action) => {
             this.translation.action[action.key] = action.name.toLowerCase();
         });
     },
@@ -662,7 +658,8 @@ const acym_helperScenario = {
                 acym_helperScenario.displayRightPanelSettings(acym_helperScenario.TYPE_DELAY, acym_helperScenario.baseSettingsElements.delay, nodeParams);
                 break;
             case acym_helperScenario.TYPE_CONDITION:
-                acym_helperScenario.displayRightPanelSettings(acym_helperScenario.TYPE_CONDITION,
+                acym_helperScenario.displayRightPanelSettings(
+                    acym_helperScenario.TYPE_CONDITION,
                     acym_helperScenario.baseSettingsElements.condition,
                     nodeParams
                 );

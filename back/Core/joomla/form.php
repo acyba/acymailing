@@ -3,9 +3,9 @@
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Session\Session;
 
-function acym_formToken(): string
+function acym_formToken(): void
 {
-    return HTMLHelper::_('form.token');
+    echo HTMLHelper::_('form.token');
 }
 
 /**
@@ -52,7 +52,7 @@ function acym_formOptions(bool $token = true, string $task = '', string $current
     echo '<input type="hidden" name="task" value="'.acym_escape($task).'"/>';
     echo '<input type="hidden" name="ctrl" value="'.acym_escape(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
     if ($token) {
-        echo acym_formToken();
+        acym_formToken();
     }
     echo '<button type="submit" class="is-hidden" id="formSubmit"></button>';
 }
@@ -74,4 +74,46 @@ function acym_getOptionRegacyPosition(): array
         acym_selectOption('password', 'ACYM_SMTP_PASSWORD'),
         acym_selectOption('custom', 'ACYM_CUSTOM_FIELD'),
     ];
+}
+
+function acym_checked(bool $checked, bool $current = true, bool $display = true): string
+{
+    $result = '';
+    if ($checked) {
+        $result = 'checked="checked"';
+    }
+
+    if ($display) {
+        echo $result;
+    }
+
+    return $result;
+}
+
+function acym_selected(bool $selected, bool $current = true, bool $display = true): string
+{
+    $result = '';
+    if ($selected) {
+        $result = ' selected="selected"';
+    }
+
+    if ($display) {
+        echo $result;
+    }
+
+    return $result;
+}
+
+function acym_disabled(bool $disabled, bool $current = true, bool $display = true): string
+{
+    $result = '';
+    if ($disabled) {
+        $result = ' disabled="disabled"';
+    }
+
+    if ($display) {
+        echo $result;
+    }
+
+    return $result;
 }

@@ -10,7 +10,6 @@ use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\TabHelper;
 use AcyMailing\Helpers\ToolbarHelper;
 use AcyMailing\Helpers\UpdatemeHelper;
-use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Types\AclType;
 use AcyMailing\Types\DelayType;
 use AcyMailing\Types\FailActionType;
@@ -39,13 +38,6 @@ trait Listing
         //__START__starter_
         $this->resetQueueProcess();
         //__END__starter_
-
-        //__START__wordpress_
-        if ($data['wp_mail_smtp_installed']) {
-            $pluginClass = new AcymPlugin();
-            $data['button_copy_settings_from'] = $pluginClass->getCopySettingsButton($data, 'from_options', 'wp_mail_smtp');
-        }
-        //__END__wordpress_
 
         $this->prepareMailSettings($data);
         $this->prepareMultilingualOption($data);
@@ -142,23 +134,14 @@ trait Listing
         $data['languages'] = [];
 
         foreach ($langs as $lang => $obj) {
-            if ($lang === 'xx-XX') continue;
+            if ($lang === 'xx-XX') {
+                continue;
+            }
 
             $oneLanguage = new \stdClass();
             $oneLanguage->language = $lang;
             $oneLanguage->name = $obj->name;
-
-            $linkEdit = acym_completeLink('language&task=displayLanguage&code='.$lang, true);
-            $icon = $obj->exists ? 'edit' : 'add';
-            $idModalLanguage = 'acym_modal_language_'.$lang;
-            $oneLanguage->edit = acym_modal(
-                '<i class="acymicon-'.$icon.' cursor-pointer acym__color__blue" data-open="'.$idModalLanguage.'" data-ajax="false" data-iframe="'.$linkEdit.'" data-iframe-class="acym__iframe_language" id="image'.$lang.'"></i>',
-                '', //<iframe src="'.$linkEdit.'"></iframe>
-                $idModalLanguage,
-                ['data-reveal-larger' => true],
-                [],
-                false
-            );
+            $oneLanguage->icon = $obj->exists ? 'edit' : 'add';
 
             $data['languages'][] = $oneLanguage;
         }
@@ -229,7 +212,7 @@ trait Listing
 
     private function prepareAcl(array &$data): void
     {
-        $data['acl'] = acym_cmsPermission();
+        $data['adminPermissions'] = acym_hasAdminPermissions();
         $data['acl_advanced'] = acym_getPagesForAcl();
         $data['aclType'] = new AclType();
     }
@@ -241,7 +224,6 @@ trait Listing
         $data['acychecker_get_link'] = ACYM_ACYCHECKER_WEBSITE.'?utm_source=acymailing_plugin&utm_campaign=get_acychecker&utm_medium=button_configuration_security';
 
         $data['level'] = acym_level(ACYM_ESSENTIAL);
-        $data['labelDropdownCaptcha'] = acym_translation('ACYM_CONFIGURATION_CAPTCHA');
 
         $captchaOptions = array_replace(
             [
@@ -256,7 +238,6 @@ trait Listing
         $data['captchaOptions'] = $captchaOptions;
 
         if (!acym_level(ACYM_ESSENTIAL)) {
-            $data['labelDropdownCaptcha'] .= ' '.acym_translation('ACYM_PRO_VERSION_ONLY');
             $data['captchaOptions'] = [];
         }
     }
@@ -414,8 +395,7 @@ trait Listing
 
     private function handleAcl(array &$formData): void
     {
-        $aclPermissions = acym_cmsPermission();
-        if (ACYM_PRODUCTION && !empty($aclPermissions)) {
+        if (ACYM_PRODUCTION && acym_hasAdminPermissions()) {
             $aclPages = array_keys(acym_getPagesForAcl());
             foreach ($aclPages as $page) {
                 if (empty($formData['acl_'.$page])) {
@@ -442,8 +422,7 @@ trait Listing
             'unsub_survey',
         ];
 
-        $aclPermissions = acym_cmsPermission();
-        if (!empty($aclPermissions)) {
+        if (acym_hasAdminPermissions()) {
             $select2Fields[] = 'wp_access';
         }
 
@@ -615,7 +594,7 @@ trait Listing
             if (is_array($unsubSurvey)) {
                 foreach ($unsubSurvey as $key => $value) {
                     if (is_string($value)) {
-                        $unsubSurvey[$key] = strip_tags($value);
+                        $unsubSurvey[$key] = acym_stripTags($value);
                     }
                 }
                 $formData['unsub_survey'] = json_encode($unsubSurvey);
@@ -629,7 +608,7 @@ trait Listing
                     if (is_array($unsubSurvey) && isset($unsubSurvey['unsub_survey'])) {
                         foreach ($unsubSurvey['unsub_survey'] as $key => $value) {
                             if (is_string($value)) {
-                                $unsubSurveyTranslation[$lang]['unsub_survey'][$key] = strip_tags($value);
+                                $unsubSurveyTranslation[$lang]['unsub_survey'][$key] = acym_stripTags($value);
                             }
                         }
                     }
@@ -651,12 +630,16 @@ trait Listing
 
     public function addNewSml(): void
     {
+        acym_checkToken();
+
         acym_trigger('onConfigurationAddSml');
         $this->listing();
     }
 
     public function deleteSml(): void
     {
+        acym_checkToken();
+
         acym_trigger('onConfigurationDeleteSml');
         $this->listing();
     }

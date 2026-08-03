@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 function acym_translationExists(string $key): bool
 {
@@ -54,32 +55,37 @@ function acym_getMultilingualLanguages(): array
     return $languages;
 }
 
-function acym_displayLanguageRadio(array $languages, string $name, $translation, string $info, $default = '', string $type = ''): string
+function acym_displayLanguageRadio(array $languages, string $name, $translation, string $info, $default = '', string $type = ''): void
 {
     $config = acym_config();
     $defaultLanguage = $config->get('multilingual_default');
 
-    if (is_array($translation)) $translation = json_encode($translation);
-    if (is_array($default)) $default = json_encode($default);
-
-    $return = '<div class="cell grid-x grid-margin-x acym__multilingual__selection" id="acym__multilingual__selection-'.acym_escape($type).'">';
-    $return .= '<input type="hidden" class="acym__multilingual__selection__translation" name="'.acym_escape($name).'" value="'.acym_escape($translation).'">';
-    $return .= '<input type="hidden" class="acym__multilingual__selection__translation__default" value="'.acym_escape($default).'">';
-    $return .= '<input type="hidden" class="acym__multilingual__selection__main-language" value="'.acym_escape($defaultLanguage).'">';
-    $return .= '<h4 class="cell shrink acym__title">'.acym_escape(acym_translation('ACYM_LANGUAGE')).acym_info(['textShownInTooltip' => $info]).'</h4>';
-
-    foreach ($languages as $code => $language) {
-        $class = $defaultLanguage === $code ? 'acym__multilingual__selection__one__selected' : '';
-        $return .= '<div class="cell shrink acym__multilingual__selection__one '.acym_escape($class).'" 
-                        data-acym-code="'.acym_escape($code).'" 
-                        data-acym-tooltip="'.acym_escape($language->name).'">';
-        $return .= '<img src="'.acym_escapeUrl(acym_getFlagByCode($code)).'" alt="'.acym_escape($code).' flag">';
-        $return .= '</div>';
+    if (is_array($translation)) {
+        $translation = json_encode($translation);
     }
+    if (is_array($default)) {
+        $default = json_encode($default);
+    }
+    ?>
 
-    $return .= '</div>';
+	<div class="cell grid-x grid-margin-x acym__multilingual__selection" id="acym__multilingual__selection-<?php echo acym_escape($type); ?>">
+		<input type="hidden" class="acym__multilingual__selection__translation" name="<?php echo acym_escape($name); ?>" value="<?php echo acym_escape($translation); ?>">
+		<input type="hidden" class="acym__multilingual__selection__translation__default" value="<?php echo acym_escape($default); ?>">
+		<input type="hidden" class="acym__multilingual__selection__main-language" value="<?php echo acym_escape($defaultLanguage); ?>">
+		<h4 class="cell shrink acym__title">
+            <?php echo acym_escapeHtml(acym_translation('ACYM_LANGUAGE')); ?>
+            <?php acym_info(['textShownInTooltip' => $info]); ?>
+		</h4>
 
-    return $return;
+        <?php foreach ($languages as $code => $language) { ?>
+			<div class="cell shrink acym__multilingual__selection__one <?php echo acym_escape($defaultLanguage === $code ? 'acym__multilingual__selection__one__selected' : ''); ?>"
+			     data-acym-code="<?php echo acym_escape($code); ?>"
+			     data-acym-tooltip="<?php echo acym_escape($language->name); ?>">
+				<img src="<?php echo acym_escapeUrl(acym_getFlagByCode($code)); ?>" alt="<?php echo acym_escape($code); ?> flag">
+			</div>
+        <?php } ?>
+	</div>
+    <?php
 }
 
 /**

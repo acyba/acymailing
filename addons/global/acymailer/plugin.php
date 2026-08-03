@@ -53,26 +53,34 @@ class plgAcymAcymailer extends AcymPlugin
         $this->pluginDescription->name = self::SENDING_METHOD_NAME;
     }
 
-    protected function callApiSendingMethod(string $url, array $data = [], array $headers = [], string $type = 'GET', array $authentication = [], bool $dataDecoded = false): array
-    {
+    protected function callApiSendingMethod(
+        string $url,
+        array  $data = [],
+        array  $headers = [],
+        string $type = 'GET',
+        array  $authentication = [],
+        bool   $dataDecoded = false,
+        array  $files = []
+    ): array {
         if (strpos($url, self::SENDING_METHOD_API_URL) === false) {
             $url = self::SENDING_METHOD_API_URL.'api/'.$url;
         }
 
         $defaultHeaders = [
-            'accept' => 'application/json',
-            'content-type' => 'application/json',
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
             'API-KEY' => $this->config->get(self::SENDING_METHOD_ID.'_apikey', ''),
             'Version' => $this->config->get('version'),
         ];
 
+        $usedHeaders = array_map('strtolower', array_keys($headers));
         foreach ($defaultHeaders as $key => $value) {
-            if (!isset($headers[$key])) {
+            if (!in_array(strtolower($key), $usedHeaders, true)) {
                 $headers[$key] = $value;
             }
         }
 
-        $result = parent::callApiSendingMethod($url, $data, $headers, $type, $authentication, $dataDecoded);
+        $result = parent::callApiSendingMethod($url, $data, $headers, $type, $authentication, $dataDecoded, $files);
         if (!empty($result['error_curl'])) {
             $result['message'] = $result['error_curl'];
             $this->errors[] = $result['error_curl'];
@@ -107,12 +115,12 @@ class plgAcymAcymailer extends AcymPlugin
 		<div class="grid-x grid-margin-x margin-top-1" id="activate_ass_method_notice">
 			<label class="cell medium-7 acym_vcenter">
 				<i class="acymicon-info-circle" id="acymailer_info_icon"></i>
-                <?php echo acym_translation('ACYM_ACTIVATE_ACYMAILER'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIVATE_ACYMAILER')); ?>
 			</label>
 			<button type="button"
-					id="acym__configuration__activate__acymailer"
-					class="cell shrink button margin-bottom-0">
-                <?php echo acym_translation('ACYM_SEE_THE_SENDING_METHOD'); ?>
+			        id="acym__configuration__activate__acymailer"
+			        class="cell shrink button margin-bottom-0">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_SEE_THE_SENDING_METHOD')); ?>
 			</button>
 		</div>
         <?php
@@ -135,19 +143,19 @@ class plgAcymAcymailer extends AcymPlugin
 
         ob_start();
         ?>
-		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
+		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_settings">
 			<div class="cell grid-x acym__sending__methods__one__settings <?php echo empty($data['step']) ? 'xlarge-10 xxlarge-8' : ''; ?>">
                 <?php if (!acym_level(ACYM_ESSENTIAL) && empty($data['step'])) { ?>
 					<div class="acym_vcenter acym__config__acymailer__warning margin-top-1 cell grid-x large-8 xlarge-6 xxlarge-5">
 						<label for="acym__configuration__license-key" class="cell">
-                            <?php echo acym_translation('ACYM_YOUR_LICENSE_KEY'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_YOUR_LICENSE_KEY')); ?>
 						</label>
 						<input type="text" name="config[license_key]" id="acym__configuration__license-key" class="cell auto" value="<?php echo acym_escape($licenseKey); ?>">
 						<button type="button"
-								id="acym__configuration__button__license"
-								class="cell shrink medium-3 button margin-top-1 medium-margin-top-0 medium-margin-left-1"
-								data-acym-linked="<?php echo empty($licenseKey) ? 0 : 1; ?>">
-                            <?php echo acym_translation(empty($licenseKey) ? 'ACYM_ATTACH_MY_LICENSE' : 'ACYM_UNLINK_MY_LICENSE'); ?>
+						        id="acym__configuration__button__license"
+						        class="cell shrink medium-3 button margin-top-1 medium-margin-top-0 medium-margin-left-1"
+						        data-acym-linked="<?php echo empty($licenseKey) ? 0 : 1; ?>">
+                            <?php echo acym_escapeHtml(acym_translation(empty($licenseKey) ? 'ACYM_ATTACH_MY_LICENSE' : 'ACYM_UNLINK_MY_LICENSE')); ?>
 						</button>
 					</div>
                 <?php }
@@ -157,9 +165,9 @@ class plgAcymAcymailer extends AcymPlugin
 						<span class="margin-right-1">
 							<?php
                             $pricingPage = ACYM_ACYMAILING_WEBSITE.'pricing?utm_source=acymailing_plugin&utm_medium=sendingmethod&utm_campaign=purchase';
-                            echo acym_translation(acym_level(ACYM_ESSENTIAL) ? 'ACYM_NO_LICENSE' : 'ACYM_NO_LICENSE_STARTER');
+                            echo acym_escapeHtml(acym_translation(acym_level(ACYM_ESSENTIAL) ? 'ACYM_NO_LICENSE' : 'ACYM_NO_LICENSE_STARTER'));
                             ?>
-							<a target="_blank" href="<?php echo $pricingPage; ?>"><?php echo acym_translation('ACYM_GET_A_LICENSE'); ?></a>
+							<a target="_blank" href="<?php echo acym_escapeUrl($pricingPage); ?>"><?php echo acym_escapeHtml(acym_translation('ACYM_GET_A_LICENSE')); ?></a>
 						</span>
 					</div>
                 <?php } elseif (empty($acyMailerKey)) { ?>
@@ -168,19 +176,21 @@ class plgAcymAcymailer extends AcymPlugin
 						<span>
 							<?php
                             $subscriptionsPage = ACYM_ACYMAILING_WEBSITE.'account/license?utm_source=acymailing_plugin&utm_medium=sendingmethod&utm_campaign=purchase';
-                            echo acym_translation('ACYM_API_KEY_NOT_ALLOWING_METHOD');
+                            echo acym_escapeHtml(acym_translation('ACYM_API_KEY_NOT_ALLOWING_METHOD'));
                             ?>
-							<a target="_blank" href="<?php echo $subscriptionsPage; ?>"><?php echo acym_translation('ACYM_SWITCH_MY_LICENSE'); ?></a>
+							<a target="_blank" href="<?php echo acym_escapeUrl($subscriptionsPage); ?>"><?php echo acym_escapeHtml(
+                                    acym_translation('ACYM_SWITCH_MY_LICENSE')
+                                ); ?></a>
 						</span>
 					</div>
 
 					<div class="acym__configuration__acymailer__check-license cell grid-x">
-						<div class="cell"><?php echo acym_translation('ACYM_CHECK_SENDING_SERVICE_LICENSE'); ?></div>
+						<div class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_CHECK_SENDING_SERVICE_LICENSE')); ?></div>
 						<button
 								data-task="attachLicenseAcymailer"
 								id="acym__configuration__acymailer__verify-license"
 								class="cell medium-shrink button margin-left-0 margin-top-1 acy_button_submit">
-                            <?php echo acym_translation('ACYM_CHECK_LICENSE'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_CHECK_LICENSE')); ?>
 						</button>
 					</div>
                 <?php } else { ?>
@@ -189,20 +199,22 @@ class plgAcymAcymailer extends AcymPlugin
 							<div class="cell <?php echo empty($data['step']) ? 'large-8' : ''; ?> grid-x acym_vcenter acym__config__acymailer__warning">
 								<i class="cell small-2 margin-right-0 acymicon-access-time acym__color__orange"></i>
 								<div class="cell small-10 grid-x">
-									<span class="cell"><?php echo acym_translation('ACYM_DOMAINS_WAITING_VALIDATION_ADD_CNAME'); ?></span>
-									<a href="<?php echo ACYM_DOCUMENTATION; ?>external-sending-method/acymailing-sending-service#how-to-add-the-dns-entries-on-my-server"
+									<span class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_DOMAINS_WAITING_VALIDATION_ADD_CNAME')); ?></span>
+									<a href="<?php echo acym_escapeUrl(
+                                        ACYM_DOCUMENTATION
+                                    ); ?>external-sending-method/acymailing-sending-service#how-to-add-the-dns-entries-on-my-server"
 									   target="_blank"
 									   class="cell">
-                                        <?php echo acym_translation('ACYM_CHECK_THIS_TUTORIAL'); ?>
+                                        <?php echo acym_escapeHtml(acym_translation('ACYM_CHECK_THIS_TUTORIAL')); ?>
 									</a>
 								</div>
 							</div>
 							<div class="cell <?php echo empty($data['step']) ? 'large-4' : ''; ?> margin-top-1 margin-bottom-1">
 								<button id="acym__config__acymailer__update-domain-status"
-										type="button"
-										class="button button-secondary float-right"
-										sending-method-id="<?php echo self::SENDING_METHOD_ID; ?>">
-									<i class="acymicon-autorenew"></i><?php echo acym_translation('ACYM_UPDATE_DOMAIN_STATUS'); ?>
+								        type="button"
+								        class="button button-secondary float-right"
+								        sending-method-id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>">
+									<i class="acymicon-autorenew"></i><?php echo acym_escapeHtml(acym_translation('ACYM_UPDATE_DOMAIN_STATUS')); ?>
 								</button>
 							</div>
                         <?php } ?>
@@ -211,25 +223,27 @@ class plgAcymAcymailer extends AcymPlugin
 						<div class="grid-x cell acym__listing__header">
 							<div class="grid-x medium-auto small-11 cell acym__listing__header__title__container">
 								<div class="cell small-8 medium-auto  acym__listing__header__title">
-                                    <?php echo acym_translation('ACYM_DOMAIN_NAME'); ?>
+                                    <?php echo acym_escapeHtml(acym_translation('ACYM_DOMAIN_NAME')); ?>
 								</div>
 								<div class="cell hide-for-small-only medium-2 acym__listing__header__title text-center">
-                                    <?php echo acym_translation('ACYM_STATUS'); ?>
+                                    <?php echo acym_escapeHtml(acym_translation('ACYM_STATUS')); ?>
 								</div>
 								<div class="cell hide-for-small-only medium-2 acym__listing__header__title text-center">
-                                    <?php echo acym_translation('ACYM_BOUNCE_RATE').acym_info(['textShownInTooltip' => 'ACYM_BOUNCE_RATE_DESC']); ?>
+                                    <?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCE_RATE'));
+                                    acym_info(['textShownInTooltip' => 'ACYM_BOUNCE_RATE_DESC']); ?>
 								</div>
 								<div class="cell hide-for-small-only medium-2 acym__listing__header__title text-center">
-                                    <?php echo acym_translation('ACYM_COMPLAINT_RATE').acym_info(['textShownInTooltip' => 'ACYM_COMPLAINT_RATE_DESC']); ?>
+                                    <?php echo acym_escapeHtml(acym_translation('ACYM_COMPLAINT_RATE'));
+                                    acym_info(['textShownInTooltip' => 'ACYM_COMPLAINT_RATE_DESC']); ?>
 								</div>
 								<div class="cell small-4 medium-2 acym__listing__header__title text-center">
-                                    <?php echo acym_translation('ACYM_ACTIONS'); ?>
+                                    <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIONS')); ?>
 								</div>
 							</div>
 						</div>
                         <?php if (empty($domains)) { ?>
 							<div class="grid-x cell margin-top-1 align-center">
-                                <?php echo acym_translation('ACYM_NO_DOMAINS_YET'); ?>
+                                <?php echo acym_escapeHtml(acym_translation('ACYM_NO_DOMAINS_YET')); ?>
 							</div>
                         <?php } else {
                             foreach ($domains as &$domain) {
@@ -238,7 +252,7 @@ class plgAcymAcymailer extends AcymPlugin
                                     $domain['CnameRecords'][$i]['isValid'] = $this->checkCnameEntry($cnameRecord['name'], $cnameRecord['value']);
                                     $isValid = $isValid && $domain['CnameRecords'][$i]['isValid'];
                                     $domain['CnameRecords'][$i]['tooltipMessages'] = $this->cnameErrors;
-									$this->cnameErrors = [];
+                                    $this->cnameErrors = [];
                                 }
 
                                 if (!$isValid && $domain['status'] === 'SUCCESS') {
@@ -246,20 +260,20 @@ class plgAcymAcymailer extends AcymPlugin
                                     $this->config->saveConfig([self::SENDING_METHOD_ID.'_domains' => json_encode($domains)]);
                                 }
 
-                                $bounceRateParams = $this->getRateColor(
+                                $bounceRateColorClass = $this->getRateColor(
                                     empty($domain['bounce_rate']) ? 0 : $domain['bounce_rate'],
                                     empty($domain['allowed_bounce_rate']) ? 0 : $domain['allowed_bounce_rate'],
                                     empty($domain['warning_bounce_rate']) ? 0 : $domain['warning_bounce_rate']
                                 );
-                                $complaintRateParams = $this->getRateColor(
+                                $complaintRateColorClass = $this->getRateColor(
                                     empty($domain['complaint_rate']) ? 0 : $domain['complaint_rate'],
                                     empty($domain['allowed_complaint_rate']) ? 0 : $domain['allowed_complaint_rate'],
                                     empty($domain['warning_complaint_rate']) ? 0 : $domain['warning_complaint_rate']
                                 );
                                 ?>
-								<div acym-data-domain="<?php echo $domain['domain']; ?>" class="grid-x cell align-middle acym__listing__row">
+								<div acym-data-domain="<?php echo acym_escape($domain['domain']); ?>" class="grid-x cell align-middle acym__listing__row">
 									<div class="cell small-6 medium-auto grid-x acym__listing__title__container">
-                                        <?php echo acym_escape($domain['domain']); ?>
+                                        <?php echo acym_escapeHtml($domain['domain']); ?>
 									</div>
 									<div class="cell small-1 medium-2 grid-x acym__listing__title__container align-center">
                                         <?php
@@ -277,7 +291,7 @@ class plgAcymAcymailer extends AcymPlugin
                                                 $tooltipText = acym_translation('ACYM_A_CNAME_MISSING');
                                         }
 
-                                        echo acym_tooltip(
+                                        acym_tooltip(
                                             [
                                                 'hoveredText' => '<i class="acym__config__acymailer__status__icon '.$iconClass.'"></i>',
                                                 'textShownInTooltip' => $tooltipText,
@@ -285,69 +299,71 @@ class plgAcymAcymailer extends AcymPlugin
                                         );
                                         ?>
 									</div>
-									<div class="cell hide-for-small-only medium-2 grid-x acym__listing__title__container align-center <?php echo $bounceRateParams['color']; ?>">
-                                        <?php echo empty($domain['bounce_rate']) ? '-' : round($domain['bounce_rate'], 2).'%';
-                                        echo $bounceRateParams['icon'];
+									<div class="cell hide-for-small-only medium-2 grid-x acym__listing__title__container align-center <?php echo acym_escape(
+                                        $bounceRateColorClass
+                                    ); ?>">
+                                        <?php echo empty($domain['bounce_rate']) ? '-' : acym_escapeHtml(round($domain['bounce_rate'], 2)).'%';
+                                        $this->displayRateIcon(
+                                            empty($domain['bounce_rate']) ? 0 : $domain['bounce_rate'],
+                                            empty($domain['allowed_bounce_rate']) ? 0 : $domain['allowed_bounce_rate'],
+                                            empty($domain['warning_bounce_rate']) ? 0 : $domain['warning_bounce_rate']
+                                        );
                                         ?>
 									</div>
-									<div class="cell hide-for-small-only medium-2 grid-x acym__listing__title__container align-center <?php echo $complaintRateParams['color']; ?>">
-                                        <?php echo empty($domain['complaint_rate']) ? '-' : round($domain['complaint_rate'], 2).'%';
-                                        echo $complaintRateParams['icon'];
+									<div class="cell hide-for-small-only medium-2 grid-x acym__listing__title__container align-center <?php echo acym_escape(
+                                        $complaintRateColorClass
+                                    ); ?>">
+                                        <?php echo empty($domain['complaint_rate']) ? '-' : acym_escapeHtml(round($domain['complaint_rate'], 2)).'%';
+                                        $this->displayRateIcon(
+                                            empty($domain['complaint_rate']) ? 0 : $domain['complaint_rate'],
+                                            empty($domain['allowed_complaint_rate']) ? 0 : $domain['allowed_complaint_rate'],
+                                            empty($domain['warning_complaint_rate']) ? 0 : $domain['warning_complaint_rate']
+                                        );
                                         ?>
 									</div>
 									<div class="cell small-4 medium-2 grid-x margin-left-1 medium-margin-left-0 acym__listing__title__container align-center">
                                         <?php ob_start(); ?>
 										<div class="cell grid-x acym__config__acymailer__cname__modal">
-											<h6 class="cell text-center margin-top-2 margin-bottom-1"><?php echo acym_translation('ACYM_DNS_ENTRIES'); ?></h6>
+											<h6 class="cell text-center margin-top-2 margin-bottom-1"><?php echo acym_escapeHtml(acym_translation('ACYM_DNS_ENTRIES')); ?></h6>
 											<div class="grid-x cell align-center margin-top-1 margin-bottom-2 acym_vcenter">
-												<p class="cell shrink"><?php echo acym_translation('ACYM_DO_NOT_KNOW_HOW_DO_IT'); ?> </p>
-												<a href="<?php echo ACYM_DOCUMENTATION; ?>external-sending-method/acymailing-sending-service#how-to-add-the-dns-entries-on-my-server"
+												<p class="cell shrink"><?php echo acym_escapeHtml(acym_translation('ACYM_DO_NOT_KNOW_HOW_DO_IT')); ?> </p>
+												<a href="<?php echo acym_escapeUrl(
+                                                    ACYM_DOCUMENTATION
+                                                ); ?>external-sending-method/acymailing-sending-service#how-to-add-the-dns-entries-on-my-server"
 												   class="cell shrink acym__config__acymailer__cname__modal__link"
 												   target="_blank">
-                                                    <?php echo acym_translation('ACYM_STEP_BY_STEP_GUIDE'); ?>
+                                                    <?php echo acym_escapeHtml(acym_translation('ACYM_STEP_BY_STEP_GUIDE')); ?>
 												</a>
 											</div>
 											<div class="grid-x acym__listing cell">
 												<div class="grid-x acym__listing cell">
 													<div class="cell grid-x grid-margin-x margin-left-0 padding-bottom-1 acym__listing__header">
 														<div class="cell small-10 hide-for-medium acym__listing__header__title">
-                                                            <?php echo acym_translation('ACYM_NAME').' / '.acym_translation('ACYM_VALUE'); ?>
+                                                            <?php echo acym_escapeHtml(acym_translation('ACYM_NAME').' / '.acym_translation('ACYM_VALUE')); ?>
 														</div>
 														<div class="cell small-5 show-for-medium acym__listing__header__title">
-                                                            <?php echo acym_translation('ACYM_NAME'); ?>
+                                                            <?php echo acym_escapeHtml(acym_translation('ACYM_NAME')); ?>
 														</div>
 														<div class="cell small-5 show-for-medium acym__listing__header__title">
-                                                            <?php echo acym_translation('ACYM_VALUE'); ?>
+                                                            <?php echo acym_escapeHtml(acym_translation('ACYM_VALUE')); ?>
 														</div>
 														<div class="cell small-2 acym__listing__header__title text-center">
-                                                            <?php echo acym_translation('ACYM_STATUS'); ?>
+                                                            <?php echo acym_escapeHtml(acym_translation('ACYM_STATUS')); ?>
 														</div>
 													</div>
-                                                    <?php
-                                                    foreach ($domain['CnameRecords'] as $cnameRecord) {
-                                                        if ($cnameRecord['isValid']) {
-                                                            $cnameStatus = '<i class="acym__config__acymailer__status__icon acymicon-check-circle acym__color__green"></i>';
-                                                        } else {
-                                                            $cnameStatus = acym_tooltip(
-                                                                [
-                                                                    'hoveredText' => '<i class="acym__config__acymailer__status__icon acymicon-close acym__color__red"></i>',
-                                                                    'textShownInTooltip' => implode('<br/>', $cnameRecord['tooltipMessages']),
-                                                                ]
-                                                            );
-                                                        }
-                                                        ?>
+                                                    <?php foreach ($domain['CnameRecords'] as $cnameRecord) { ?>
 														<div class="cell grid-x grid-margin-x margin-left-0 align-middle acym__listing__row">
 															<div class="cell small-11 medium-5 cname-name">
-                                                                <?php echo $cnameRecord['name']; ?>
+                                                                <?php echo acym_escapeHtml($cnameRecord['name']); ?>
 															</div>
 															<div class="cell small-1 hide-for-medium cname-value">
-                                                                <?php echo $cnameStatus; ?>
+                                                                <?php $this->displayCnameStatus($cnameRecord); ?>
 															</div>
 															<div class="cell small-11 medium-5 cname-value">
-                                                                <?php echo $cnameRecord['value']; ?>
+                                                                <?php echo acym_escapeHtml($cnameRecord['value']); ?>
 															</div>
 															<div class="cell medium-2 show-for-medium text-center">
-                                                                <?php echo $cnameStatus; ?>
+                                                                <?php $this->displayCnameStatus($cnameRecord); ?>
 															</div>
 														</div>
                                                     <?php } ?>
@@ -356,13 +372,17 @@ class plgAcymAcymailer extends AcymPlugin
 										</div>
                                         <?php
                                         $modalContent = ob_get_clean();
-                                        $buttonModal = acym_tooltip(
+                                        ob_start();
+                                        acym_tooltip(
                                             [
-                                                'hoveredText' => '<i class="acymicon-cogs acym__config__acymailer__domain--settings cursor-pointer acym__color__blue" acym-data-domain="'.$domain['domain'].'"></i>',
+                                                'hoveredText' => '<i class="acymicon-cogs acym__config__acymailer__domain--settings cursor-pointer acym__color__blue" acym-data-domain="'.acym_escape(
+                                                        $domain['domain']
+                                                    ).'"></i>',
                                                 'textShownInTooltip' => acym_translation('ACYM_SHOW_DNS_SETTINGS'),
                                             ]
                                         );
-                                        echo acym_modal(
+                                        $buttonModal = ob_get_clean();
+                                        acym_modal(
                                             $buttonModal,
                                             $modalContent,
                                             null,
@@ -373,7 +393,7 @@ class plgAcymAcymailer extends AcymPlugin
                                             'acym__config__acymailer__cname__modal__container'
                                         );
 
-                                        echo acym_tooltip(
+                                        acym_tooltip(
                                             [
                                                 'hoveredText' => '<i class="acymicon-delete acym__config__acymailer__domain--delete cursor-pointer" acym-data-domain="'.acym_escape(
                                                         $domain['domain']
@@ -392,26 +412,26 @@ class plgAcymAcymailer extends AcymPlugin
 					<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings padding-top-1">
 						<div class="cell grid-x">
 							<div class="cell small-7 medium-4 large-3 margin-next-1">
-								<input id="<?php echo self::SENDING_METHOD_ID; ?>_domain"
-									   class="cell medium-6 large-4 xlarge-3"
-									   type="text"
-									   autocomplete="off"
-									   value="">
-								<span id="<?php echo self::SENDING_METHOD_ID; ?>_domain_error" class="medium-6 large-4 xlarge-3"></span>
+								<input id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_domain"
+								       class="cell medium-6 large-4 xlarge-3"
+								       type="text"
+								       autocomplete="off"
+								       value="">
+								<span id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_domain_error" class="medium-6 large-4 xlarge-3"></span>
                                 <?php
                                 if (!empty($unverifiedDomains)) { ?>
 									<span id="acym__acymailer__unverifiedDomains">
 									<?php foreach ($unverifiedDomains as $oneDomain) { ?>
-										<span class="acym__acymailer__oneSuggestion"><?php echo $oneDomain; ?></span>
+										<span class="acym__acymailer__oneSuggestion"><?php echo acym_escapeHtml($oneDomain); ?></span>
                                     <?php } ?>
 									</span>
                                 <?php } ?>
 							</div>
 							<div id="acym__configuration__sending__method_addDomain_submit" class="cell grid-x small-4 medium-6 large-8 acym_vcenter">
 								<button type="button"
-										id="acym__configuration__sending__method-addDomain"
-										class="cell shrink button button-secondary">
-                                    <?php echo acym_translation('ACYM_ADD_A_DOMAIN'); ?>
+								        id="acym__configuration__sending__method-addDomain"
+								        class="cell shrink button button-secondary">
+                                    <?php echo acym_escapeHtml(acym_translation('ACYM_ADD_A_DOMAIN')); ?>
 								</button>
 								<i class="margin-left-1 acym_vcenter acymicon-circle-o-notch acymicon-spin is-hidden"
 								   id="acym__configuration__sending__method_add_domain-wait"></i>
@@ -425,7 +445,7 @@ class plgAcymAcymailer extends AcymPlugin
                     <?php if (!$this->isLogFileEmpty()) { ?>
 						<div class="cell grid-x acym__sending__methods__log">
                             <?php
-                            echo acym_modal(
+                            acym_modal(
                                 acym_translation('ACYM_REPORT_SEE'),
                                 '',
                                 null,
@@ -887,18 +907,22 @@ class plgAcymAcymailer extends AcymPlugin
         if (empty($creditsShowed)) {
             $creditsShowed = '0';
         }
+
+        ob_start();
+        acym_tooltip(
+            [
+                'hoveredText' => $creditsShowed,
+                'textShownInTooltip' => acym_translation('ACYM_GET_MORE_CREDITS'),
+                'classContainer' => 'credits_remaining',
+                'link' => ACYM_ACYMAILING_WEBSITE,
+            ]
+        );
+        $tooltip = ob_get_clean();
         $html = acym_translationSprintf(
             'ACYM_SENDING_METHOD_X_UNITY',
             self::SENDING_METHOD_NAME,
-            acym_tooltip(
-                [
-                    'hoveredText' => $creditsShowed,
-                    'textShownInTooltip' => acym_translation('ACYM_GET_MORE_CREDITS'),
-                    'classContainer' => 'credits_remaining',
-                    'link' => ACYM_ACYMAILING_WEBSITE,
-                ]
-            ),
-            '<span class="acym_not_bold">'.acym_translation($unityTranslation).'</span>'
+            $tooltip,
+            '<span class="acym_not_bold">'.acym_escapeHtml(acym_translation($unityTranslation)).'</span>'
         );
     }
 
@@ -1000,35 +1024,42 @@ class plgAcymAcymailer extends AcymPlugin
         return array_diff($allDomains, $verifiedDomains);
     }
 
-    private function getRateColor($rate, $allowedRate, $warningRate): array
+    private function getRateColor(float $rate, float $allowedRate, float $warningRate): string
     {
         if (empty($rate) || empty($allowedRate) || empty($warningRate)) {
-            return ['color' => '', 'icon' => ''];
+            return '';
         }
 
         if ($rate > $allowedRate) {
-            return [
-                'color' => 'acym__color__red',
-                'icon' => acym_tooltip(
-                    [
-                        'hoveredText' => '<i class="acym__config__acymailer__rate-status__icon acymicon-close acym__color__red"></i>',
-                        'textShownInTooltip' => acym_translation('ACYM_RATE_BLOCKED'),
-                    ]
-                ),
-            ];
+            return 'acym__color__red';
         } elseif ($rate >= $warningRate) {
-            return [
-                'color' => 'acym__color__orange',
-                'icon' => acym_tooltip(
-                    [
-                        'hoveredText' => '<i class="acym__config__acymailer__rate-status__icon acymicon-exclamation-triangle acym__color__orange"></i>',
-                        'textShownInTooltip' => acym_translation('ACYM_RATE_WARNING'),
-                    ]
-                ),
-            ];
+            return 'acym__color__orange';
         }
 
-        return ['color' => '', 'icon' => ''];
+        return '';
+    }
+
+    private function displayRateIcon(float $rate, float $allowedRate, float $warningRate): void
+    {
+        if (empty($rate) || empty($allowedRate) || empty($warningRate)) {
+            return;
+        }
+
+        if ($rate > $allowedRate) {
+            acym_tooltip(
+                [
+                    'hoveredText' => '<i class="acym__config__acymailer__rate-status__icon acymicon-close acym__color__red"></i>',
+                    'textShownInTooltip' => acym_translation('ACYM_RATE_BLOCKED'),
+                ]
+            );
+        } elseif ($rate >= $warningRate) {
+            acym_tooltip(
+                [
+                    'hoveredText' => '<i class="acym__config__acymailer__rate-status__icon acymicon-exclamation-triangle acym__color__orange"></i>',
+                    'textShownInTooltip' => acym_translation('ACYM_RATE_WARNING'),
+                ]
+            );
+        }
     }
 
     private function updateDomainRates($domainsRates)
@@ -1253,5 +1284,19 @@ class plgAcymAcymailer extends AcymPlugin
         $this->cnameErrors[] = acym_translation('ACYM_DNS_NOT_CNAME');
 
         return false;
+    }
+
+    private function displayCnameStatus(array $cnameRecord): void
+    {
+        if ($cnameRecord['isValid']) {
+            echo '<i class="acym__config__acymailer__status__icon acymicon-check-circle acym__color__green"></i>';
+        } else {
+            acym_tooltip(
+                [
+                    'hoveredText' => '<i class="acym__config__acymailer__status__icon acymicon-close acym__color__red"></i>',
+                    'textShownInTooltip' => implode('<br/>', $cnameRecord['tooltipMessages']),
+                ]
+            );
+        }
     }
 }

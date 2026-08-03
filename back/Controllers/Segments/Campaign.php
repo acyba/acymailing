@@ -74,6 +74,8 @@ trait Campaign
 
     public function countGlobalBySegmentId(): void
     {
+        acym_checkToken();
+
         $segmentId = acym_getVar('int', 'segmentId', 0);
         $isExclude = acym_getVar('boolean', 'exclude', false);
         $listsIds = json_decode(acym_getVar('string', 'lists', '[]'), true);
@@ -89,8 +91,12 @@ trait Campaign
 
     public function saveFromCampaign(): void
     {
-        $name = acym_getVar('string', 'segment_name', '');
+        acym_checkToken();
+
         $filters = acym_getVar('array', 'acym_action', []);
+        acym_blockRestrictedFilterAjax($filters);
+
+        $name = acym_getVar('string', 'segment_name', '');
 
         $segmentClass = new SegmentClass();
 

@@ -90,6 +90,13 @@ trait SubscriptionAutomationFilters
 
     public function onAcymDeclareSummary_filters(&$automation)
     {
-        $this->onAcymDeclareSummary_conditionsFilters($automation, 'ACYM_FILTER_ACY_LIST_SUMMARY', 'ACYM_SUBSCRIBED', 'ACYM_UNSUBSCRIBED', 'ACYM_NOT_SUBSCRIBED', 'ACYM_NOT_CURRENTLY_SUBSCRIBED');
+        $this->onAcymDeclareSummary_conditionsFilters(
+            $automation,
+            'ACYM_FILTER_ACY_LIST_SUMMARY',
+            'ACYM_SUBSCRIBED',
+            'ACYM_UNSUBSCRIBED',
+            'ACYM_NOT_SUBSCRIBED',
+            'ACYM_NOT_CURRENTLY_SUBSCRIBED'
+        );
     }
 }

@@ -1,9 +1,10 @@
 <?php
+// context verification
 
 function acym_replaceDateTags(string $value): string
 {
     $replace = ['{year}', '{month}', '{weekday}', '{day}'];
-    $replaceBy = [date('Y'), date('m'), date('N'), date('d')];
+    $replaceBy = [gmdate('Y'), gmdate('m'), gmdate('N'), gmdate('d')];
     $value = str_replace($replace, $replaceBy, $value);
 
     $results = [];
@@ -11,7 +12,7 @@ function acym_replaceDateTags(string $value): string
         foreach ($results[0] as $i => $oneMatch) {
             $format = str_replace(['year', 'month', 'weekday', 'day'], ['Y', 'm', 'N', 'd'], $results[1][$i]);
             $delay = str_replace(['add', 'remove'], ['+', '-'], $results[2][$i]).intval($results[3][$i]).' '.str_replace('weekday', 'day', $results[1][$i]);
-            $value = str_replace($oneMatch, date($format, strtotime($delay)), $value);
+            $value = str_replace($oneMatch, gmdate($format, strtotime($delay)), $value);
         }
     }
 
@@ -99,15 +100,18 @@ function acym_dateField(string $name, $value = '', string $class = '', string $a
     } else {
         $shownValue = $value;
     }
-    $result = '<input data-rs="'.acym_escape($id).'" type="hidden" name="'.acym_escape($name).'" value="'.acym_escape($value).'">'.acym_modal(
-            '<input data-open="'.acym_escape($id).'" class="rs_date_field '.$class.'" '.$attributes.' type="text" value="'.acym_escape($shownValue).'" readonly>',
-            $result,
-            $id,
-            [],
-            [],
-            false,
-            false
-        );
+    $hiddenField = '<input data-rs="'.acym_escape($id).'" type="hidden" name="'.acym_escape($name).'" value="'.acym_escape($value).'">';
+    ob_start();
+    acym_modal(
+        '<input data-open="'.acym_escape($id).'" class="rs_date_field '.acym_escape($class).'" '.$attributes.' type="text" value="'.acym_escape($shownValue).'" readonly>',
+        $result,
+        $id,
+        [],
+        [],
+        false,
+        false
+    );
+    $result = $hiddenField.ob_get_clean();
 
     return $result;
 }
@@ -133,7 +137,7 @@ function acym_getDate($time = 0, string $format = '%d %B %Y %H:%M')
     try {
         return acym_date($time, $format, false);
     } catch (Exception $e) {
-        return date($format, $time);
+        return gmdate($format, $time);
     }
 }
 
@@ -297,12 +301,16 @@ function acym_getTimeFromUTCDate(?string $date): int
         return 0;
     }
 
-    $timestamp = strtotime($date);
+    // Stored dates are UTC: parse them as UTC so the resulting timestamp is independent of the server timezone
+    $timestamp = strtotime($date.' UTC');
+    if ($timestamp === false) {
+        $timestamp = strtotime($date);
+    }
     if ($timestamp === false) {
         return 0;
     }
 
-    return $timestamp + date('Z');
+    return $timestamp;
 }
 
 function acym_getTimeFromCMSDate($date)
@@ -315,14 +323,14 @@ function acym_getTime($date)
     return acym_getTimeFromCMSDate($date);
 }
 
-function acym_date($time = 'now', $format = null, bool $useTz = true, bool $translate = true): string
+function acym_date($date = 'now', $format = null, bool $useTz = true, bool $translate = true): string
 {
-    if ($time === 'now') {
-        $time = time();
+    if ($date === 'now') {
+        $date = time();
     }
 
-    if (is_numeric($time)) {
-        $time = acym_dateTimeCMS($time);
+    if (is_numeric($date)) {
+        $date = acym_dateTimeCMS($date);
     }
 
     if (!$format || (strpos($format, 'ACYM_DATE_FORMAT') !== false && acym_translation($format) == $format)) {
@@ -334,7 +342,7 @@ function acym_date($time = 'now', $format = null, bool $useTz = true, bool $tran
 
     //Don't use timezone
     if ($useTz === false) {
-        $date = new DateTime($time);
+        $date = new DateTime($date);
 
         if ($translate) {
             return acym_translateDate($date->format($format));
@@ -351,10 +359,11 @@ function acym_date($time = 'now', $format = null, bool $useTz = true, bool $tran
             $cmsOffset = $timezone->getOffset(new DateTime());
         }
 
+        // $date is a UTC date string: apply the CMS timezone offset then format in UTC so the server timezone never shifts the displayed result
         if ($translate) {
-            return acym_translateDate(date($format, strtotime($time) + $cmsOffset));
+            return acym_translateDate(gmdate($format, strtotime($date.' UTC') + $cmsOffset));
         } else {
-            return date($format, strtotime($time) + $cmsOffset);
+            return gmdate($format, strtotime($date.' UTC') + $cmsOffset);
         }
     }
 }

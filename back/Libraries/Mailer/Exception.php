@@ -35,6 +35,6 @@ class Exception extends \Exception
      */
     public function errorMessage()
     {
-        return '<strong>'.acym_escape($this->getMessage())."</strong><br />\n";
+        return '<strong>'.acym_escapeHtml($this->getMessage())."</strong><br />\n";
     }
 }

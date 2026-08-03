@@ -1,6 +1,5 @@
 jQuery(function ($) {
     if ($('#acym__plugin__available__application').length > 0) {
-
         const remove = (array, pluginId) => array.filter((plugin) => plugin.id !== pluginId);
 
         const appVue = new Vue({
@@ -32,34 +31,29 @@ jQuery(function ($) {
 
                         return false;
                     }
-                    acym_helper.config_get('level').done((resConfig) => {
-                        if (resConfig.error) {
-                            acym_helperNotification.addNotification(resConfig.message, 'error');
-
-                            return false;
-                        }
-                        this.getAllPluginsInstalled().then((response) => {
-                            this.allPluginsInstalled = response.data;
-                            this.currentLevel = resConfig.data.value.toLowerCase();
-                            this.allPlugins = res;
-                            res = res.map((plugin) => {
-                                plugin.description = plugin.description.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />');
-                            });
-                            this.setStatus();
-                            this.resetDisplay();
-                            $('[name="acym__plugins__level"], [name="acym__plugins__type"]').select2({
-                                theme: 'foundation',
-                                width: '100%'
-                            });
-                            if (this.displayedPlugins.length === 0) {
-                                this.noPluginTodisplay = true;
-                            }
-                            this.loading = false;
-                            setTimeout(() => {
-                                this.$forceUpdate();
-                                acym_helperTooltip.setTooltip();
-                            }, 400);
+                    this.getAllPluginsInstalled().then((response) => {
+                        this.allPluginsInstalled = response.data;
+                        this.currentLevel = (
+                            typeof ACYM_LEVEL === 'undefined' ? '' : ACYM_LEVEL
+                        ).toLowerCase();
+                        this.allPlugins = res;
+                        res = res.map((plugin) => {
+                            plugin.description = plugin.description.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />');
                         });
+                        this.setStatus();
+                        this.resetDisplay();
+                        $('[name="acym__plugins__level"], [name="acym__plugins__type"]').select2({
+                            theme: 'foundation',
+                            width: '100%'
+                        });
+                        if (this.displayedPlugins.length === 0) {
+                            this.noPluginTodisplay = true;
+                        }
+                        this.loading = false;
+                        setTimeout(() => {
+                            this.$forceUpdate();
+                            acym_helperTooltip.setTooltip();
+                        }, 400);
                     });
                 });
                 this.$el.addEventListener('touchend', this.loadMorePlugins);
@@ -69,7 +63,7 @@ jQuery(function ($) {
                     if (ACYM_CMS === 'joomla') {
                         return $.get(ACYM_UPDATEME_API_URL + 'public/addons');
                     } else if (ACYM_CMS === 'wordpress') {
-                        return Promise.resolve($('#acym__plugin__available__plugins').val());
+                        return Promise.resolve(JSON.stringify(window.acymailingAvailableAddons));
                     }
                 },
                 getAllPluginsInstalled() {
@@ -144,9 +138,13 @@ jQuery(function ($) {
                     return this.allPluginsInstalled.find(plugin => plugin.folder_name === pluginDefinition.file_name) !== undefined;
                 },
                 filter() {
-                    return this.allPlugins.filter((plugin) => (plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1)
-                                                              && (plugin.category.toLowerCase().indexOf(this.type.toLowerCase()) !== -1)
-                                                              && (plugin.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1));
+                    return this.allPlugins.filter((plugin) => (
+                                                                  plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1
+                                                              ) && (
+                                                                  plugin.category.toLowerCase().indexOf(this.type.toLowerCase()) !== -1
+                                                              ) && (
+                                                                  plugin.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1
+                                                              ));
                 },
                 loadMorePlugins() {
                     this.pageDisplay++;

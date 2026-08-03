@@ -35,10 +35,6 @@ class DtextType extends AcymObject
             'text' => $options['text'] ?? '',
         ];
 
-        if (!empty($data['icon'])) {
-            $data['icon'] = '<i class="'.$data['icon'].'"></i>';
-        }
-
         include acym_getPartial('dtext', 'button');
     }
 

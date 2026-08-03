@@ -22,10 +22,6 @@ trait Action
 
     private function getSaveActions(bool $isMassAction = false): array
     {
-        if ($isMassAction) {
-            acym_session();
-        }
-
         $automationID = acym_getVar('int', 'id');
         $actionId = acym_getVar('int', 'actionId');
         $action = acym_getVar('array', 'acym_action');
@@ -46,7 +42,9 @@ trait Action
         }
 
         if ($isMassAction) {
-            $_SESSION['massAction']['actions'] = $action['actions'];
+            $massAction = acym_getVar('array', 'massAction', [], 'SESSION');
+            $massAction['actions'] = $action['actions'];
+            acym_setSession('massAction', $massAction);
 
             return [];
         }
@@ -71,6 +69,8 @@ trait Action
 
     public function saveExitActions(): void
     {
+        acym_checkToken();
+
         $this->getSaveActions();
 
         acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
@@ -80,6 +80,8 @@ trait Action
 
     public function saveActions(): void
     {
+        acym_checkToken();
+
         $ids = $this->getSaveActions();
 
         acym_setVar('id', $ids['automationId']);
@@ -90,6 +92,8 @@ trait Action
 
     public function createMail(): void
     {
+        acym_checkToken();
+
         $id = acym_getVar('int', 'id');
         $idAdmin = acym_getVar('boolean', 'automation_admin');
         $type = MailClass::TYPE_AUTOMATION;

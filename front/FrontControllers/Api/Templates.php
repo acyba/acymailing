@@ -34,7 +34,7 @@ trait Templates
             $templates = $mailClass->getAllTemplatesByType(
                 [
                     'offset' => acym_getVar('int', 'offset', 0),
-                    'limit' => acym_getVar('int', 'limit', 20),
+                    'limit' => $this->getRequestedLimit(20),
                     'filters' => acym_getVar('array', 'filters', ''),
                 ]
             );

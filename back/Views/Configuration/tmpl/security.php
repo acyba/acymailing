@@ -1,9 +1,13 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
     <?php if (acym_level(ACYM_ESSENTIAL)) { ?>
 		<div class="margin-bottom-2 acym__configuration__rest_api cell grid-x">
 			<div class="acym__title acym__title__secondary grid-x">
-                <?php echo acym_translation('ACYM_REST_API'); ?>
-                <?php echo acym_externalLink(
+                <?php echo acym_escapeHtml(acym_translation('ACYM_REST_API')); ?>
+                <?php acym_externalLink(
                     'ACYM_DOCUMENTATION',
                     ACYM_DOCUMENTATION.'v/rest-api/',
                     true,
@@ -13,27 +17,47 @@
 			</div>
 			<div class="cell grid-x acym_vcenter">
 				<label class="cell large-3" for="php_overrides">
-                    <?php echo acym_translation('ACYM_ACTIVATE_REST_API').acym_info(['textShownInTooltip' => 'ACYM_ACTIVATE_REST_API_DESC']); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIVATE_REST_API'));
+                    acym_info(['textShownInTooltip' => 'ACYM_ACTIVATE_REST_API_DESC']); ?>
 				</label>
 				<div class="cell grid-x large-9">
                     <?php
-                    echo acym_switch(
-                        'config[rest_api]',
-                        $this->config->get('rest_api', 0)
-                    );
+                    acym_switch([
+                        'name' => 'config[rest_api]',
+                        'value' => $this->config->get('rest_api', 0),
+                    ]);
                     ?>
 				</div>
+			</div>
+			<div class="cell grid-x acym_vcenter margin-top-1">
+				<label class="cell large-3" for="api_key">
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_API_KEY'));
+                    acym_info(['textShownInTooltip' => 'ACYM_API_KEY_DESC']); ?>
+				</label>
+				<input class="cell large-9"
+				       id="api_key"
+				       type="text"
+				       name="config[api_key]"
+				       value="<?php echo acym_escape($this->config->get('api_key')); ?>" />
 			</div>
 		</div>
     <?php } ?>
 
-    <?php if (!empty($data['labelDropdownCaptcha']) && isset($data['level']) && isset($data['captchaOptions'])) { ?>
+    <?php if (isset($data['level']) && isset($data['captchaOptions'])) { ?>
 		<div class="margin-bottom-2 cell margin-y acym__configuration__security__captcha">
-			<div class="acym__title acym__title__secondary"><?php echo $data['labelDropdownCaptcha']; ?></div>
+			<div class="acym__title acym__title__secondary">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_CAPTCHA')); ?>
+                <?php
+                if (!acym_level(ACYM_ESSENTIAL)) {
+                    echo acym_escapeHtml(' '.acym_translation('ACYM_PRO_VERSION_ONLY'));
+                }
+                ?>
+			</div>
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell medium-6 grid-x">
 					<label class="cell large-3" for="security_key">
-                        <?php echo acym_translation('ACYM_CONFIGURATION_CAPTCHA').acym_info(['textShownInTooltip' => 'ACYM_CAPTCHA_DESC']); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_CAPTCHA'));
+                        acym_info(['textShownInTooltip' => 'ACYM_CAPTCHA_DESC']); ?>
 					</label>
 					<div class="cell large-9">
                         <?php
@@ -46,11 +70,16 @@
                             $attribs['disabled'] = '';
                         }
 
-                        echo acym_select(
+                        acym_select(
                             $data['captchaOptions'],
                             'config[captcha]',
                             $this->config->get('captcha', 'none'),
-                            $attribs
+                            $attribs,
+                            'value',
+                            'text',
+                            null,
+                            false,
+                            true
                         );
                         ?>
 					</div>
@@ -58,7 +87,8 @@
                 <?php if ($data['level']) { ?>
 					<div class="cell medium-6 grid-x">
 						<label class="cell large-3" for="security_key">
-                            <?php echo acym_translation('ACYM_SECURITY_KEY').acym_info(['textShownInTooltip' => 'ACYM_SECURITY_KEY_DESC']); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_SECURITY_KEY'));
+                            acym_info(['textShownInTooltip' => 'ACYM_SECURITY_KEY_DESC']); ?>
 						</label>
 						<input class="cell large-9"
 						       id="security_key"
@@ -69,8 +99,8 @@
 					<div class="cell medium-6 grid-x acym__config__captcha__hcaptcha">
 						<label class="cell large-3" for="hcaptcha_sitekey">
                             <?php
-                            echo acym_translation('ACYM_GENERAL_SITE_KEY');
-                            echo acym_tooltip(
+                            echo acym_escapeHtml(acym_translation('ACYM_GENERAL_SITE_KEY'));
+                            acym_tooltip(
                                 [
                                     'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
                                     'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
@@ -89,8 +119,8 @@
 					<div class="cell medium-6 grid-x acym__config__captcha__hcaptcha">
 						<label class="cell large-3" for="hcaptcha_secretkey">
                             <?php
-                            echo acym_translation('ACYM_GENERAL_SECRET_KEY');
-                            echo acym_tooltip(
+                            echo acym_escapeHtml(acym_translation('ACYM_GENERAL_SECRET_KEY'));
+                            acym_tooltip(
                                 [
                                     'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
                                     'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
@@ -110,8 +140,8 @@
 					<div class="cell medium-6 grid-x acym__config__captcha__recaptcha">
 						<label class="cell large-3" for="recaptcha_sitekey">
                             <?php
-                            echo acym_translation('ACYM_SITE_KEY');
-                            echo acym_tooltip(
+                            echo acym_escapeHtml(acym_translation('ACYM_SITE_KEY'));
+                            acym_tooltip(
                                 [
                                     'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
                                     'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
@@ -130,8 +160,8 @@
 					<div class="cell medium-6 grid-x acym__config__captcha__recaptcha">
 						<label class="cell large-3" for="recaptcha_secretkey">
                             <?php
-                            echo acym_translation('ACYM_SECRET_KEY');
-                            echo acym_tooltip(
+                            echo acym_escapeHtml(acym_translation('ACYM_SECRET_KEY'));
+                            acym_tooltip(
                                 [
                                     'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
                                     'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
@@ -150,8 +180,8 @@
 					<div class="cell medium-6 grid-x acym__config__captcha__recaptcha_v3">
 						<label class="cell large-3" for="recaptcha_score">
                             <?php
-                            echo acym_translation('ACYM_CAPTCHA_SCORE');
-                            echo acym_tooltip(
+                            echo acym_escapeHtml(acym_translation('ACYM_CAPTCHA_SCORE'));
+                            acym_tooltip(
                                 [
                                     'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
                                     'textShownInTooltip' => acym_translation('ACYM_CAPTCHA_SCORE_DESC'),
@@ -178,7 +208,7 @@
 
 	<div class="acym__configuration__security__email cell grid-x">
 		<div class="acym__title acym__title__secondary grid-x">
-            <?php echo acym_translation('ACYM_EMAIL_VERIFICATION'); ?>
+            <?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL_VERIFICATION')); ?>
 			<div class="margin-left-1">
                 <?php
                 $score = 100;
@@ -227,9 +257,9 @@
                     if (!$oneEnabled) $tooltip[] = acym_translation('ACYM_YOU_SHOULD_ENABLE_CHECK');
                 }
 
-                echo '('.acym_translationSprintf('ACYM_EMAIL_VERIFICATION_SCORE', $score).')';
+                echo '('.acym_escapeHtml(acym_translationSprintf('ACYM_EMAIL_VERIFICATION_SCORE', $score)).')';
                 if (!empty($tooltip)) {
-                    echo acym_info(
+                    acym_info(
                         [
                             'textShownInTooltip' => implode('<br />', $tooltip),
                         ]
@@ -241,66 +271,58 @@
 		<div class="grid-x margin-y">
 			<div class="cell medium-6 grid-x">
                 <?php
-                echo acym_switch(
-                    'config[email_checkdomain]',
-                    $this->config->get('email_checkdomain'),
-                    acym_translation('ACYM_CHECK_DOMAIN_EXISTS'),
-                    [],
-                    'xlarge-9 large-6 small-9'
-                );
+                acym_switch([
+                    'name' => 'config[email_checkdomain]',
+                    'value' => $this->config->get('email_checkdomain'),
+                    'label' => acym_translation('ACYM_CHECK_DOMAIN_EXISTS'),
+                    'labelClass' => 'xlarge-9 large-6 small-9',
+                ]);
                 ?>
 			</div>
 			<div class="cell medium-6 grid-x">
                 <?php
-                echo acym_switch(
-                    'config[email_spellcheck]',
-                    $this->config->get('email_spellcheck'),
-                    acym_translation('ACYM_SPELLCHECK_SUGGESTIONS').acym_info(['textShownInTooltip' => 'ACYM_SPELLCHECK_SUGGESTIONS_DESC']),
-                    [],
-                    'xlarge-9 large-6 small-9'
-                );
+                acym_switch([
+                    'name' => 'config[email_spellcheck]',
+                    'value' => $this->config->get('email_spellcheck'),
+                    'label' => acym_translation('ACYM_SPELLCHECK_SUGGESTIONS'),
+                    'tip' => ['textShownInTooltip' => 'ACYM_SPELLCHECK_SUGGESTIONS_DESC'],
+                    'labelClass' => 'xlarge-9 large-6 small-9',
+                ]);
                 ?>
 			</div>
 			<div class="cell medium-6 grid-x">
                 <?php
-                echo acym_switch(
-                    'config[email_confirmation]',
-                    $this->config->get('email_confirmation'),
-                    acym_translation('ACYM_ENABLE_EMAIL_CONFIRMATION_FOR_SUBSCRIPTION_FORM').acym_info(
-                        ['textShownInTooltip' => 'ACYM_ENABLE_EMAIL_CONFIRMATION_FOR_SUBSCRIPTION_FORM_DESC']
-                    ),
-                    [],
-                    'xlarge-9 large-6 small-9'
-                );
+                acym_switch([
+                    'name' => 'config[email_confirmation]',
+                    'value' => $this->config->get('email_confirmation'),
+                    'label' => acym_translation('ACYM_ENABLE_EMAIL_CONFIRMATION_FOR_SUBSCRIPTION_FORM'),
+                    'tip' => ['textShownInTooltip' => 'ACYM_ENABLE_EMAIL_CONFIRMATION_FOR_SUBSCRIPTION_FORM_DESC'],
+                    'labelClass' => 'xlarge-9 large-6 small-9',
+                ]);
                 ?>
 			</div>
 			<div class="cell grid-x acychecker_ad">
 				<div class="cell ">
 					<h6>
-                        <?php echo acym_translation('ACYM_ACYCHECKER_CONFIG_AD_TITLE'); ?>
-						<img class="acychecker_logo" alt="logo AcyChecker" src="<?php echo ACYM_IMAGES.'icons/logo_acychecker.png'; ?>" />
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_ACYCHECKER_CONFIG_AD_TITLE')); ?>
+						<img class="acychecker_logo" alt="logo AcyChecker" src="<?php echo acym_escapeUrl(ACYM_IMAGES.'icons/logo_acychecker.png'); ?>" />
 					</h6>
 				</div>
 				<div class="cell xlarge-6 grid-x">
                     <?php
-                    echo acym_switch(
-                        'config[email_verification]',
-                        $this->config->get('email_verification'),
-                        acym_translation('ACYM_ACYCHECKER_CHECK_SUBSCRIPTION'),
-                        [],
-                        'xlarge-9 large-6 small-9',
-                        'auto',
-                        '',
-                        $data['acychecker_installed'] ? 'email_verification' : null,
-                        true,
-                        '',
-                        !$data['acychecker_installed']
-                    );
+                    acym_switch([
+                        'name' => 'config[email_verification]',
+                        'value' => $this->config->get('email_verification'),
+                        'label' => acym_translation('ACYM_ACYCHECKER_CHECK_SUBSCRIPTION'),
+                        'labelClass' => 'xlarge-9 large-6 small-9',
+                        'toggle' => $data['acychecker_installed'] ? 'email_verification' : null,
+                        'disabled' => !$data['acychecker_installed'],
+                    ]);
                     ?>
 				</div>
 				<div id="email_verification" class="cell grid-x">
 					<label class="cell margin-top-1">
-                        <?php echo acym_translation('ACYM_ACYCHECKER_CHECK_SUBSCRIPTION_BLOCK'); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_ACYCHECKER_CHECK_SUBSCRIPTION_BLOCK')); ?>
 					</label>
 					<div class="cell large-6 grid-x">
                         <?php
@@ -320,23 +342,17 @@
 
                         foreach ($verificationOptions as $option => $label) {
                             echo '<div class="cell grid-x margin-bottom-1">';
-                            $optionText = acym_translation($label[0]);
+							$switchOptions = [
+                                'name' => 'config['.$option.']',
+                                'value' => $this->config->get($option),
+                                'label' => acym_translation($label[0]),
+                                'labelClass' => 'small-9',
+                                'disabled' => !$data['acychecker_installed'],
+                            ];
                             if (!empty($label[1])) {
-                                $optionText .= acym_info(['textShownInTooltip' => $label[1]]);
+								$switchOptions['tip'] = ['textShownInTooltip' => $label[1]];
                             }
-                            echo acym_switch(
-                                'config['.$option.']',
-                                $this->config->get($option),
-                                $optionText,
-                                [],
-                                'small-9',
-                                'auto',
-                                '',
-                                null,
-                                true,
-                                '',
-                                !$data['acychecker_installed']
-                            );
+                            acym_switch($switchOptions);
                             echo '</div>';
                         }
                         ?>
@@ -344,9 +360,9 @@
                     <?php if (!$data['acychecker_installed']) { ?>
 						<div class="cell large-6 grid-x align-center">
 							<div class="cell large-6 grid-x align-center text-center">
-                                <?php echo acym_translation('ACYM_ACYCHECKER_CONFIG_AD'); ?>
-								<a target="_blank" class="cell shrink button button-secondary" href="<?php echo $data['acychecker_get_link']; ?>">
-                                    <?php echo acym_translation('ACYM_ACYCHECKER_CONFIG_AD_BUTTON'); ?>
+                                <?php echo acym_escapeHtml(acym_translation('ACYM_ACYCHECKER_CONFIG_AD')); ?>
+								<a target="_blank" class="cell shrink button button-secondary" href="<?php echo acym_escapeUrl($data['acychecker_get_link']); ?>">
+                                    <?php echo acym_escapeHtml(acym_translation('ACYM_ACYCHECKER_CONFIG_AD_BUTTON')); ?>
 								</a>
 							</div>
 						</div>
@@ -359,23 +375,26 @@
 
 <div class="acym__content acym_area padding-horizontal-2 acym__configuration__advanced">
 	<div class="cell grid-x acym__configuration__showmore-head">
-		<div class="acym__title acym__title__secondary cell auto margin-bottom-0"><?php echo acym_translation('ACYM_CONFIGURATION_ADVANCED'); ?></div>
+		<div class="acym__title acym__title__secondary cell auto margin-bottom-0"><?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_ADVANCED')); ?></div>
 		<div class="cell shrink">
-            <?php echo acym_showMore('acym__configuration__security__advanced__content'); ?>
+            <?php acym_showMore('acym__configuration__security__advanced__content'); ?>
 		</div>
 	</div>
 	<div id="acym__configuration__security__advanced__content" style="display:none;">
-        <?php if (!empty($data['acl'])) { ?>
+        <?php if ($data['adminPermissions']) { ?>
 			<div class="margin-bottom-2">
-				<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_PERMISSIONS'); ?></div>
+				<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_PERMISSIONS')); ?></div>
 				<div class="grid-x grid-margin-x margin-y">
-                    <?php echo $data['acl']; ?>
+                    <?php acym_cmsPermission(); ?>
 					<div class="cell grid-x">
 						<label class="cell large-3 medium-5 small-9">
-                            <?php echo acym_translation('ACYM_ADVANCED_ACL').acym_info(['textShownInTooltip' => 'ACYM_ADVANCED_ACL_DESC']); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_ADVANCED_ACL'));
+                            acym_info(['textShownInTooltip' => 'ACYM_ADVANCED_ACL_DESC']); ?>
 						</label>
 						<div class="cell auto">
-							<button type="button" class="button button-secondary" id="acym__configuration__acl__toggle"><?php echo acym_translation('ACYM_SHOW_HIDE'); ?></button>
+							<button type="button" class="button button-secondary" id="acym__configuration__acl__toggle"><?php echo acym_escapeHtml(
+                                    acym_translation('ACYM_SHOW_HIDE')
+                                ); ?></button>
 						</div>
 					</div>
 				</div>
@@ -384,10 +403,10 @@
                     <?php foreach ($data['acl_advanced'] as $page => $title) { ?>
 						<div class="cell grid-x acym__configuration__acl__row">
 							<div class="cell large-3 margin-left-1">
-                                <?php echo acym_translation($title); ?>
+                                <?php echo acym_escapeHtml(acym_translation($title)); ?>
 							</div>
 							<div class="cell auto">
-                                <?php echo $data['aclType']->display($page); ?>
+                                <?php $data['aclType']->display($page); ?>
 							</div>
 						</div>
                     <?php } ?>
@@ -398,14 +417,15 @@
             //__START__enterprise_
             if (acym_level(ACYM_ENTERPRISE)) { ?>
 				<div class="margin-bottom-2">
-					<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_FRONTEND_EDITION'); ?></div>
+					<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_FRONTEND_EDITION')); ?></div>
 					<div class="grid-x grid-margin-x grid-margin-y">
-						<div class="cell large-3 small-12"><?php echo acym_translation('ACYM_FRONT_DELETE_BUTTON').acym_info(
-                                    ['textShownInTooltip' => 'ACYM_FRONT_DELETE_BUTTON_DESC']
-                                ); ?></div>
+						<div class="cell large-3 small-12"><?php echo acym_escapeHtml(acym_translation('ACYM_FRONT_DELETE_BUTTON'));
+                            acym_info(
+                                ['textShownInTooltip' => 'ACYM_FRONT_DELETE_BUTTON_DESC']
+                            ); ?></div>
 						<div class="cell auto">
                             <?php
-                            echo acym_radio(
+                            acym_radio(
                                 [
                                     'delete' => acym_translation('ACYM_DELETE_THE_SUBSCRIBER'),
                                     'removesub' => acym_translation('ACYM_REMOVE_USER_SUBSCRIPTION'),
@@ -417,10 +437,10 @@
 						</div>
 					</div>
 					<div class="grid-x grid-margin-x grid-margin-y">
-						<div class="cell large-3"><?php echo acym_translation('ACYM_FRONT_FILTER_CAMPAIGNS'); ?></div>
+						<div class="cell large-3"><?php echo acym_escapeHtml(acym_translation('ACYM_FRONT_FILTER_CAMPAIGNS')); ?></div>
 						<div class="cell large-9">
                             <?php
-                            echo acym_select(
+                            acym_select(
                                 [
                                     'own' => acym_translation('ACYM_FRONT_ONLY_CREATED_CAMPAIGNS'),
                                     'allowed' => acym_translation('ACYM_FRONT_SENT_TO_ALLOWED_LISTS'),
@@ -429,7 +449,12 @@
                                 $this->config->get('front_campaigns_filter', 'own'),
                                 [
                                     'class' => 'acym__select',
-                                ]
+                                ],
+                                'value',
+                                'text',
+                                null,
+                                false,
+                                true
                             );
                             ?>
 						</div>
@@ -439,11 +464,12 @@
             }
         } ?>
 		<div class="margin-bottom-2">
-			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_FILES'); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_FILES')); ?></div>
 			<div class="grid-x grid-margin-y margin-y">
 
 				<label class="cell large-3" for="allowed_files">
-                    <?php echo acym_translation('ACYM_ALLOWED_FILES').acym_info(['textShownInTooltip' => 'ACYM_ALLOWED_FILES_DESC']); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ALLOWED_FILES'));
+                    acym_info(['textShownInTooltip' => 'ACYM_ALLOWED_FILES_DESC']); ?>
 				</label>
 				<input class="cell auto"
 				       id="allowed_files"
@@ -453,7 +479,8 @@
 			</div>
 			<div class="grid-x grid-margin-y margin-y">
 				<label class="cell large-3" for="uploadfolder">
-                    <?php echo acym_translation('ACYM_UPLOAD_FOLDER').acym_info(['textShownInTooltip' => 'ACYM_UPLOAD_FOLDER_DESC']); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_UPLOAD_FOLDER'));
+                    acym_info(['textShownInTooltip' => 'ACYM_UPLOAD_FOLDER_DESC']); ?>
 				</label>
 				<input class="cell large-9" id="uploadfolder" type="text" name="config[uploadfolder]" value="<?php echo acym_escape($this->config->get('uploadfolder')); ?>" />
 			</div>
@@ -463,12 +490,13 @@
                 ?>
 				<div class="grid-x grid-margin-y margin-y">
 					<label class="cell large-3">
-                        <?php echo acym_translation('ACYM_SCAN_SITE_FILES').acym_info(['textShownInTooltip' => 'ACYM_SCAN_SITE_FILES_DESC']); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_SCAN_SITE_FILES'));
+                        acym_info(['textShownInTooltip' => 'ACYM_SCAN_SITE_FILES_DESC']); ?>
 					</label>
 
 					<div class="cell large-9 grid-x">
 						<button type="button" class="cell medium-shrink button button-secondary" id="scanfiles_button">
-                            <?php echo acym_translation('ACYM_SCAN_SITE_FILES'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_SCAN_SITE_FILES')); ?>
 						</button>
 						<div class="cell auto padding-left-1" id="scanfiles_report"></div>
 					</div>
@@ -479,24 +507,26 @@
             ?>
 			<div class="cell grid-x grid-margin-y margin-y acym_vcenter">
 				<label class="cell large-3" for="php_overrides">
-                    <?php echo acym_translation('ACYM_ALLOW_PHP_OVERRIDES').acym_info(['textShownInTooltip' => 'ACYM_ALLOW_PHP_OVERRIDES_DESC']); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ALLOW_PHP_OVERRIDES'));
+                    acym_info(['textShownInTooltip' => 'ACYM_ALLOW_PHP_OVERRIDES_DESC']); ?>
 				</label>
 				<div class="cell grid-x large-9">
                     <?php
-                    echo acym_switch(
-                        'config[php_overrides]',
-                        $this->config->get('php_overrides', 0)
-                    );
+                    acym_switch([
+                        'name' => 'config[php_overrides]',
+                        'value' => $this->config->get('php_overrides', 0),
+                    ]);
                     ?>
 				</div>
 			</div>
 		</div>
 		<div class="acym__configuration__check-database margin-bottom-2">
-			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_REDIRECTIONS'); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_REDIRECTIONS')); ?></div>
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell grid-x acym_vcenter">
 					<label class="cell large-3" for="allowed_files">
-                        <?php echo acym_translation('ACYM_ALLOWED_HOSTS').acym_info(['textShownInTooltip' => 'ACYM_ALLOWED_HOSTS_DESC']); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_ALLOWED_HOSTS'));
+                        acym_info(['textShownInTooltip' => 'ACYM_ALLOWED_HOSTS_DESC']); ?>
 					</label>
 					<div class="cell grid-x large-9">
                         <?php
@@ -512,37 +542,39 @@
                                 $allowedHostsFormatted[$host] = $host;
                             }
                         }
-                        echo acym_selectMultiple(
+                        acym_selectMultiple(
                             $allowedHostsFormatted,
                             'config[allowed_hosts]',
                             $allowedHosts,
-                            ['class' => 'acym__allowed__hosts__select', 'placeholder' => acym_translation('ACYM_ENTER_NEW_DOMAIN')]
+                            ['class' => 'acym__allowed__hosts__select', 'placeholder' => acym_translation('ACYM_ENTER_NEW_DOMAIN')],
+                            'value',
+                            'text',
+                            true
                         );
                         ?>
 					</div>
 				</div>
 				<div class="cell grid-x acym_vcenter">
 					<label class="cell large-3" for="allowed_files">
-                        <?php echo acym_translation('ACYM_ACTIVATE_AUTOLOGIN_URLS').acym_info(['textShownInTooltip' => 'ACYM_ACTIVATE_AUTOLOGIN_URLS_DESCRIPTION']); ?>
+                        <?php
+                        echo acym_escapeHtml(acym_translation('ACYM_ACTIVATE_AUTOLOGIN_URLS'));
+                        acym_info(['textShownInTooltip' => 'ACYM_ACTIVATE_AUTOLOGIN_URLS_DESCRIPTION']);
+                        ?>
 					</label>
 					<div class="cell grid-x large-9">
                         <?php
-                        echo acym_switch(
-                            'config[autologin_urls]',
-                            $this->config->get('autologin_urls', 0),
-                            '',
-                            [],
-                            '',
-                            '',
-                            '',
-                            'autologin_urls_duration'
-                        );
+                        acym_switch([
+                            'name' => 'config[autologin_urls]',
+                            'value' => $this->config->get('autologin_urls', 0),
+                            'toggle' => 'autologin_urls_duration',
+                        ]);
                         ?>
 					</div>
 				</div>
 				<div class="cell grid-x acym_vcenter" id="autologin_urls_duration">
 					<label class="cell large-3">
-                        <?php echo acym_translation('ACYM_AUTOLOGIN_TOKEN_DURATION').acym_info(['textShownInTooltip' => 'ACYM_AUTOLOGIN_TOKEN_DURATION_DESC']); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_AUTOLOGIN_TOKEN_DURATION'));
+                        acym_info(['textShownInTooltip' => 'ACYM_AUTOLOGIN_TOKEN_DURATION_DESC']); ?>
 					</label>
 					<div class="cell large-9">
 						<input type="number"
@@ -555,25 +587,26 @@
 			</div>
 		</div>
 		<div class="margin-bottom-2">
-			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CRON'); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_CRON')); ?></div>
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell grid-x acym_vcenter">
 					<label class="cell large-3" for="cron_security">
-                        <?php echo acym_translation('ACYM_ADD_SECURITY_KEY_CRON'); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_ADD_SECURITY_KEY_CRON')); ?>
 					</label>
 					<div class="cell grid-x large-9">
                         <?php
-                        echo acym_switch(
-                            'config[cron_security]',
-                            $this->config->get('cron_security', 0)
-                        );
+                        acym_switch([
+                            'name' => 'config[cron_security]',
+                            'value' => $this->config->get('cron_security', 0),
+                        ]);
                         ?>
 					</div>
 				</div>
 			</div>
 			<div class="grid-x grid-margin-y margin-y">
 				<label class="cell large-3" for="cron_key">
-                    <?php echo acym_translation('ACYM_CRON_KEY').acym_info(['textShownInTooltip' => 'ACYM_CRON_KEY_DESC']); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_CRON_KEY'));
+                    acym_info(['textShownInTooltip' => 'ACYM_CRON_KEY_DESC']); ?>
 				</label>
 				<input class="cell large-9"
 				       id="cron_key"
@@ -584,24 +617,19 @@
 		</div>
 
 		<div class="margin-bottom-2">
-			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_URL'); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_URL')); ?></div>
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell grid-x acym_vcenter">
 					<label class="cell large-3" for="different_admin_url_toggle">
-                        <?php echo acym_translation('ACYM_FRONT_BACK_URL'); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_FRONT_BACK_URL')); ?>
 					</label>
 					<div class="cell grid-x large-9">
                         <?php
-                        echo acym_switch(
-                            'config[different_admin_url_toggle]',
-                            $this->config->get('different_admin_url_toggle', 0),
-                            '',
-                            [],
-                            '',
-                            '',
-                            '',
-                            'cron_security_config'
-                        );
+                        acym_switch([
+                            'name' => 'config[different_admin_url_toggle]',
+                            'value' => $this->config->get('different_admin_url_toggle', 0),
+                            'toggle' => 'cron_security_config',
+                        ]);
                         ?>
 					</div>
 				</div>
@@ -609,7 +637,7 @@
 			<div class="grid-x grid-margin-y margin-y" id="cron_security_config">
 				<div class="cell grid-x acym_vcenter">
 					<label class="cell large-3" for="different_admin_url_value">
-                        <?php echo acym_translation('ACYM_BACKEND_URL'); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_BACKEND_URL')); ?>
 					</label>
                     <?php $differentUrl = $this->config->get('different_admin_url_value'); ?>
 					<input class="cell large-9"
@@ -623,11 +651,11 @@
 		</div>
 
 		<div class="acym__configuration__check-database margin-bottom-2">
-			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_DB_MAINTENANCE'); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_DB_MAINTENANCE')); ?></div>
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell grid-x">
                     <?php
-                    echo acym_tooltip(
+                    acym_tooltip(
                         [
                             'hoveredText' => '<button type="button" class="cell medium-shrink button button-secondary" id="checkdb_button">'.acym_translation(
                                     'ACYM_CHECK_DB'
@@ -642,7 +670,7 @@
                 <?php if (acym_existsAcyMailing59()) { ?>
 					<div class="cell grid-x">
 						<button type="submit" data-task="redomigration" class="cell medium-shrink button button-secondary acy_button_submit">
-                            <?php echo acym_translation('ACYM_REDO_MIGRATION'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_REDO_MIGRATION')); ?>
 						</button>
 					</div>
                 <?php } ?>
@@ -651,12 +679,12 @@
 
         <?php if (acym_isLogFileErrorExist()) { ?>
 			<div class="acym__configuration__log">
-				<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_LOG_FILE'); ?></div>
+				<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_LOG_FILE')); ?></div>
 				<div class="grid-x grid-margin-x margin-y">
 					<div class="cell grid-x">
 						<div class="cell grid-x">
                             <?php
-                            echo acym_modal(
+                            acym_modal(
                                 acym_translation('ACYM_REPORT_SEE'),
                                 '',
                                 null,

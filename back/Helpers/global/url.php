@@ -1,10 +1,11 @@
 <?php
+// context verification
 
 function acym_absoluteURL(string $text): string
 {
     static $mainurl = '';
     if (empty($mainurl)) {
-        $urls = parse_url(ACYM_LIVE);
+        $urls = acym_parseUrl(ACYM_LIVE);
         if (!empty($urls['path'])) {
             $mainurl = substr(ACYM_LIVE, 0, strrpos(ACYM_LIVE, $urls['path'])).'/';
         } else {
@@ -84,7 +85,7 @@ function acym_mainURL(string &$link): string
     static $baseUrl = '';
     static $otherArguments = false;
     if (empty($baseUrl)) {
-        $urls = parse_url(ACYM_LIVE);
+        $urls = acym_parseUrl(ACYM_LIVE);
         if (isset($urls['path']) && strlen($urls['path']) > 0) {
             $baseUrl = substr(ACYM_LIVE, 0, strrpos(ACYM_LIVE, $urls['path'])).'/';
             $otherArguments = trim(str_replace($baseUrl, '', ACYM_LIVE), '/');
@@ -106,14 +107,26 @@ function acym_mainURL(string &$link): string
 function acym_currentURL(): string
 {
     $protocol = isset($_SERVER['HTTPS']) || !empty($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']) ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? getenv('HTTP_HOST'));
 
-    return $protocol.'://'.$host.$_SERVER['REQUEST_URI'];
+    $httpHost = acym_getVar('string', 'HTTP_HOST', '', 'SERVER');
+    $serverName = acym_getVar('string', 'SERVER_NAME', '', 'SERVER');
+
+    $host = empty($httpHost)
+        ? (
+        empty($serverName)
+            ? getenv('HTTP_HOST')
+            : $serverName
+        )
+        : $httpHost;
+
+    $requestUri = acym_getVar('string', 'REQUEST_URI', '', 'SERVER');
+
+    return $protocol.'://'.$host.$requestUri;
 }
 
 function acym_cleanUrl(string $url, array $parametersToRemove): string
 {
-    $parts = parse_url($url);
+    $parts = acym_parseUrl($url);
 
     if (empty($parts['query'])) {
         return $url;
@@ -169,5 +182,5 @@ function acym_isImageUrl(string $url): bool
 {
     $extension = strtolower(pathinfo($url, PATHINFO_EXTENSION));
 
-    return in_array($extension, acym_getImageFileExtensions());
+    return in_array($extension, acym_getImageFileExtensions(true));
 }

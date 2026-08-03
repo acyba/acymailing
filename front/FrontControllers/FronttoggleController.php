@@ -24,6 +24,11 @@ class FronttoggleController extends ToggleController
         ];
     }
 
+    // Front: no back-office ACL — auth is menu + ownership based (checkTaskFront/listGlobal/userGlobal); neutralise the backend per-table check.
+    protected function checkToggleAcl(string $table): void
+    {
+    }
+
     protected function defineToggles(): void
     {
         $currentMenu = acym_getMenu();

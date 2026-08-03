@@ -1,7 +1,5 @@
 <?php
 
-use AcyMailing\Classes\FieldClass;
-
 trait OnlineInsertion
 {
     public function dynamicText(?int $mailId): ?object
@@ -19,7 +17,7 @@ trait OnlineInsertion
             'modify_profile' => [
                 'default' => acym_translation('ACYM_MODIFY_MY_PROFILE', true),
                 'desc' => acym_translation('ACYM_MODIFY_PROFILE_DESC'),
-                'disabled' => (ACYM_CMS == 'joomla' && empty(acym_getPageLink('view=frontusers&layout=profile'))),
+                'disabled' => (ACYM_CMS === 'joomla' && empty(acym_getPageLink('view=frontusers&layout=profile'))),
                 'tooltip' => acym_translation('ACYM_NO_PROFILE_MENU'),
             ],
         ];
@@ -76,10 +74,10 @@ trait OnlineInsertion
                 const defaultText = [];
                 <?php
                 foreach ($links as $tagname => $tag) {
-                    echo 'defaultText["'.$tagname.'"] = "'.$tag['default'].'";';
+                    echo 'defaultText['.json_encode($tagname).'] = '.json_encode($tag['default']).';';
                 }
                 foreach ($information as $infoKey => $info) {
-                    echo 'defaultText["info_'.$infoKey.'"] = \''.str_replace("'", "\\'", $info['value']).'\';';
+                    echo 'defaultText['.json_encode('info_'.$infoKey).'] = '.json_encode($info['value']).';';
                 }
                 ?>
                 jQuery('.selected_row').removeClass('selected_row');
@@ -193,15 +191,18 @@ trait OnlineInsertion
 
         foreach ($extractedTags[0] as $i => $fullMatch) {
             $content = $extractedTags[2][$i];
-            $fieldValue = '';
 
             if (acym_isValidEmail($content)) {
-                $fieldValue = '<a style="text-decoration:none;" href="mailto:'.$content.'"><span class="acym_online acym_link">'.$content.'</span></a>';
+                $fieldValue = '<a style="text-decoration:none;" href="mailto:'.acym_escape($content).'"><span class="acym_online acym_link">'.acym_escapeHtml($content).'</span></a>';
             } elseif (acym_isValidUrl($content)) {
                 if (acym_isImageUrl($content)) {
-                    $fieldValue = '<img src="'.$content.'" alt="Image" style="display: inline-block; max-width: 25px; max-height: 25px; vertical-align: middle;" />';
+                    $fieldValue = '<img src="'.acym_escapeUrl(
+                            $content
+                        ).'" alt="Image" style="display: inline-block; max-width: 25px; max-height: 25px; vertical-align: middle;" />';
                 } else {
-                    $fieldValue = '<a style="text-decoration:none;" href="'.$content.'" target="_blank"><span class="acym_online acym_link">'.$content.'</span></a>';
+                    $fieldValue = '<a style="text-decoration:none;" href="'.acym_escapeUrl($content).'" target="_blank"><span class="acym_online acym_link">'.acym_escapeHtml(
+                            $content
+                        ).'</span></a>';
                 }
             } else {
                 $fieldValue = $content;

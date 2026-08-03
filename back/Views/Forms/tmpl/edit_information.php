@@ -1,62 +1,66 @@
+<?php
+// context verification
+?>
 <div class="cell grid-x acym__content margin-bottom-1" id="acym__forms__information">
 	<div class="cell">
 		<div class="grid-x grid-margin-x margin-y">
 			<div class="cell medium-6 grid-x acym_vcenter">
 				<label for="acym__forms__information__name" class="cell medium-6 large-4">
-                    <?php echo acym_translation('ACYM_FORM_NAME'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_FORM_NAME')); ?>
 				</label>
 				<input type="text" id="acym__forms__information__name" class="cell large-5" name="form[name]" v-model="form.name">
 			</div>
             <?php if ($data['form']->type != 'shortcode') { ?>
 				<div class="cell medium-6 grid-x acym_vcenter">
 					<label for="acym__forms__information__page" class="cell medium-6 large-4">
-                        <?php echo acym_translation('ACYM_PAGE_SELECTION').acym_info(['textShownInTooltip' => 'ACYM_PAGE_SELECTION_DESC']); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_PAGE_SELECTION'));
+                        acym_info(['textShownInTooltip' => 'ACYM_PAGE_SELECTION_DESC']); ?>
 					</label>
 					<div class="cell medium-6">
 						<select2multiple v-model="form.pages"
-										 :name="'form[pages]'"
-										 :value="<?php echo acym_escape(json_encode($data['form']->pages)); ?>"
-										 :options="<?php echo acym_escape(json_encode($data['all_pages'])); ?>"></select2multiple>
+						                 :name="'form[pages]'"
+						                 :value="<?php echo acym_escape(json_encode($data['form']->pages)); ?>"
+						                 :options="<?php echo acym_escape(json_encode($data['all_pages'])); ?>"></select2multiple>
 					</div>
 				</div>
             <?php } ?>
 			<div class="cell medium-6 grid-x acym_vcenter">
                 <?php
-                echo acym_switch(
-                    'form[active]',
-                    $data['form']->active,
-                    acym_translation('ACYM_ACTIVATED'),
-                    [],
-                    'large-4 medium-6 small-9',
-                    'auto',
-                    '',
-                    null,
-                    true,
-                    'v-model="form.active"'
-                );
+                acym_switch([
+                    'name' => 'form[active]',
+                    'value' => $data['form']->active,
+                    'label' => acym_translation('ACYM_ACTIVATED'),
+                    'attributes' => [
+                        'v-model' => 'form.active',
+                    ],
+                    'labelClass' => 'large-4 medium-6 small-9',
+                ]);
                 ?>
 			</div>
 			<div class="cell medium-6 grid-x acym_vcenter">
 				<label for="acym__forms__available__language" class="cell medium-6 large-4">
-                    <?php echo acym_translation('ACYM_LANGUAGE_AVAILABLE').acym_info(['textShownInTooltip' => 'ACYM_LANGUAGE_AVAILABLE_INFO']); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_LANGUAGE_AVAILABLE'));
+                    acym_info(['textShownInTooltip' => 'ACYM_LANGUAGE_AVAILABLE_INFO']); ?>
 				</label>
 
 				<div class="cell medium-6">
 					<div class="cell medium-6">
 						<select2multiple v-model="form['display_languages']"
-										 :name="'form[display_languages]'"
-										 :value="<?php echo acym_escape(json_encode($data['form']->display_languages)); ?>"
-										 :options="<?php echo acym_escape(json_encode($data['all_languages'])); ?>"></select2multiple>
+						                 :name="'form[display_languages]'"
+						                 :value="<?php echo acym_escape(json_encode($data['form']->display_languages)); ?>"
+						                 :options="<?php echo acym_escape(json_encode($data['all_languages'])); ?>"></select2multiple>
 					</div>
 				</div>
 			</div>
             <?php
             if ($data['form']->type == 'shortcode') {
                 echo '<div class="cell grid-x acym_vcenter">';
-                echo '<p class="cell shrink" v-if="!form.id"><i class="acymicon-exclamation-triangle acym__color__orange acym__forms__information__shortcode__warning margin-right-1"></i>'.acym_translation(
-                        'ACYM_PLEASE_SAVE_FORM_TO_GET_SHORTCODE'
+                echo '<p class="cell shrink" v-if="!form.id"><i class="acymicon-exclamation-triangle acym__color__orange acym__forms__information__shortcode__warning margin-right-1"></i>'.acym_escapeHtml(
+                        acym_translation(
+                            'ACYM_PLEASE_SAVE_FORM_TO_GET_SHORTCODE'
+                        )
                     ).'</p>';
-                echo '<p class="cell shrink" v-if="form.id">'.acym_translation('ACYM_SHORTCODE_COPY_PASTE').'</p>';
+                echo '<p class="cell shrink" v-if="form.id">'.acym_escapeHtml(acym_translation('ACYM_SHORTCODE_COPY_PASTE')).'</p>';
                 echo '<code class="cell shrink acym__forms__information__shortcode margin-left-1" v-if="form.id">[acymailing_form_shortcode id="{{ form.id }}"]</code>';
                 echo '</div>';
             }

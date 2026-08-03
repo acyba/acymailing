@@ -110,6 +110,8 @@ trait Info
 
     public function saveExitInfo(): void
     {
+        acym_checkToken();
+
         $ids = $this->saveInfos();
 
         if (empty($ids)) {
@@ -125,6 +127,8 @@ trait Info
 
     public function saveInfo(): void
     {
+        acym_checkToken();
+
         $ids = $this->saveInfos();
 
         if (empty($ids)) {

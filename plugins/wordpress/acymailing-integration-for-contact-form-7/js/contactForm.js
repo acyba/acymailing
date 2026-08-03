@@ -23,7 +23,7 @@ document.addEventListener('wpcf7submit', function (event) {
             continue;
         }
 
-        const emailAddress = jQuery(`[name="${emailField}"]`).val();
+        const emailAddress = formcontainer.find(`[name="${emailField}"]`).val();
         if (!emailAddress || emailAddress.length === 0) {
             console.error('The specified email field is empty or does not exist: ' + emailField);
             continue;
@@ -31,14 +31,14 @@ document.addEventListener('wpcf7submit', function (event) {
 
         let name = '';
         if (undefined !== nameField && nameField.length !== 0) {
-            const nameFieldElement = jQuery('[name="' + nameField + '"]');
+            const nameFieldElement = formcontainer.find('[name="' + nameField + '"]');
             if (nameFieldElement) {
                 name = nameFieldElement.val();
             }
         }
 
         const hiddenLists = currentField.val();
-        const allListsField = jQuery('[name="' + identifier + '[]"]');
+        const allListsField = formcontainer.find('[name="' + identifier + '[]"]');
         const allLists = [];
         for (let j = 0 ; j < allListsField.length ; j++) {
             if (allListsField[j].checked) {
@@ -62,9 +62,9 @@ document.addEventListener('wpcf7submit', function (event) {
         if (customFields && typeof customFields === 'object') {
             for (const id in customFields) {
                 const fieldName = customFields[id]['matchingFieldName'];
-                let $fieldElement = jQuery(`[name="${fieldName}"]`);
+                let $fieldElement = formcontainer.find(`[name="${fieldName}"]`);
                 if ($fieldElement.length === 0) {
-                    $fieldElement = jQuery(`[name="${fieldName}[]"]`);
+                    $fieldElement = formcontainer.find(`[name="${fieldName}[]"]`);
                     if ($fieldElement.length === 0) {
                         continue;
                     }

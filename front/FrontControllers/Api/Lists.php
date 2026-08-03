@@ -73,7 +73,7 @@ trait Lists
         $lists = $listClass->getXLists(
             [
                 'offset' => acym_getVar('int', 'offset', 0),
-                'limit' => acym_getVar('int', 'limit', 100),
+                'limit' => $this->getRequestedLimit(100),
                 'filters' => acym_getVar('array', 'filters', []),
             ]
         );

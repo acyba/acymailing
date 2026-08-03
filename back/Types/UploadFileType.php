@@ -6,14 +6,13 @@ use AcyMailing\Core\AcymObject;
 
 class UploadFileType extends AcymObject
 {
-    public function display(string $map, int $num): string
+    public function display(string $map, int $num): void
     {
-        $result = '<input type="hidden" name="'.acym_escape($map).'[]" id="'.acym_escape($map.$num).'" />';
+        echo '<input type="hidden" name="'.acym_escape($map).'[]" id="'.acym_escape($map.$num).'" />';
 
-        $buttonLoad = acym_translation('ACYM_SELECT');
         $ctrlFile = acym_isAdmin() ? 'file' : 'frontfile';
-        $result .= acym_modal(
-            $buttonLoad,
+        acym_modal(
+            acym_translation('ACYM_SELECT'),
             '',
             'acym__campaign__email__'.$map.$num,
             [
@@ -28,8 +27,6 @@ class UploadFileType extends AcymObject
             ]
         );
 
-        $result .= '<span id="'.acym_escape($map.$num).'selection" class="acy_selected_attachment cell medium-shrink"></span>';
-
-        return $result;
+        echo '<span id="'.acym_escape($map.$num).'selection" class="acy_selected_attachment cell medium-shrink"></span>';
     }
 }

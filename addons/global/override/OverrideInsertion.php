@@ -27,21 +27,21 @@ trait OverrideInsertion
             }
 		</script>
         <?php
-        $text = '<div class="acym__popup__listing text-center grid-x">';
-        $text .= '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_ORIGINAL_EMAIL_DATA').'</h1>';
+        echo '<div class="acym__popup__listing text-center grid-x">';
+        echo '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_escapeHtml(acym_translation('ACYM_ORIGINAL_EMAIL_DATA')).'</h1>';
 
         $overridesClass = new OverrideClass();
         $overrideParams = $overridesClass->getParamsByMailId($mailId);
 
         foreach ($overrideParams as $key => $overrideParam) {
-            $text .= '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeOverrideTag(\''.$key.'\', jQuery(this));" >
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$overrideParam['nicename'].'</div>
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$overrideParam['description'].'</div>
-                     </div>';
+            echo '<div style="cursor:pointer" 
+            		class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" 
+            		onclick="changeOverrideTag(\''.acym_escape($key).'\', jQuery(this));">
+					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escapeHtml($overrideParam['nicename']).'</div>
+					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escapeHtml($overrideParam['description']).'</div>
+				 </div>';
         }
 
-        $text .= '</div>';
-
-        echo $text;
+        echo '</div>';
     }
 }

@@ -1,3 +1,6 @@
+<?php
+// context verification
+?>
 <div id="acym__dashboard">
     <?php include acym_getView('dashboard', 'important_notice'); ?>
 

@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 function acym_getEmailRegex(bool $secureJS = false, bool $forceRegex = false): string
 {

@@ -27,44 +27,44 @@ class plgAcymAmazon extends AcymPlugin
     {
         ob_start();
         ?>
-		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
+		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<label for="amazon_host" class="cell shrink">
                         <?php
-                        echo acym_translation('ACYM_AMAZON_SES_SERVER');
-                        echo acym_info(
+                        echo acym_escapeHtml(acym_translation('ACYM_AMAZON_SES_SERVER'));
+                        acym_info(
                             [
                                 'textShownInTooltip' => acym_translation('ACYM_AMAZON_SES_SERVER_DESC'),
                             ]
                         );
                         ?>
 					</label>
-                    <?php echo $this->getLinks(
+                    <?php $this->getLinks(
                         'https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fportal.aws.amazon.com%2Fbilling%2Fsignup%2Fresume&client_id=signup',
                         'https://aws.amazon.com/en/ses/pricing/'
                     ); ?>
 					<input id="amazon_host"
-						   class="cell"
-						   type="text"
-						   name="config[amazon_host]"
-						   value="<?php echo acym_escape($this->config->get('amazon_host', self::SENDING_METHOD_HOST)); ?>">
+					       class="cell"
+					       type="text"
+					       name="config[amazon_host]"
+					       value="<?php echo acym_escape($this->config->get('amazon_host', self::SENDING_METHOD_HOST)); ?>">
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-					<label for="amazon_username" class="cell"><?php echo acym_translation('ACYM_AMAZON_SES_USERNAME'); ?></label>
+					<label for="amazon_username" class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_AMAZON_SES_USERNAME')); ?></label>
 					<input id="amazon_username"
-						   class="cell"
-						   type="text"
-						   name="config[amazon_username]"
-						   value="<?php echo acym_escape($this->config->get('amazon_username')); ?>">
+					       class="cell"
+					       type="text"
+					       name="config[amazon_username]"
+					       value="<?php echo acym_escape($this->config->get('amazon_username')); ?>">
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-					<label for="amazon_password" class="cell"><?php echo acym_translation('ACYM_AMAZON_SES_PASSWORD'); ?></label>
+					<label for="amazon_password" class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_AMAZON_SES_PASSWORD')); ?></label>
 					<input id="amazon_password"
-						   class="cell"
-						   type="text"
-						   name="config[amazon_password]"
-						   value="<?php echo str_repeat('*', strlen($this->config->get('amazon_password'))); ?>">
+					       class="cell"
+					       type="text"
+					       name="config[amazon_password]"
+					       value="<?php echo acym_escape(str_repeat('*', strlen($this->config->get('amazon_password')))); ?>">
 				</div>
 			</div>
 		</div>

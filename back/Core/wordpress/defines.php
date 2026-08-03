@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 define('ACYM_CMS', 'wordpress');
 define('ACYM_CMS_TITLE', 'WordPress');
 define('ACYM_COMPONENT', 'acymailing');
@@ -7,23 +9,23 @@ define('ACYM_DEFAULT_LANGUAGE', 'en-US');
 
 define('ACYM_BASE', '');
 // On wordpress.com, websites have access restrictions on the base folder. According to them we need $_SERVER['DOCUMENT_ROOT'] instead of the standard ABSPATH
-$acyAbsPath = ABSPATH;
+$acymailingAbsPath = ABSPATH;
 if (!empty($_SERVER['DOCUMENT_ROOT'])) {
-    $docRoot = $_SERVER['DOCUMENT_ROOT'];
-    $pos = strpos(ABSPATH, $docRoot);
-    if ($pos !== false) {
-        $docRoot .= substr(ABSPATH, $pos + strlen($docRoot));
+    $acymailingDocRoot = sanitize_text_field(wp_unslash($_SERVER['DOCUMENT_ROOT']));
+    $acymailingPos = strpos(ABSPATH, $acymailingDocRoot);
+    if ($acymailingPos !== false) {
+        $acymailingDocRoot .= substr(ABSPATH, $acymailingPos + strlen($acymailingDocRoot));
     }
-    $docRoot = rtrim($docRoot, DS.'/').DS;
-    if (str_replace($docRoot, '', WP_PLUGIN_DIR.DS) === 'wp-content/plugins/') {
-        $acyAbsPath = $docRoot;
+    $acymailingDocRoot = rtrim($acymailingDocRoot, DS.'/').DS;
+    if (str_replace($acymailingDocRoot, '', WP_PLUGIN_DIR.DS) === 'wp-content/plugins/') {
+        $acymailingAbsPath = $acymailingDocRoot;
     }
 }
 // For WordPress bedrock
-if (defined('CONTENT_DIR') && substr($acyAbsPath, -3) === 'wp/') {
-    $acyAbsPath = substr($acyAbsPath, 0, -3);
+if (defined('CONTENT_DIR') && substr($acymailingAbsPath, -3) === 'wp/') {
+    $acymailingAbsPath = substr($acymailingAbsPath, 0, -3);
 }
-define('ACYM_ROOT', rtrim($acyAbsPath, DS.'/').DS);
+define('ACYM_ROOT', rtrim($acymailingAbsPath, DS.'/').DS);
 define('ACYM_FOLDER', WP_PLUGIN_DIR.DS.ACYM_COMPONENT.DS);
 define('ACYM_WIDGETS', ACYM_FOLDER.'widgets'.DS);
 define('ACYM_FRONT', ACYM_FOLDER.'front'.DS);
@@ -80,179 +82,177 @@ define('ACYM_ALLOWHTML', 4);
 define('ACYM_ADMIN_GROUP', 'administrator');
 define(
     'ACYM_AVAILABLE_PLUGINS',
-    json_encode(
+    [
         [
-            (object)[
-                'name' => 'Advanced Custom Fields (ACF)',
-                'description' => '- Insert custom post types in your emails<br />- Insert them by category',
-                'file_name' => 'acf',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/advanced-custom-fields-acf',
-                'category' => 'Content management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-acf/',
-            ],
-            (object)[
-                'name' => 'Business Directory',
-                'description' => '- Insert individual listings in your emails<br />- Insert listings by category',
-                'file_name' => 'businessdirectory',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/business-directory',
-                'category' => 'Content management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-business-directory/',
-            ],
-            (object)[
-                'name' => 'Contact Form 7',
-                'description' => '- Add AcyMailing lists on contact forms',
-                'file_name' => 'contactform7',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/contact-form-7',
-                'category' => 'Subscription system',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-contact-form-7/',
-            ],
-            (object)[
-                'name' => 'Custom headers',
-                'description' => '- Add custom email headers to the sent emails',
-                'file_name' => 'customheaders',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/custom-headers',
-                'category' => 'Content management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-custom-headers/',
-            ],
-            (object)[
-                'name' => 'Easy Digital Downloads',
-                'description' => '- Insert digital downloads and generate coupons in your emails',
-                'file_name' => 'easydigitaldownloads',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/easydigitaldownloads',
-                'category' => 'E-commerce solutions',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-easy-digital-downloads/',
-            ],
-            (object)[
-                'name' => 'EventOn',
-                'description' => '- Add events from Events Manager to your emails.',
-                'file_name' => 'eventon',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/eventon',
-                'category' => 'Events management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-eventon/',
-            ],
-            (object)[
-                'name' => 'Events Manager',
-                'description' => '- Add events from Events Manager to your emails.<br />- Filter users on events participation.',
-                'file_name' => 'eventsmanager',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/events-manager',
-                'category' => 'Events management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-events-manager/',
-            ],
-            (object)[
-                'name' => 'Export in automations',
-                'description' => '- Export the filtered users in the automations',
-                'file_name' => 'automationexport',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/automation-export-action',
-                'category' => 'User management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-automation-export/',
-            ],
-            (object)[
-                'name' => 'Gravity Forms',
-                'description' => '- Add AcyMailing lists to your forms',
-                'file_name' => 'gravityforms',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/gravity-forms',
-                'category' => 'Subscription system',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-gravity-forms/',
-            ],
-            (object)[
-                'name' => 'Learndash',
-                'description' => '- Filter AcyMailing users on Learndash groups<br />- Filter AcyMailing users on started Learndash courses',
-                'file_name' => 'learndash',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/learndash',
-                'category' => 'User management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-learndash/',
-            ],
-            (object)[
-                'name' => 'MemberPress',
-                'description' => '- Insert MemberPress custom fields in your emails<br />- Filter users based on their subscription<br />-Trigger automation when a user subscribe to a membership',
-                'file_name' => 'memberpress',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/memberpress',
-                'category' => 'User management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-memberpress/',
-            ],
-            (object)[
-                'name' => 'Modern Events Calendar',
-                'description' => '- Insert events in your emails<br />- Filter users attending your events',
-                'file_name' => 'moderneventscalendar',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/modern-events-calendar',
-                'category' => 'Events management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-modern-events-calendar/',
-            ],
-            (object)[
-                'name' => 'RSS and Atom feeds',
-                'description' => '- Insert content in your emails from an RSS feed<br />- Insert content in your emails from an Atom feed',
-                'file_name' => 'rss',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/rss-feed',
-                'category' => 'Content management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-rss-content/',
-            ],
-            (object)[
-                'name' => 'Table of contents',
-                'description' => '- Insert a dynamic table of contents in your emails based on their contents',
-                'file_name' => 'tableofcontents',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/table-of-contents-generator',
-                'category' => 'Content management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-table-of-contents-generator/',
-            ],
-            (object)[
-                'name' => 'The Events Calendar',
-                'description' => '- Insert events in your emails<br />- Filter users by event subscription',
-                'file_name' => 'theeventscalendar',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/the-events-calendar',
-                'category' => 'Events management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-the-events-calendar/',
-            ],
-            (object)[
-                'name' => 'Ultimate Member',
-                'description' => '- insert AcyMailing list on your Ultimate Member register form',
-                'file_name' => 'ultimatemember',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/ultimate-member',
-                'category' => 'Subscription system',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-ultimate-member/',
-            ],
-            (object)[
-                'name' => 'Uncanny Automator',
-                'description' => '- Trigger recipes on AcyMailing subscriber creation/update<br />- Create new AcyMailing subscribers<br />- Subscribe users to lists<br />- Unsubscribe users from lists<br />- <br />- Update AcyMailing subscribers email addresses<br />- Create new tags<br />- Remove old tags',
-                'file_name' => 'uncannyautomator',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/uncanny-automator',
-                'category' => 'User management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-uncanny-automator/',
-            ],
-            (object)[
-                'name' => 'Universal filter',
-                'description' => '- Filter AcyMailing subscribers based on any data from your database<br />- Filter users based on email addresses in a specified text',
-                'file_name' => 'universalfilter',
-                'level' => 'enterprise',
-                'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/universal-filter',
-                'category' => 'User management',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-universal-filter/',
-            ],
-            (object)[
-                'name' => 'WooCommerce',
-                'description' => '- Insert products and generate coupons in your emails<br />- Filter users based on their purchases',
-                'file_name' => 'woocommerce',
-                'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/woocommerce',
-                'category' => 'E-commerce solutions',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-woocommerce/',
-            ],
-        ]
-    )
+            'name' => 'Advanced Custom Fields (ACF)',
+            'description' => '- Insert custom post types in your emails<br />- Insert them by category',
+            'file_name' => 'acf',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/advanced-custom-fields-acf',
+            'category' => 'Content management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-acf/',
+        ],
+        [
+            'name' => 'Business Directory',
+            'description' => '- Insert individual listings in your emails<br />- Insert listings by category',
+            'file_name' => 'businessdirectory',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/business-directory',
+            'category' => 'Content management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-business-directory/',
+        ],
+        [
+            'name' => 'Contact Form 7',
+            'description' => '- Add AcyMailing lists on contact forms',
+            'file_name' => 'contactform7',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/contact-form-7',
+            'category' => 'Subscription system',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-contact-form-7/',
+        ],
+        [
+            'name' => 'Custom headers',
+            'description' => '- Add custom email headers to the sent emails',
+            'file_name' => 'customheaders',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/custom-headers',
+            'category' => 'Content management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-custom-headers/',
+        ],
+        [
+            'name' => 'Easy Digital Downloads',
+            'description' => '- Insert digital downloads and generate coupons in your emails',
+            'file_name' => 'easydigitaldownloads',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/easydigitaldownloads',
+            'category' => 'E-commerce solutions',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-easy-digital-downloads/',
+        ],
+        [
+            'name' => 'EventOn',
+            'description' => '- Add events from Events Manager to your emails.',
+            'file_name' => 'eventon',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/eventon',
+            'category' => 'Events management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-eventon/',
+        ],
+        [
+            'name' => 'Events Manager',
+            'description' => '- Add events from Events Manager to your emails.<br />- Filter users on events participation.',
+            'file_name' => 'eventsmanager',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/events-manager',
+            'category' => 'Events management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-events-manager/',
+        ],
+        [
+            'name' => 'Export in automations',
+            'description' => '- Export the filtered users in the automations',
+            'file_name' => 'automationexport',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/automation-export-action',
+            'category' => 'User management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-automation-export/',
+        ],
+        [
+            'name' => 'Gravity Forms',
+            'description' => '- Add AcyMailing lists to your forms',
+            'file_name' => 'gravityforms',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/gravity-forms',
+            'category' => 'Subscription system',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-gravity-forms/',
+        ],
+        [
+            'name' => 'Learndash',
+            'description' => '- Filter AcyMailing users on Learndash groups<br />- Filter AcyMailing users on started Learndash courses',
+            'file_name' => 'learndash',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/learndash',
+            'category' => 'User management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-learndash/',
+        ],
+        [
+            'name' => 'MemberPress',
+            'description' => '- Insert MemberPress custom fields in your emails<br />- Filter users based on their subscription<br />-Trigger automation when a user subscribe to a membership',
+            'file_name' => 'memberpress',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/memberpress',
+            'category' => 'User management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-memberpress/',
+        ],
+        [
+            'name' => 'Modern Events Calendar',
+            'description' => '- Insert events in your emails<br />- Filter users attending your events',
+            'file_name' => 'moderneventscalendar',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/modern-events-calendar',
+            'category' => 'Events management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-modern-events-calendar/',
+        ],
+        [
+            'name' => 'RSS and Atom feeds',
+            'description' => '- Insert content in your emails from an RSS feed<br />- Insert content in your emails from an Atom feed',
+            'file_name' => 'rss',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/rss-feed',
+            'category' => 'Content management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-rss-content/',
+        ],
+        [
+            'name' => 'Table of contents',
+            'description' => '- Insert a dynamic table of contents in your emails based on their contents',
+            'file_name' => 'tableofcontents',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/table-of-contents-generator',
+            'category' => 'Content management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-table-of-contents-generator/',
+        ],
+        [
+            'name' => 'The Events Calendar',
+            'description' => '- Insert events in your emails<br />- Filter users by event subscription',
+            'file_name' => 'theeventscalendar',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/the-events-calendar',
+            'category' => 'Events management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-the-events-calendar/',
+        ],
+        [
+            'name' => 'Ultimate Member',
+            'description' => '- insert AcyMailing list on your Ultimate Member register form',
+            'file_name' => 'ultimatemember',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/ultimate-member',
+            'category' => 'Subscription system',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-ultimate-member/',
+        ],
+        [
+            'name' => 'Uncanny Automator',
+            'description' => '- Trigger recipes on AcyMailing subscriber creation/update<br />- Create new AcyMailing subscribers<br />- Subscribe users to lists<br />- Unsubscribe users from lists<br />- <br />- Update AcyMailing subscribers email addresses<br />- Create new tags<br />- Remove old tags',
+            'file_name' => 'uncannyautomator',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/uncanny-automator',
+            'category' => 'User management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-uncanny-automator/',
+        ],
+        [
+            'name' => 'Universal filter',
+            'description' => '- Filter AcyMailing subscribers based on any data from your database<br />- Filter users based on email addresses in a specified text',
+            'file_name' => 'universalfilter',
+            'level' => 'enterprise',
+            'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/universal-filter',
+            'category' => 'User management',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-universal-filter/',
+        ],
+        [
+            'name' => 'WooCommerce',
+            'description' => '- Insert products and generate coupons in your emails<br />- Filter users based on their purchases',
+            'file_name' => 'woocommerce',
+            'level' => 'starter',
+            'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/woocommerce',
+            'category' => 'E-commerce solutions',
+            'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-woocommerce/',
+        ],
+    ]
 );

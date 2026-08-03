@@ -48,13 +48,18 @@ class plgAcymUniversalfilter extends AcymPlugin
             $columns[$value] = $value;
         }
 
-        echo acym_select(
+        acym_select(
             $columns,
             acym_getVar('string', 'name', ''),
             acym_getVar('string', 'value', 'user_id'),
             [
                 'class' => 'acym__select',
-            ]
+            ],
+            'value',
+            'text',
+            null,
+            false,
+            true
         );
         exit;
     }
@@ -122,7 +127,10 @@ class plgAcymUniversalfilter extends AcymPlugin
 
         $conditions['classic']['universalfilter']->option .= '<div class="cell grid-x">';
         $conditions['classic']['universalfilter']->option .= '<div class="cell medium-3 large-2 acym_vcenter margin-right-1">';
-        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_IDENTIFIER').acym_info(['textShownInTooltip' => 'ACYM_IDENTIFIER_DESC']);
+        ob_start();
+        acym_info(['textShownInTooltip' => 'ACYM_IDENTIFIER_DESC']);
+        $tooltip = ob_get_clean();
+        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_IDENTIFIER').$tooltip;
         $conditions['classic']['universalfilter']->option .= '</div>';
         $conditions['classic']['universalfilter']->option .= '<div class="cell intext_select_automation" id="universalfilter_column_tochange___numor_____numand__">';
         $conditions['classic']['universalfilter']->option .= '<input 
@@ -135,7 +143,10 @@ class plgAcymUniversalfilter extends AcymPlugin
 
         $conditions['classic']['universalfilter']->option .= '<div class="cell grid-x">';
         $conditions['classic']['universalfilter']->option .= '<div class="cell medium-3 large-2 acym_vcenter margin-right-1">';
-        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_CONDITION').acym_info(['textShownInTooltip' => 'ACYM_CONDITION_DESC']);
+        ob_start();
+        acym_info(['textShownInTooltip' => 'ACYM_CONDITION_DESC']);
+        $tooltip = ob_get_clean();
+        $conditions['classic']['universalfilter']->option .= acym_translation('ACYM_CONDITION').$tooltip;
         $conditions['classic']['universalfilter']->option .= '</div>';
         $conditions['classic']['universalfilter']->option .= '<div class="cell grid-margin-x medium-auto grid-x margin-y">';
         $conditions['classic']['universalfilter']->option .= '<div class="intext_select_automation cell" id="universalfilter_where_tochange___numor_____numand__" style="vertical-align: top;">';

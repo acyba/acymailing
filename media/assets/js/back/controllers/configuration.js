@@ -84,28 +84,43 @@ jQuery(function ($) {
     }
 
     function setCheckPortConfiguration() {
-        const $container = $('#available_ports');
-        $container.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
+        let portsChecked = false;
 
-        const data = {
-            ctrl: 'configuration',
-            task: 'ports'
-        };
+        function checkPorts() {
+            const $container = $('#available_ports');
+            $container.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-        acym_helper.post(ACYM_AJAX_URL, data).then(response => {
-            const portsReport = Object.values(response.data).map(portInfo => {
-                if (portInfo.open) {
-                    return `<span style="color:#3dea91">${portInfo.message}</span>`;
-                } else {
-                    if (portInfo.port === 465) {
-                        jQuery('.acym_port_465_closed').removeClass('is-hidden');
+            const data = {
+                ctrl: 'configuration',
+                task: 'ports'
+            };
+
+            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                const portsReport = Object.values(response.data).map(portInfo => {
+                    if (portInfo.open) {
+                        return `<span style="color:#3dea91">${portInfo.message}</span>`;
+                    } else {
+                        if (portInfo.port === 465) {
+                            jQuery('.acym_port_465_closed').removeClass('is-hidden');
+                        }
+                        return `<span style="color:#ff5259">${portInfo.message}</span>`;
                     }
-                    return `<span style="color:#ff5259">${portInfo.message}</span>`;
-                }
-            });
+                });
 
-            $container.html(portsReport.join('<br>'));
-        });
+                $container.html(portsReport.join('<br>'));
+            });
+        }
+
+        function checkPortsIfNeeded() {
+            if (portsChecked) return;
+            const methodsNeedingPortCheck = ['smtp', 'google', 'outlook'];
+            if (!methodsNeedingPortCheck.includes($('input[name="config[mailer_method]"]:checked').val())) return;
+            portsChecked = true;
+            checkPorts();
+        }
+
+        $('input[name="config[mailer_method]"]').on('change', checkPortsIfNeeded);
+        checkPortsIfNeeded();
     }
 
     function setDKIMSelectConfiguration() {

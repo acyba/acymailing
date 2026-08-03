@@ -88,3 +88,8 @@ function acym_getMenu()
 
     return $menu;
 }
+
+function acym_parseUrl(string $url)
+{
+    return parse_url($url);
+}

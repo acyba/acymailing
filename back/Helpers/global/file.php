@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 use AcyMailing\Helpers\ImageHelper;
 
@@ -109,9 +110,9 @@ function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?stri
 
     acym_createDir($uploadPath, true);
 
-    if (!is_writable($uploadPath)) {
-        @chmod($uploadPath, '0755');
-        if (!is_writable($uploadPath)) {
+    if (!acym_isWritable($uploadPath)) {
+        acym_chmod($uploadPath, 0755);
+        if (!acym_isWritable($uploadPath)) {
             acym_display(acym_translationSprintf('ACYM_WRITABLE_FOLDER', $uploadPath), 'error');
 
             return null;
@@ -130,7 +131,7 @@ function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?stri
         acym_display(
             acym_translationSprintf(
                 'ACYM_ACCEPTED_TYPE',
-                acym_escape($ext),
+                acym_escapeHtml($ext),
                 implode(', ', $allowedExtensions)
             ),
             'error'
@@ -185,18 +186,16 @@ function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?stri
     }
 
     if (!acym_uploadFile($file['tmp_name'], rtrim($uploadPath, DS).DS.$file['name'])) {
-        if (!move_uploaded_file($file['tmp_name'], rtrim($uploadPath, DS).DS.$file['name'])) {
-            acym_display(
-                acym_translationSprintf(
-                    'ACYM_FAIL_UPLOAD',
-                    '<b><i>'.acym_escape($file['tmp_name']).'</i></b>',
-                    '<b><i>'.acym_escape(rtrim($uploadPath, DS).DS.$file['name']).'</i></b>'
-                ),
-                'error'
-            );
+        acym_display(
+            acym_translationSprintf(
+                'ACYM_FAIL_UPLOAD',
+                '<b><i>'.acym_escapeHtml($file['tmp_name']).'</i></b>',
+                '<b><i>'.acym_escapeHtml(rtrim($uploadPath, DS).DS.$file['name']).'</i></b>'
+            ),
+            'error'
+        );
 
-            return null;
-        }
+        return null;
     }
 
     if ($onlyPict && $imageSize[0] > 1000) {
@@ -218,29 +217,46 @@ function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?stri
     return $file['name'];
 }
 
-function acym_inputFile(string $name, string $value = '', string $class = '', string $attributes = '', string $downloadUrl = ''): string
-{
+function acym_inputFile(
+    string $name,
+    string $value = '',
+    string $class = '',
+    array  $attributes = [],
+    string $downloadUrl = ''
+): void {
     $hasValue = !empty($value);
-    $actionStyle = $hasValue ? '' : ' style="display: none;"';
     $noFileText = acym_translation('ACYM_NO_FILE_CHOSEN');
     $baseName = substr($name, -2) === '[]' ? substr($name, 0, -2) : $name;
+    ?>
 
-    $downloadAttr = !empty($downloadUrl) ? ' data-download-url="'.acym_escapeUrl($downloadUrl).'"' : '';
+	<div class="cell <?php echo acym_escape($class); ?> grid-x acym__input__file__container">
+		<input type="hidden" name="<?php echo acym_escape($baseName); ?>" value="<?php echo acym_escape($value); ?>" class="acym__input__file__clear">
+		<input <?php
+        foreach ($attributes as $oneAttribute => $oneValue) {
+            if (is_array($oneValue) || is_object($oneValue)) {
+                $oneValue = json_encode($oneValue);
+            } elseif ($oneValue === true) {
+                $oneValue = $oneAttribute;
+            }
 
-    $return = '</label><div class="cell '.acym_escape($class).' grid-x acym__input__file__container">';
-    $return .= '<input type="hidden" name="'.acym_escape($baseName).'"  value="'.acym_escape($value).'" class="acym__input__file__clear">';
-    $return .= '<input '.$attributes.' style="display: none" type="file" name="'.acym_escape($name).'">';
-    $return .= '<button type="button" class="acym__button__file button button-secondary cell shrink">'.acym_translation('ACYM_CHOOSE_FILE').'</button>';
-    $return .= '<span class="cell shrink margin-left-2 margin-right-2 acym__input__file__name" data-no-file="'.acym_escape($noFileText).'">';
-    $return .= acym_escape($hasValue ? $value : $noFileText);
-    $return .= '</span>';
-    $return .= '<i class="acym__input__file__download cell shrink acym__color__blue cursor-pointer acymicon-download margin-right-1"'.$actionStyle.$downloadAttr.
-        ' title="'.acym_escape(acym_translation('ACYM_DOWNLOAD')).'" aria-label="'.acym_escape(acym_translation('ACYM_DOWNLOAD')).'"></i>';
-    $return .= '<i class="acymicon-close acym__color__red acym__input__file__delete cursor-pointer cell shrink margin-left-1"'.$actionStyle.
-        ' title="'.acym_escape(acym_translation('ACYM_DELETE')).'" aria-label="'.acym_escape(acym_translation('ACYM_DELETE')).'"></i>';
-    $return .= '</div>';
-
-    return $return;
+            echo ' '.acym_escape($oneAttribute).'="'.acym_escape($oneValue).'"';
+        }
+        ?> style="display: none" type="file" name="<?php echo acym_escape($name); ?>">
+		<button type="button" class="acym__button__file button button-secondary cell shrink">
+            <?php echo acym_escapeHtml(acym_translation('ACYM_CHOOSE_FILE')); ?>
+		</button>
+		<span class="cell shrink margin-left-2 margin-right-2 acym__input__file__name" data-no-file="<?php echo acym_escape($noFileText); ?>">
+			<?php echo acym_escapeHtml($hasValue ? $value : $noFileText); ?>
+		</span>
+		<i class="acym__input__file__download cell shrink acym__color__blue cursor-pointer acymicon-download margin-right-1"
+            <?php echo $hasValue ? '' : ' style="display: none;"'; ?>
+            <?php echo !empty($downloadUrl) ? ' data-download-url="'.acym_escapeUrl($downloadUrl).'"' : ''; ?>
+           title="<?php echo acym_escape(acym_translation('ACYM_DOWNLOAD')); ?>" aria-label="<?php echo acym_escape(acym_translation('ACYM_DOWNLOAD')); ?>"></i>
+		<i class="acymicon-close acym__color__red acym__input__file__delete cursor-pointer cell shrink margin-left-1"
+            <?php echo $hasValue ? '' : ' style="display: none;"'; ?>
+           title="<?php echo acym_escape(acym_translation('ACYM_DELETE')); ?>" aria-label="<?php echo acym_escape(acym_translation('ACYM_DELETE')); ?>"></i>
+	</div>
+    <?php
 }
 
 function acym_getFilesFolder(bool $ignoreVariables = false): string
@@ -253,9 +269,9 @@ function acym_getFilesFolder(bool $ignoreVariables = false): string
     $uploadFolder = trim($uploadFolder, '/');
 
     $uploadFolder = str_replace('{userid}', acym_currentUserId(), $uploadFolder);
-    $uploadFolder = str_replace('{year}', date('Y'), $uploadFolder);
-    $uploadFolder = str_replace('{month}', date('m'), $uploadFolder);
-    $uploadFolder = str_replace('{day}', date('d'), $uploadFolder);
+    $uploadFolder = str_replace('{year}', gmdate('Y'), $uploadFolder);
+    $uploadFolder = str_replace('{month}', gmdate('m'), $uploadFolder);
+    $uploadFolder = str_replace('{day}', gmdate('d'), $uploadFolder);
 
     return acym_replaceGroupTags($uploadFolder);
 }
@@ -292,56 +308,6 @@ function acym_makeSafeFile(string $file): string
     $regex = ['#(\.){2,}#', '#[^A-Za-z0-9\.\_\- ]#', '#^\.#'];
 
     return trim(preg_replace($regex, '', $file));
-}
-
-function acym_deleteFolder(string $path, bool $report = true): bool
-{
-    $path = acym_cleanPath($path);
-    if (!is_dir($path)) {
-        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
-
-        return false;
-    }
-
-    $files = acym_getFiles($path, '.', false, false, [], []);
-    if (!empty($files)) {
-        foreach ($files as $oneFile) {
-            if (!acym_deleteFile($path.DS.$oneFile, $report)) {
-                return false;
-            }
-        }
-    }
-
-    $folders = acym_getFolders($path, '.', false, false, []);
-    if (!empty($folders)) {
-        foreach ($folders as $oneFolder) {
-            if (!acym_deleteFolder($path.DS.$oneFolder, $report)) {
-                return false;
-            }
-        }
-    }
-
-    if (@rmdir($path)) {
-        return true;
-    } else {
-        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_DELETE_FOLDER', $path), 'error');
-
-        return false;
-    }
-}
-
-function acym_createFolder(string $path = '', int $mode = 0755): bool
-{
-    $path = acym_cleanPath($path);
-    if (file_exists($path)) {
-        return true;
-    }
-
-    $origmask = @umask(0);
-    $ret = @mkdir($path, $mode, true);
-    @umask($origmask);
-
-    return $ret;
 }
 
 function acym_getFolders(
@@ -557,27 +523,6 @@ function acym_listFolderTree(string $path, string $filter, int $maxLevel = 3, in
     return $dirs;
 }
 
-function acym_deleteFile(string $file, bool $report = true): bool
-{
-    $file = acym_cleanPath($file);
-    if (!is_file($file)) {
-        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_IS_NOT_A_FILE', $file), 'error');
-
-        return false;
-    }
-
-    @chmod($file, 0777);
-
-    if (!@unlink($file)) {
-        $filename = basename($file);
-        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_FAILED_DELETE', $filename), 'error');
-
-        return false;
-    }
-
-    return true;
-}
-
 /**
  * @param mixed $buffer
  */
@@ -590,51 +535,6 @@ function acym_writeFile(string $file, $buffer, int $flags = 0): bool
     $file = acym_cleanPath($file);
 
     return is_int(file_put_contents($file, $buffer, $flags));
-}
-
-function acym_moveFile(string $src, string $dest, string $path = ''): bool
-{
-    if (!empty($path)) {
-        $src = acym_cleanPath($path.'/'.$src);
-        $dest = acym_cleanPath($path.'/'.$dest);
-    }
-
-    if (!is_readable($src)) {
-        acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_FIND_FILE_SOURCE_PERMISSION', $src), 'error');
-
-        return false;
-    }
-
-    if (!@rename($src, $dest)) {
-        acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_MOVE_FILE'), 'error');
-
-        return false;
-    }
-
-    return true;
-}
-
-function acym_uploadFile(string $src, string $dest): bool
-{
-    $dest = acym_cleanPath($dest);
-
-    $baseDir = dirname($dest);
-    if (!file_exists($baseDir)) {
-        acym_createFolder($baseDir);
-    }
-
-    if (is_writeable($baseDir) && move_uploaded_file($src, $dest)) {
-        // Short circuit to prevent file permission errors
-        if (@chmod($dest, octdec('0644'))) {
-            return true;
-        } else {
-            acym_enqueueMessage(acym_translation('ACYM_FILE_REJECTED_SAFETY_REASON'), 'error');
-        }
-    } else {
-        acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_UPLOAD_FILE_PERMISSION', $baseDir), 'error');
-    }
-
-    return false;
 }
 
 function acym_copyFile(string $src, string $dest, string $path = ''): bool
@@ -732,22 +632,21 @@ function acym_createArchive(string $name, array $files): bool
     return acym_writeFile($name.'.zip', $buffer);
 }
 
-function acym_loaderLogo(bool $wrap = true): string
+function acym_loaderLogo(bool $withContainer = true): void
 {
-    $loader = '';
-    if ($wrap) {
-        $loader .= '<div class="cell shrink acym_loader_logo">';
+    if ($withContainer) {
+        echo '<div class="cell shrink acym_loader_logo">';
     }
-
-    $loader .= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 1024 1024">
-	                <path class="acym__svg__loader" fill="#a6a9ab" d="M553.074 174.168c-12.201 7.319-26.84 10.573-40.668 10.573s-27.655-3.253-40.668-10.573l-242.376-139.081-229.362 132.575v732.011l254.576 143.963v-430.26l219.602 124.442c11.388 6.507 24.401 9.76 37.415 9.76 0 0 0 0 0 0s0 0 0 0c12.201 0 25.214-3.253 36.6-9.76l221.23-124.442v430.26l254.576-144.775v-732.011l-229.362-131.762-241.563 139.081zM491.261 701.215l-217.164-122.815-61.001-34.161v430.26l-173.243-97.601v-662.063l422.94 245.629c0 0 0 0 0 0 8.947 4.881 17.895 8.135 27.655 10.573v230.178zM983.334 876.086l-173.243 98.416v-431.073l-61.001 34.161-217.164 122.815v-229.362c9.76-2.441 18.707-5.694 27.655-10.573l423.753-246.444v662.063zM539.246 425.493c-17.080 9.76-38.227 9.76-55.307 0 0 0 0 0 0 0l-422.94-245.629 168.362-97.601 222.043 127.696c18.707 10.573 39.853 16.267 61.001 16.267s42.294-5.694 61.001-16.267l222.043-127.696 168.362 97.601-424.566 245.629z"></path>
-                </svg>';
-
-    if ($wrap) {
-        $loader .= '</div>';
+    ?>
+	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 1024 1024">
+		<path class="acym__svg__loader"
+		      fill="#a6a9ab"
+		      d="M553.074 174.168c-12.201 7.319-26.84 10.573-40.668 10.573s-27.655-3.253-40.668-10.573l-242.376-139.081-229.362 132.575v732.011l254.576 143.963v-430.26l219.602 124.442c11.388 6.507 24.401 9.76 37.415 9.76 0 0 0 0 0 0s0 0 0 0c12.201 0 25.214-3.253 36.6-9.76l221.23-124.442v430.26l254.576-144.775v-732.011l-229.362-131.762-241.563 139.081zM491.261 701.215l-217.164-122.815-61.001-34.161v430.26l-173.243-97.601v-662.063l422.94 245.629c0 0 0 0 0 0 8.947 4.881 17.895 8.135 27.655 10.573v230.178zM983.334 876.086l-173.243 98.416v-431.073l-61.001 34.161-217.164 122.815v-229.362c9.76-2.441 18.707-5.694 27.655-10.573l423.753-246.444v662.063zM539.246 425.493c-17.080 9.76-38.227 9.76-55.307 0 0 0 0 0 0 0l-422.94-245.629 168.362-97.601 222.043 127.696c18.707 10.573 39.853 16.267 61.001 16.267s42.294-5.694 61.001-16.267l222.043-127.696 168.362 97.601-424.566 245.629z"></path>
+	</svg>
+    <?php
+    if ($withContainer) {
+        echo '</div>';
     }
-
-    return $loader;
 }
 
 function acym_fileNameValid(string $filename): bool
@@ -759,7 +658,44 @@ function acym_fileNameValid(string $filename): bool
     return true;
 }
 
-function acym_getImageFileExtensions(): array
+function acym_getImageFileExtensions(bool $allowSvg = false): array
 {
-    return ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp', 'svg'];
+    $imageFormats = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp'];
+    if ($allowSvg) {
+        $imageFormats[] = 'svg';
+    }
+
+    return $imageFormats;
+}
+
+function acym_isSvgFileSafe(string $path): bool
+{
+    if (!is_file($path)) {
+        return false;
+    }
+
+    $content = @file_get_contents($path);
+    if ($content === false || trim($content) === '') {
+        return false;
+    }
+
+    // Decode HTML entities so obfuscated payloads (e.g. "javascript&#58;") are caught, and drop NULL bytes.
+    $content = str_replace("\0", '', html_entity_decode($content, ENT_QUOTES | ENT_HTML5));
+
+    $dangerousPatterns = [
+        '#<\s*script#i',
+        '#<\s*(foreignObject|iframe|embed|object|audio|video|handler|listener)#i',
+        '#\son[a-z]+\s*=#i',
+        '#javascript\s*:#i',
+        '#data\s*:\s*text/html#i',
+        '#<!\s*(DOCTYPE|ENTITY)#i',
+    ];
+
+    foreach ($dangerousPatterns as $pattern) {
+        if (preg_match($pattern, $content)) {
+            return false;
+        }
+    }
+
+    return true;
 }

@@ -9,13 +9,19 @@ trait Migration
 {
     public function preMigration(): void
     {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration') || !acym_existsAcyMailing59()) {
+            return;
+        }
+
         $elementToMigrate = acym_getVar('string', 'element', '');
         $helperMigration = new MigrationHelper();
 
         $result = $helperMigration->preMigration($elementToMigrate);
 
         if (!empty($result['isOk'])) {
-            echo $result['count'];
+            echo acym_escapeHtml($result['count']);
         } else {
             $this->errorHandling($result);
         }
@@ -24,9 +30,20 @@ trait Migration
 
     public function migrate(): void
     {
-        $elementToMigrate = acym_getVar('string', 'element');
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
+        $elementToMigrate = acym_getVar('string', 'element', '');
         $helperMigration = new MigrationHelper();
         $functionName = 'do'.ucfirst($elementToMigrate).'Migration';
+
+        if (!is_callable([$helperMigration, $functionName])) {
+            echo 'ERROR : '.acym_escapeHtml(acym_translation('ACYM_NON_EXISTING_PAGE'));
+            exit;
+        }
 
         $result = $helperMigration->$functionName($elementToMigrate);
 
@@ -40,6 +57,12 @@ trait Migration
 
     public function migrationDone(): void
     {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
         $this->config->saveConfig(['migration' => 1]);
 
         $updateHelper = new UpdateHelper();
@@ -54,23 +77,27 @@ trait Migration
     {
         echo 'ERROR : ';
         if (!empty($result['errorInsert'])) {
-            echo strtoupper(acym_translation('ACYM_INSERT_ERROR'));
+            echo acym_escapeHtml(strtoupper(acym_translation('ACYM_INSERT_ERROR')));
         }
         if (!empty($result['errorClean'])) {
-            echo strtoupper(acym_translation('ACYM_CLEAN_ERROR'));
+            echo acym_escapeHtml(strtoupper(acym_translation('ACYM_CLEAN_ERROR')));
         }
 
         if (!empty($result['errors'])) {
             echo '<br>';
 
             foreach ($result['errors'] as $key => $oneError) {
-                echo '<br>'.$key.' : '.$oneError;
+                echo '<br>'.acym_escapeHtml($key.' : '.$oneError);
             }
         }
     }
 
-    public function migration(): bool
+    private function migration(): bool
     {
+        if (!acym_isAllowed('configuration')) {
+            return false;
+        }
+
         if ($this->config->get('migration') == 0 && acym_existsAcyMailing59()) {
             acym_setVar('layout', 'migrate');
             parent::display();

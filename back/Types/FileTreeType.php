@@ -6,18 +6,18 @@ use AcyMailing\Core\AcymObject;
 
 class FileTreeType extends AcymObject
 {
-    public function display(array $folders, string $currentFolder, string $nameInput): string
+    public function display(array $folders, string $currentFolder, string $nameInput): void
     {
         $tree = [];
         foreach ($folders as $root => $children) {
             $tree = array_merge($tree, $this->searchChildren($children, $root));
         }
 
-        $treeView = '<div id="displaytree" class="cell medium-11"><input type="text" readonly name="currentPath" id="currentPath" value="'.acym_escape($currentFolder).'"></div>';
-        $treeView .= '<div class="cell" id="treefile" style="display: none;">'.$this->displayTree($tree, $currentFolder).'</div>';
-        $treeView .= '<input type="hidden" name="'.acym_escape($nameInput).'" id="'.acym_escape($nameInput).'" value="'.acym_escape($currentFolder).'">';
-
-        return $treeView;
+        echo '<div id="displaytree" class="cell medium-11"><input type="text" readonly name="currentPath" id="currentPath" value="'.acym_escape($currentFolder).'"></div>';
+        echo '<div class="cell" id="treefile" style="display: none;">';
+        $this->displayTree($tree, $currentFolder);
+        echo '</div>';
+        echo '<input type="hidden" name="'.acym_escape($nameInput).'" id="'.acym_escape($nameInput).'" value="'.acym_escape($currentFolder).'">';
     }
 
     private function searchChildren(array $folders, string $root): array
@@ -44,13 +44,13 @@ class FileTreeType extends AcymObject
         return $tree;
     }
 
-    private function displayTree(array $tree, string $pathValue, string $path = ''): string
+    private function displayTree(array $tree, string $pathValue, string $path = ''): void
     {
         if (empty($tree)) {
-            return '';
+            return;
         }
 
-        $results = '<ul>';
+        echo '<ul>';
         foreach ($tree as $key => $treeItem) {
             if (empty($path)) {
                 $currentPath = $key;
@@ -72,15 +72,13 @@ class FileTreeType extends AcymObject
                 $extraClass .= ' tree-empty';
             }
 
-            $subTree = $this->displayTree($treeItem, $pathValue, $currentPath);
-            $results .= '<li class="tree-child-item '.acym_escape($extraClass).'" data-path="'.acym_escape($currentPath).'">
-                            <span class="tree-child-title">
-                                <i class="'.acym_escape($icon).'"></i> '.$title.'
-                            </span>'.$subTree.'
-                        </li>';
+            echo '<li class="tree-child-item '.acym_escape($extraClass).'" data-path="'.acym_escape($currentPath).'">
+                    <span class="tree-child-title">
+                        <i class="'.acym_escape($icon).'"></i> '.acym_escapeHtml($title).'
+                    </span>';
+            $this->displayTree($treeItem, $pathValue, $currentPath);
+            echo '</li>';
         }
-        $results .= '</ul>';
-
-        return $results;
+        echo '</ul>';
     }
 }

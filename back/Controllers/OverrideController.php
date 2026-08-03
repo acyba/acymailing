@@ -87,6 +87,8 @@ class OverrideController extends AcymController
 
     public function reInstallOverrideEmails(): void
     {
+        acym_checkToken();
+
         $overrideClass = new OverrideClass();
         $overrideClass->cleanEmailsOverride();
         $this->installOverrideEmails();

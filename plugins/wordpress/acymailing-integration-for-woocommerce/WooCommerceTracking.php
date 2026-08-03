@@ -19,10 +19,15 @@ trait WooCommerceTracking
 
     public function acym_displayTrackingMessage(&$message)
     {
+        // The else below writes the configuration, keep it in the back-end
+        if (!acym_isAdmin() || !acym_hasBackofficeAccess()) {
+            return;
+        }
+
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
 
         if (!in_array('woocommerce_tracking', $remindme)) {
-            if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php') && acym_isAdmin()) {
+            if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php')) {
                 $message = acym_translation('ACYM_WOOCOMMERCE_TRACKING_INFO');
                 $message .= ' <a target="_blank" href="https://docs.acymailing.com/addons/wordpress-add-ons/woocommerce#tracking">';
                 $message .= acym_translation('ACYM_READ_MORE');
@@ -41,15 +46,20 @@ trait WooCommerceTracking
     public function trackingWoocommerceAddCookie()
     {
         $trackingWoo = acym_getVar('string', 'linkReferal', '');
-        if (empty($trackingWoo)) return;
+        if (empty($trackingWoo)) {
+            return;
+        }
 
         $trackingWoo = explode('-', $trackingWoo);
+        if (count($trackingWoo) < 2) {
+            return;
+        }
 
         $hours = $this->getParam('cookie_expire', 1);
 
         $time = time() + (3600 * $hours);
 
-        setcookie('acym_track_woocommerce', 'mailid-'.$trackingWoo[0].'_userid-'.$trackingWoo[1], $time, COOKIEPATH, COOKIE_DOMAIN);
+        setcookie('acym_track_woocommerce', 'mailid-'.intval($trackingWoo[0]).'_userid-'.intval($trackingWoo[1]), $time, COOKIEPATH, COOKIE_DOMAIN);
     }
 
     public function trackingWoocommerce($result, $order_id)
@@ -61,9 +71,14 @@ trait WooCommerceTracking
 
         $this->formatCookie($cookie, $formattedCookie);
 
+        // The cookie is written from a url parameter, never trust its content
+        $formattedCookie['mailid'] = (int)($formattedCookie['mailid'] ?? 0);
+        $formattedCookie['userid'] = (int)($formattedCookie['userid'] ?? 0);
+
         if (empty($formattedCookie['userid']) || empty($formattedCookie['mailid'])) return $result;
 
         $order = wc_get_order($order_id);
+        if (empty($order)) return $result;
 
         $currency = $order->get_currency();
         if (empty($currency)) return $result;

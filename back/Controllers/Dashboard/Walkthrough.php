@@ -12,54 +12,26 @@ use AcyMailing\Types\StepsType;
 
 trait Walkthrough
 {
-    public function walkthrough(): bool
-    {
-        if ($this->config->get('walk_through', 0) != 1) {
-            return false;
-        }
-
-        $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
-        if (empty($walkthroughParams['step']) || !method_exists($this, $walkthroughParams['step'])) {
-            $this->stepThankYou();
-        } else {
-            $this->{$walkthroughParams['step']}();
-        }
-
-        return true;
-    }
-
-    public function stepThankYou(): void
-    {
-        acym_setVar('layout', 'step_thank_you');
-
-        $data = [
-            'level' => $this->config->get('level'),
-        ];
-
-        parent::display($data);
-    }
-
     public function saveStepThankYou(): void
     {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
         $this->saveWalkthrough(['step' => 'stepSenderInformation']);
         $this->stepSenderInformation();
     }
 
-    public function stepSenderInformation(): void
-    {
-        acym_setVar('layout', 'step_sender_information');
-
-        $data = [
-            'stepsType' => new StepsType(),
-            'siteName' => $this->config->get('from_name', acym_getCMSConfig('sitename')),
-            'userEmail' => $this->config->get('from_email', acym_currentUserEmail()),
-        ];
-
-        parent::display($data);
-    }
-
     public function saveStepSenderInformation(): void
     {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
         $newConfiguration = [
             'from_name' => acym_getVar('string', 'from_name'),
             'from_email' => acym_getVar('string', 'from_email'),
@@ -78,21 +50,13 @@ trait Walkthrough
         $this->stepLicense();
     }
 
-    public function stepLicense(): void
-    {
-        acym_setVar('layout', 'step_license');
-
-        $data = [
-            'stepsType' => new StepsType(),
-            'level' => $this->config->get('level'),
-        ];
-
-        parent::display($data);
-    }
-
     public function ajaxAttachLicense(): void
     {
         acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
 
         $licenseKey = acym_getVar('string', 'licenseKey', '');
         if (empty($licenseKey)) {
@@ -121,6 +85,10 @@ trait Walkthrough
     {
         acym_checkToken();
 
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
         $licenseKey = $this->config->get('license_key');
         if (empty($licenseKey)) {
             acym_sendAjaxResponse(acym_translation('ACYM_LICENSE_NOT_FOUND'), [], false);
@@ -148,11 +116,115 @@ trait Walkthrough
 
     public function saveStepLicense(): void
     {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
         $this->saveWalkthrough(['step' => 'stepFinal']);
         $this->stepFinal();
     }
 
-    public function stepFinal(): void
+    public function startUsing(bool $campaigns = false): void
+    {
+        if (!$campaigns) {
+            acym_checkToken();
+        }
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
+        $this->config->saveConfig(['walk_through' => 0]);
+        $redirectUrl = $campaigns ? 'campaigns' : 'dashboard';
+
+        acym_redirect(acym_completeLink($redirectUrl, false, true));
+    }
+
+    public function tryEditor(): void
+    {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
+        $this->saveWalkthrough(['step' => 'stepEditor']);
+        $this->stepEditor();
+    }
+
+    public function saveAjax(): void
+    {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration') || $this->config->get('walk_through', 0) != 1) {
+            return;
+        }
+
+        $mailController = new MailsController();
+        $mailId = $mailController->store(true);
+
+        if (!empty($mailId)) {
+            acym_sendAjaxResponse('', ['result' => $mailId]);
+        } else {
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
+        }
+    }
+
+    private function walkthrough(): bool
+    {
+        if ($this->config->get('walk_through', 0) != 1 || !acym_isAllowed('configuration')) {
+            return false;
+        }
+
+        $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
+        if (empty($walkthroughParams['step']) || !method_exists($this, $walkthroughParams['step'])) {
+            $this->stepThankYou();
+        } else {
+            $this->{$walkthroughParams['step']}();
+        }
+
+        return true;
+    }
+
+    private function stepThankYou(): void
+    {
+        acym_setVar('layout', 'step_thank_you');
+
+        $data = [
+            'level' => $this->config->get('level'),
+        ];
+
+        parent::display($data);
+    }
+
+    private function stepSenderInformation(): void
+    {
+        acym_setVar('layout', 'step_sender_information');
+
+        $data = [
+            'stepsType' => new StepsType(),
+            'siteName' => $this->config->get('from_name', acym_getCMSConfig('sitename')),
+            'userEmail' => $this->config->get('from_email', acym_currentUserEmail()),
+        ];
+
+        parent::display($data);
+    }
+
+    private function stepLicense(): void
+    {
+        acym_setVar('layout', 'step_license');
+
+        $data = [
+            'stepsType' => new StepsType(),
+            'level' => $this->config->get('level'),
+        ];
+
+        parent::display($data);
+    }
+
+    private function stepFinal(): void
     {
         $acyMailerApiKey = $this->config->get('acymailer_apikey');
         acym_setVar('layout', empty($acyMailerApiKey) ? 'step_final' : 'step_acymailer');
@@ -169,21 +241,7 @@ trait Walkthrough
         parent::display($data);
     }
 
-    public function startUsing(bool $campaigns = false): void
-    {
-        $this->config->saveConfig(['walk_through' => 0]);
-        $redirectUrl = $campaigns ? 'campaigns' : 'dashboard';
-
-        acym_redirect(acym_completeLink($redirectUrl, false, true));
-    }
-
-    public function tryEditor(): void
-    {
-        $this->saveWalkthrough(['step' => 'stepEditor']);
-        $this->stepEditor();
-    }
-
-    public function stepEditor(): void
+    private function stepEditor(): void
     {
         acym_setVar('layout', 'step_editor');
 
@@ -217,18 +275,6 @@ trait Walkthrough
         ];
 
         parent::display($data);
-    }
-
-    public function saveAjax(): void
-    {
-        $mailController = new MailsController();
-        $mailId = $mailController->store(true);
-
-        if (!empty($mailId)) {
-            acym_sendAjaxResponse('', ['result' => $mailId]);
-        } else {
-            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
-        }
     }
 
     private function saveWalkthrough(array $params): void

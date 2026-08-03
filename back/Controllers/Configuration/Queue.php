@@ -6,6 +6,8 @@ trait Queue
 {
     public function deletereport(): void
     {
+        acym_checkToken();
+
         $path = trim(html_entity_decode($this->config->get('cron_savepath')));
         if (!preg_match('#^[a-z0-9/_\-{}]*\.log$#i', $path)) {
             acym_enqueueMessage(acym_translation('ACYM_WRONG_LOG_NAME'), 'error');
@@ -13,7 +15,7 @@ trait Queue
             return;
         }
 
-        $path = str_replace(['{year}', '{month}'], [date('Y'), date('m')], $this->config->get('cron_savepath'));
+        $path = str_replace(['{year}', '{month}'], [gmdate('Y'), gmdate('m')], $this->config->get('cron_savepath'));
         $reportPath = acym_cleanPath(ACYM_ROOT.$path);
 
         if (is_file($reportPath)) {
@@ -37,24 +39,29 @@ trait Queue
         $path = trim(html_entity_decode($this->config->get('cron_savepath')));
         if (!preg_match('#^[a-z0-9/_\-{}]*\.log$#i', $path)) {
             acym_display(acym_translation('ACYM_WRONG_LOG_NAME'), 'error');
+
+            return;
         }
 
-        $path = str_replace(['{year}', '{month}'], [date('Y'), date('m')], $path);
+        $path = str_replace(['{year}', '{month}'], [gmdate('Y'), gmdate('m')], $path);
         $reportPath = acym_cleanPath(ACYM_ROOT.$path);
 
         if (file_exists($reportPath) && !is_dir($reportPath)) {
             try {
                 $lines = 5000;
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Necessary tail to save on resources.
                 $f = fopen($reportPath, 'rb');
                 fseek($f, -1, SEEK_END);
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- Necessary tail to save on resources.
                 if (fread($f, 1) != "\n") {
                     $lines -= 1;
                 }
 
                 $report = '';
                 while (ftell($f) > 0 && $lines >= 0) {
-                    $seek = min(ftell($f), 4096); // Figure out how far back we should jump
+                    $seek = min(ftell($f), 4096);
                     fseek($f, -$seek, SEEK_CUR);
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- Necessary tail to save on resources.
                     $report = ($chunk = fread($f, $seek)).$report; // Get the line
                     fseek($f, -mb_strlen($chunk, '8bit'), SEEK_CUR);
                     $lines -= substr_count($chunk, "\n"); // Move to previous line
@@ -63,6 +70,7 @@ trait Queue
                 while ($lines++ < 0) {
                     $report = substr($report, strpos($report, "\n") + 1);
                 }
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Necessary tail to save on resources.
                 fclose($f);
             } catch (\Exception $e) {
                 $report = '';
@@ -73,7 +81,7 @@ trait Queue
             $report = acym_translation('ACYM_EMPTY_LOG');
         }
 
-        echo nl2br($report);
+        echo nl2br(acym_escapeHtml($report));
         exit;
     }
 }

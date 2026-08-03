@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 if (!class_exists('AcymJFormField')) {
     if ('{__CMS__}' === 'Joomla') {

@@ -1,4 +1,9 @@
-<input type="hidden" value="<?php echo acym_escape($splashJson); ?>" id="splashScreenJsonInfos" />
+<?php
+// context verification
+?>
+<script type="text/javascript">
+    window.acymailingSplash = <?php echo json_encode($version); ?>;
+</script>
 
 <div id="acym__splashscreen" class="cell grid-x ">
 	<div class="acym__splashscreen__container">
@@ -11,8 +16,8 @@
 					</h2>
 
 					<button class="acym_vcenter align-center large-shrink button"
-							type="button" @click="skipButton"><?php echo acym_translation('ACYM_SKIP'); ?></button>
-
+					        type="button" @click="skipButton">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?>
 					</button>
 				</div>
 
@@ -25,17 +30,17 @@
 			<div class="acym__splashscreen__body">
 				<div v-if="activeMenu">
 					<div class="acym__splashscreen__body__buttonWrapper">
-						<a href="<?php echo ACYM_ACYMAILING_WEBSITE.'changelog/'; ?>"
+						<a href="<?php echo acym_escapeUrl(ACYM_ACYMAILING_WEBSITE).'changelog/'; ?>"
 						   class="acym_vcenter align-center large-shrink button"
 						   target="_blank">
-                            <?php echo acym_translation('ACYM_SEE_FULL_CHANGELOG'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_SEE_FULL_CHANGELOG')); ?>
 						</a>
 						<a v-if="this.menus.indexOf(this.activeMenu)+1 < this.menus.length"
 						   class="acym_vcenter align-center large-shrink button button-secondary"
-						   @click="toggleNextMenu"><?php echo acym_translation('ACYM_NEXT'); ?></a>
+						   @click="toggleNextMenu"><?php echo acym_escapeHtml(acym_translation('ACYM_NEXT')); ?></a>
 						<a v-if="this.menus.indexOf(this.activeMenu)+1 === this.menus.length"
 						   class="acym_vcenter align-center large-shrink button button-secondary acym__splashscreen__bottom__skip__button"
-						   @click="skipButton"><?php echo acym_translation('ACYM_SKIP'); ?></a>
+						   @click="skipButton"><?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?></a>
 					</div>
 
 					<h2 class="acym__splashscreen__title">{{activeMenu.title}}</h2>
@@ -45,9 +50,11 @@
 						<p>{{ article.desc }}</p>
 					</div>
 					<button v-if="this.menus.indexOf(this.activeMenu)+1 === this.menus.length"
-							class="acym_vcenter align-center large-shrink button acym__splashscreen__bottom__skip__button"
-							type="button"
-							@click="skipButton"><?php echo acym_translation('ACYM_SKIP'); ?></button>
+					        class="acym_vcenter align-center large-shrink button acym__splashscreen__bottom__skip__button"
+					        type="button"
+					        @click="skipButton">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?>
+					</button>
 				</div>
 
 

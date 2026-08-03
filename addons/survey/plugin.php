@@ -493,7 +493,7 @@ class plgAcymSurvey extends AcymPlugin
 
         $category = acym_loadResult('SELECT title FROM #__categories WHERE id = '.intval($element->catid));
         $varFields['{cat}'] = '<a href="'.$this->finalizeLink(RouteHelper::getCategoryRoute($element->catid), $tag).'" target="_blank">'.
-            acym_escape($category).
+            acym_escapeHtml($category).
             '</a>';
         if (in_array('cat', $tag->display)) {
             $customFields[] = [
@@ -510,7 +510,9 @@ class plgAcymSurvey extends AcymPlugin
                   AND map.content_item_id = '.intval($tag->id)
         );
         foreach ($tags as $i => $oneTag) {
-            $tags[$i] = '<a href="'.acym_escapeUrl($this->finalizeLink('index.php?option=com_tags&view=tag&id='.$oneTag->id.':'.$oneTag->alias, $tag)).'" target="_blank">'.acym_escape(
+            $tags[$i] = '<a href="'.acym_escapeUrl(
+                    $this->finalizeLink('index.php?option=com_tags&view=tag&id='.$oneTag->id.':'.$oneTag->alias, $tag)
+                ).'" target="_blank">'.acym_escapeHtml(
                     $oneTag->title
                 ).'</a>';
         }
@@ -526,7 +528,9 @@ class plgAcymSurvey extends AcymPlugin
         $this->handleCustomFields($tag, $customFields);
 
         $readMoreText = empty($tag->readmore) ? acym_translation('ACYM_READ_MORE') : $tag->readmore;
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.acym_escapeUrl($link).'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.acym_escapeUrl(
+                $link
+            ).'"><span class="acymailing_readmore">'.acym_escapeHtml(
                 $readMoreText
             ).'</span></a>';
         if (in_array('readmore', $tag->display)) {
@@ -548,7 +552,7 @@ class plgAcymSurvey extends AcymPlugin
         if (!empty($tag->groupbycat) && $this->currentCategory !== (int)$element->catid) {
             $this->currentCategory = intval($element->catid);
 
-            $categoryTitle = '<h1 class="acymailing_category_title">'.acym_escape($element->category_title).'</h1>';
+            $categoryTitle = '<h1 class="acymailing_category_title">'.acym_escapeHtml($element->category_title).'</h1>';
             $categoryLink = $this->finalizeLink(RouteHelper::getCategoryRoute($element->catid), $tag);
             $categoryTitle = '<a target="_blank" href="'.acym_escapeUrl($categoryLink).'">'.$categoryTitle.'</a>';
         }

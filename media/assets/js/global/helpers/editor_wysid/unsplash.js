@@ -9,13 +9,11 @@ let typingTimerUnsplash = '';
 const acym_editorWysidUnsplash = {
     unsplashKey: '',
     init: function () {
-        acym_helper.config_get('unsplash_key').done((resConfig) => {
-            this.unsplashKey = resConfig.data.value;
+        this.unsplashKey = typeof ACYM_UNSPLASH_KEY === 'undefined' ? '' : ACYM_UNSPLASH_KEY;
 
-            this.setSearchInput();
-            this.insertImage();
-            this.makeNewSearch('');
-        });
+        this.setSearchInput();
+        this.insertImage();
+        this.makeNewSearch('');
     },
     makeNewSearch: function (query) {
         clearTimeout(typingTimerUnsplash);

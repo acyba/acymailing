@@ -10,6 +10,8 @@ trait UserLinksDetails
 {
     public function exportUserLinksDetails(): void
     {
+        acym_checkToken();
+
         $data = [];
         if (!$this->prepareDefaultPageInfo($data, true)) {
             return;

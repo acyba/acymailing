@@ -83,10 +83,6 @@ const acym_helperSegment = {
     },
     setSelectFilters: function (type) {
         let inCampaignStep = jQuery('#acym__campaigns__segment').length > 0;
-        let $options = jQuery('#acym__segments__edit__info__options');
-        if (!$options.length) return;
-
-        let filters = acym_helper.parseJson($options.val());
 
         jQuery('.acym__segments__select__' + type + '__filter').off('change').on('change', function () {
             if (inCampaignStep) {
@@ -103,9 +99,12 @@ const acym_helperSegment = {
             const seeUsersFilter = acym_helperSegment.getSeeUserModalButton(jQuery(this), $inputAnd.val());
 
             jQuery(this).parent().parent().find('.acym__segments__inserted__filter').remove();
-            const html = filters[jQuery(this).val()]
+
+            const html = jQuery('#acym__segments__edit__info__template__' + jQuery(this).val())
+                .html()
                 .replace(/__numor__/g, jQuery(this).closest('.acym__segments__group__filter').attr('data-filter-number'))
                 .replace(/__numand__/g, $inputAnd.val());
+
             const classOptions = inCampaignStep ? 'medium-9' : 'medium-6';
             jQuery(this)
                 .parent()

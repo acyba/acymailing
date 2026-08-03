@@ -1154,8 +1154,8 @@ final class CssInliner extends AbstractHtmlProcessor
      */
     protected function addStyleElementToDocument(string $css): void
     {
-        global $emogrifiedMediaCSS;
-        $emogrifiedMediaCSS = $css;
+        global $acymailingEmogrifiedMediaCSS;
+        $acymailingEmogrifiedMediaCSS = $css;
     }
 
     /**

@@ -14,46 +14,70 @@ use Joomla\CMS\Captcha\Captcha;
 function acym_getVar(string $type, string $name, $default = null, string $source = 'default', int $mask = 0)
 {
     if (ACYM_J40) {
-        if ($mask & ACYM_ALLOWRAW) {
-            $type = 'RAW';
-        } elseif ($mask & ACYM_ALLOWHTML) {
-            $type = 'HTML';
-        }
-
-        if (empty($source) || $source === 'default') $source = 'REQUEST';
-        $input = Factory::getApplication()->input;
-        $sourceInput = $input->__get($source);
-        if ($type === 'file') {
-            $result = $sourceInput->files->get($name, $default, 'RAW');
-        } elseif (acym_isAdmin()) {
-            $result = $sourceInput->get($name, $default, $type);
+        if ($source === 'SESSION') {
+            $result = Factory::getApplication()->getSession()->get($name, $default);
         } else {
-            // When the SEF is active, $_REQUEST is empty as Joomla doesn't populate it anymore
-            $result = $sourceInput->get($name, $input->get($name, $default, $type), $type);
+            if ($mask & ACYM_ALLOWRAW) {
+                $type = 'RAW';
+            } elseif ($mask & ACYM_ALLOWHTML) {
+                $type = 'HTML';
+            }
+
+            if (empty($source) || $source === 'default') {
+                $source = 'REQUEST';
+            }
+            $input = Factory::getApplication()->input;
+            $sourceInput = $input->__get($source);
+            if ($type === 'file') {
+                $result = $sourceInput->files->get($name, $default, 'RAW');
+            } elseif (acym_isAdmin()) {
+                $result = $sourceInput->get($name, $default, $type);
+            } else {
+                // When the SEF is active, $_REQUEST is empty as Joomla doesn't populate it anymore
+                $result = $sourceInput->get($name, $input->get($name, $default, $type), $type);
+            }
         }
     } else {
-        $result = JRequest::getVar($name, $default, $source, $type, $mask);
+        if ($source === 'SESSION') {
+            $result = JFactory::getSession()->get($name, $default);
+        } else {
+            $result = JRequest::getVar($name, $default, $source, $type, $mask);
+        }
     }
 
     if (is_string($result) && !($mask & ACYM_ALLOWRAW)) {
         return ComponentHelper::filterText($result);
     }
 
+    switch ($type) {
+        case 'string':
+            $result = strval($result);
+            break;
+        case 'int':
+            $result = intval($result);
+            break;
+        case 'float':
+            $result = floatval($result);
+            break;
+        case 'bool':
+            $result = boolval($result);
+            break;
+        default:
+            break;
+    }
+
     return $result;
 }
 
-function acym_setVar(string $name, $value = null, string $hash = 'method', bool $overwrite = true): void
+function acym_setVar(string $name, $value): void
 {
     if (ACYM_J40) {
-        if (empty($hash) || $hash === 'method') {
-            $hash = 'REQUEST';
-        }
         $input = Factory::getApplication()->input;
-        $hashInput = $input->__get($hash);
+        $hashInput = $input->__get('REQUEST');
         $hashInput->set($name, $value);
         $input->set($name, $value);
     } else {
-        JRequest::setVar($name, $value, $hash, $overwrite);
+        JRequest::setVar($name, $value, 'method', true);
     }
 }
 
@@ -115,20 +139,32 @@ function acym_getDefaultConfigValues(): array
     return $allPref;
 }
 
-function acym_cmsPermission(): string
+function acym_hasAdminPermissions(): bool
 {
     $user = Factory::getUser();
-    if (!$user->authorise('core.admin', ACYM_COMPONENT)) return '';
+
+    return (bool)$user->authorise('core.admin', ACYM_COMPONENT);
+}
+
+function acym_hasBackofficeAccess(): bool
+{
+    return (bool)Factory::getUser()->authorise('core.manage', ACYM_COMPONENT);
+}
+
+function acym_cmsPermission(): void
+{
+    if (!acym_hasAdminPermissions()) {
+        return;
+    }
 
     $url = 'index.php?option=com_config&view=component&component='.ACYM_COMPONENT.'&return='.urlencode(base64_encode((string)Uri::getInstance()));
 
-    return '
-		<div class="cell grid-x margin-bottom-1">
-			<label class="cell large-3 medium-5 small-9">'.acym_translation('ACYM_JOOMLA_PERMISSIONS').'</label>
-			<div class="cell auto">
-				<a class="button button-secondary" href="'.$url.'">'.acym_translation('JTOOLBAR_OPTIONS').'</a>
-			</div>
-		</div>';
+    echo '<div class="cell grid-x margin-bottom-1">
+        <label class="cell large-3 medium-5 small-9">'.acym_escapeHtml(acym_translation('ACYM_JOOMLA_PERMISSIONS')).'</label>
+        <div class="cell auto">
+            <a class="button button-secondary" href="'.acym_escapeUrl($url).'">'.acym_escapeHtml(acym_translation('JTOOLBAR_OPTIONS')).'</a>
+        </div>
+    </div>';
 }
 
 function acym_loadJoomlaPlugin(string $family, ?string $name = null): void
@@ -177,23 +213,23 @@ function acym_getCmsCaptcha(): array
     return $results;
 }
 
-function acym_loadCaptcha(string $captchaPluginName, string $id): string
+function acym_loadCaptcha(string $captchaPluginName, string $id): void
 {
     if (ACYM_J40) {
         $captcha = Captcha::getInstance($captchaPluginName);
 
         if (empty($captcha) || !method_exists($captcha, 'display')) {
-            return '';
+            return;
         }
 
-        return $captcha->display('acym-captcha', $id);
+        echo $captcha->display('acym-captcha', $id);
     }
 
     PluginHelper::importPlugin('captcha', $captchaPluginName);
     acym_triggerCmsHook('onInit', [$id]);
     $result = acym_triggerCmsHook('onDisplay', ['acym-captcha', $id, 'class=""']);
 
-    return empty($result[0]) ? '' : $result[0];
+    echo empty($result[0]) ? '' : $result[0];
 }
 
 function acym_getSiteSalt(): string
@@ -226,90 +262,28 @@ function acym_checkCaptcha(string $captchaPluginName, ?string $response = null):
     }
 }
 
-/**
- * To secure URLs echoed in HTML attributes
- */
-function acym_escapeUrl(string $url): string
+function acym_stripTags(string $text): string
 {
-    if (empty($url)) {
-        return '';
-    }
+    return strip_tags($text);
+}
 
-    $url = str_replace(' ', '%20', ltrim($url));
-    $url = preg_replace('|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\\x80-\\xff]|i', '', $url);
+function acym_setSession(string $name, $value, bool $remove = false): void
+{
+    if (ACYM_J40) {
+        $session = Factory::getApplication()->getSession();
 
-    if (empty($url)) {
-        return '';
-    }
+        if ($remove) {
+            $session->remove($name);
+        } else {
+            $session->set($name, $value);
+        }
+    } else {
+        $session = JFactory::getSession();
 
-    if (0 !== stripos($url, 'mailto:')) {
-        $strip = ['%0d', '%0a', '%0D', '%0A'];
-        $count = 1;
-        while ($count) {
-            $url = str_replace($strip, '', $url, $count);
+        if ($remove) {
+            $session->clear($name);
+        } else {
+            $session->set($name, $value);
         }
     }
-
-    $url = str_replace(';//', '://', $url);
-    if (strpos($url, ':') === false && !in_array($url[0], ['/', '#', '?'], true) && !preg_match('/^[a-z0-9-]+?\.php/i', $url)) {
-        $url = 'https://'.$url;
-    }
-
-    $url = str_replace('&amp;', '&#038;', $url);
-    $url = str_replace("'", '&#039;', $url);
-
-    if (strpos($url, '[') !== false || strpos($url, ']') !== false) {
-        $to_unset = [];
-
-        if (strpos($url, '//') === 0) {
-            $to_unset[] = 'scheme';
-            $url = 'placeholder:'.$url;
-        } elseif (strpos($url, '/') === 0) {
-            $to_unset[] = 'scheme';
-            $to_unset[] = 'host';
-            $url = 'placeholder://placeholder'.$url;
-        }
-
-        $parsed = parse_url($url);
-
-        if (!empty($parsed)) {
-            foreach ($to_unset as $key) {
-                unset($parsed[$key]);
-            }
-        }
-
-        $front = '';
-
-        if (isset($parsed['scheme'])) {
-            $front .= $parsed['scheme'].'://';
-        } elseif ('/' === $url[0]) {
-            $front .= '//';
-        }
-
-        if (isset($parsed['user'])) {
-            $front .= $parsed['user'];
-        }
-
-        if (isset($parsed['pass'])) {
-            $front .= ':'.$parsed['pass'];
-        }
-
-        if (isset($parsed['user']) || isset($parsed['pass'])) {
-            $front .= '@';
-        }
-
-        if (isset($parsed['host'])) {
-            $front .= $parsed['host'];
-        }
-
-        if (isset($parsed['port'])) {
-            $front .= ':'.$parsed['port'];
-        }
-
-        $end_dirty = str_replace($front, '', $url);
-        $end_clean = str_replace(['[', ']'], ['%5B', '%5D'], $end_dirty);
-        $url = str_replace($end_dirty, $end_clean, $url);
-    }
-
-    return $url;
 }

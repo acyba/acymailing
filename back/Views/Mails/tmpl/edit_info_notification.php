@@ -1,9 +1,12 @@
+<?php
+// context verification
+?>
 <input type="hidden" name="notification" value="<?php echo acym_escape($data['mail']->name); ?>" />
 
 <?php if (empty($data['multilingual']) && empty($data['abtest'])) { ?>
 	<div class="cell<?php if (!empty($data['langChoice'])) echo ' large-7 xlarge-8'; ?>">
 		<label>
-            <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
+            <?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL_SUBJECT')); ?>
 			<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
                 $data['mail']->type,
                 [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_AUTOMATION]
@@ -15,9 +18,9 @@
 	<div class="cell large-5 xlarge-4">
 		<label class="cell">
             <?php
-            echo acym_translation('ACYM_EMAIL_LANGUAGE');
-            echo acym_info(['textShownInTooltip' => 'ACYM_EMAIL_LANGUAGE_DESC']);
-            echo $data['langChoice'];
+            echo acym_escapeHtml(acym_translation('ACYM_EMAIL_LANGUAGE'));
+            acym_info(['textShownInTooltip' => 'ACYM_EMAIL_LANGUAGE_DESC']);
+            acym_languageOption($data['langChoice']['links'], $data['langChoice']['name']);
             ?>
 		</label>
 	</div>

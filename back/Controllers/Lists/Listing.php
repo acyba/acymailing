@@ -54,7 +54,6 @@ trait Listing
             ['data-task' => 'export', 'type' => 'submit', 'data-ctrl' => 'users', 'id' => 'acym__list__export'],
             'download'
         );
-        $toolbarHelper->addOtherContent('<input type="hidden" name="preselectList" value="1" />');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'settings'], 'playlist_add', true);
 
         $data['toolbar'] = $toolbarHelper;

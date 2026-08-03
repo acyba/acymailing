@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\ListClass;
 use AcyMailing\FrontControllers\ArchiveController;
 
@@ -54,28 +56,42 @@ class acym_archive_widget extends WP_Widget
         }
 
         echo '<div class="acyblock">';
-        echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('title').'">'.acym_translation('ACYM_TITLE').'</label>
-			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
-        echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE').'</label>
-           '.acym_translationSprintf(
-                'ACYM_X_NEWSLETTERS_PER_PAGE',
-                acym_select(
-                    [
-                        '5' => '5',
-                        '10' => '10',
-                        '15' => '15',
-                        '20' => '20',
-                        '30' => '30',
-                        '50' => '50',
-                        '100' => '100',
-                        '200' => '200',
+        echo '<p><label class="acyWPconfig" for="'.esc_attr($this->get_field_id('title')).'">'.esc_html(acym_translation('ACYM_TITLE')).'</label>
+			<input type="text" class="widefat" id="'.esc_attr($this->get_field_id('title')).'" name="'.esc_attr($this->get_field_name('title')).'" value="'.esc_attr(
+                $params['title']
+            ).'" /></p>';
+        echo '<p><label class="acyWPconfig"> '.esc_html(acym_translation('ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE')).'</label>
+           '.wp_kses(
+                acym_translationSprintf(
+                    'ACYM_X_NEWSLETTERS_PER_PAGE',
+                    acym_select(
+                        [
+                            '5' => '5',
+                            '10' => '10',
+                            '15' => '15',
+                            '20' => '20',
+                            '30' => '30',
+                            '50' => '50',
+                            '100' => '100',
+                            '200' => '200',
+                        ],
+                        $this->get_field_name('nbNewslettersPerPage'),
+                        $params['nbNewslettersPerPage']
+                    )
+                ),
+                [
+                    'select' => [
+                        'name' => true,
+                        'id' => true,
                     ],
-                    $this->get_field_name('nbNewslettersPerPage'),
-                    $params['nbNewslettersPerPage']
-                )
+                    'option' => [
+                        'value' => true,
+                        'selected' => true,
+                    ],
+                ]
             ).'</p>';
-        echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_ARCHIVE').'">'.acym_translation('ACYM_LISTS').'</label>';
-        echo acym_selectMultiple(
+        echo '<p><label class="acyWPconfig" title="'.esc_attr(acym_translation('ACYM_LISTS_ARCHIVE')).'">'.esc_html(acym_translation('ACYM_LISTS')).'</label>';
+        acym_selectMultiple(
             $lists,
             $this->get_field_name('lists'),
             explode(',', $params['lists']),
@@ -84,14 +100,17 @@ class acym_archive_widget extends WP_Widget
                 'id' => $this->get_field_id('lists'),
             ],
             'id',
-            'name'
+            'name',
+            true
         );
 
-        echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_ARCHIVE_POPUP_DESC').'">'.acym_translation('ACYM_ARCHIVE_POPUP').'</label>';
-        echo acym_boolean($this->get_field_name('popup'), $params['popup'], $this->get_field_id('popup')).'</p>';
+        echo '<p><label class="acyWPconfig" title="'.esc_attr(acym_translation('ACYM_ARCHIVE_POPUP_DESC')).'">'.esc_html(acym_translation('ACYM_ARCHIVE_POPUP')).'</label>';
+        acym_boolean($this->get_field_name('popup'), $params['popup'], $this->get_field_id('popup')).'</p>';
 
-        echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_ARCHIVE_ONLY_USER_LIST_DESC').'">'.acym_translation('ACYM_ARCHIVE_ONLY_USER_LIST').'</label>';
-        echo acym_boolean($this->get_field_name('displayUserListOnly'), $params['displayUserListOnly'], $this->get_field_id('displayUserListOnly')).'</p>';
+        echo '<p><label class="acyWPconfig" title="'.esc_attr(acym_translation('ACYM_ARCHIVE_ONLY_USER_LIST_DESC')).'">'.esc_html(
+                acym_translation('ACYM_ARCHIVE_ONLY_USER_LIST')
+            ).'</label>';
+        acym_boolean($this->get_field_name('displayUserListOnly'), $params['displayUserListOnly'], $this->get_field_id('displayUserListOnly')).'</p>';
 
         echo '</div>';
     }
@@ -105,12 +124,14 @@ class acym_archive_widget extends WP_Widget
             acym_loadAssets('archive', 'listing');
         }
 
-        echo $args['before_widget'];
+        echo wp_kses_post($args['before_widget']);
 
         if (!isset($instance['title'])) $instance['title'] = '';
         $title = apply_filters('widget_title', $instance['title'], $instance, $args['widget_id']);
         if (!empty($title)) {
-            echo $args['before_title'].$title.$args['after_title'];
+            echo wp_kses_post($args['before_title']);
+            echo esc_html($title);
+            echo wp_kses_post($args['after_title']);
         }
 
         acym_setVar('page', 'front');
@@ -130,7 +151,7 @@ class acym_archive_widget extends WP_Widget
         $archiveController = new ArchiveController();
         $archiveController->showArchive($viewParams);
 
-        echo $args['after_widget'];
+        echo wp_kses_post($args['after_widget']);
     }
 
     private function loadAcyMailing(): void

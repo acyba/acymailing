@@ -37,9 +37,9 @@ class ActionClass extends AcymClass
     public function getActionsByConditionId(int $id): array
     {
         $actions = acym_loadObjectList(
-            'SELECT action.* 
-            FROM #__acym_action as action 
-            WHERE action.condition_id = '.intval($id)
+            'SELECT * 
+            FROM #__acym_action 
+            WHERE condition_id = '.intval($id)
         );
 
         array_map([$this, 'fixTypes'], $actions);

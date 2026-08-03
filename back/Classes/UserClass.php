@@ -20,7 +20,6 @@ class UserClass extends AcymClass
     ];
 
     private const FORM_ALLOWED_FIELDS = [
-        'id',
         'email',
         'name',
         'language',
@@ -314,19 +313,21 @@ class UserClass extends AcymClass
             }
         }
 
-        $where = '';
+        $whereBlocks = [];
         $join = '';
-        foreach ($automationHelpers as $index => $automationHelper) {
+        foreach ($automationHelpers as $automationHelper) {
             if (!empty($automationHelper->where)) {
-                $where .= ' ('.implode(') and (', $automationHelper->where).')';
-                // Add 'or' except for the last condition
-                if ($index != count($automationHelpers) - 1) $where .= ' OR ';
+                $whereBlocks[] = ' ('.implode(') and (', $automationHelper->where).')';
             }
-            if (!empty($automationHelper->join)) $join .= ' JOIN '.implode(' JOIN ', $automationHelper->join);
-            if (!empty($automationHelper->leftjoin)) $join .= ' LEFT JOIN '.implode(' LEFT JOIN ', $automationHelper->leftjoin);
+            if (!empty($automationHelper->join)) {
+                $join .= ' JOIN '.implode(' JOIN ', $automationHelper->join);
+            }
+            if (!empty($automationHelper->leftjoin)) {
+                $join .= ' LEFT JOIN '.implode(' LEFT JOIN ', $automationHelper->leftjoin);
+            }
         }
-        if (!empty($where)) {
-            $filters[] = $where;
+        if (!empty($whereBlocks)) {
+            $filters[] = implode(' OR ', $whereBlocks);
         }
         $query .= $join;
         $queryCount .= $join;
@@ -615,7 +616,7 @@ class UserClass extends AcymClass
                 $subscription->user_id = $userId;
                 $subscription->list_id = $oneListId;
                 $subscription->status = 1;
-                $subscription->subscription_date = date('Y-m-d H:i:s', time() - date('Z'));
+                $subscription->subscription_date = gmdate('Y-m-d H:i:s', time());
 
                 if (empty($currentSubscription[$oneListId])) {
                     // The user isn't already subscribed, we subscribe him!
@@ -738,7 +739,7 @@ class UserClass extends AcymClass
                 $subscription->user_id = $userId;
                 $subscription->list_id = $oneListId;
                 $subscription->status = 0;
-                $subscription->unsubscribe_date = date('Y-m-d H:i:s', time() - date('Z'));
+                $subscription->unsubscribe_date = gmdate('Y-m-d H:i:s', time());
                 if (empty($currentSubscription[$oneListId])) {
                     // The user isn't already subscribed, we unsubscribe him directly
                     acym_insertObject('#__acym_user_has_list', $subscription);
@@ -823,7 +824,7 @@ class UserClass extends AcymClass
 
     public function onlyManageableUsers(array &$elements): void
     {
-        if (acym_isAdmin()) {
+        if (acym_isAdmin() && acym_isAllowed('users')) {
             return;
         }
 
@@ -923,6 +924,10 @@ class UserClass extends AcymClass
                 $user->active = 1;
             }
 
+            if (!isset($user->tracking)) {
+                $user->tracking = $this->config->get('dont_track_by_default', 0) ? 0 : 1;
+            }
+
             if (empty($user->language)) {
                 // Take the user account's language
                 if (!acym_isAdmin()) {
@@ -959,11 +964,11 @@ class UserClass extends AcymClass
 
             $user->key = acym_generateKey(14);
 
-            $user->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
+            $user->creation_date = gmdate('Y-m-d H:i:s', time());
         } elseif (!empty($user->confirmed)) {
             $oldUser = $this->getOneByIdWithCustomFields($user->id);
             if (!empty($oldUser) && empty($oldUser['confirmed'])) {
-                $user->confirmation_date = date('Y-m-d H:i:s', time() - date('Z'));
+                $user->confirmation_date = gmdate('Y-m-d H:i:s', time());
                 $user->confirmation_ip = acym_getIP();
 
                 if ($this->triggers) {
@@ -991,7 +996,7 @@ class UserClass extends AcymClass
 
             $oneAttribute = trim(strtolower($oneAttribute));
             if (!in_array($oneAttribute, self::RESTRICTED_FIELDS)) {
-                $user->$oneAttribute = strip_tags($value);
+                $user->$oneAttribute = acym_stripTags($value);
             }
 
             // Convert into utf-8 in case of it's not already
@@ -1032,7 +1037,7 @@ class UserClass extends AcymClass
             }
             if ($this->triggers) {
                 $result = acym_trigger('onAcymBeforeUserCreate', [&$user]);
-                if (in_array(false, $result)) {
+                if (is_array($result) && in_array(false, $result)) {
                     $acycheckerError = acym_getVar('string', 'acychecker_error');
                     if (!empty($acycheckerError)) {
                         if ($ajax) {
@@ -1115,6 +1120,10 @@ class UserClass extends AcymClass
             }
         }
 
+        if (!empty($connectedUser->id)) {
+            $user->id = $connectedUser->id;
+        }
+
         if (empty($user->email)) {
             if (!empty($connectedUser->email)) {
                 $user->email = $connectedUser->email;
@@ -1165,11 +1174,18 @@ class UserClass extends AcymClass
             }
         }
 
+        $fromProfile = acym_getVar('int', 'acyprofile', 0) == 1;
+
         $this->newUser = empty($user->id);
         if (empty($user->id) || $allowUserModifications) {
             if ($this->newUser && $this->config->get('require_confirmation', 1) == 1) {
                 $user->confirmed = 0;
             }
+
+            if ($fromProfile && !(isset($user->confirmed) && empty($user->confirmed))) {
+                $this->sendConf = false;
+            }
+
             // Get custom fields to save them if exist
             $customFieldData = acym_getVar('array', 'customField', []);
             $id = $this->save($user, $customFieldData, $ajax);
@@ -1200,8 +1216,6 @@ class UserClass extends AcymClass
                 }
             }
         }
-
-        $fromProfile = acym_getVar('int', 'acyprofile', 0) == 1;
 
         if (empty($formData['listsub'])) {
             if (!$fromProfile) $this->sendNotification($id, 'acy_notification_subform');
@@ -1307,7 +1321,7 @@ class UserClass extends AcymClass
         if (empty($user)) return;
 
         // We confirm the user and add the confirmation_date and confirmation_ip in the table.
-        $confirmDate = date('Y-m-d H:i:s', time() - date('Z'));
+        $confirmDate = gmdate('Y-m-d H:i:s', time());
         $ip = acym_getIP();
         $query = 'UPDATE `#__acym_user`';
         $query .= ' SET `confirmed` = 1, `confirmation_date` = '.acym_escapeDB($confirmDate).', `confirmation_ip` = '.acym_escapeDB($ip);
@@ -1321,7 +1335,7 @@ class UserClass extends AcymClass
         if ($res === false) {
             $errorMessage = isset($e) ? $e->getMessage() : acym_getDBError();
             // If there is an error we definitely want to warn the user about it.
-            $msg = acym_translation('ACYM_CONTACT_ADMIN_ERROR').'<br />'.substr(strip_tags($errorMessage), 0, 200).'...';
+            $msg = acym_translation('ACYM_CONTACT_ADMIN_ERROR').'<br />'.substr(acym_stripTags($errorMessage), 0, 200).'...';
             acym_display($msg, 'error');
             exit;
         }
@@ -1508,9 +1522,9 @@ class UserClass extends AcymClass
          * Step 1: create / update the user  *
          * * * * * * * * * * * * * * * * * * */
         $cmsUser = new \stdClass();
-        $cmsUser->email = trim(strip_tags($user['email']));
+        $cmsUser->email = trim(acym_stripTags($user['email']));
         if (!acym_isValidEmail($cmsUser->email)) return;
-        if (!empty($user['name'])) $cmsUser->name = trim(strip_tags($user['name']));
+        if (!empty($user['name'])) $cmsUser->name = trim(acym_stripTags($user['name']));
         if (!$regacyForceConf) $cmsUser->confirmed = 1;
         $cmsUser->active = 1 - intval($user['block']);
         $cmsUser->cms_id = $user['id'];
@@ -1793,7 +1807,7 @@ class UserClass extends AcymClass
             return false;
         }
 
-        if (acym_isAdmin()) {
+        if (acym_isAdmin() && acym_isAllowed('users')) {
             return true;
         }
 
@@ -1846,5 +1860,13 @@ class UserClass extends AcymClass
         }
 
         return acym_loadObjectList($query, $this->pkey, $offset, $limit);
+    }
+
+    public function disableTracking(object $user, int $mailId): void
+    {
+        acym_query('UPDATE #__acym_user SET `tracking` = 0 WHERE `id` = '.intval($user->id));
+
+        $historyClass = new HistoryClass();
+        $historyClass->insert($user->id, 'tracking_disabled', [], $mailId);
     }
 }

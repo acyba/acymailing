@@ -27,6 +27,8 @@ trait Listing
 
     public function duplicate(): void
     {
+        acym_checkToken();
+
         $ids = acym_getVar('array', 'elements_checked', []);
 
         $segmentClass = new SegmentClass();

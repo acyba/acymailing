@@ -25,8 +25,9 @@ function acym_getGroupsByUser(?int $userid = null, ?bool $recursive = null, bool
 {
     if ($userid === null) {
         $userid = acym_currentUserId();
-        $recursive = true;
     }
+
+    $recursive = $recursive ?? true;
 
     jimport('joomla.access.access');
 

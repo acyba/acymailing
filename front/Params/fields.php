@@ -1,9 +1,11 @@
 <?php
+// context verification
 
 use AcyMailing\Classes\FieldClass;
 
 include_once __DIR__.DIRECTORY_SEPARATOR.'AcymJFormField.php';
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Joomla specific class naming with imposed prefix "JFormField".
 class JFormFieldFields extends AcymJFormField
 {
     public function __construct($form = null)

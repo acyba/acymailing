@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 
 use AcyMailing\Classes\TagClass;
 
@@ -15,9 +17,10 @@ $isAbTest = !empty($data['abtest']);
 	<div class="acym__title acym__title__secondary">
         <?php
         if ($isAbTest) {
-            echo acym_translation('ACYM_VERSIONS');
+            echo acym_escapeHtml(acym_translation('ACYM_VERSIONS'));
         } else {
-            echo acym_translation('ACYM_CONFIGURATION_LANGUAGES').acym_info(['textShownInTooltip' => 'ACYM_MULTILINGUAL_DESC']);
+            echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_LANGUAGES'));
+            acym_info(['textShownInTooltip' => 'ACYM_MULTILINGUAL_DESC']);
         } ?>
 	</div>
 
@@ -26,9 +29,9 @@ $isAbTest = !empty($data['abtest']);
         if ($isAbTest) {
             echo '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
 						<i class="acymicon-check acym__wysid__edit__versions__selection__check"></i>
-						<span class="acym__wysid__edit__versions__selection__element" acym-data-version="main">'.$data['main_version']->name.'</span>';
+						<span class="acym__wysid__edit__versions__selection__element" acym-data-version="main">'.acym_escapeHtml($data['main_version']->name).'</span>';
         } else {
-            echo acym_tooltip(
+            acym_tooltip(
                 [
                     'hoveredText' => '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
 						<i class="acymicon-check acym__wysid__edit__versions__selection__check"></i>
@@ -69,14 +72,16 @@ $isAbTest = !empty($data['abtest']);
         ?>
 
 		<div class="acym__wysid__edit__versions__separator"></div>
-		<div class="<?php echo $containerClass; ?>">
+		<div class="<?php echo acym_escape($containerClass); ?>">
             <?php
             if ($isAbTest) {
                 echo '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
 						<i class="acymicon-check acym__wysid__edit__versions__selection__check"></i>
-						<span class="acym__wysid__edit__versions__selection__element" acym-data-version="'.$version->code.'">'.$version->name.'</span>';
+						<span class="acym__wysid__edit__versions__selection__element" acym-data-version="'.acym_escape($version->code).'">'.acym_escapeHtml(
+                        $version->name
+                    ).'</span>';
             } else {
-                echo acym_tooltip(
+                acym_tooltip(
                     [
                         'hoveredText' => '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
 							<i class="acymicon-check acym__wysid__edit__versions__selection__check"></i>
@@ -91,12 +96,12 @@ $isAbTest = !empty($data['abtest']);
             }
             ?>
 
-			<input type="hidden" name="versions[<?php echo $version->code; ?>][subject]" value="<?php echo acym_escape($version->subject); ?>">
-			<input type="hidden" name="versions[<?php echo $version->code; ?>][preview]" value="<?php echo acym_escape($version->preview); ?>">
-			<input type="hidden" name="versions[<?php echo $version->code; ?>][content]" value="<?php echo acym_escape($version->content); ?>">
-			<input type="hidden" name="versions[<?php echo $version->code; ?>][autosave]" value="<?php echo acym_escape($version->autosave); ?>">
-			<input type="hidden" name="versions[<?php echo $version->code; ?>][settings]" value="<?php echo acym_escape($version->settings); ?>">
-			<input type="hidden" name="versions[<?php echo $version->code; ?>][stylesheet]" value="<?php echo acym_escape($version->stylesheet); ?>">
+			<input type="hidden" name="versions[<?php echo acym_escape($version->code); ?>][subject]" value="<?php echo acym_escape($version->subject); ?>">
+			<input type="hidden" name="versions[<?php echo acym_escape($version->code); ?>][preview]" value="<?php echo acym_escape($version->preview); ?>">
+			<input type="hidden" name="versions[<?php echo acym_escape($version->code); ?>][content]" value="<?php echo acym_escape($version->content); ?>">
+			<input type="hidden" name="versions[<?php echo acym_escape($version->code); ?>][autosave]" value="<?php echo acym_escape($version->autosave); ?>">
+			<input type="hidden" name="versions[<?php echo acym_escape($version->code); ?>][settings]" value="<?php echo acym_escape($version->settings); ?>">
+			<input type="hidden" name="versions[<?php echo acym_escape($version->code); ?>][stylesheet]" value="<?php echo acym_escape($version->stylesheet); ?>">
 		</div>
         <?php
     }
@@ -104,25 +109,25 @@ $isAbTest = !empty($data['abtest']);
 </div>
 
 <div id="acym__wysid__edit__versions__creation" class="cell grid-x grid-margin-x text-center align-center is-hidden">
-	<h5><?php echo acym_translation($isAbTest ? 'ACYM_VERSION_CREATION_TITLE' : 'ACYM_MULTILINGUAL_CREATION_TITLE'); ?></h5>
-	<div class="cell"><?php echo acym_translation($isAbTest ? 'ACYM_VERSION_CREATION_DESCRIPTION' : 'ACYM_MULTILINGUAL_CREATION_DESCRIPTION'); ?></div>
+	<h5><?php echo acym_escapeHtml(acym_translation($isAbTest ? 'ACYM_VERSION_CREATION_TITLE' : 'ACYM_MULTILINGUAL_CREATION_TITLE')); ?></h5>
+	<div class="cell"><?php echo acym_escapeHtml(acym_translation($isAbTest ? 'ACYM_VERSION_CREATION_DESCRIPTION' : 'ACYM_MULTILINGUAL_CREATION_DESCRIPTION')); ?></div>
 	<button type="button" class="cell button xlarge-4 large-4 margin-top-1 button-secondary" id="acym__wysid__edit__versions__creation__default">
-        <?php echo acym_translation('ACYM_MULTILINGUAL_CREATION_FROM_DEFAULT'); ?>
+        <?php echo acym_escapeHtml(acym_translation('ACYM_MULTILINGUAL_CREATION_FROM_DEFAULT')); ?>
 	</button>
 	<button type="button" class="cell button xlarge-4 large-4 margin-top-1 button-secondary" id="acym__wysid__edit__versions__creation__scratch">
-        <?php echo acym_translation('ACYM_MULTILINGUAL_CREATION_FROM_SCRATCH'); ?>
+        <?php echo acym_escapeHtml(acym_translation('ACYM_MULTILINGUAL_CREATION_FROM_SCRATCH')); ?>
 	</button>
 	<button type="button"
-			data-open="acym__template__choose__modal"
-			aria-controls="acym__template__choose__modal"
-			tabindex="0"
-			aria-haspopup="true"
-			class="cell button xlarge-4 large-4 margin-top-1 button-secondary">
-        <?php echo acym_translation('ACYM_START_FROM_TEMPLATE'); ?>
+	        data-open="acym__template__choose__modal"
+	        aria-controls="acym__template__choose__modal"
+	        tabindex="0"
+	        aria-haspopup="true"
+	        class="cell button xlarge-4 large-4 margin-top-1 button-secondary">
+        <?php echo acym_escapeHtml(acym_translation('ACYM_START_FROM_TEMPLATE')); ?>
 	</button>
     <?php
     $dataForTemplate = ['allTags' => $data['tagClass']->getAllTagsByType(TagClass::TYPE_MAIL)];
-    echo acym_modalInclude(
+    acym_modalInclude(
         '',
         ACYM_VIEW.'Mails'.DS.'tmpl'.DS.'choose_template_ajax.php',
         'acym__template__choose__modal',

@@ -109,23 +109,28 @@ function acym_getLanguagePath(string $basePath = ACYM_BASE, ?string $language = 
     return LanguageHelper::getLanguagePath(rtrim($basePath, DS), $language);
 }
 
-function acym_languageOption(?string $emailLanguage, string $name): string
+function acym_languageOption(?string $emailLanguage, string $name): void
 {
     $languages = acym_getLanguages(true, true);
-    if (count($languages) < 2) return '';
+    if (count($languages) < 2) {
+        return;
+    }
 
     $default = new stdClass();
     $default->language = '';
     $default->name = acym_translation('ACYM_DEFAULT');
     array_unshift($languages, $default);
 
-    return acym_select(
+    acym_select(
         $languages,
         $name,
         $emailLanguage,
         ['class' => 'acym__select'],
         'language',
-        'name'
+        'name',
+        null,
+        false,
+        true
     );
 }
 

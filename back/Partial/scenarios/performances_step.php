@@ -1,9 +1,13 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <div id="acym__scenario__performance__step">
     <?php include acym_getPartial('scenarios', 'performances_step_header'); ?>
 	<div class="acym__scenario__edit__right__panel__separator"></div>
 	<div id="acym__scenario__performance__listing">
         <?php if ($data['isEmpty']) {
-            echo '<p>'.acym_translation('ACYM_NO_USER_TRIGGERED_SCENARIO').'</p>';
+            echo '<p>'.acym_escapeHtml(acym_translation('ACYM_NO_USER_TRIGGERED_SCENARIO')).'</p>';
         } else { ?>
 			<input
 					type="text"
@@ -16,10 +20,10 @@
 				<div class="grid-x cell acym__listing__header">
 					<div class="grid-x medium-auto small-11 cell acym__listing__header__title__container">
 						<div class="cell medium-auto acym__listing__header__title">
-                            <?php echo acym_translation('ACYM_EMAIL'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL')); ?>
 						</div>
 						<div class="cell medium-4 acym__listing__header__title text-center">
-                            <?php echo acym_translation('ACYM_EXECUTION_DATE'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_EXECUTION_DATE')); ?>
 						</div>
 					</div>
 				</div>
@@ -30,12 +34,12 @@
 						<div class="grid-x cell align-middle acym__listing__row">
 							<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 								<div class="grid-x cell medium-auto acym__listing__title cursor-pointer acym__scenario__performance__trigger__user"
-									 data-acym-user-id="<?php echo $historyLine->user_id; ?>"
-									 data-acym-process-id="<?php echo $historyLine->scenario_process_id; ?>">
-                                    <?php echo $historyLine->email; ?>
+								     data-acym-user-id="<?php echo acym_escape($historyLine->user_id); ?>"
+								     data-acym-process-id="<?php echo acym_escape($historyLine->scenario_process_id); ?>">
+                                    <?php echo acym_escapeHtml($historyLine->email); ?>
 								</div>
 								<div class="grid-x cell medium-4 acym__listing__title align-right">
-                                    <?php echo acym_date($historyLine->date, 'Y-m-d H:i:s'); ?>
+                                    <?php echo acym_escapeHtml(acym_date($historyLine->date, 'Y-m-d H:i:s')); ?>
 								</div>
 							</div>
 						</div>
@@ -45,7 +49,7 @@
                 ?>
 			</div>
         <?php }
-        echo $data['pagination']->display('scenario_performance_step_ajax', '', true);
+        $data['pagination']->display('scenario_performance_step_ajax', '', true);
         ?>
 	</div>
 </div>

@@ -94,7 +94,7 @@ class QueueClass extends AcymClass
             ];
 
             if (empty($allowedStatus[$settings['status']])) {
-                die('Unauthorized filter: '.acym_escape($settings['status']));
+                die('Unauthorized filter: '.acym_escapeHtml($settings['status']));
             }
 
             $filters[] = $allowedStatus[$settings['status']];
@@ -112,7 +112,6 @@ class QueueClass extends AcymClass
 
         $isMultilingual = acym_isMultilingual();
         $campaignRecipientsMultilingual = [];
-        $automationHelper = new AutomationHelper();
 
         // Get the recipients
         $specialTypes = [];
@@ -153,6 +152,8 @@ class QueueClass extends AcymClass
                     }
                 } elseif ($isMultilingual) {
                     if (empty($campaignRecipientsMultilingual[$oneMail->campaign])) {
+                        $automationHelper = new AutomationHelper();
+
                         $listIds = array_keys($results['elements'][$i]->lists);
                         acym_arrayToInteger($listIds);
 
@@ -316,11 +317,13 @@ class QueueClass extends AcymClass
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
         }
 
-        if (!empty($settings['tag'])) {
+        if (empty($settings['tag'])) {
+            $queryCount = 'SELECT COUNT(queue.mail_id) AS total '.$query;
+        } else {
+            $queryCount = 'SELECT COUNT(DISTINCT queue.mail_id, queue.user_id) AS total '.$query;
             $query .= ' GROUP BY queue.mail_id, queue.user_id';
         }
 
-        $queryCount = 'SELECT COUNT(queue.mail_id) AS total '.$query;
         $query = 'SELECT mail.id, queue.sending_date, mail.name, mail.subject, user.email, user.name AS user_name, queue.user_id, queue.try '.$query.' ORDER BY queue.sending_date ASC';
 
         $mailClass = new MailClass();
@@ -487,7 +490,7 @@ class QueueClass extends AcymClass
         } else {
             $sendOrder = str_replace('subid', 'user_id', $sendOrder);
             $ordering = explode(',', $sendOrder);
-            $order = 'queue.`'.acym_secureDBColumn(trim($ordering[0])).'` '.acym_secureDBColumn(trim($ordering[1]));
+            $order = 'queue.`'.acym_secureDBColumn(trim($ordering[0])).'` '.acym_secureDBColumn(trim($ordering[1] ?? 'ASC'));
         }
 
         $query .= ' ORDER BY queue.`priority` ASC, queue.`sending_date` ASC, '.$order;

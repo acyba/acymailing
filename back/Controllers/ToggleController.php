@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers;
 
 use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Core\AcymController;
 
@@ -122,6 +123,9 @@ class ToggleController extends AcymController
             exit;
         }
 
+        // Security (ACL): per-table check — the 'toggle' exception opens this controller to ~10 roles regardless of table.
+        $this->checkToggleAcl($table);
+
         $preciseMethod = $table.ucfirst($field);
         $globalMethod = $table.'Global';
         if (method_exists($this, $preciseMethod)) {
@@ -148,6 +152,29 @@ class ToggleController extends AcymController
         }
 
         acym_sendAjaxResponse('', $data);
+    }
+
+    // Each toggle icon is only rendered on the page whose ACL the user already holds, so this per-table check blocks only forged cross-feature requests (the 'toggle' exception opens the controller to ~10 roles); overridden as a no-op by FronttoggleController.
+    protected function checkToggleAcl(string $table): void
+    {
+        $tableAcl = [
+            'user' => 'users',
+            'list' => 'lists',
+            'campaign' => 'campaigns',
+            'followup' => 'campaigns',
+            'automation' => 'automation',
+            'segment' => 'segments',
+            'scenario' => 'scenarios',
+            'form' => 'forms',
+            'field' => 'fields',
+            'mailbox_action' => 'bounces',
+            'rule' => 'bounces',
+            'mail_override' => 'override',
+        ];
+
+        if (empty($tableAcl[$table]) || !acym_isAllowed($tableAcl[$table])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_ACCESS_DENIED'), [], false);
+        }
     }
 
     protected function userActive(int $id, string $table, string $field, int $newValue): void
@@ -181,6 +208,17 @@ class ToggleController extends AcymController
             exit;
         }
 
+        if ($table === 'queue') {
+            $allowed = acym_isAllowed('queue');
+        } else {
+            $mailClass = new MailClass();
+            $allowed = $mailClass->hasUserAccess($id, true);
+        }
+
+        if (!$allowed) {
+            acym_sendAjaxResponse(acym_translation('ACYM_ACCESS_DENIED'), [], false);
+        }
+
         $method = $table === 'queue' ? 'deleteQueuedByUserIds' : 'delete';
 
         $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($table).'Class';
@@ -212,6 +250,10 @@ class ToggleController extends AcymController
 
     public function subscribeOnClick(): void
     {
+        acym_checkToken();
+        // Security (ACL): subscription management is restricted to the 'users' role (backend); no-op on front (ownership).
+        $this->checkToggleAcl('user');
+
         $userIds = acym_getVar('array', 'userid', []);
         $listIds = acym_getVar('array', 'listid', []);
 
@@ -233,6 +275,10 @@ class ToggleController extends AcymController
 
     public function unsubscribeOnClick(): void
     {
+        acym_checkToken();
+        // Security (ACL): subscription management is restricted to the 'users' role (backend); no-op on front (ownership).
+        $this->checkToggleAcl('user');
+
         $userIds = acym_getVar('array', 'userid', []);
         $listIds = acym_getVar('array', 'listid', []);
 

@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 
 $newsletters = [
     [
@@ -52,11 +54,11 @@ $newsletters = [
 
 $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select-card cell xxlarge-2 large-3 medium-4 text-center';
 ?>
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm">
 	<div id="acym__email__new" class="cell grid-x grid-margin-y align-center acym__content margin-top-2 acym__selection">
 		<div class="cell shrink medium-12">
 			<h1 class="margin-top-1 margin-bottom-2 acym__title acym__campaign__selection__title text-center">
-                <?php echo acym_translation('ACYM_WHICH_KIND_OF_MAIL_CREATE'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_WHICH_KIND_OF_MAIL_CREATE')); ?>
 			</h1>
 		</div>
 		<div class="cell shrink medium-4 margin-bottom-3">
@@ -64,23 +66,23 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
                 <?php if ($data['isNewslettersTab']) { ?>
 					<li class="step current_step" data-tab="acym__campaign__selection__newsletters">
 						<a>
-                            <?php echo acym_translation('ACYM_NEWSLETTERS'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_NEWSLETTERS')); ?>
 						</a>
 					</li>
 					<li class="step " data-tab="acym__campaign__selection__onetime">
 						<a>
-                            <?php echo acym_translation('ACYM_ONE_TIME_EMAIL'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_ONE_TIME_EMAIL')); ?>
 						</a>
 					</li>
                 <?php } else { ?>
 					<li class="step" data-tab="acym__campaign__selection__newsletters">
 						<a>
-                            <?php echo acym_translation('ACYM_NEWSLETTERS'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_NEWSLETTERS')); ?>
 						</a>
 					</li>
 					<li class="step current_step" data-tab="acym__campaign__selection__onetime">
 						<a>
-                            <?php echo acym_translation('ACYM_ONE_TIME_EMAIL'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_ONE_TIME_EMAIL')); ?>
 						</a>
 					</li>
                 <?php } ?>
@@ -88,8 +90,8 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
 		</div>
 		<!-- Newsletters -->
 		<div id="acym__campaign__selection__newsletters"
-			 class="cell grid-x grid-margin-x align-center margin-y"
-			 style="<?php echo $data['isNewslettersTab'] ? '' : 'display: none;'; ?>">
+		     class="cell grid-x grid-margin-x align-center margin-y"
+		     style="<?php echo $data['isNewslettersTab'] ? '' : 'display: none;'; ?>">
             <?php
             foreach ($newsletters as $oneNewsletterType) {
                 $classes = '';
@@ -105,29 +107,32 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
                 if ($oneNewsletterType['type'] === 'scheduled') {
                     $classes .= ' scheduled ';
                 } ?>
-				<div class="<?php echo $classes; ?> acym__campaign__selection__card-container" data-email-type="<?php echo acym_escape($oneNewsletterType['type']); ?>">
+				<div class="<?php echo acym_escape($classes); ?> acym__campaign__selection__card-container"
+				     data-email-type="<?php echo acym_escape($oneNewsletterType['type']); ?>">
                     <?php if (!acym_level($oneNewsletterType['level'])) { ?>
 						<div class="acym__selection__card__lock">
 							<i class="acymicon-lock"></i>
 						</div>
                     <?php } ?>
-					<i class="acymicon-<?php echo $oneNewsletterType['icon']; ?> acym__selection__card__icon"></i>
-					<h1 class="acym__selection__card__title"><?php echo acym_translation($oneNewsletterType['title']); ?></h1>
+					<i class="acymicon-<?php echo acym_escape($oneNewsletterType['icon']); ?> acym__selection__card__icon"></i>
+					<h1 class="acym__selection__card__title"><?php echo acym_escapeHtml(acym_translation($oneNewsletterType['title'])); ?></h1>
                     <?php if (!acym_level($oneNewsletterType['level'])) { ?>
 						<p class="acym__selection__card__promotion__text"><?php if (!empty($oneNewsletterType['promotion-text'])) {
-                                echo acym_translation(
-                                    $oneNewsletterType['promotion-text']
+                                echo acym_escapeHtml(
+                                    acym_translation(
+                                        $oneNewsletterType['promotion-text']
+                                    )
                                 );
                             } ?></p>
                     <?php } else { ?>
 						<p class="acym__selection__card__promotion__text"><?php echo ' '; ?></p>
                     <?php } ?>
-					<p class="acym__selection__card__description"><?php echo acym_translation($oneNewsletterType['desc']); ?></p>
+					<p class="acym__selection__card__description"><?php echo acym_escapeHtml(acym_translation($oneNewsletterType['desc'])); ?></p>
 					<button type="button"
-							class="cell shrink button acym__campaign__selection__button-select button-primary <?php echo acym_level($oneNewsletterType['level']) ? ''
+					        class="cell shrink button acym__campaign__selection__button-select button-primary <?php echo acym_level($oneNewsletterType['level']) ? ''
                                 : 'acym__promotion__disabled__button'; ?>"
-							acym-data-link="<?php echo acym_level($oneNewsletterType['level']) ? $oneNewsletterType['data-link'] : ''; ?>">
-                        <?php echo acym_translation('ACYM_CREATE'); ?>
+					        acym-data-link="<?php echo acym_level($oneNewsletterType['level']) ? acym_escapeUrl($oneNewsletterType['data-link']) : ''; ?>">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_CREATE')); ?>
 					</button>
 				</div>
                 <?php
@@ -137,8 +142,8 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
 		<!-- One time email -->
         <?php if (acym_isAllowed('mails')) { ?>
 			<div id="acym__campaign__selection__onetime"
-				 class="cell grid-x grid-margin-x align-center margin-y"
-				 style="<?php echo $data['isNewslettersTab'] ? 'display: none;' : ''; ?>">
+			     class="cell grid-x grid-margin-x align-center margin-y"
+			     style="<?php echo $data['isNewslettersTab'] ? 'display: none;' : ''; ?>">
                 <?php
                 $classes = $classesOneTimeEmails;
                 if ($data['selectedType'] === 'welcome') {
@@ -147,20 +152,25 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
                     $classes .= ' ';
                 }
                 ?>
-				<div class="<?php echo $classes; ?> acym__campaign__selection__card-container">
+				<div class="<?php echo acym_escape($classes); ?> acym__campaign__selection__card-container">
 					<i class="acymicon-handshake-o acym__selection__card__icon"></i>
-					<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_WELCOME_EMAIL'); ?></h1>
-					<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_WELCOME_EMAIL_DESC'); ?></p>
-                    <?php echo acym_select(
+					<h1 class="acym__selection__card__title"><?php echo acym_escapeHtml(acym_translation('ACYM_WELCOME_EMAIL')); ?></h1>
+					<p class="acym__selection__card__description"><?php echo acym_escapeHtml(acym_translation('ACYM_WELCOME_EMAIL_DESC')); ?></p>
+                    <?php acym_select(
                         $data['lists'],
                         'welcome_list_id',
                         null,
-                        ['class' => 'acym__email__new__card__select acym__select']
+                        ['class' => 'acym__email__new__card__select acym__select'],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
                     ); ?>
 					<button type="button"
-							class="cell shrink button acym__campaign__selection__button-select button-primary"
-							acym-data-link="<?php echo $data['welcome_email_link']; ?>" <?php echo empty($data['selectedType']); ?>>
-                        <?php echo acym_translation('ACYM_CREATE'); ?>
+					        class="cell shrink button acym__campaign__selection__button-select button-primary"
+					        acym-data-link="<?php echo acym_escapeUrl($data['welcome_email_link']); ?>">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_CREATE')); ?>
 					</button>
 				</div>
                 <?php
@@ -171,20 +181,25 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
                     $classes .= ' ';
                 }
                 ?>
-				<div class="<?php echo $classes; ?> acym__campaign__selection__card-container">
+				<div class="<?php echo acym_escape($classes); ?> acym__campaign__selection__card-container">
 					<i class="acymicon-hand-paper-o acym__selection__card__icon"></i>
-					<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_UNSUBSCRIBE_EMAIL'); ?></h1>
-					<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_UNSUBSCRIBE_EMAIL_DESC'); ?></p>
-                    <?php echo acym_select(
+					<h1 class="acym__selection__card__title"><?php echo acym_escapeHtml(acym_translation('ACYM_UNSUBSCRIBE_EMAIL')); ?></h1>
+					<p class="acym__selection__card__description"><?php echo acym_escapeHtml(acym_translation('ACYM_UNSUBSCRIBE_EMAIL_DESC')); ?></p>
+                    <?php acym_select(
                         $data['lists'],
                         'unsubscribe_list_id',
                         null,
-                        ['class' => 'acym__email__new__card__select acym__select']
+                        ['class' => 'acym__email__new__card__select acym__select'],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
                     ); ?>
 					<button type="button"
-							class="cell shrink button acym__campaign__selection__button-select button-primary"
-							acym-data-link="<?php echo $data['unsubscribe_email_link']; ?>" <?php echo empty($data['selectedType']); ?>>
-                        <?php echo acym_translation('ACYM_CREATE'); ?>
+					        class="cell shrink button acym__campaign__selection__button-select button-primary"
+					        acym-data-link="<?php echo acym_escapeUrl($data['unsubscribe_email_link']); ?>">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_CREATE')); ?>
 					</button>
 				</div>
                 <?php
@@ -200,14 +215,14 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
                         $classes .= ' ';
                     }
                     ?>
-					<div class="<?php echo $classes; ?> acym__campaign__selection__card-container">
-						<i class="<?php echo $oneExtra['icon']; ?> acym__selection__card__icon"></i>
-						<h1 class="acym__selection__card__title"><?php echo $oneExtra['name']; ?></h1>
-						<p class="acym__selection__card__description"><?php echo $oneExtra['description']; ?></p>
+					<div class="<?php echo acym_escape($classes); ?> acym__campaign__selection__card-container">
+						<i class="<?php echo acym_escape($oneExtra['icon']); ?> acym__selection__card__icon"></i>
+						<h1 class="acym__selection__card__title"><?php echo acym_escapeHtml($oneExtra['name']); ?></h1>
+						<p class="acym__selection__card__description"><?php echo acym_escapeHtml($oneExtra['description']); ?></p>
 						<button type="button"
-								class="cell shrink button acym__campaign__selection__button-select button-primary"
-								acym-data-link="<?php echo $oneExtra['link']; ?>" <?php echo empty($data['selectedType']); ?>>
-                            <?php echo acym_translation('ACYM_CREATE'); ?>
+						        class="cell shrink button acym__campaign__selection__button-select button-primary"
+						        acym-data-link="<?php echo acym_escapeUrl($oneExtra['link']); ?>">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_CREATE')); ?>
 						</button>
 					</div>
                 <?php } ?>

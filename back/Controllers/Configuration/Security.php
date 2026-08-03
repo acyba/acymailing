@@ -11,6 +11,8 @@ trait Security
 
     public function checkDBAjax(): void
     {
+        acym_checkToken();
+
         $this->checkDB();
 
         if (empty($this->messagesNoHtml)) {
@@ -18,7 +20,7 @@ trait Security
         } else {
             $nbMessages = count($this->messagesNoHtml);
             foreach ($this->messagesNoHtml as $i => $oneMsg) {
-                echo '<span style="color:'.$oneMsg['color'].'">'.$oneMsg['msg'].'</span>';
+                echo '<span style="color:'.acym_escape($oneMsg['color']).'">'.acym_escapeHtml($oneMsg['msg']).'</span>';
 
                 if ($i < $nbMessages) {
                     echo '<br />';
@@ -139,7 +141,7 @@ trait Security
             }
 
             // We didn't get the columns, the table crashed or doesn't exist
-            $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+            $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
             $this->messagesNoHtml[] = [
                 'error' => false,
                 'color' => 'blue',
@@ -154,7 +156,7 @@ trait Security
                 }
 
                 if ($isError === null) {
-                    $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                    $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                     $this->messagesNoHtml[] = [
                         'error' => true,
                         'color' => 'red',
@@ -177,7 +179,7 @@ trait Security
                 }
 
                 if ($isError === null) {
-                    $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                    $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                     $this->messagesNoHtml[] = [
                         'error' => true,
                         'color' => 'red',
@@ -240,7 +242,7 @@ trait Security
             }
 
             if ($isError === null) {
-                $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                 $this->messagesNoHtml[] = [
                     'error' => true,
                     'color' => 'red',
@@ -279,7 +281,7 @@ trait Security
             }
 
             if ($isError === null) {
-                $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                 $this->messagesNoHtml[] = [
                     'error' => true,
                     'color' => 'red',
@@ -378,7 +380,7 @@ trait Security
             }
 
             if ($isError === null) {
-                $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                 $this->messagesNoHtml[] = [
                     'error' => true,
                     'color' => 'red',
@@ -428,7 +430,7 @@ trait Security
             }
 
             if ($isError === null) {
-                $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                 $this->messagesNoHtml[] = [
                     'error' => true,
                     'color' => 'red',
@@ -488,7 +490,7 @@ trait Security
                 }
 
                 if ($isError === null) {
-                    $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                    $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                     $this->messagesNoHtml[] = [
                         'error' => true,
                         'color' => 'red',
@@ -508,7 +510,7 @@ trait Security
             }
 
             if ($isError === null) {
-                $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                $errorMessage = (isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200));
                 $this->messagesNoHtml[] = [
                     'error' => true,
                     'color' => 'red',
@@ -604,12 +606,20 @@ trait Security
 
     public function redomigration(): void
     {
+        acym_checkToken();
+
+        if (!acym_isAllowed('configuration')) {
+            return;
+        }
+
         $this->config->saveConfig(['migration' => 0]);
         acym_redirect(acym_completeLink('dashboard', false, true));
     }
 
     public function scanSiteFiles(): void
     {
+        acym_checkToken();
+
         $maliciousFiles = [];
         $siteFiles = acym_getFiles(ACYM_ROOT, '.', true, true);
         foreach ($siteFiles as $oneFilePath) {

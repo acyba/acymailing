@@ -56,19 +56,20 @@ trait Detailed
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'dqueue_search', 'ACYM_SEARCH');
-        $otherContent = acym_modal(
-            '<i class="acymicon-paper-plane"></i>'.acym_translation('ACYM_SEND_ALL'),
-            '',
-            null,
-            ['data-reveal-larger' => true],
+        $toolbarHelper->addModalButton(
             [
-                'class' => 'cell medium-shrink button',
-                'data-reload' => 'true',
-                'data-ajax' => 'true',
-                'data-iframe' => '&ctrl=queue&task=continuesend&id=0&totalsend=0',
+                'button' => '<i class="acymicon-paper-plane"></i>'.acym_escapeHtml(acym_translation('ACYM_SEND_ALL')),
+                'attributesModal' => [
+                    'data-reveal-larger' => true,
+                ],
+                'attributesButton' => [
+                    'class' => 'cell medium-shrink button',
+                    'data-reload' => 'true',
+                    'data-ajax' => 'true',
+                    'data-iframe' => '&ctrl=queue&task=continuesend&id=0&totalsend=0',
+                ],
             ]
         );
-        $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addFilterByTag($data, 'dqueue_tag', 'acym__queue__filter__tags acym__select');
 
         $data['toolbar'] = $toolbarHelper;

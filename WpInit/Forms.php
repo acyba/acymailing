@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\FormClass;
 
 class Forms
@@ -36,13 +38,18 @@ class Forms
             }
         }
 
-        if (!empty($this->formToDisplay)) acym_initModule();
+        if (!empty($this->formToDisplay)) {
+            acym_initModule();
+        }
     }
 
     public function displayForms()
     {
-        if (empty($this->formToDisplay)) return;
+        if (empty($this->formToDisplay)) {
+            return;
+        }
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Generated in partial folder "forms", escaped there.
         echo implode('', $this->formToDisplay);
     }
 

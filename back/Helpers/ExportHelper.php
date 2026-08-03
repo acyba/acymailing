@@ -63,7 +63,7 @@ class ExportHelper extends AcymObject
 
                 $filename = basename($location);
                 while (file_exists($imagesFolder.DS.$filename)) {
-                    $filename = rand(0, 99).$filename;
+                    $filename = acym_rand(0, 99).$filename;
                 }
 
                 acym_copyFile($location, $imagesFolder.DS.$filename);
@@ -144,6 +144,7 @@ class ExportHelper extends AcymObject
 
         // 8 - Download the zip
         $this->setDownloadHeaders($name, 'zip');
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Downloading an export file.
         echo acym_fileGetContent($exportFolder.'.zip');
         acym_deleteFile($exportFolder.'.zip');
 
@@ -251,8 +252,9 @@ class ExportHelper extends AcymObject
         if (ACYM_CMS === 'wordpress') {
             @ob_get_clean();
         }
-        $filename = 'export_stats_'.$type.'_'.date('Y-m-d');
+        $filename = 'export_stats_'.$type.'_'.gmdate('Y-m-d');
         $this->setDownloadHeaders($filename);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Exporting CSV data.
         echo $final;
     }
 
@@ -310,14 +312,16 @@ class ExportHelper extends AcymObject
 
         if (empty($exportFile)) {
             @ob_get_clean();
-            $filename = 'export_'.date('Y-m-d');
+            $filename = 'export_'.gmdate('Y-m-d');
             $this->setDownloadHeaders($filename);
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Exporting CSV data.
             echo $firstLine;
         } else {
             // Make sure the folder exists
             preg_match('#^(.+/)[^/]+$#', $exportFile, $folder);
             if (!empty($folder[1]) && !file_exists($folder[1])) acym_createDir($folder[1]);
 
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Using buffer for big exports.
             $fp = fopen($exportFile, 'w');
             if (false === $fp) {
                 if ($flagToRemove !== 0) {
@@ -328,6 +332,7 @@ class ExportHelper extends AcymObject
                 return acym_translationSprintf('ACYM_FAIL_SAVE_FILE', $exportFile);
             }
 
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Using buffer for big exports.
             $error = fwrite($fp, $firstLine);
             if (false === $error) {
                 if ($flagToRemove !== 0) {
@@ -349,11 +354,13 @@ class ExportHelper extends AcymObject
             $start += $nbExport;
 
             if ($users === false) {
-                $errorLine = $this->eol.$this->eol.'Error: '.(isset($e) ? $e->getMessage() : acym_getDBError());
+                $errorLine = $this->eol.$this->eol.'Error: '.acym_escapeHtml(isset($e) ? $e->getMessage() : acym_getDBError());
 
                 if (empty($exportFile)) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Exporting CSV data.
                     echo $errorLine;
                 } else {
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Using buffer for big exports.
                     $error = fwrite($fp, $errorLine);
                     if (false === $error) {
                         if ($flagToRemove !== 0) {
@@ -443,8 +450,10 @@ class ExportHelper extends AcymObject
 
                 $oneLine = $this->before.$encodingClass->change($dataexport, 'UTF-8', $charset).$this->after.$this->eol;
                 if (empty($exportFile)) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Exporting CSV data.
                     echo $oneLine;
                 } else {
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Using buffer for big exports.
                     $error = fwrite($fp, $oneLine);
                     if (false === $error) {
                         if ($flagToRemove !== 0) {
@@ -465,7 +474,10 @@ class ExportHelper extends AcymObject
             $automationHelper->removeFlag($flagToRemove);
         }
 
-        if (!empty($exportFile)) fclose($fp);
+        if (!empty($exportFile)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Using buffer for big exports.
+            fclose($fp);
+        }
 
         return '';
     }
@@ -592,7 +604,7 @@ class ExportHelper extends AcymObject
                 continue;
             }
 
-            @unlink(acym_getLogPath($file));
+            acym_deleteFile(acym_getLogPath($file));
         }
     }
 }

@@ -11,12 +11,15 @@ class UpdateController extends AcymController
     public function checkForNewVersion(): void
     {
         UpdatemeHelper::getLicenseInfo(true);
+        ob_start();
         $headerHelper = new HeaderHelper();
+        $headerHelper->displayVersionArea(true);
+        $versionArea = ob_get_clean();
 
         acym_sendAjaxResponse(
             '',
             [
-                'content' => $headerHelper->checkVersionArea(true),
+                'content' => $versionArea,
                 'lastcheck' => acym_date('now', 'ACYM_DATE_FORMAT_LC2'),
             ]
         );

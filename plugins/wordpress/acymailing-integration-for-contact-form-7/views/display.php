@@ -17,9 +17,9 @@ if (!defined('ABSPATH')) {
 
 				<span class="onelist wpcf7-list-item">
 				<input type="checkbox"
-					   class="acym_checkbox"
-					   name="<?php echo esc_attr($data['identifier']); ?>[]"
-					   id="<?php echo esc_attr($idInput); ?>"
+				       class="acym_checkbox"
+				       name="<?php echo esc_attr($data['identifier']); ?>[]"
+				       id="<?php echo esc_attr($idInput); ?>"
 					   <?php checked(in_array($listId, $data['listsToCheckByDefault'])); ?>
 					   value="<?php echo esc_attr($listId); ?>" />
 				<label for="<?php echo esc_attr($idInput); ?>">
@@ -32,12 +32,12 @@ if (!defined('ABSPATH')) {
         ?>
 
 		<input type="hidden"
-			   name="acymhiddenlists_<?php echo esc_attr($data['identifier']); ?>"
-			   data-acymfield="<?php echo esc_attr($data['identifier']); ?>"
-			   data-acymmail="<?php echo esc_attr($data['emailField']); ?>"
-			   data-acymname="<?php echo esc_attr($data['nameField']); ?>"
-			   data-acymcf="<?php echo esc_attr(wp_json_encode($data['customFields'])); ?>"
-			   value="<?php echo esc_attr(implode(',', $data['listsSubbedOnSubmit'])); ?>" />
+		       name="acymhiddenlists_<?php echo esc_attr($data['identifier']); ?>"
+		       data-acymfield="<?php echo esc_attr($data['identifier']); ?>"
+		       data-acymmail="<?php echo esc_attr($data['emailField']); ?>"
+		       data-acymname="<?php echo esc_attr($data['nameField']); ?>"
+		       data-acymcf="<?php echo esc_attr(wp_json_encode($data['customFields'])); ?>"
+		       value="<?php echo esc_attr(implode(',', $data['listsSubbedOnSubmit'])); ?>" />
 		<input type="hidden" name="acymaction_<?php echo esc_attr($data['identifier']); ?>" value="<?php echo esc_url($data['submitUrl']); ?>" />
 	</span>
 	<?php

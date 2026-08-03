@@ -308,7 +308,7 @@ trait JswcrmInsertion
         if (!in_array('image', $tag->display)) $imagePath = '';
 
         $afterArticle = '';
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escapeHtml(
                 acym_translation('ACYM_READ_MORE')
             ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle = $varFields['{readmore}'];

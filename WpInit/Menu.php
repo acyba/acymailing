@@ -40,7 +40,7 @@ class Menu
         if (!$allowed) return;
 
         // Add the Acy menu items to the WP menu
-        $svg = acym_loaderLogo(false);
+        $svg = acym_fileGetContent(ACYM_IMAGES.'logos/logo_grey.svg');
         add_menu_page(
             acym_translation('ACYM_DASHBOARD'),
             'AcyMailing',

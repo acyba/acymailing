@@ -27,7 +27,7 @@ function acym_cmsModal(
     int     $height = 400
 ): string {
     if (empty($identifier)) {
-        $identifier = 'identifier_'.rand(1000, 9000);
+        $identifier = 'identifier_'.acym_rand(1000, 9000);
     }
 
     $params = [

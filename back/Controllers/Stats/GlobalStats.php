@@ -27,7 +27,6 @@ trait GlobalStats
         $this->prepareOpenTimeChart($data);
         $this->preparecharts($data);
         $this->prepareListReceivers($data);
-        $this->prepareDefaultRoundCharts($data);
         $this->prepareDefaultLineChart($data);
         $this->prepareDefaultDevicesChart($data);
         $this->prepareDefaultBrowsersChart($data);
@@ -73,34 +72,20 @@ trait GlobalStats
             $attributes['data-selected'] = implode(',', $this->selectedMailIds);
         }
 
-        $data['mail_filter'] = acym_selectMultiple(
-            [],
-            'mail_ids',
-            [],
-            $attributes
-        );
-
-        $data['emailVersionsFilters'] = '';
+        $data['mail_filter_options'] = $attributes;
+        $data['emailVersionsFilters'] = [];
 
         if (!empty($data['emailVersions'])) {
-            $data['emailVersionsFilters'] = acym_select(
-                $data['emailVersions'],
-                'mail_id_version',
-                $this->selectedMailIds[0],
-                [
-                    'class' => 'acym__select acym__stats__select__language',
-                ]
-            );
+            $data['emailVersionsFilters'] = [
+                'options' => $data['emailVersions'],
+                'mailId' => $this->selectedMailIds[0],
+            ];
         }
         if (!empty($data['emailTranslations'])) {
-            $data['emailVersionsFilters'] = acym_select(
-                $data['emailTranslations'],
-                'mail_id_version',
-                $this->selectedMailIds[0],
-                [
-                    'class' => 'acym__select acym__stats__select__language',
-                ]
-            );
+            $data['emailVersionsFilters'] = [
+                'options' => $data['emailTranslations'],
+                'mailId' => $this->selectedMailIds[0],
+            ];
         }
     }
 
@@ -157,74 +142,38 @@ trait GlobalStats
         $data['url_click_map_email'] = ACYM_CSS.'click_map.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'click_map.min.css');
     }
 
-    public function prepareDefaultRoundCharts(array &$data): void
-    {
-        $charts = [
-            'delivery' => [
-                'percentage' => 95,
-                'text' => 'ACYM_SUCCESSFULLY_SENT',
-            ],
-            'open' => [
-                'percentage' => 25,
-                'text' => 'ACYM_OPEN_RATE',
-            ],
-            'click' => [
-                'percentage' => 10,
-                'text' => 'ACYM_CLICK_RATE',
-            ],
-            'fail' => [
-                'percentage' => 2,
-                'text' => 'ACYM_BOUNCE_RATE',
-            ],
-            'unsub' => [
-                'percentage' => 3,
-                'text' => 'ACYM_UNSUBSCRIBE',
-            ],
-        ];
-
-        $data['example_round_chart'] = '';
-        foreach ($charts as $type => $oneChart) {
-            if ($type == 'unsub' && empty($this->selectedMailIds)) continue;
-            $data['example_round_chart'] .= '<div class="cell acym__stats__donut__one-chart">';
-            $data['example_round_chart'] .= acym_roundChart(
-                $oneChart['percentage'],
-                $type,
-                '',
-                acym_translation($oneChart['text'])
-            );
-            $data['example_round_chart'] .= '</div>';
-        }
-    }
-
     public function prepareDefaultLineChart(array &$data): void
     {
-        $dataMonth = [];
-        $dataMonth['Jan 18'] = ['open' => '150', 'click' => '40'];
-        $dataDay = [];
-        $dataDay['23 Jan'] = ['open' => '150', 'click' => '40'];
-        $dataHour = [];
-        $dataHour['23 Jan 08:00'] = ['open' => '25', 'click' => '10'];
-        $dataHour['23 Jan 09:00'] = ['open' => '50', 'click' => '10'];
-        $dataHour['23 Jan 10:00'] = ['open' => '16', 'click' => '10'];
-        $dataHour['23 Jan 11:00'] = ['open' => '59', 'click' => '10'];
-        $data['example_line_chart'] = acym_lineChart($dataMonth, $dataDay, $dataHour);
+        $data['example_line_chart'] = [
+            'month' => [
+                'Jan 18' => ['open' => '150', 'click' => '40'],
+            ],
+            'day' => [
+                '23 Jan' => ['open' => '150', 'click' => '40'],
+            ],
+            'hour' => [
+                '23 Jan' => ['open' => '150', 'click' => '40'],
+                '23 Jan 08:00' => ['open' => '25', 'click' => '10'],
+                '23 Jan 09:00' => ['open' => '50', 'click' => '10'],
+                '23 Jan 10:00' => ['open' => '16', 'click' => '10'],
+                '23 Jan 11:00' => ['open' => '59', 'click' => '10'],
+            ],
+        ];
     }
 
     public function prepareDefaultDevicesChart(array &$data): void
     {
-        $defaultData = [
+        $data['example_devices_chart'] = [
             'ACYM_MOBILE' => 25662,
             'ACYM_DESKTOP' => 12471,
             'ACYM_OTHER' => 3548,
             'ACYM_UNKNOWN' => 6213,
         ];
-
-        $data['example_devices_chart'] = acym_pieChart($defaultData, '', acym_translation('ACYM_DEVICES'));
     }
 
     public function prepareDefaultBrowsersChart(array &$data): void
     {
-        $exampleData = [
+        $data['example_source_chart'] = [
             'Apple Mail' => 15835,
             'Google Chrome' => 13375,
             'Safari' => 2667,
@@ -234,8 +183,6 @@ trait GlobalStats
             'ACYM_OTHER' => 4775,
             'ACYM_UNKNOWN' => 6123,
         ];
-
-        $data['example_source_chart'] = acym_pieChart($exampleData, '', acym_translation('ACYM_OPENED_WITH'));
     }
 
     public function setDataForChartLine(): void
@@ -265,7 +212,7 @@ trait GlobalStats
         $statsCampaignSelected = new \stdClass();
         $this->prepareLineChart($statsCampaignSelected, $mailIds, $newStart, $newEnd);
 
-        echo acym_lineChart($statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour, true);
+        acym_lineChart($statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour, true);
         exit;
     }
 
@@ -313,8 +260,8 @@ trait GlobalStats
 
         // Apply timezone for chart by hour
         if ($modifier === 'min') {
-            $startDate = acym_date(strtotime($startDate) + date('Z'), 'Y-m-d H:i:s');
-            $endDate = acym_date(strtotime($endDate) + date('Z'), 'Y-m-d H:i:s');
+            $startDate = acym_date(acym_getTimeFromUTCDate($startDate), 'Y-m-d H:i:s');
+            $endDate = acym_date(acym_getTimeFromUTCDate($endDate), 'Y-m-d H:i:s');
         }
 
         $begin = new \DateTime($startDate);
@@ -377,6 +324,8 @@ trait GlobalStats
 
     public function exportGlobal(): void
     {
+        acym_checkToken();
+
         $exportType = acym_getVar('string', 'export_type', 'charts');
 
         $functionName = 'exportGlobal'.ucfirst($exportType);
@@ -770,11 +719,9 @@ trait GlobalStats
         $data['page_title'] = false;
         $timeLinechart = acym_getVar('string', 'time_linechart', 'month');
 
-
         $this->prepareMailFilter($data);
         $this->prepareClickStats($data);
         $this->preparecharts($data);
-        $this->prepareDefaultRoundCharts($data);
         $this->prepareDefaultLineChart($data);
         $this->prepareDefaultDevicesChart($data);
         $this->prepareDefaultBrowsersChart($data);

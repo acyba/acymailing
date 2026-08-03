@@ -229,6 +229,8 @@ trait Followup
 
     public function followupDuplicateMail(): void
     {
+        acym_checkToken();
+
         $mailId = acym_getVar('int', 'action_mail_id', 0);
         $id = acym_getVar('int', 'id', 0);
         $followupClass = new FollowupClass();
@@ -241,6 +243,8 @@ trait Followup
 
     public function followupDeleteMail(): void
     {
+        acym_checkToken();
+
         $mailId = acym_getVar('int', 'action_mail_id', 0);
         $followupClass = new FollowupClass();
         if (!$followupClass->deleteMail($mailId)) {
@@ -248,16 +252,23 @@ trait Followup
         }
 
         $step = acym_getVar('cmd', 'step', 'followupEmail');
+        if (!in_array($step, ['followupEmail', 'followupSummary'], true)) {
+            $step = 'followupEmail';
+        }
         $this->$step();
     }
 
     public function followupDraft(): void
     {
+        acym_checkToken();
+
         $this->followupFinalize(0);
     }
 
     public function followupActivate(): void
     {
+        acym_checkToken();
+
         $this->followupFinalize(1);
     }
 
@@ -274,7 +285,9 @@ trait Followup
 
     public function saveFollowupCondition(): void
     {
-        if (!acym_isAdmin()) {
+        acym_checkToken();
+
+        if (!acym_isAdmin() || !acym_isAllowed('campaigns')) {
             die('Access denied for follow-ups');
         }
 
@@ -291,7 +304,7 @@ trait Followup
             $followup = new stdClass();
             $followup->name = '';
             $followup->display_name = '';
-            $followup->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
+            $followup->creation_date = gmdate('Y-m-d H:i:s', time());
             $followup->trigger = $trigger;
             $followup->condition = json_encode($followupData['condition']);
             $followup->active = 0;
@@ -313,7 +326,9 @@ trait Followup
 
     public function saveFollowupEmail(bool $redirect = true): void
     {
-        if (!acym_isAdmin()) {
+        acym_checkToken();
+
+        if (!acym_isAdmin() || !acym_isAllowed('campaigns')) {
             die('Access denied for follow-ups');
         }
 

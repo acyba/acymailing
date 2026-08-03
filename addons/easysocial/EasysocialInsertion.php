@@ -33,12 +33,12 @@ trait EasysocialInsertion
             }
 		</script>
         <?php
-        $text = '<div class="grid-x acym__popup__listing">';
+        echo '<div class="grid-x acym__popup__listing">';
 
         $typeinfo = [];
         $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
         $typeinfo[] = acym_selectOption('sender', 'ACYM_SENDER_INFORMATION');
-        $text .= acym_radio($typeinfo, 'typeInfoES', 'receiver', ['onclick' => 'applyES(selectedESUserDText, this)']);
+        acym_radio($typeinfo, 'typeInfoES', 'receiver', ['onclick' => 'applyES(selectedESUserDText, this)']);
 
         $profiles = acym_loadObjectList('SELECT id, title FROM #__social_profiles');
         $profilesList = [];
@@ -46,14 +46,19 @@ trait EasysocialInsertion
         foreach ($profiles as $oneProfile) {
             $profilesList[] = acym_selectOption($oneProfile->id, $oneProfile->title);
         }
-        $text .= acym_select(
+        acym_select(
             $profilesList,
             'userfields_profile',
             '',
             [
                 'onchange' => 'updateESFields(this.value)',
                 'style' => 'width: 220px;',
-            ]
+            ],
+            'value',
+            'text',
+            null,
+            false,
+            true
         );
 
         $fields = acym_loadObjectList(
@@ -69,14 +74,14 @@ trait EasysocialInsertion
         );
 
         foreach ($fields as $field) {
-            $text .= '<div data-acym-profile="'.$field->uid.'" class="cell acym__row__no-listing acym__listing__row__popup is-hidden" onclick="applyES(\''.$field->unique_key.'\', this);">';
-            $text .= acym_translation($field->title);
-            $text .= '</div>';
+            echo '<div data-acym-profile="'.acym_escape($field->uid).'" class="cell acym__row__no-listing acym__listing__row__popup is-hidden" onclick="applyES(\''.acym_escape(
+                    $field->unique_key
+                ).'\', this);">';
+            echo acym_escapeHtml(acym_translation($field->title));
+            echo '</div>';
         }
 
-        $text .= '</div>';
-
-        echo $text;
+        echo '</div>';
     }
 
     public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void

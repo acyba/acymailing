@@ -34,7 +34,7 @@ class UpdateHelper extends AcymObject
             $splashscreenJson = ACYM_PARTIAL.'update'.DS.'changelogs_splashscreen.json';
 
             if (file_exists($splashscreenJson)) {
-                @unlink($splashscreenJson);
+                acym_deleteFile($splashscreenJson);
             }
         }
     }
@@ -59,7 +59,7 @@ class UpdateHelper extends AcymObject
         }
 
         if ($res === null) {
-            $message = isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200).'...';
+            $message = isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200).'...';
 
             if ($messageType === 'enqueue') {
                 acym_enqueueMessage($message, 'error');

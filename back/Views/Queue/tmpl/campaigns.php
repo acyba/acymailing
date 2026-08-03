@@ -1,4 +1,8 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm" data-abide novalidate>
     <?php
     $isEmpty = empty($data['allElements']) && empty($data['search']) && empty($data['tag']) && empty($data['status']);
     if (!$isEmpty) {
@@ -8,24 +12,24 @@
 	<div id="acym__queue" class="acym__content">
         <?php
         $workflow = $data['workflowHelper'];
-        echo $workflow->displayTabs($this->steps, 'campaigns');
+        $workflow->displayTabs($this->steps, 'campaigns');
         ?>
 
         <?php if ($isEmpty) { ?>
 			<div class="grid-x text-center">
-				<h1 class="acym__listing__empty__title cell"><?php echo acym_translation('ACYM_YOU_DONT_HAVE_ANY_CAMPAIGN_IN_QUEUE'); ?></h1>
-				<h1 class="acym__listing__empty__subtitle cell"><?php echo acym_translation('ACYM_SEND_ONE_AND_SEE_HOW_AMAZING_QUEUE_IS'); ?></h1>
+				<h1 class="acym__listing__empty__title cell"><?php echo acym_escapeHtml(acym_translation('ACYM_YOU_DONT_HAVE_ANY_CAMPAIGN_IN_QUEUE')); ?></h1>
+				<h1 class="acym__listing__empty__subtitle cell"><?php echo acym_escapeHtml(acym_translation('ACYM_SEND_ONE_AND_SEE_HOW_AMAZING_QUEUE_IS')); ?></h1>
 			</div>
         <?php } else { ?>
             <?php if (empty($data['allElements'])) { ?>
-				<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
+				<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_escapeHtml(acym_translation('ACYM_NO_RESULTS_FOUND')); ?></h1>
             <?php } else { ?>
 				<div class="cell grid-x">
 					<div class="grid-x acym__listing__actions cell auto">
                         <?php
                         $sendingText = $this->config->get('cron_last', 0) < (time() - 43200) ? 'ACYM_QUEUE_READY' : 'ACYM_SENDING';
 
-                        echo acym_filterStatus(
+                        acym_filterStatus(
                             [
                                 '' => ['ACYM_ALL', $data['numberPerStatus']['all']],
                                 'sending' => [$sendingText, $data['numberPerStatus']['sending']],
@@ -42,13 +46,13 @@
 				<div class="grid-x acym__listing acym__listing__view__cqueue">
 					<div class="cell grid-x acym__listing__header hide-for-small-only">
 						<div class="acym__listing__header__title cell medium-auto">
-                            <?php echo acym_translation('ACYM_MAILS'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_MAILS')); ?>
 						</div>
 						<div class="acym__listing__header__title cell large-3 hide-for-medium-only text-center">
-                            <?php echo acym_translation('ACYM_RECIPIENTS'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_RECIPIENTS')); ?>
 						</div>
 						<div class="acym__listing__header__title cell medium-4 text-center">
-                            <?php echo acym_translation('ACYM_STATUS'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_STATUS')); ?>
 						</div>
 						<div class="cell medium-2"></div>
 					</div>
@@ -66,10 +70,10 @@
                                     }
                                     $afterName = empty($afterName) ? '' : ' - '.$afterName
                                     ?>
-									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo acym_escape($row->name.$afterName); ?></h6>
-									<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escape($row->subject); ?></span>
+									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo acym_escapeHtml($row->name.$afterName); ?></h6>
+									<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escapeHtml($row->subject); ?></span>
 									<p class="acym__listing__title__secondary">
-                                        <?php echo acym_date($row->sending_date, acym_getDateTimeFormat()); ?>
+                                        <?php echo acym_escapeHtml(acym_date($row->sending_date, acym_getDateTimeFormat())); ?>
 									</p>
 								</div>
 							</div>
@@ -83,7 +87,7 @@
                                         $class = 'acym_subscription acymicon-circle';
                                         foreach ($row->lists as $oneList) {
                                             if ($i == 6) {
-                                                echo acym_tooltip(
+                                                acym_tooltip(
                                                     [
                                                         'hoveredText' => '<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>',
                                                         'textShownInTooltip' => acym_translation('ACYM_SHOW_ALL_LISTS'),
@@ -91,9 +95,9 @@
                                                 );
                                                 $class .= ' is-hidden';
                                             }
-                                            echo acym_tooltip(
+                                            acym_tooltip(
                                                 [
-                                                    'hoveredText' => '<i class="'.$class.'" style="color:'.$oneList->color.'"></i>',
+                                                    'hoveredText' => '<i class="'.acym_escape($class).'" style="color:'.acym_escape($oneList->color).'"></i>',
                                                     'textShownInTooltip' => $oneList->name,
                                                 ]
                                             );
@@ -104,7 +108,12 @@
 								</div>
                                 <?php
                                 if (!empty($row->recipients)) {
-                                    echo acym_translationSprintf('ACYM_X_RECIPIENTS', '<strong>'.number_format($row->recipients, 0, '.', ' ').'</strong>');
+                                    echo acym_escapeHtmlWithAllowedTags(
+                                        acym_translationSprintf('ACYM_X_RECIPIENTS', '<strong>'.number_format($row->recipients, 0, '.', ' ').'</strong>'),
+                                        [
+                                            'strong' => [],
+                                        ]
+                                    );
                                 }
                                 ?>
 							</div>
@@ -130,21 +139,21 @@
                                     ?>
 
 									<div class="cell">
-										<div class="progress_bar <?php echo $class; ?>">
+										<div class="progress_bar <?php echo acym_escape($class); ?>">
                                             <?php
                                             $percentageSent = 0;
                                             if (!empty($row->nbqueued) && $row->iscampaign) {
                                                 if (!empty($row->recipients)) {
                                                     $percentageSent = 100 - ceil($row->nbqueued * 100 / $row->recipients);
                                                 }
-                                                echo '<div class="progress_bar_left" style="width: '.$percentageSent.'%;"></div>';
+                                                echo '<div class="progress_bar_left" style="width: '.acym_escape($percentageSent).'%;"></div>';
                                             }
                                             ?>
 											<div class="progress_bar_text grid-x">
-												<span class="cell auto acym_text_ellipsis"><?php echo $text; ?></span>
+												<span class="cell auto acym_text_ellipsis"><?php echo acym_escapeHtml($text); ?></span>
                                                 <?php
                                                 if (!empty($row->nbqueued) && $row->iscampaign) {
-                                                    echo '<span class="cell" style="width: 40px;">'.$percentageSent.'%</span>';
+                                                    echo '<span class="cell" style="width: 40px;">'.acym_escapeHtml($percentageSent).'%</span>';
                                                 }
                                                 ?>
 											</div>
@@ -156,8 +165,8 @@
 
                                             <?php
                                             $sendID = 'send_campaign_'.$row->id;
-                                            echo acym_modal(
-                                                '<i class="acymicon-paper-plane" data-acy-elementid="'.$row->id.'"></i> '.acym_translation('ACYM_SEND_NOW'),
+                                            acym_modal(
+                                                '<i class="acymicon-paper-plane" data-acy-elementid="'.acym_escape($row->id).'"></i> '.acym_translation('ACYM_SEND_NOW'),
                                                 '',
                                                 null,
                                                 ['data-reveal-larger' => true],
@@ -182,15 +191,15 @@
                                     // Play/pause button
                                     if (!empty($row->nbqueued) && $row->iscampaign) {
                                         $class = $row->active == 0 ? 'acymicon-play-circle-filled' : 'acymicon-pause-circle';
-                                        echo acym_tooltip([
-                                            'hoveredText' => '<i campaignid="'.$row->campaign.'" class="'.$class.' acym__queue__play_pause__button"></i>',
+                                        acym_tooltip([
+                                            'hoveredText' => '<i campaignid="'.acym_escape($row->campaign).'" class="'.acym_escape($class).' acym__queue__play_pause__button"></i>',
                                             'textShownInTooltip' => acym_translation($row->active == 0 ? 'ACYM_UNPAUSE_CAMPAIGN' : 'ACYM_PAUSE_CAMPAIGN'),
                                         ]);
                                         $cancelText = 'ACYM_CANCEL_CAMPAIGN';
                                     }
 
                                     // Delete button
-                                    echo acym_tooltip(
+                                    acym_tooltip(
                                         [
                                             'hoveredText' => '<i class="acymicon-times-circle acym__queue__cancel__button" mailid="'.$row->id.'"></i>',
                                             'textShownInTooltip' => acym_translation($cancelText),
@@ -203,7 +212,7 @@
 						</div>
                     <?php } ?>
 				</div>
-                <?php echo $data['pagination']->display('cqueue'); ?>
+                <?php $data['pagination']->display('cqueue'); ?>
             <?php } ?>
         <?php } ?>
         <?php acym_formOptions(); ?>

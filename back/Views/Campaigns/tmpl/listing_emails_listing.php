@@ -1,21 +1,24 @@
-<?php if (empty($data['allCampaigns'])) { ?>
-	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+if (empty($data['allCampaigns'])) { ?>
+	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_escapeHtml(acym_translation('ACYM_NO_RESULTS_FOUND')); ?></h1>
 <?php } else {
     global $Itemid;
     ?>
-	<input type="hidden" name="acym_itemid" value="<?php echo empty($Itemid) ? '' : $Itemid; ?>">
+	<input type="hidden" name="acym_itemid" value="<?php echo empty($Itemid) ? '' : acym_escape($Itemid); ?>">
 	<div class="cell margin-bottom-1 acym__listing__actions grid-x">
         <?php
         $actions = [
             'delete' => acym_translation('ACYM_DELETE'),
         ];
-        echo acym_listingActions($actions, '', acym_isAdmin() ? 'mails' : 'frontmails');
+        acym_listingActions($actions, '', acym_isAdmin() ? 'mails' : 'frontmails');
         ?>
 	</div>
 	<div class="cell grid-x">
 		<div class="grid-x cell auto">
 			<div class="cell acym_listing_sort-by">
-                <?php echo acym_sortBy(
+                <?php acym_sortBy(
                     [
                         'id' => acym_strtolower(acym_translation('ACYM_ID')),
                         'name' => acym_translation('ACYM_NAME'),
@@ -35,19 +38,19 @@
 			</div>
 			<div class="grid-x medium-auto small-11 cell acym__listing__header__title__container">
 				<div class="medium-auto small-11 cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_EMAILS'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_EMAILS')); ?>
 				</div>
 				<div class="large-3 medium-3 hide-for-small-only cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_LIST'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_LIST')); ?>
 				</div>
 				<div class="large-1 hide-for-small-only hide-for-medium-only text-center cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_OPEN'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_OPEN')); ?>
 				</div>
 				<div class="large-1 hide-for-small-only hide-for-medium-only text-center cell acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_CLICK'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_CLICK')); ?>
 				</div>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_MAIL_ID'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_MAIL_ID')); ?>
 				</div>
 			</div>
 		</div>
@@ -77,14 +80,16 @@
                         $idName = !empty($data['cleartask']) && in_array($data['cleartask'], ['welcome', 'unsubscribe']) ? 'id' : 'campaignId';
                         ?>
 						<a class="cell auto"
-						   href="<?php echo acym_completeLink($controllerName.'&task='.$linkTask.'&'.$idName.'='.intval($email->id).$return.'&'.acym_getFormToken()); ?>">
+						   href="<?php echo acym_escapeUrl(
+                               acym_completeLink($controllerName.'&task='.$linkTask.'&'.$idName.'='.intval($email->id).$return.'&'.acym_getFormToken())
+                           ); ?>">
 							<h6 class='acym__listing__title__primary acym_text_ellipsis'>
-                                <?php echo acym_escape($email->name); ?>
+                                <?php echo acym_escapeHtml($email->name); ?>
 							</h6>
 						</a>
 						<p class='acym__listing__title__secondary'>
                             <?php
-                            echo acym_date(acym_getTime($email->creation_date), acym_getDateTimeFormat());
+                            echo acym_escapeHtml(acym_date(acym_getTime($email->creation_date), acym_getDateTimeFormat()));
                             ?>
 						</p>
 					</div>
@@ -93,19 +98,21 @@
                         if (!empty($email->lists)) {
                             echo '<div class="grid-x cell text-center">';
                             foreach ($email->lists as $list) {
-                                echo acym_tooltip(
+                                acym_tooltip(
                                     [
                                         'hoveredText' => '<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color).'"></i>',
-                                        'textShownInTooltip' => acym_escape($list->name),
+                                        'textShownInTooltip' => acym_escapeHtml($list->name),
                                     ]
                                 );
                             }
                             echo '</div>';
                         } else {
                             echo '<div class="cell medium-12">'.(empty($email->automation)
-                                    ? acym_translation('ACYM_NO_LIST_SELECTED')
-                                    : acym_translation(
-                                        'ACYM_SENT_WITH_AUTOMATION'
+                                    ? acym_escapeHtml(acym_translation('ACYM_NO_LIST_SELECTED'))
+                                    : acym_escapeHtml(
+                                        acym_translation(
+                                            'ACYM_SENT_WITH_AUTOMATION'
+                                        )
                                     )).'</div>';
                         }
                         ?>
@@ -113,7 +120,7 @@
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
                         <?php
                         if (!empty($email->subscribers) && isset($email->open)) {
-                            echo $email->open.'%';
+                            echo acym_escapeHtml($email->open).'%';
                         } else {
                             echo '-';
                         }
@@ -122,18 +129,18 @@
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
                         <?php
                         if (!empty($email->subscribers) && isset($email->click)) {
-                            echo $email->click.'%';
+                            echo acym_escapeHtml($email->click).'%';
                         } else {
                             echo '-';
                         }
                         ?>
 					</div>
-					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text"><?php echo acym_escape($email->id); ?></h6>
+					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text"><?php echo acym_escapeHtml($email->id); ?></h6>
 				</div>
 			</div>
             <?php
         }
         ?>
 	</div>
-    <?php echo $data['pagination']->display('campaigns');
+    <?php $data['pagination']->display('campaigns');
 }

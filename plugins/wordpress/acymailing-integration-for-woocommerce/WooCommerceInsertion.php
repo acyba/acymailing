@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailing\Helpers\SecurityHelper;
 use AcyMailing\Helpers\TabHelper;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\QueueClass;
@@ -109,7 +110,7 @@ trait WooCommerceInsertion
     {
         $tags = [];
 
-        foreach ($extractedTags as $oneTag) {
+        foreach ($extractedTags as $tagKey => $oneTag) {
             $field = $oneTag->id;
             $value = $oneTag->default;
 
@@ -171,7 +172,8 @@ trait WooCommerceInsertion
             }
 
             $this->pluginHelper->formatString($value, $oneTag);
-            $tags["{wootag:$field}"] = $value;
+            // Key on the tag as it was found, rebuilding it from the id alone would miss its parameters
+            $tags[$tagKey] = $value;
         }
 
         return $tags;
@@ -573,8 +575,11 @@ trait WooCommerceInsertion
 		<div class="cell grid-x margin-bottom-1">
 			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
                 <?php
+                ob_start();
+                acym_info(['textShownInTooltip' => 'ACYM_MIN_NUMBER_OF_PRODUCTS_DESC']);
+                $tooltip = ob_get_clean();
                 echo wp_kses(
-                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MIN_NUMBER_OF_PRODUCTS_DESC']),
+                    acym_translation('ACYM_MIN_NB_ELEMENTS').$tooltip,
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -583,17 +588,20 @@ trait WooCommerceInsertion
                 ?>
 			</label>
 			<input type="number"
-				   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>"
-				   class="cell medium-6"
-				   value="<?php echo esc_attr($this->defaultValues->min); ?>"
-				   name="min"
-				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
+			       id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>"
+			       class="cell medium-6"
+			       value="<?php echo esc_attr($this->defaultValues->min); ?>"
+			       name="min"
+			       onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
 		</div>
 		<div class="cell grid-x margin-bottom-1">
 			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
                 <?php
+                ob_start();
+                acym_info(['textShownInTooltip' => 'ACYM_MAX_NUMBER_OF_PRODUCTS_DESC']);
+                $tooltip = ob_get_clean();
                 echo wp_kses(
-                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info(['textShownInTooltip' => 'ACYM_MAX_NUMBER_OF_PRODUCTS_DESC']),
+                    acym_translation('ACYM_MAX_NB_ELEMENTS').$tooltip,
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -602,17 +610,20 @@ trait WooCommerceInsertion
                 ?>
 			</label>
 			<input type="number"
-				   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>"
-				   class="cell medium-6"
-				   value="<?php echo esc_attr($this->defaultValues->max); ?>"
-				   name="max"
-				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
+			       id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>"
+			       class="cell medium-6"
+			       value="<?php echo esc_attr($this->defaultValues->max); ?>"
+			       name="max"
+			       onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
 		</div>
 		<div class="cell grid-x margin-bottom-1">
 			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
                 <?php
+                ob_start();
+                acym_info(['textShownInTooltip' => 'ACYM_CATEGORY_FILTER_DESC']);
+                $tooltip = ob_get_clean();
                 echo wp_kses(
-                    acym_translation('ACYM_CATEGORY_FILTER').acym_info(['textShownInTooltip' => 'ACYM_CATEGORY_FILTER_DESC']),
+                    acym_translation('ACYM_CATEGORY_FILTER').$tooltip,
                     [
                         'span' => ['class' => []],
                         'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -646,7 +657,7 @@ trait WooCommerceInsertion
 			</div>
 		</div>
 		<script type="text/javascript">
-			window._additionalInfo<?php echo esc_html($identifier); ?> = window._additionalInfo<?php echo esc_html($identifier); ?> || {};
+            window._additionalInfo<?php echo esc_html($identifier); ?> = window._additionalInfo<?php echo esc_html($identifier); ?> || {};
             <?php
             echo esc_html('window._additionalInfo'.$identifier.'.min = '.$this->defaultValues->min.';');
             echo esc_html('window._additionalInfo'.$identifier.'.max = '.$this->defaultValues->max.';');
@@ -658,8 +669,11 @@ trait WooCommerceInsertion
 			<div class="cell grid-x">
 				<label class="cell medium-6">
                     <?php
+                    ob_start();
+                    acym_info(['textShownInTooltip' => 'ACYM_START_DATE_PURCHASED_PRODUCT_DESC']);
+                    $tooltip = ob_get_clean();
                     echo wp_kses(
-                        acym_translation('ACYM_START_DATE').acym_info(['textShownInTooltip' => 'ACYM_START_DATE_PURCHASED_PRODUCT_DESC']),
+                        acym_translation('ACYM_START_DATE').$tooltip,
                         [
                             'span' => ['class' => []],
                             'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
@@ -675,39 +689,7 @@ trait WooCommerceInsertion
                         'cell medium-6',
                         'onchange="addAdditionalInfo'.$identifier.'(\'min_date\', this.value)"'
                     ),
-                    [
-                        'div' => ['class' => [], 'style' => []],
-                        'input' => [
-                            'type' => [],
-                            'name' => [],
-                            'id' => [],
-                            'value' => [],
-                            'class' => [],
-                            'data-open' => [],
-                            'readonly' => [],
-                            'data-acym-translate' => [],
-                            'data-rs' => [],
-                            'onchange' => [],
-                            'data-reveal' => [],
-                            'data-reveal-larger' => [],
-                        ],
-                        'span' => ['class' => [], 'aria-hidden' => []],
-                        'button' => [
-                            'type' => [],
-                            'class' => [],
-                            'data-close' => [],
-                            'data-type' => [],
-                            'aria-label' => [],
-                            'data-open' => [],
-                        ],
-                        'select' => [
-                            'id' => [],
-                            'name' => [],
-                            'class' => [],
-                        ],
-                        'optgroup' => ['label' => []],
-                        'option' => ['value' => [], 'selected' => [], 'disabled' => []],
-                    ]
+                    SecurityHelper::ALLOWED_HTML_DATE
                 );
                 ?>
 			</div>
@@ -1054,11 +1036,13 @@ trait WooCommerceInsertion
                 $selectedArea = $this->getSelectedArea($parameter);
                 if (!empty($selectedArea)) {
                     $product_ids = array_unique($product_ids);
+                    acym_arrayToInteger($selectedArea);
                     $query .= ' JOIN #__term_relationships AS cat ON product.ID = cat.object_id 
-                    AND cat.term_taxonomy_id = '.implode(' OR cat.term_taxonomy_id = ', $selectedArea).'';
+                    AND cat.term_taxonomy_id IN ('.implode(',', $selectedArea).')';
                 }
             }
 
+            acym_arrayToInteger($product_ids);
             $query .= ' WHERE product.ID IN ('.implode(',', $product_ids).')';
 
             if ($send) {
@@ -1081,7 +1065,6 @@ trait WooCommerceInsertion
             }
             if (!empty($tag)) {
                 $emptyTags = false;
-                break;
             }
         }
 
@@ -1185,11 +1168,13 @@ trait WooCommerceInsertion
                 $selectedArea = $this->getSelectedArea($parameter);
                 if (!empty($selectedArea)) {
                     $product_ids = array_unique($product_ids);
+                    acym_arrayToInteger($selectedArea);
                     $query .= ' JOIN #__term_relationships AS cat ON product.ID = cat.object_id 
-                    AND cat.term_taxonomy_id = '.implode(' OR cat.term_taxonomy_id = ', $selectedArea).'';
+                    AND cat.term_taxonomy_id IN ('.implode(',', $selectedArea).')';
                 }
             }
 
+            acym_arrayToInteger($product_ids);
             $query .= ' WHERE product.ID IN ('.implode(',', $product_ids).')';
 
             if ($send) {
@@ -1213,7 +1198,6 @@ trait WooCommerceInsertion
             }
             if (!empty($tag)) {
                 $emptyTags = false;
-                break;
             }
         }
 

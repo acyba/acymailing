@@ -132,7 +132,7 @@ trait Emails
             $typeMail,
             [
                 'offset' => acym_getVar('int', 'offset', 0),
-                'mailsPerPage' => acym_getVar('int', 'limit', 100),
+                'mailsPerPage' => $this->getRequestedLimit(100),
                 'filters' => $filters,
             ]
         );

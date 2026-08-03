@@ -653,13 +653,18 @@ trait EasysocialAutomationConditions
             $options[$oneElement->id] = acym_translation($oneElement->title);
         }
 
-        echo acym_select(
+        acym_select(
             $options,
             acym_getVar('string', 'name', ''),
             acym_getVar('int', 'value', 0),
             [
                 'class' => 'acym__select',
-            ]
+            ],
+            'value',
+            'text',
+            null,
+            false,
+            true
         );
         exit;
     }

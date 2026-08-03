@@ -63,10 +63,13 @@ class getAcymTab extends cbTabHandler
 
         $listsHtml = '<table class="acym_cb_registration">';
         foreach ($visibleListsArray as $listId) {
-            $check = in_array($listId, $checkedListsArray) ? 'checked="checked"' : '';
             $listsHtml .= '<tr>
                                 <td>
-                                    <input type="checkbox" class="acym_checkbox" id="acym_'.$listId.'" name="acymcb[list][]" '.$check.' value="'.intval($listId).'"/>
+                                    <input type="checkbox" class="acym_checkbox" id="acym_'.$listId.'" name="acymcb[list][]" '.checked(
+                    in_array($listId, $checkedListsArray),
+                    true,
+                    false
+                ).' value="'.intval($listId).'"/>
                                 </td>
                                 <td>
                                     <label for="acym_'.$listId.'">'.$allLists[$listId]->name.'</label>
@@ -300,10 +303,14 @@ class getAcymTab extends cbTabHandler
         foreach ($visibleListsArray as $listId) {
             $return .= '<tr class="acym_list row'.$k.'">';
             if ('edition' === $mode) {
-                $return .= '<td class="acym_list_status">'.acym_boolean(
-                        'acymcb[list]['.$listId.']',
-                        !empty($userLists[$listId]) && 1 === intval($userLists[$listId]->status)
-                    ).'</td>';
+                $return .= '<td class="acym_list_status">';
+                ob_start();
+                acym_boolean(
+                    'acymcb[list]['.$listId.']',
+                    !empty($userLists[$listId]) && 1 === intval($userLists[$listId]->status)
+                );
+                $return .= ob_get_clean();
+                $return .= '</td>';
             }
             $return .= '<td class="acym_list_name">'.$allLists[$listId]->name.'</td>';
             $return .= '</tr>';
@@ -384,14 +391,19 @@ class getAcymTab extends cbTabHandler
 
     public function lists($name, $value, $controlName)
     {
-        if (!$this->installed) return $this->errorMessage;
+        if (!$this->installed) {
+            return $this->errorMessage;
+        }
         $value = str_replace('|*|', ',', $value);
 
-        return acym_displayParam(
+        ob_start();
+        acym_displayParam(
             'lists',
             $value,
             $controlName.'['.$name.']'
         );
+
+        return ob_get_clean();
     }
 
     private function getParam($name, $default)

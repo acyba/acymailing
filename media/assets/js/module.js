@@ -117,13 +117,13 @@ if (typeof submitAcymForm !== 'function') {
     function acym_checkEmailField(varform, name, validation) {
         let emailField = varform.elements[name];
         if (emailField) {
-            if (emailField.value !== acymModule['EMAILCAPTION']) {
+            if (emailField.value !== window.acymModule['EMAILCAPTION']) {
                 emailField.value = emailField.value.replace(/ /g, '');
             }
 
-            const filter = acymModule['emailRegex'];
-            if (emailField.value === acymModule['EMAILCAPTION'] || !filter.test(emailField.value)) {
-                acymAddInvalidClass(emailField.name, validation, acymModule['VALID_EMAIL']);
+            const filter = window.acymModule['emailRegex'];
+            if (emailField.value === window.acymModule['EMAILCAPTION'] || !filter.test(emailField.value)) {
+                acymAddInvalidClass(emailField.name, validation, window.acymModule['VALID_EMAIL']);
             }
         }
     }
@@ -133,7 +133,7 @@ if (typeof submitAcymForm !== 'function') {
         let emailConfirmationField = varform.elements[name];
         if (emailConfirmationField) {
             if (emailField.value !== emailConfirmationField.value || emailConfirmationField.value === '') {
-                acymAddInvalidClass(name, validation, acymModule['VALID_EMAIL_CONFIRMATION']);
+                acymAddInvalidClass(name, validation, window.acymModule['VALID_EMAIL_CONFIRMATION']);
             }
         }
     }
@@ -331,9 +331,9 @@ if (typeof submitAcymForm !== 'function') {
 
             if (!listschecked) {
                 if (currentAction !== 'unsubscribe') {
-                    alert(acymModule['NO_LIST_SELECTED']);
+                    alert(window.acymModule['NO_LIST_SELECTED']);
                 } else {
-                    alert(acymModule['NO_LIST_SELECTED_UNSUB']);
+                    alert(window.acymModule['NO_LIST_SELECTED_UNSUB']);
                 }
                 return false;
             }
@@ -342,16 +342,16 @@ if (typeof submitAcymForm !== 'function') {
         if (currentAction !== 'unsubscribe') {
             let termsandconditions = varform.elements['terms'];
             if (termsandconditions && !termsandconditions.checked) {
-                if (typeof acymModule != 'undefined') {
-                    alert(acymModule['ACCEPT_TERMS']);
+                if (typeof window.acymModule != 'undefined') {
+                    alert(window.acymModule['ACCEPT_TERMS']);
                 }
                 return false;
             }
 
-            if (typeof acymModule != 'undefined' && typeof acymModule['excludeValues' + window.acyFormName] != 'undefined') {
-                for (let fieldName in acymModule['excludeValues' + window.acyFormName]) {
-                    if (!acymModule['excludeValues' + window.acyFormName].hasOwnProperty(fieldName)) continue;
-                    if (!varform.elements[`user[${fieldName}]`] || varform.elements[`user[${fieldName}]`].value != acymModule[`excludeValues${window.acyFormName}`][fieldName]) {
+            if (typeof window.acymModule != 'undefined' && typeof window.acymModule['excludeValues' + window.acyFormName] != 'undefined') {
+                for (let fieldName in window.acymModule['excludeValues' + window.acyFormName]) {
+                    if (!window.acymModule['excludeValues' + window.acyFormName].hasOwnProperty(fieldName)) continue;
+                    if (!varform.elements[`user[${fieldName}]`] || varform.elements[`user[${fieldName}]`].value != window.acymModule[`excludeValues${window.acyFormName}`][fieldName]) {
                         continue;
                     }
 

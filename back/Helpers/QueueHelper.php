@@ -48,7 +48,7 @@ class QueueHelper extends AcymObject
 
         $this->send_limit = (int)$this->config->get('queue_nbmail', 40);
 
-        // The default is 60, which is too much for email sending as it wastes time
+        // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- The default is 60s, which is far too much for email sending.
         @ini_set('default_socket_timeout', 10);
 
         // We call cron URLs but don't wait for the result, we still want the script to execute
@@ -104,7 +104,9 @@ class QueueHelper extends AcymObject
             }
 
             /*This is to avoid the blank page... and it apparently works! ;) */
+            // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Disabled to prevent blank output pages.
             @ini_set('output_buffering', 'off');
+            // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Disabled to prevent blank output pages.
             @ini_set('zlib.output_compression', 0);
 
             if (!headers_sent()) {
@@ -113,39 +115,59 @@ class QueueHelper extends AcymObject
                 }
             }
 
-            //We prepare the area where we will add information
-            $disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
-            $disp .= '<title>'.acym_translation('ACYM_SEND_PROCESS').'</title>';
-            $disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
-            $disp .= '<div style="margin-bottom: 18px;padding: 8px !important; background-color: #fcf8e3; border: 1px solid #fbeed5; border-radius: 4px;"><p style="margin:0;">'.acym_translation(
-                    'ACYM_DONT_CLOSE'
-                ).'</p></div>';
-            $disp .= "<div style='display: inline;background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
-            $disp .= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
-            $disp .= acym_translation('ACYM_SEND_PROCESS').': <span id="counter" >'.$this->start.'</span> / '.$this->total;
-            $disp .= '</div>';
-            $disp .= "<div id='divinfo' style='display:none; position:fixed; bottom:3px;left:3px;background-color : white; border : 1px solid grey; padding : 3px;'> </div>";
-            $disp .= '<br /><br />';
-            $url = acym_completeLink('queue&task=continuesend&id='.$this->id.'&totalsend='.$this->total, true, true).'&alreadysent=';
-            $disp .= '<script type="text/javascript" language="javascript">';
-            $disp .= 'var mycounter = document.getElementById("counter");';
-            $disp .= 'var divinfo = document.getElementById("divinfo");
-					var divpauseinfo = document.getElementById("divpauseinfo");
-					function setInfo(message){ divinfo.style.display = \'block\';divinfo.innerHTML=message; }
-					function setPauseInfo(nbpause){ divpauseinfo.style.display = \'\';divpauseinfo.innerHTML=nbpause;}
-					function setCounter(val){ mycounter.innerHTML=val;}
-					var scriptpause = '.$this->pause.';
-					function handlePause(){
-						setPauseInfo(scriptpause);
-						if(scriptpause > 0){
-							scriptpause = scriptpause - 1;
-							setTimeout(\'handlePause()\',1000);
-						}else{
-							document.location.href=\''.$url.'\'+mycounter.innerHTML;
-						}
-					}
-					</script>';
-            echo $disp;
+            ?>
+			<html>
+			<head>
+				<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+				<title><?php echo acym_escapeHtml(acym_translation('ACYM_SEND_PROCESS')); ?></title>
+				<style>body{
+						font-size: 12px;
+						font-family: Arial, Helvetica, sans-serif;
+					}</style>
+			</head>
+			<body>
+			<div style="margin-bottom: 18px;padding: 8px !important; background-color: #fcf8e3; border: 1px solid #fbeed5; border-radius: 4px;">
+				<p style="margin:0;"><?php echo acym_escapeHtml(acym_translation('ACYM_DONT_CLOSE')); ?></p>
+			</div>
+			<div style="display: inline;background-color : white;border : 1px solid grey; padding : 3px;font-size:14px">
+				<span id="divpauseinfo" style="padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;"> </span>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_SEND_PROCESS')); ?>:
+				<span id="counter"><?php echo intval($this->start); ?></span> / <?php echo intval($this->total); ?>
+			</div>
+			<div id="divinfo" style="display:none; position:fixed; bottom:3px;left:3px;background-color : white; border : 1px solid grey; padding : 3px;"></div>
+			<br /><br />
+			<script type="text/javascript" language="javascript">
+                function setInfo(message) {
+                    const divinfo = document.getElementById('divinfo');
+                    divinfo.style.display = 'block';
+                    divinfo.innerHTML = message;
+                }
+
+                function setPauseInfo(nbpause) {
+                    const divpauseinfo = document.getElementById('divpauseinfo');
+                    divpauseinfo.style.display = '';
+                    divpauseinfo.innerHTML = nbpause;
+                }
+
+                function setCounter(val) {
+                    document.getElementById('counter').innerHTML = val;
+                }
+
+                let acymailingScriptPause = <?php echo intval($this->pause); ?>;
+
+                function handlePause() {
+                    setPauseInfo(acymailingScriptPause);
+                    if (acymailingScriptPause > 0) {
+                        acymailingScriptPause = acymailingScriptPause - 1;
+                        setTimeout(handlePause, 1000);
+                    } else {
+                        document.location.href = <?php echo json_encode(
+                            acym_completeLink('queue&task=continuesend&id='.$this->id.'&totalsend='.$this->total, true, true).'&'.acym_getFormToken().'&alreadysent='
+                        ); ?> +document.getElementById('counter').innerHTML;
+                    }
+                }
+			</script>
+            <?php
             if (function_exists('ob_flush')) {
                 @ob_flush();
             }
@@ -224,7 +246,7 @@ class QueueHelper extends AcymObject
             $currentMail++;
             $this->nbprocess++;
             if ($this->report) {
-                echo '<script type="text/javascript">setCounter('.$currentMail.')</script>';
+                echo '<script type="text/javascript">setCounter('.acym_escapeHtml($currentMail).')</script>';
                 if (function_exists('ob_flush')) {
                     @ob_flush();
                 }
@@ -554,7 +576,7 @@ class QueueHelper extends AcymObject
     private function displayMessage(array $messages, int $status, int $num = 0): void
     {
         foreach ($messages as $message) {
-            $this->messages[] = strip_tags($message);
+            $this->messages[] = acym_stripTags($message);
         }
 
         if (!$this->report) {
@@ -564,9 +586,19 @@ class QueueHelper extends AcymObject
         $color = $status === self::MESSAGE_TYPE_SUCCESS ? 'green' : ($status === self::MESSAGE_TYPE_WARNING ? 'orange' : 'red');
         foreach ($messages as $message) {
             if (!empty($num)) {
-                echo '<br />'.$num.' : <span style="color:'.$color.';">'.$message.'</span>';
+                echo '<br />'.acym_escapeHtml($num).' : <span style="color:'.acym_escape($color).';">'.acym_escapeHtmlWithAllowedTags(
+                        $message,
+                        [
+                            'b' => [],
+                            'i' => [],
+                            'a' => [
+                                'href' => true,
+                                'target' => true,
+                            ],
+                        ]
+                    ).'</span>';
             } else {
-                echo '<script type="text/javascript" language="javascript">setInfo(\''.addslashes($message).'\')</script>';
+                echo '<script type="text/javascript" language="javascript">setInfo('.json_encode($message).')</script>';
             }
         }
 

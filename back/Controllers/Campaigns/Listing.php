@@ -19,7 +19,6 @@ trait Listing
 
     public function storeRedirectListing(bool $fromListing = false): void
     {
-        acym_session();
         $isFrontJoomla = !acym_isAdmin() && ACYM_CMS === 'joomla';
         $variableName = $isFrontJoomla ? 'ctrl_stored_front' : 'ctrl_stored';
 
@@ -28,8 +27,11 @@ trait Listing
             return;
         }
 
-        if ((empty($currentTask) || !in_array($currentTask, self::TASKS_TO_REMEMBER_FOR_LISTING)) && !empty($_SESSION[$variableName])) {
-            $taskToGo = is_array($_SESSION[$variableName]) ? $_SESSION[$variableName]['task'].'&type='.$_SESSION[$variableName]['type'] : $_SESSION[$variableName];
+        $controller = acym_getVar('RAW', $variableName, null, 'SESSION');
+        if ((empty($currentTask) || !in_array($currentTask, self::TASKS_TO_REMEMBER_FOR_LISTING)) && !empty($controller)) {
+            $taskToGo = is_array($controller)
+                ? $controller['task'].'&type='.$controller['type']
+                : $controller;
             $link = acym_completeLink(($isFrontJoomla ? 'front' : '').'campaigns&task='.$taskToGo, false, true);
             acym_redirect($link);
         } else {
@@ -42,7 +44,7 @@ trait Listing
                 $currentTask = empty($type) ? self::TASK_TYPE_CAMPAIGN : ['task' => $currentTask, 'type' => $type];
             }
 
-            $_SESSION[$variableName] = $currentTask;
+            acym_setSession($variableName, $currentTask);
         }
 
         $taskToCall = is_array($currentTask) ? $currentTask['task'] : $currentTask;
@@ -65,8 +67,7 @@ trait Listing
 
         $isFrontJoomla = !acym_isAdmin() && ACYM_CMS === 'joomla';
         $variableName = $isFrontJoomla ? 'ctrl_stored_front' : 'ctrl_stored';
-        acym_session();
-        $_SESSION[$variableName] = $task;
+        acym_setSession($variableName, $task);
 
         return true;
     }

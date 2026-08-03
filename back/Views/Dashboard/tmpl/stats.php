@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 foreach ($data['stats'] as $label => $stat) {
     $evolution = $stat['evolution'];
     $evolutionText = ($evolution !== 0 && !is_null($evolution)) ? (($evolution > 0 ? '+' : '').$evolution.' %') : '';
@@ -11,12 +13,12 @@ foreach ($data['stats'] as $label => $stat) {
 	<div class="acym__content acym__dashboard__stats__container cell text-center margin-bottom-2">
 		<div class="grid-x align-middle grid-container">
 			<div class="cell shrink acym__dashboard__stats__text__container">
-				<div class="acym__title acym__dashboard__stats__title"><?php echo acym_translation($label); ?></div>
-				<span class="acym__dashboard__number"><?php echo $stat['value']; ?></span>
-				<span class="acym__dashboard__percentage <?php echo $colorClass; ?>"><?php echo $evolutionText; ?></span>
+				<div class="acym__title acym__dashboard__stats__title"><?php echo acym_escapeHtml(acym_translation($label)); ?></div>
+				<span class="acym__dashboard__number"><?php echo acym_escapeHtml($stat['value']); ?></span>
+				<span class="acym__dashboard__percentage <?php echo acym_escape($colorClass); ?>"><?php echo acym_escapeHtml($evolutionText); ?></span>
 			</div>
 			<div class="cell shrink">
-                <?php echo acym_tooltip(
+                <?php acym_tooltip(
                     [
                         'hoveredText' => '<i class="'.$stat['icon'].' acym__dashboard__stats__icon"></i>',
                         'textShownInTooltip' => acym_translation('ACYM_DASHBOARD_STATS_TOOLTIP'),

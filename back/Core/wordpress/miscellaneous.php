@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 // Front-end breadcrumb for Joomla
 function acym_addBreadcrumb(string $title, string $link = ''): void
 {
@@ -14,11 +16,6 @@ function acym_isLeftMenuNecessary(): bool
 {
     // Already one in WP
     return false;
-}
-
-function acym_getLeftMenu(string $name): string
-{
-    return '';
 }
 
 function acym_isPluginActive(string $plugin, string $family = 'system'): bool
@@ -63,4 +60,9 @@ function acym_deleteScheduledTask(array $options): bool
     }
 
     return true;
+}
+
+function acym_rand(int $min, int $max): int
+{
+    return wp_rand($min, $max);
 }

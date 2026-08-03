@@ -2,6 +2,8 @@
 
 namespace AcyMailing\Helpers;
 
+// context verification
+
 use AcyMailing\Core\AcymObject;
 use AcyMailing\Types\CharsetType;
 
@@ -52,6 +54,7 @@ class EncodingHelper extends AcymObject
         }
 
         if (function_exists('iconv')) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Catching iconv errors for clean handling.
             set_error_handler('AcyMailing\Helpers\acym_errorHandlerEncoding');
             $encodedData = iconv($inputCharset, $outputCharset.'//IGNORE', $data);
             restore_error_handler();
@@ -107,7 +110,7 @@ class EncodingHelper extends AcymObject
 
     public function encodingField(string $name, string $selected): void
     {
-        echo acym_select(
+        acym_select(
             [
                 'binary' => 'Binary',
                 'quoted' => 'Quoted-printable',
@@ -124,15 +127,27 @@ class EncodingHelper extends AcymObject
             ],
             '',
             '',
-            'config_encoding'
+            'config_encoding',
+            false,
+            true
         );
     }
 
-    public function charsetField(string $name, string $selected, array $attribs = []): string
+    public function charsetField(string $name, string $selected, array $attribs = [], bool $display = false): string
     {
         $charsetType = new CharsetType();
 
-        return acym_select($charsetType->charsets, $name, $selected, $attribs, '', '');
+        return acym_select(
+            $charsetType->charsets,
+            $name,
+            $selected,
+            $attribs,
+            '',
+            '',
+            null,
+            false,
+            $display
+        );
     }
 }
 

@@ -61,7 +61,7 @@ define('ACYM_ALLOWRAW', defined('JREQUEST_ALLOWRAW') ? JREQUEST_ALLOWRAW : 2);
 define('ACYM_ALLOWHTML', defined('JREQUEST_ALLOWHTML') ? JREQUEST_ALLOWHTML : 4);
 define('ACYM_ADMIN_GROUP', 8);
 define('ACYM_PLUGINS_URL', ACYM_BACK);
-define('ACYM_AVAILABLE_PLUGINS', json_encode([]));
+define('ACYM_AVAILABLE_PLUGINS', []);
 
 function acym_rootURI(bool $pathonly = false, ?string $path = null): string
 {

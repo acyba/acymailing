@@ -1,6 +1,9 @@
+<?php
+// context verification
+?>
 <div class="intext_select_automation cell">
     <?php
-    echo acym_select(
+    acym_select(
         $allListFollowups,
         'acym_action[actions][__and__][subscribe_followup][followup_id]',
         null,
@@ -9,7 +12,10 @@
             'data-placeholder' => (!empty($listFollowups) ? acym_translation('ACYM_SELECT_FOLLOWUP', true) : acym_translation('ACYM_FOLLOWUP_NOT_FOUND', true)),
         ],
         'id',
-        'name'
+        'name',
+        null,
+        false,
+        true
     );
     ?>
 </div>

@@ -232,7 +232,7 @@ trait PhocaInsertion
 
         $category = acym_loadObject('SELECT alias, title FROM #__phocadownload_categories WHERE id = '.intval($element->catid));
         $linkCat = $this->finalizeLink('index.php?option=com_phocadownload&view=category&id='.$element->catid.':'.$category->alias, $tag);
-        $varFields['{cat}'] = '<a href="'.$linkCat.'" target="_blank">'.acym_escape($category->title).'</a>';
+        $varFields['{cat}'] = '<a href="'.$linkCat.'" target="_blank">'.acym_escapeHtml($category->title).'</a>';
         if (in_array('cat', $tag->display)) {
             $customFields[] = [
                 $varFields['{cat}'],
@@ -242,7 +242,7 @@ trait PhocaInsertion
 
         if (in_array('readmore', $tag->display)) {
             $afterArticle .= '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">
-                <span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span>
+                <span class="acymailing_readmore">'.acym_escapeHtml(acym_translation('ACYM_READ_MORE')).'</span>
             </a>';
         }
 

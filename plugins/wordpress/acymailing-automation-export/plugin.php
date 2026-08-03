@@ -47,19 +47,20 @@ class plgAcymAutomationexport extends AcymPlugin
                 }
             }
 
-            $checked = in_array($fieldValue, $defaultFields) ? 'checked="checked"' : '';
-
             $actions['export']->option .= '<div class="cell large-6 xlarge-3">';
-            $actions['export']->option .= '<input '.$checked.' id="checkbox__and___'.$fieldName.'" type="checkbox" name="acym_action[actions][__and__][export]['.$type.']['.$fieldValue.']" value="'.acym_escape(
+            $actions['export']->option .= '<input '.checked(in_array($fieldValue, $defaultFields), true, false).' id="checkbox__and___'.esc_attr(
                     $fieldName
-                ).'">';
+                ).'" type="checkbox" name="acym_action[actions][__and__][export]['.$type.']['.$fieldValue.']" value="'.esc_attr($fieldName).'">';
             $actions['export']->option .= '<label for="checkbox__and___'.$fieldName.'">'.$fieldName.'</label>';
             $actions['export']->option .= '</div>';
         }
 
-        $checked = in_array('subscribe_date', $defaultFields) ? 'checked="checked"' : '';
         $actions['export']->option .= '<div class="cell large-6 xlarge-3">';
-        $actions['export']->option .= '<input '.$checked.' id="checkbox__and___subscribe_date" type="checkbox" name="acym_action[actions][__and__][export][special][subscribe_date]" value="subscribe_date">';
+        $actions['export']->option .= '<input '.checked(
+                in_array('subscribe_date', $defaultFields),
+                true,
+                false
+            ).' id="checkbox__and___subscribe_date" type="checkbox" name="acym_action[actions][__and__][export][special][subscribe_date]" value="subscribe_date">';
         $actions['export']->option .= '<label for="checkbox__and___subscribe_date">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</label>';
         $actions['export']->option .= '</div>';
 
@@ -93,7 +94,7 @@ class plgAcymAutomationexport extends AcymPlugin
         $actions['export']->option .= '<input class="cell" 
                                             type="text" 
                                             name="acym_action[actions][__and__][export][path]" 
-                                            value="'.acym_escapeUrl(ACYM_LOGS_FOLDER.'export_%Y_%m_%d.csv').'" 
+                                            value="'.esc_url(ACYM_LOGS_FOLDER.'export_%Y_%m_%d.csv').'" 
                                             id="action__and__exportpath" />';
         $actions['export']->option .= '</div>';
     }

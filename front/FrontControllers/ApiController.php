@@ -39,6 +39,8 @@ class ApiController extends AcymController
     private const TYPE_MAIL = 'mail';
     private const TYPE_USER = 'user';
 
+    private const MAX_API_LIMIT = 500;
+
     private const COLUMNS_TO_RETURN_FOR_GET = [
         self::TYPE_TEMPLATE => [
             'id',
@@ -164,6 +166,19 @@ class ApiController extends AcymController
     }
 
     /**
+     * Read the requested "limit" and cap it so an unbounded value cannot dump the whole dataset (PII).
+     */
+    private function getRequestedLimit(int $default = 100): int
+    {
+        $limit = acym_getVar('int', 'limit', $default);
+        if ($limit < 1) {
+            $limit = $default;
+        }
+
+        return min($limit, self::MAX_API_LIMIT);
+    }
+
+    /**
      * Validate the API key and check the user's license before processing requests.
      */
     private function authenticate(bool $isRouteAuthenticate = false): void
@@ -180,10 +195,14 @@ class ApiController extends AcymController
             }
         }
 
+        $storedApiKey = $this->config->get('api_key');
         $licenseKey = $this->config->get('license_key');
 
-        if ($licenseKey !== $apiKey) {
-            $this->sendJsonResponse(['message' => 'License key is invalid'], 401);
+        $matchesApiKey = !empty($storedApiKey) && hash_equals((string)$storedApiKey, (string)$apiKey);
+        $matchesLicenseKey = !empty($licenseKey) && hash_equals((string)$licenseKey, (string)$apiKey);
+
+        if (!$matchesApiKey && !$matchesLicenseKey) {
+            $this->sendJsonResponse(['message' => 'API key is invalid'], 401);
         }
 
         if (!acym_isLicenseValidWeekly()) {

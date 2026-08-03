@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 class Oauth
 {
     public function __construct()
@@ -10,11 +12,11 @@ class Oauth
         $state = acym_getVar('string', 'state');
         if (!empty($code) && !empty($state)) {
             if ($state === 'acymailingsmtp') {
-                acym_redirect(acym_completeLink('configuration&auth_type=smtp&code='.$_GET['code'], false, true));
+                acym_redirect(acym_completeLink('configuration&auth_type=smtp&code='.$code, false, true));
             }
 
             if ($state === 'acymailingbounce') {
-                acym_redirect(acym_completeLink('configuration&auth_type=bounce&code='.$_GET['code'], false, true));
+                acym_redirect(acym_completeLink('configuration&auth_type=bounce&code='.$code, false, true));
             }
         }
     }

@@ -249,12 +249,12 @@ class FollowupClass extends AcymClass
             $list->name = $element->display_name;
             $list->description = '';
             $list->color = '#'.implode('', [
-                    ListClass::COLOR_PARTS[rand(0, 15)],
-                    ListClass::COLOR_PARTS[rand(0, 15)],
-                    ListClass::COLOR_PARTS[rand(0, 15)],
-                    ListClass::COLOR_PARTS[rand(0, 15)],
-                    ListClass::COLOR_PARTS[rand(0, 15)],
-                    ListClass::COLOR_PARTS[rand(0, 15)],
+                    ListClass::COLOR_PARTS[acym_rand(0, 15)],
+                    ListClass::COLOR_PARTS[acym_rand(0, 15)],
+                    ListClass::COLOR_PARTS[acym_rand(0, 15)],
+                    ListClass::COLOR_PARTS[acym_rand(0, 15)],
+                    ListClass::COLOR_PARTS[acym_rand(0, 15)],
+                    ListClass::COLOR_PARTS[acym_rand(0, 15)],
                 ]);
             $list->access = '';
             $list->type = ListClass::LIST_TYPE_FOLLOWUP;
@@ -405,6 +405,7 @@ class FollowupClass extends AcymClass
         $this->getDelaySettingToMail($delaySettings, $id);
 
         unset($mail->id);
+        unset($mail->creator_id);
         $mail->name .= '_copy';
 
         $mail->id = $mailClass->save($mail);
@@ -713,6 +714,10 @@ class FollowupClass extends AcymClass
                 $sendDate = acym_escapeDB(acym_date($sendDate, 'Y-m-d H:i:s', false));
                 $allValues[] = '('.intval($mail->mail_id).', '.intval($userId).', '.$sendDate.', '.$this->config->get('priority_newsletter', 3).', 0'.')';
             }
+        }
+
+        if (empty($allValues)) {
+            return;
         }
 
         $queryToProcess = 'INSERT IGNORE INTO #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`, `try`) VALUES '.implode(', ', $allValues);

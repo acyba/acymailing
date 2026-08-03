@@ -86,19 +86,20 @@ trait Campaigns
             ],
             'close'
         );
-        $otherContent = acym_modal(
-            '<i class="acymicon-paper-plane"></i>'.acym_translation('ACYM_SEND_MAILS_MANUALLY'),
-            '',
-            null,
-            ['data-reveal-larger' => true],
+        $toolbarHelper->addModalButton(
             [
-                'class' => 'cell medium-6 large-shrink button',
-                'data-reload' => 'true',
-                'data-ajax' => 'true',
-                'data-iframe' => '&ctrl=queue&task=continuesend&id=0&totalsend=0',
+                'button' => '<i class="acymicon-paper-plane"></i>'.acym_escapeHtml(acym_translation('ACYM_SEND_MAILS_MANUALLY')),
+                'attributesModal' => [
+                    'data-reveal-larger' => true,
+                ],
+                'attributesButton' => [
+                    'class' => 'cell medium-6 large-shrink button',
+                    'data-reload' => 'true',
+                    'data-ajax' => 'true',
+                    'data-iframe' => '&ctrl=queue&task=continuesend&id=0&totalsend=0',
+                ],
             ]
         );
-        $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addFilterByTag($data, 'cqueue_tag', 'acym__queue__filter__tags acym__select');
 
         $data['toolbar'] = $toolbarHelper;
@@ -111,6 +112,8 @@ trait Campaigns
 
     public function cancelSending(): void
     {
+        acym_checkToken();
+
         $mailId = acym_getVar('int', 'acym__queue__cancel__mail_id');
 
         if (!empty($mailId)) {
@@ -136,6 +139,8 @@ trait Campaigns
 
     public function playPauseSending(): void
     {
+        acym_checkToken();
+
         $active = acym_getVar('int', 'acym__queue__play_pause__active__new_value');
         $campaignId = acym_getVar('int', 'acym__queue__play_pause__campaign_id');
 

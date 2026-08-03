@@ -62,7 +62,7 @@ trait WooCommerceCampaignType
         if (!empty($sendingParams) && isset($sendingParams[$this->mailType.'_number'])) {
             $defaultNumber = $sendingParams[$this->mailType.'_number'];
         }
-        $inputTime = '<input type="number" min="0" stp="1" name="acym_woocomerce_time_number" class="intext_input" value="'.intval($defaultNumber).'">';
+        $inputTime = '<input type="number" min="0" step="1" name="acym_woocomerce_time_number" class="intext_input" value="'.intval($defaultNumber).'">';
 
         $orderStatuses = $this->getOrderStatuses();
         $selectedStatus = 'wc-pending';

@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Core\AcymPlugin;
@@ -76,20 +77,30 @@ class plgAcymSubscriber extends AcymPlugin
     public function onBeforeSaveConfigFields(&$newConfig)
     {
         $fieldToExportOnChange = $this->config->get('export_data_changes_fields', []);
-        if (empty($fieldToExportOnChange)) return;
+        if (empty($fieldToExportOnChange)) {
+            return;
+        }
 
-        if (!is_array($fieldToExportOnChange)) $fieldToExportOnChange = explode(',', $fieldToExportOnChange);
+        if (!is_array($fieldToExportOnChange)) {
+            $fieldToExportOnChange = explode(',', $fieldToExportOnChange);
+        }
 
-        if (empty($newConfig['export_data_changes_fields'])) $newConfig['export_data_changes_fields'] = [];
+        if (empty($newConfig['export_data_changes_fields'])) {
+            $newConfig['export_data_changes_fields'] = [];
+        }
 
-        if ($fieldToExportOnChange == $newConfig['export_data_changes_fields']) return;
+        if ($fieldToExportOnChange == $newConfig['export_data_changes_fields']) {
+            return;
+        }
 
         $exportHelper = new ExportHelper();
         $fileExportPath = $exportHelper->getExportChangesFilePath();
 
-        if (!file_exists($fileExportPath)) return;
+        if (!file_exists($fileExportPath)) {
+            return;
+        }
 
         $newFilename = $exportHelper->generateExportChangesFilePathConfigChanges();
-        @rename($fileExportPath, $newFilename);
+        acym_moveFile($fileExportPath, $newFilename);
     }
 }

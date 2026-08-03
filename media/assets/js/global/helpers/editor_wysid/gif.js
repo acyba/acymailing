@@ -9,12 +9,10 @@ let typingTimerGif = '';
 const acym_editorWysidGif = {
     giphyKey: '',
     init: function () {
-        acym_helper.config_get('giphy_key').done((resConfig) => {
-            this.giphyKey = resConfig.data.value;
+        this.giphyKey = typeof ACYM_GIPHY_KEY === 'undefined' ? '' : ACYM_GIPHY_KEY;
 
-            this.insertGif();
-            this.makeNewResearch('');
-        });
+        this.insertGif();
+        this.makeNewResearch('');
     },
     loadGif: function () {
         const $errorMessage = jQuery('#acym__wysid__modal__gif--error_message');

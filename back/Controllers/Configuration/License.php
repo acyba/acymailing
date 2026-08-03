@@ -8,6 +8,8 @@ trait License
 {
     public function unlinkLicense(): void
     {
+        acym_checkToken();
+
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
@@ -35,6 +37,8 @@ trait License
 
     public function attachLicense(): void
     {
+        acym_checkToken();
+
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
@@ -162,6 +166,8 @@ trait License
 
     public function activateCron(): void
     {
+        acym_checkToken();
+
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
@@ -182,6 +188,11 @@ trait License
     //The listing parameter allows us to know if we need to display the listing or not
     public function deactivateCron(bool $listing = true, ?string $licenseKey = null): void
     {
+        // Called as a task (no argument) → require a CSRF token. Internal calls (e.g. unlinkLicense) are already token-checked.
+        if (func_num_args() === 0) {
+            acym_checkToken();
+        }
+
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
@@ -240,6 +251,8 @@ trait License
 
     public function attachLicenseAcymailer(): void
     {
+        acym_checkToken();
+
         $acyMailerLicenseKey = $this->config->get('acymailer_apikey');
         $acyMailingKey = $this->config->get('license_key');
         if (empty($acyMailerLicenseKey) && !empty($acyMailingKey)) {

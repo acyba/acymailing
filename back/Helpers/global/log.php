@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 function acym_getLogPath(string $filename = '', bool $create = false): string
 {

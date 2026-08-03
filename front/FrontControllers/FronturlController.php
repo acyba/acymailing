@@ -53,7 +53,7 @@ class FronturlController extends AcymController
         // The mail has been deleted, or we didn't send this email to this user, or it's a bot
         $delay = $this->config->get('tracking_delay', 0);
         if (empty($mail) || empty($userStat) || acym_isRobot() || (!empty($delay) && acym_getTimeFromUTCDate($userStat->send_date) > time() - $delay)) {
-            acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId));
+            acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId), '', 'message', false);
         }
 
         $urlClick = new \stdClass();
@@ -95,7 +95,7 @@ class FronturlController extends AcymController
             $userClass->save($subscriber);
         }
 
-        acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId));
+        acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId), '', 'message', false);
     }
 
     private function resolveSubscriberTags(string $url, int $userId): string

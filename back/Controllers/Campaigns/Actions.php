@@ -13,6 +13,8 @@ trait Actions
 {
     public function duplicate(): void
     {
+        acym_checkToken();
+
         //We get the id of campaign checked
         $campaignsSelected = acym_getVar('array', 'elements_checked', []);
 
@@ -93,6 +95,8 @@ trait Actions
 
     public function duplicateFollowup(): void
     {
+        acym_checkToken();
+
         //We get the id of follow-ups checked
         $followupsSelected = acym_getVar('int', 'elements_checked');
 
@@ -147,7 +151,11 @@ trait Actions
             return;
         }
 
-        acym_redirect(acym_completeLink('queue', false, true).'&task=playPauseSending&acym__queue__play_pause__active__new_value=1&acym__queue__play_pause__campaign_id='.$id);
+        acym_redirect(
+            acym_completeLink('queue', false, true)
+            .'&task=playPauseSending&acym__queue__play_pause__active__new_value=1&acym__queue__play_pause__campaign_id='.$id
+            .'&'.acym_getFormToken()
+        );
     }
 
     public function stopSending(): void
@@ -192,6 +200,8 @@ trait Actions
 
     public function confirmCampaign(): void
     {
+        acym_checkToken();
+
         $this->updateOpenAcymailerPopup();
         $campaignId = acym_getVar('int', 'campaignId');
         $campaignSendingDate = acym_getVar('string', 'sending_date');
@@ -228,6 +238,8 @@ trait Actions
 
     public function activeAutoCampaign(): void
     {
+        acym_checkToken();
+
         $this->updateOpenAcymailerPopup();
         $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
@@ -251,6 +263,8 @@ trait Actions
 
     public function saveAsDraftCampaign(): void
     {
+        acym_checkToken();
+
         $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
 
@@ -276,6 +290,7 @@ trait Actions
 
     public function toggleActivateColumnCampaign(): void
     {
+        acym_checkToken();
 
         $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
@@ -333,7 +348,7 @@ trait Actions
             $status = $campaignClass->send($campaignID);
 
             if ($status) {
-                acym_enqueueMessage(acym_translationSprintf('ACYM_CAMPAIGN_ADDED_TO_QUEUE', $campaign->name), 'info');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_CAMPAIGN_ADDED_TO_QUEUE', $campaign->name, 'info'));
             } else {
                 if (empty($campaignClass->errors)) {
                     $notification = [
@@ -368,6 +383,8 @@ trait Actions
 
     public function updateArchive(): void
     {
+        acym_checkToken();
+
         $campaignId = acym_getVar('int', 'campaignId', 0);
         if (empty($campaignId)) {
             acym_sendAjaxResponse('', [], false);

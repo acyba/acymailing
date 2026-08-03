@@ -59,28 +59,35 @@ class SendinblueCredentials extends SendinblueClass
         }
 
         $delayType = new DelayType();
+        ob_start();
+        $delayType->display(
+            'config['.plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency]',
+            $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 604800),
+            DelayType::TYPE_WEEKS_MONTHS
+        );
+        $delay = ob_get_clean();
         $config = empty($data['tab']) ? $this->config : $data['tab']->config;
         $defaultApiKey = $config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key');
         ob_start();
         ?>
-		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings">
+		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo acym_escape(plgAcymSendinblue::SENDING_METHOD_ID); ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label class="cell shrink margin-right-1" for="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key">
-                    <?php echo acym_translationSprintf('ACYM_SENDING_METHOD_API_KEY', plgAcymSendinblue::SENDING_METHOD_NAME); ?>
+				<label class="cell shrink margin-right-1" for="<?php echo acym_escape(plgAcymSendinblue::SENDING_METHOD_ID); ?>_settings_api-key">
+                    <?php echo acym_escapeHtml(acym_translationSprintf('ACYM_SENDING_METHOD_API_KEY', plgAcymSendinblue::SENDING_METHOD_NAME)); ?>
 				</label>
-                <?php echo $this->getLinks('https://get.brevo.com/hbvmwg6onvve'); ?>
+                <?php $this->getLinks('https://get.brevo.com/hbvmwg6onvve'); ?>
 				<input type="text"
-					   id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key"
-					   value="<?php echo empty($defaultApiKey) ? $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
-					   name="config[<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_api_key]"
-					   class="cell margin-next-1 acym__configuration__mail__settings__text">
-                <?php echo $this->getTestCredentialsSendingMethodButton(plgAcymSendinblue::SENDING_METHOD_ID); ?>
-                <?php echo $this->getCopySettingsButton($data, plgAcymSendinblue::SENDING_METHOD_ID, 'wp_mail_smtp'); ?>
+				       id="<?php echo acym_escape(plgAcymSendinblue::SENDING_METHOD_ID); ?>_settings_api-key"
+				       value="<?php echo acym_escape(empty($defaultApiKey) ? $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key') : $defaultApiKey); ?>"
+				       name="config[<?php echo acym_escape(plgAcymSendinblue::SENDING_METHOD_ID); ?>_api_key]"
+				       class="cell margin-next-1 acym__configuration__mail__settings__text">
+                <?php $this->getTestCredentialsSendingMethodButton(plgAcymSendinblue::SENDING_METHOD_ID); ?>
+                <?php $this->getCopySettingsButton($data, plgAcymSendinblue::SENDING_METHOD_ID, 'wp_mail_smtp'); ?>
 				<div class="cell grid-x margin-top-1 acym__sending__methods__synch">
 					<button type="button"
-							sending-method-id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>"
-							class="acym__configuration__sending__synch__users cell shrink button button-secondary">
-                        <?php echo acym_translation('ACYM_SYNCHRO_EXISTING_USERS'); ?>
+					        sending-method-id="<?php echo acym_escape(plgAcymSendinblue::SENDING_METHOD_ID); ?>"
+					        class="acym__configuration__sending__synch__users cell shrink button button-secondary">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_SYNCHRO_EXISTING_USERS')); ?>
 					</button>
 					<span class="acym__configuration__sending__method-icon cell shrink margin-left-1 acym_vcenter"></span>
 					<span class="acym__configuration__sending__method-synch__message cell shrink margin-left-1 acym_vcenter"></span>
@@ -88,7 +95,7 @@ class SendinblueCredentials extends SendinblueClass
                 <?php if (!$this->plugin->isLogFileEmpty()) { ?>
 					<div class="cell grid-x margin-top-1 acym__sending__methods__log">
                         <?php
-                        echo acym_modal(
+                        acym_modal(
                             acym_translation('ACYM_REPORT_SEE'),
                             '',
                             null,
@@ -103,14 +110,28 @@ class SendinblueCredentials extends SendinblueClass
 					</div>
                 <?php } ?>
 				<div class="cell grid-x margin-top-1 acym_vcenter acym__sending__methods__clean__data">
-                    <?php echo acym_translationSprintf(
-                        'ACYM_CLEAN_DATA_ON_X_X',
-                        plgAcymSendinblue::SENDING_METHOD_NAME,
-                        $delayType->display(
-                            'config['.plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency]',
-                            $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 604800),
-                            DelayType::TYPE_WEEKS_MONTHS
-                        )
+                    <?php echo acym_escapeHtmlWithAllowedTags(
+                        acym_translationSprintf('ACYM_CLEAN_DATA_ON_X_X', plgAcymSendinblue::SENDING_METHOD_NAME, $delay),
+                        [
+                            'input' => [
+                                'class' => true,
+                                'type' => true,
+                                'id' => true,
+                                'value' => true,
+                                'onchange' => true,
+                                'min' => true,
+                            ],
+                            'select' => [
+                                'name' => true,
+                                'id' => true,
+                                'class' => true,
+                                'onchange' => true,
+                            ],
+                            'option' => [
+                                'value' => true,
+                                'selected' => true,
+                            ],
+                        ]
                     ); ?>
 				</div>
 			</div>

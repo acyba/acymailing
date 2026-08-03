@@ -116,7 +116,7 @@ function acym_checkEmailConfirmationField(varform, name, validation) {
     let emailConfirmationField = varform.elements[name];
     if (emailConfirmationField) {
         if (emailField.value !== emailConfirmationField.value) {
-            acymAddInvalidClass(name, validation, acymModule['VALID_EMAIL_CONFIRMATION']);
+            acymAddInvalidClass(name, validation, window.acymModule['VALID_EMAIL_CONFIRMATION']);
         }
     }
 }

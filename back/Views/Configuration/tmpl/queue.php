@@ -1,12 +1,14 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 
 use AcyMailing\Helpers\CronHelper;
 
 ?>
 	<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2">
-		<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE'); ?></div>
+		<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_QUEUE')); ?></div>
 		<div class="grid-x grid-margin-x margin-y">
-			<div class="cell medium-3"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE_PROCESSING'); ?></div>
+			<div class="cell medium-3"><?php echo acym_escapeHtml(acym_translation('ACYM_CONFIGURATION_QUEUE_PROCESSING')); ?></div>
 			<div class="cell medium-9">
                 <?php
                 $disabledOptions = [];
@@ -16,7 +18,7 @@ use AcyMailing\Helpers\CronHelper;
                         'automan' => ['tooltipTxt' => acym_translation('ACYM_PRO_ONLY'), 'disabledClass' => 'acym__disabled'],
                     ];
                 }
-                echo acym_radio(
+                acym_radio(
                     [
                         'auto' => acym_translation('ACYM_CONFIGURATION_QUEUE_AUTOMATIC'),
                         'automan' => acym_translation('ACYM_CONFIGURATION_QUEUE_AUTOMAN'),
@@ -39,8 +41,8 @@ use AcyMailing\Helpers\CronHelper;
 			</div>
 			<div class="cell medium-3 automatic_only automatic_manual">
                 <?php
-                echo acym_translation('ACYM_AUTO_SEND_PROCESS');
-                echo acym_info(['textShownInTooltip' => 'ACYM_AUTO_SEND_PROCESS_DESC']);
+                echo acym_escapeHtml(acym_translation('ACYM_AUTO_SEND_PROCESS'));
+                acym_info(['textShownInTooltip' => 'ACYM_AUTO_SEND_PROCESS_DESC']);
                 ?>
 			</div>
 			<div class="cell medium-9 grid-x automatic_only automatic_manual">
@@ -57,36 +59,81 @@ use AcyMailing\Helpers\CronHelper;
 
                         $disabledBatch = acym_level(ACYM_ENTERPRISE) ? '' : 'disabled';
                         $delayTypeAuto = $data['typeDelay'];
-                        $delayHtml = '<span data-acym-tooltip="'.acym_translation('ACYM_CRON_TRIGGERED_DESC').'">'.$delayTypeAuto->display(
-                                'config[cron_frequency]',
-                                $cronFrequency,
-                                \AcyMailing\Types\DelayType::TYPE_MINUTES_HOURS,
-                                '',
-                                'auto_sending_input'
-                            ).'</span>';
-                        echo acym_translationSprintf(
-                            'ACYM_SEND_X_BATCH_OF_X_EMAILS_EVERY_Y',
-                            '<input '.$disabledBatch.' class="intext_input auto_sending_input" type="number" min="1" max="10" name="config[queue_batch_auto]" value="'.intval(
-                                $valueBatch
-                            ).'" />',
-                            '<input class="intext_input auto_sending_input" type="number" min="1" max="900" name="config[queue_nbmail_auto]" value="'.intval(
-                                $this->config->get('queue_nbmail_auto')
-                            ).'" />',
-                            $delayHtml
+                        $delayHtml = '<span data-acym-tooltip="'.acym_escape(acym_translation('ACYM_CRON_TRIGGERED_DESC')).'">';
+                        ob_start();
+                        $delayTypeAuto->display(
+                            'config[cron_frequency]',
+                            $cronFrequency,
+                            \AcyMailing\Types\DelayType::TYPE_MINUTES_HOURS,
+                            '',
+                            'auto_sending_input'
+                        );
+                        $delayHtml .= ob_get_clean().'</span>';
+                        echo acym_escapeHtmlWithAllowedTags(
+                            acym_translationSprintf(
+                                'ACYM_SEND_X_BATCH_OF_X_EMAILS_EVERY_Y',
+                                '<input '.$disabledBatch.' class="intext_input auto_sending_input" type="number" min="1" max="10" name="config[queue_batch_auto]" value="'.intval(
+                                    $valueBatch
+                                ).'" />',
+                                '<input class="intext_input auto_sending_input" type="number" min="1" max="900" name="config[queue_nbmail_auto]" value="'.intval(
+                                    $this->config->get('queue_nbmail_auto')
+                                ).'" />',
+                                $delayHtml
+                            ),
+                            [
+                                'input' => [
+                                    'disabled' => true,
+                                    'class' => true,
+                                    'type' => true,
+                                    'min' => true,
+                                    'max' => true,
+                                    'name' => true,
+                                    'value' => true,
+                                    'onchange' => true,
+                                    'id' => true,
+                                ],
+                                'span' => [
+                                    'data-acym-tooltip' => true,
+                                ],
+                                'select' => [
+                                    'class' => true,
+                                    'onchange' => true,
+                                    'name' => true,
+                                    'id' => true,
+                                ],
+                                'option' => [
+                                    'value' => true,
+                                    'selected' => true,
+                                ],
+                                'script' => [],
+                            ]
                         );
                         echo '<span id="automatic_sending_speed_too_many_batches">';
-                        echo acym_info(['textShownInTooltip' => 'ACYM_TOO_MANY_BATCHES', 'isWarning' => true]);
+                        acym_info(['textShownInTooltip' => 'ACYM_TOO_MANY_BATCHES', 'isWarning' => true]);
                         echo '</span>';
                         ?>
 					</div>
 					<div class="cell">
                         <?php
-                        echo acym_translationSprintf(
-                            'ACYM_WAIT_X_SECONDS_BETWEEN_MAILS',
-                            '<input class="intext_input auto_sending_input" type="number" min="0" name="config[email_frequency]" value="'.$this->config->get(
-                                'email_frequency',
-                                0
-                            ).'" />'
+                        echo acym_escapeHtmlWithAllowedTags(
+                            acym_translationSprintf(
+                                'ACYM_WAIT_X_SECONDS_BETWEEN_MAILS',
+                                '<input class="intext_input auto_sending_input" type="number" min="0" name="config[email_frequency]" value="'.acym_escape(
+                                    $this->config->get(
+                                        'email_frequency',
+                                        0
+                                    )
+                                ).'" />'
+                            ),
+                            [
+                                'input' => [
+                                    'class' => true,
+                                    'type' => true,
+                                    'min' => true,
+                                    'name' => true,
+                                    'value' => true,
+                                ],
+                            ]
                         );
                         ?>
 					</div>
@@ -94,10 +141,17 @@ use AcyMailing\Helpers\CronHelper;
 			</div>
 			<div class="cell medium-3 automatic_only automatic_manual"></div>
 			<div class="cell medium-9 automatic_only automatic_manual margin-bottom-2">
-                <?php echo acym_translationSprintf('ACYM_SEND_X_EMAILS_PER_HOUR', '<span id="automatic_sending_speed_preview">280</span>'); ?>
+                <?php echo acym_escapeHtmlWithAllowedTags(
+                    acym_translationSprintf('ACYM_SEND_X_EMAILS_PER_HOUR', '<span id="automatic_sending_speed_preview">280</span>'),
+                    [
+                        'span' => [
+                            'id' => true,
+                        ],
+                    ]
+                ); ?>
 				<span id="automatic_sending_speed_too_much">
 					<?php
-                    echo acym_info(
+                    acym_info(
                         [
                             'textShownInTooltip' => acym_translation('ACYM_ONE_SECOND_PER_EMAIL_WARNING'),
                         ]
@@ -106,7 +160,7 @@ use AcyMailing\Helpers\CronHelper;
 				</span>
 				<span id="automatic_sending_speed_no_wait">
 					<?php
-                    echo acym_info(
+                    acym_info(
                         [
                             'textShownInTooltip' => acym_translation('ACYM_SEND_FASTER_DECREASE_WAIT'),
                         ]
@@ -114,7 +168,7 @@ use AcyMailing\Helpers\CronHelper;
                     ?>
 				</span>
 			</div>
-			<div class="cell medium-3 automatic_only automatic_manual"><?php echo acym_translation('ACYM_SEND_RESTRICTIONS'); ?></div>
+			<div class="cell medium-3 automatic_only automatic_manual"><?php echo acym_escapeHtml(acym_translation('ACYM_SEND_RESTRICTIONS')); ?></div>
 			<div class="cell medium-9 grid-x margin-y automatic_only automatic_manual acym_auto_send_time">
 				<div class="cell">
                     <?php
@@ -142,43 +196,98 @@ use AcyMailing\Helpers\CronHelper;
                         $this->config->get('queue_send_to_minute', '59'),
                         ['class' => 'intext_select']
                     );
-                    echo acym_translationSprintf('ACYM_SEND_FROM_TO', $hoursFrom, $minutesFrom, $hoursTo, $minutesTo);
+                    echo acym_escapeHtmlWithAllowedTags(
+                        acym_translationSprintf('ACYM_SEND_FROM_TO', $hoursFrom, $minutesFrom, $hoursTo, $minutesTo),
+                        [
+                            'select' => [
+                                'class' => true,
+                                'name' => true,
+                                'id' => true,
+                            ],
+                            'option' => [
+                                'value' => true,
+                                'selected' => true,
+                            ],
+                        ]
+                    );
                     ?>
 				</div>
 				<div class="cell grid-x">
 					<div class="cell shrink margin-right-1">
-                        <?php echo acym_translation('ACYM_DONT_SEND_WEEKEND'); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_DONT_SEND_WEEKEND')); ?>
 					</div>
 					<div class="cell shrink">
-                        <?php echo acym_switch('config[queue_stop_weekend]', $this->config->get('queue_stop_weekend', 0)); ?>
+                        <?php acym_switch(['name' => 'config[queue_stop_weekend]', 'value' => $this->config->get('queue_stop_weekend', 0)]); ?>
 					</div>
 					<div class="cell auto"></div>
 				</div>
 			</div>
-			<div class="cell medium-3 manual_only automatic_manual"><?php echo acym_translation('ACYM_MANUAL_SEND_PROCESS'); ?></div>
+			<div class="cell medium-3 manual_only automatic_manual"><?php echo acym_escapeHtml(acym_translation('ACYM_MANUAL_SEND_PROCESS')); ?></div>
 			<div class="cell medium-9 manual_only automatic_manual">
                 <?php
-                echo acym_translationSprintf(
-                    'ACYM_SEND_X_EMAILS_WAIT_Y_SECONDS',
-                    '<input class="intext_input" type="number" min="1" name="config[queue_nbmail]" value="'.intval($this->config->get('queue_nbmail')).'" />',
-                    '<input class="intext_input" type="number" min="0" name="config[queue_pause]" value="'.intval($this->config->get('queue_pause')).'" />'
+                echo acym_escapeHtmlWithAllowedTags(
+                    acym_translationSprintf(
+                        'ACYM_SEND_X_EMAILS_WAIT_Y_SECONDS',
+                        '<input class="intext_input" type="number" min="1" name="config[queue_nbmail]" value="'.intval($this->config->get('queue_nbmail')).'" />',
+                        '<input class="intext_input" type="number" min="0" name="config[queue_pause]" value="'.intval($this->config->get('queue_pause')).'" />'
+                    ),
+                    [
+                        'input' => [
+                            'class' => true,
+                            'type' => true,
+                            'min' => true,
+                            'name' => true,
+                            'value' => true,
+                        ],
+                    ]
                 );
                 ?>
 			</div>
-			<div class="cell medium-3"><?php echo '<span>'.acym_translation('ACYM_MAX_NB_TRY').'</span>'.acym_info(['textShownInTooltip' => 'ACYM_MAX_NB_TRY_DESC']); ?></div>
+			<div class="cell medium-3"><?php echo '<span>'.acym_escapeHtml(acym_translation('ACYM_MAX_NB_TRY')).'</span>';
+                acym_info(['textShownInTooltip' => 'ACYM_MAX_NB_TRY_DESC']); ?></div>
 			<div class="cell medium-9">
-                <?php echo acym_translationSprintf(
-                    'ACYM_CONFIG_TRY',
-                    '<input class="intext_input" type="number" min="0" name="config[queue_try]" value="'.intval($this->config->get('queue_try')).'">'
+                <?php echo acym_escapeHtmlWithAllowedTags(
+                    acym_translationSprintf(
+                        'ACYM_CONFIG_TRY',
+                        '<input class="intext_input" type="number" min="0" name="config[queue_try]" value="'.intval($this->config->get('queue_try')).'">'
+                    ),
+                    [
+                        'input' => [
+                            'class' => true,
+                            'type' => true,
+                            'min' => true,
+                            'name' => true,
+                            'value' => true,
+                        ],
+                    ]
                 );
 
                 $failaction = $data['failaction'];
-                echo ' '.acym_translationSprintf('ACYM_CONFIG_TRY_ACTION', $failaction->display('maxtry', $this->config->get('bounce_action_maxtry', 'noaction'))); ?>
+                echo ' '.acym_escapeHtmlWithAllowedTags(
+                        acym_translationSprintf('ACYM_CONFIG_TRY_ACTION', $failaction->display('maxtry', $this->config->get('bounce_action_maxtry', 'noaction'))),
+                        [
+                            'select' => [
+                                'class' => true,
+                                'style' => true,
+                                'onchange' => true,
+                                'name' => true,
+                                'id' => true,
+                            ],
+                            'option' => [
+                                'value' => true,
+                                'selected' => true,
+                            ],
+                            'span' => [
+                                'id' => true,
+                                'style' => true,
+                            ],
+                        ]
+                    ); ?>
 			</div>
 			<div class="cell medium-3">
                 <?php
-                echo acym_translation('ACYM_NUMBER_OF_DAYS_TO_CLEAN_QUEUE');
-                echo acym_info(
+                echo acym_escapeHtml(acym_translation('ACYM_NUMBER_OF_DAYS_TO_CLEAN_QUEUE'));
+                acym_info(
                     [
                         'textShownInTooltip' => 'ACYM_NUMBER_OF_DAYS_TO_CLEAN_QUEUE_DESC',
                     ]
@@ -191,52 +300,51 @@ use AcyMailing\Helpers\CronHelper;
                     $queueDelete = $this->config->get('queue_delete_days', 0);
                     if (!acym_level(ACYM_ESSENTIAL)) {
                         $inputContent = '<input type="number" class="intext_input" disabled min="0" name="config[queue_delete_days]" value="'.acym_escape($queueDelete).'">';
-                        $inputContent = acym_tooltip(
+                        acym_tooltip(
                             [
                                 'hoveredText' => $inputContent,
                                 'textShownInTooltip' => acym_translation('ACYM_PRO_ONLY'),
                             ]
                         );
                     } else {
-                        $inputContent = '<input type="number" class="intext_input" min="0" name="config[queue_delete_days]" value="'.acym_escape($queueDelete).'">';
+                        echo '<input type="number" class="intext_input" min="0" name="config[queue_delete_days]" value="'.acym_escape($queueDelete).'">';
                     }
-                    echo $inputContent;
                     ?>
 				</div>
 			</div>
 			<div class="cell medium-3">
                 <?php
-                echo acym_translation('ACYM_RECORD_STATS_EACH_EMAIL');
-                echo acym_info(['textShownInTooltip' => 'ACYM_RECORD_STATS_EACH_EMAIL_DESC']); ?>
+                echo acym_escapeHtml(acym_translation('ACYM_RECORD_STATS_EACH_EMAIL'));
+                acym_info(['textShownInTooltip' => 'ACYM_RECORD_STATS_EACH_EMAIL_DESC']); ?>
 			</div>
 			<div class="cell medium-9 grid-x">
 				<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
-                    <?php echo acym_switch('config[queue_statistics_by_batch]', $this->config->get('queue_statistics_by_batch', 1)); ?>
+                    <?php acym_switch(['name' => 'config[queue_statistics_by_batch]', 'value' => $this->config->get('queue_statistics_by_batch', 1)]); ?>
 				</div>
 			</div>
             <?php if (acym_level(ACYM_ENTERPRISE)) { ?>
 				<div class="cell medium-3">
                     <?php
-                    echo acym_translation('ACYM_SET_FOLLOWUP_PRIORITY');
-                    echo acym_info(['textShownInTooltip' => 'ACYM_SET_FOLLOWUP_PRIORITY_DESC']); ?>
+                    echo acym_escapeHtml(acym_translation('ACYM_SET_FOLLOWUP_PRIORITY'));
+                    acym_info(['textShownInTooltip' => 'ACYM_SET_FOLLOWUP_PRIORITY_DESC']); ?>
 				</div>
 				<div class="cell medium-9 grid-x">
 					<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
-                        <?php echo acym_switch('config[followup_max_priority]', $this->config->get('followup_max_priority', 0)); ?>
+                        <?php acym_switch(['name' => 'config[followup_max_priority]', 'value' => $this->config->get('followup_max_priority', 0)]); ?>
 					</div>
 				</div>
 				<div class="cell medium-3 automatic_only automatic_manual">
                     <?php
-                    echo acym_translation('ACYM_USE_DEDICATED_SENDING_PROCESS');
-                    echo acym_info(['textShownInTooltip' => 'ACYM_USE_DEDICATED_SENDING_PROCESS_DESC']); ?>
+                    echo acym_escapeHtml(acym_translation('ACYM_USE_DEDICATED_SENDING_PROCESS'));
+                    acym_info(['textShownInTooltip' => 'ACYM_USE_DEDICATED_SENDING_PROCESS_DESC']); ?>
 				</div>
 				<div class="cell medium-9 grid-x automatic_only automatic_manual">
 					<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
                         <?php
-                        echo acym_switch(
-                            'config[dedicated_send_process]',
-                            $this->config->get('dedicated_send_process', 0)
-                        );
+                        acym_switch([
+                            'name' => 'config[dedicated_send_process]',
+                            'value' => $this->config->get('dedicated_send_process', 0),
+                        ]);
                         ?>
 					</div>
 				</div>
@@ -246,7 +354,7 @@ use AcyMailing\Helpers\CronHelper;
 <?php
 if (!acym_level(ACYM_ESSENTIAL)) {
     echo '<div class="acym_area">
-            <div class="acym__title acym__title__secondary">'.acym_translation('ACYM_CRON').'</div>';
+            <div class="acym__title acym__title__secondary">'.acym_escapeHtml(acym_translation('ACYM_CRON')).'</div>';
     include acym_getView('configuration', 'upgrade_license');
     echo '</div>';
 }

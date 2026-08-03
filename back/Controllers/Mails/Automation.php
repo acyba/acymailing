@@ -8,6 +8,8 @@ trait Automation
 {
     public function deleteMailAutomation(): void
     {
+        acym_checkToken();
+
         $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'id', 0);
 
@@ -20,6 +22,8 @@ trait Automation
 
     public function duplicateMailAutomation(): void
     {
+        acym_checkToken();
+
         $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'id', 0);
         $prevMail = acym_getVar('int', 'previousId');

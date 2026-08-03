@@ -4,7 +4,9 @@ namespace AcyMailing\FrontControllers;
 
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailArchiveClass;
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Helpers\EditorHelper;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\PaginationHelper;
@@ -38,7 +40,7 @@ class ArchiveController extends AcymController
 
         $mailArchiveClass = new MailArchiveClass();
         $oneMail = $mailArchiveClass->getOneByMailId($mailId);
-        if (empty($oneMail)) {
+        if (empty($oneMail) && $this->canViewMailOnline($mailId)) {
             $mailerHelper = new MailerHelper();
             $oneMail = $mailerHelper->load($mailId);
         }
@@ -112,6 +114,42 @@ class ArchiveController extends AcymController
 
         // We are forced to use exit because of WordPress that displays a 0 if an exit isn't used
         if ($isPopup || 'wordpress' === ACYM_CMS) exit;
+    }
+
+    private function canViewMailOnline(int $mailId): bool
+    {
+        if (empty($mailId)) {
+            return false;
+        }
+
+        $mailClass = new MailClass();
+        if ($mailClass->hasUserAccess($mailId) || $mailClass->isPublicArchive($mailId)) {
+            return true;
+        }
+
+        // Other types (automation, followup, welcome, unsubscribe...): the "view online" link embedded in
+        // the sent email carries the recipient's per-user secret key as userid=id-key.
+        $userKeys = acym_getVar('string', 'userid', '');
+        $separatorPosition = strpos($userKeys, '-');
+        if ($separatorPosition === false) {
+            return false;
+        }
+
+        $userId = intval(substr($userKeys, 0, $separatorPosition));
+        $userKey = substr($userKeys, $separatorPosition + 1);
+        if (empty($userId) || empty($userKey)) {
+            return false;
+        }
+
+        $userClass = new UserClass();
+        $user = $userClass->getOneById($userId);
+        if (empty($user) || !hash_equals((string)$user->key, $userKey)) {
+            return false;
+        }
+
+        $userStatClass = new UserStatClass();
+
+        return $userStatClass->hasUserReceivedMail($mailId, $userId);
     }
 
     public function listing(): void

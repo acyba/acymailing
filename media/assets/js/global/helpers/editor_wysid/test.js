@@ -36,24 +36,22 @@ const acym_editorWysidTest = {
                 return true;
             }
 
-            acym_helper.config_get('save_thumbnail').done((resConfig) => {
-                if (resConfig.error || resConfig.data.value != 1) {
-                    acym_editorWysidFormAction.saveEmail(true, false, false);
-                    return;
-                }
-                acym_editorWysidFormAction.setThumbnailPreSave()
-                                          .then(function (dataUrl) {
-                                              // Copy img content in hidden input
-                                              if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
-                                                  jQuery('#editor_thumbnail').attr('value', dataUrl);
-                                              }
-                                              acym_editorWysidFormAction.saveEmail(true, false);
-                                          })
-                                          .catch(function (err) {
-                                              acym_editorWysidFormAction.saveEmail(true, false);
-                                              console.error('Error generating template thumbnail: ' + err);
-                                          });
-            });
+            if (typeof ACYM_SAVE_THUMBNAIL === 'undefined' || ACYM_SAVE_THUMBNAIL !== 1) {
+                acym_editorWysidFormAction.saveEmail(true, false, false);
+                return true;
+            }
+            acym_editorWysidFormAction.setThumbnailPreSave()
+                                      .then(function (dataUrl) {
+                                          // Copy img content in hidden input
+                                          if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
+                                              jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                          }
+                                          acym_editorWysidFormAction.saveEmail(true, false);
+                                      })
+                                      .catch(function (err) {
+                                          acym_editorWysidFormAction.saveEmail(true, false);
+                                          console.error('Error generating template thumbnail: ' + err);
+                                      });
             return true;
         });
     },

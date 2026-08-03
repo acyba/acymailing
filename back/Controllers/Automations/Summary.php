@@ -20,6 +20,8 @@ trait Summary
 
     public function activeAutomation(): void
     {
+        acym_checkToken();
+
         $automationClass = new AutomationClass();
         $automation = $automationClass->getOneById(acym_getVar('int', 'id'));
         $automation->active = 1;

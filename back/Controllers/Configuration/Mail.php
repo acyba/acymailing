@@ -81,6 +81,8 @@ trait Mail
 
     public function synchronizeExistingUsers(): void
     {
+        acym_checkToken();
+
         $sendingMethod = acym_getVar('string', 'sendingMethod', '');
 
         if (empty($sendingMethod)) {
@@ -129,8 +131,11 @@ trait Mail
 
         acym_createArchive($filename, $zipFiles);
 
-        if (ACYM_CMS === 'wordpress') @ob_get_clean();
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
         $exportHelper->setDownloadHeaders($filenameToSearch, 'zip');
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Downloading a file, better than WP functions for memory handling.
         readfile($filename.'.zip');
         acym_deleteFile($filename.'.zip');
 
@@ -149,6 +154,8 @@ trait Mail
 
     public function logoutForOAuth2Smtp(): void
     {
+        acym_checkToken();
+
         acym_trigger('onAcymOauthRevoke');
 
         $this->listing();
@@ -156,6 +163,8 @@ trait Mail
 
     public function logoutForOAuth2Bounce(): void
     {
+        acym_checkToken();
+
         $this->config->saveConfig(
             [
                 'bounce_refresh_token' => '',

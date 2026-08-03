@@ -1,9 +1,12 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Core\AcymParameter;
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Prefixed and unique class name.
 class acySubscriptionFormWidget extends \Elementor\Widget_Base
 {
     private array $displayMode;
@@ -146,6 +149,7 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
         $this->startControlsSection('terms_condition_options', acym_translation('ACYM_TERMS_POLICY_OPTIONS'));
         $this->getSimpleSelect('termscontent', acym_translation('ACYM_TERMS_CONDITIONS'), $this->posts, '');
         $this->getSimpleSelect('privacypolicy', acym_translation('ACYM_PRIVACY_POLICY'), $this->posts, '');
+        $this->getSimpleSelect('trackingconsent', acym_translation('ACYM_DISPLAY_TRACKING_CONSENT'), $this->subscriberInfo, '0');
         $this->end_controls_section();
 
         //Subscribe option
@@ -283,8 +287,6 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
     {
         $settings = $this->get_settings_for_display();
         $params = new AcymParameter($settings);
-        $render = acym_renderForm($params);
-
-        echo $render;
+        acym_renderForm($params);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 function acym_getView(string $ctrl, string $view, bool $forceBackend = false): string
 {
@@ -23,12 +24,12 @@ function acym_loadAssets(string $ctrl, string $task): void
 {
     $scope = acym_isAdmin() ? 'back' : 'front';
     acym_loadCmsScripts();
+	$config = acym_config();
 
     // Include JS
     acym_addScript(
         true,
-        'const ACYM_AVAILABLE_PLUGINS = "'.str_replace('"', '\"', ACYM_AVAILABLE_PLUGINS).'";
-        const ACYM_UPDATEME_API_URL = "'.ACYM_UPDATEME_API_URL.'";
+        'const ACYM_UPDATEME_API_URL = "'.ACYM_UPDATEME_API_URL.'";
         const ACYM_MEDIA_URL = "'.ACYM_MEDIA_URL.'";
         const ACYM_CMS = "'.addslashes(ACYM_CMS).'";
         const ACYM_J40 = '.(defined('ACYM_J40') && ACYM_J40 ? 'true' : 'false').';
@@ -41,7 +42,8 @@ function acym_loadAssets(string $ctrl, string $task): void
         const ACYM_ROOT_URI = "'.acym_rootURI().'";
         const ACYM_CONTROLLER = "'.addslashes($ctrl).'";
         const ACYM_TASK = "'.addslashes($task).'";
-        const ACYM_SOCIAL_MEDIA = "'.addslashes(ACYM_SOCIAL_MEDIA).'";'
+        const ACYM_SOCIAL_MEDIA = "'.addslashes(ACYM_SOCIAL_MEDIA).'";
+        const ACYM_LEVEL = "'.addslashes($config->get('level', '')).'";'
     );
 
     acym_addScript(false, ACYM_JS.'helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'helpers.min.js'));
@@ -340,6 +342,7 @@ function acym_getJSMessages(): string
         'ACYM_PRIVACY_POLICY',
         'ACYM_TERMS_CONDITIONS_URL',
         'ACYM_PRIVACY_POLICY_URL',
+        'ACYM_DISPLAY_TRACKING_CONSENT',
         'ACYM_SUBSCRIBE_OPTIONS',
         'ACYM_SUCCESS_MODE',
         'ACYM_CONFIRMATION_MESSAGE',
@@ -451,7 +454,7 @@ function acym_isExcludedFrontView(string $ctrl, string $task): bool
     return false;
 }
 
-function acym_listingActions(array $actions, string $deleteMessage = '', string $ctrl = ''): string
+function acym_listingActions(array $actions, string $deleteMessage = '', string $ctrl = ''): void
 {
     $defaultAction = new stdClass();
     $defaultAction->value = 0;
@@ -460,38 +463,43 @@ function acym_listingActions(array $actions, string $deleteMessage = '', string 
 
     array_unshift($actions, $defaultAction);
 
-    $completeMessage = '<input id="acym__listing__action__delete-message" value="'.(empty($deleteMessage) ? '' : acym_escape($deleteMessage)).'" type="hidden">';
 
     $attributes = [
         'class' => 'medium-shrink cell margin-right-1',
     ];
     if (!empty($ctrl)) {
         $attributes['data-ctrl'] = $ctrl;
-        $completeMessage .= ' <input type="hidden" name="return_listing">';
     }
 
-    return acym_select(
-            $actions,
-            '',
-            0,
-            $attributes,
-            'value',
-            'text',
-            'listing_actions'
-        ).$completeMessage;
+    acym_select(
+        $actions,
+        '',
+        0,
+        $attributes,
+        'value',
+        'text',
+        'listing_actions',
+        false,
+        true
+    );
+
+    echo '<input id="acym__listing__action__delete-message" value="'.acym_escape(empty($deleteMessage) ? '' : $deleteMessage).'" type="hidden">';
+    if (!empty($ctrl)) {
+        echo ' <input type="hidden" name="return_listing">';
+    }
 }
 
-function acym_backToListing(?string $listingName = null): string
+function acym_backToListing(?string $listingName = null): void
 {
     if (empty($listingName)) {
         $listingName = acym_getVar('cmd', 'ctrl');
     }
+    ?>
 
-    $returnLink = '<p class="acym__back_to_listing">';
-    $returnLink .= '<a href="'.acym_escapeUrl(acym_completeLink($listingName)).'" class="acym_vcenter">';
-    $returnLink .= '<i class="acymicon-chevron-left"></i> '.acym_translation('ACYM_BACK_TO_LISTING');
-    $returnLink .= '</a>';
-    $returnLink .= '</p>';
-
-    return $returnLink;
+	<p class="acym__back_to_listing">
+		<a href="<?php echo acym_escapeUrl(acym_completeLink($listingName)); ?>" class="acym_vcenter">
+			<i class="acymicon-chevron-left"></i> <?php echo acym_escapeHtml(acym_translation('ACYM_BACK_TO_LISTING')); ?>
+		</a>
+	</p>
+    <?php
 }

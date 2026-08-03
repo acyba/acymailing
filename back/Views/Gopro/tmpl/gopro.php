@@ -1,3 +1,7 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <div class="cell grid-x align-center">
     <?php $pricingPage = ACYM_ACYMAILING_WEBSITE.'pricing?utm_source=acymailing_plugin&utm_medium=gopro&utm_campaign=upgrade_from_plugin'; ?>
 	<div class="acym__splashscreen__white__container cell grid-x grid-margin-y grid-margin-x align-center margin-top-1">

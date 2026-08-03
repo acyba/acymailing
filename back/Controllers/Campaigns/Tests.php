@@ -307,6 +307,8 @@ trait Tests
 
     public function checkSPAM(): void
     {
+        acym_checkToken();
+
         $message = '';
         $data = [];
         $success = false;

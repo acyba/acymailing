@@ -1,4 +1,5 @@
 <?php
+// context verification
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -32,9 +33,9 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) {
 
     $config = acym_config();
 
-    displayFreeTrialMessage();
+    acym_displayFreeTrialMessage();
 
-    if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
+    if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON) && acym_isWritable(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
         $ctrl = 'dashboard';
         $task = 'features';
         acym_setVar('ctrl', $ctrl);

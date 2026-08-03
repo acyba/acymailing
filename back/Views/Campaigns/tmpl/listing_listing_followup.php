@@ -1,9 +1,12 @@
-<?php if (empty($data['allCampaigns'])) { ?>
-	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+if (empty($data['allCampaigns'])) { ?>
+	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_escapeHtml(acym_translation('ACYM_NO_RESULTS_FOUND')); ?></h1>
 <?php } else { ?>
 	<div class="cell margin-bottom-1 acym__listing__actions grid-x">
         <?php
-        echo acym_listingActions(
+        acym_listingActions(
             [
                 'duplicateFollowup' => acym_translation('ACYM_DUPLICATE'),
                 'deleteFollowup' => acym_translation('ACYM_DELETE'),
@@ -14,7 +17,7 @@
 	<div class="cell grid-x">
 		<div class="grid-x cell auto">
 			<div class="cell acym_listing_sort-by">
-                <?php echo acym_sortBy(
+                <?php acym_sortBy(
                     [
                         'id' => acym_strtolower(acym_translation('ACYM_ID')),
                         'name' => acym_translation('ACYM_NAME'),
@@ -35,35 +38,35 @@
 			</div>
 			<div class="grid-x medium-auto small-11 cell acym__listing__header__title__container">
 				<div class="cell auto acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_FOLLOW_UP'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_FOLLOW_UP')); ?>
 				</div>
 				<div class="cell small-3 xlarge-2 acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_EMAILS'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_EMAILS')); ?>
 				</div>
 				<div class="cell show-for-large large-3 xxlarge-2 acym__listing__header__title text-center">
-                    <?php echo acym_translation('ACYM_STATUS'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_STATUS')); ?>
 				</div>
 				<div class="cell show-for-large large-1 acym__listing__header__title text-center">
-                    <?php echo acym_translation('ACYM_OPEN'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_OPEN')); ?>
 				</div>
 				<div class="cell show-for-large large-1 acym__listing__header__title text-center">
-                    <?php echo acym_translation('ACYM_CLICK'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_CLICK')); ?>
 				</div>
                 <?php if (acym_isTrackingSalesActive()) { ?>
 					<div class="cell show-for-xlarge xlarge-1 acym__listing__header__title text-center">
-                        <?php echo acym_translation('ACYM_INCOME'); ?>
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_INCOME')); ?>
 					</div>
                 <?php } ?>
 				<div class="cell small-2 large-1 acym__listing__header__title text-center">
-                    <?php echo acym_translation('ACYM_ACTIVE'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIVE')); ?>
 				</div>
 
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ACTIONS'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIONS')); ?>
 				</div>
 
 				<div class="cell show-for-large large-1 acym__listing__header__title text-center">
-                    <?php echo acym_translation('ACYM_ID'); ?>
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_ID')); ?>
 				</div>
 			</div>
 		</div>
@@ -76,12 +79,15 @@
 				</div>
 				<div class="grid-x medium-auto small-11 cell acym__followup__listing acym__listing__title__container">
 					<div class="cell auto grid-x acym__listing__title acym__followup__title">
-						<a class="cell shrink" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&step=followupEmail&id='.intval($followup->id)); ?>">
+						<a class="cell shrink"
+						   href="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&step=followupEmail&id='.intval($followup->id))); ?>">
 							<h6 class="acym_text_ellipsis">
                                 <?php echo empty($followup->name)
-                                    ? '<i class="acym__color__orange acym__followup__listing__unnamed__icon acymicon-exclamation-triangle"></i> '.acym_translation(
-                                        'ACYM_UNNAMED_FOLLOWUP'
-                                    ) : acym_escape($followup->name); ?>
+                                    ? '<i class="acym__color__orange acym__followup__listing__unnamed__icon acymicon-exclamation-triangle"></i> '.acym_escapeHtml(
+                                        acym_translation(
+                                            'ACYM_UNNAMED_FOLLOWUP'
+                                        )
+                                    ) : acym_escapeHtml($followup->name); ?>
 							</h6>
 						</a>
 						<div class="cell shrink">
@@ -101,7 +107,7 @@
                                     $details[] = acym_translation('ACYM_MISSING_ADDON');
                                 }
                             }
-                            echo acym_info(
+                            acym_info(
                                 [
                                     'textShownInTooltip' => implode('<br />', $details),
                                     'classContainer' => 'acym__tooltip__listing',
@@ -113,7 +119,7 @@
 					<div class="cell small-3 xlarge-2 grid-x">
 						<div class="cell align-center acym__followup__emails__count acym__followup_listing_main_element">
                             <?php
-                            echo '<span>'.acym_escape(acym_translationSprintf('ACYM_X_EMAILS', $followup->nbEmails)).'</span>';
+                            echo '<span>'.acym_escapeHtml(acym_translationSprintf('ACYM_X_EMAILS', $followup->nbEmails)).'</span>';
                             if (!empty($followup->nbEmails)) {
                                 ?>
 								<i class="acym__followup__emails__toggle acymicon-keyboard-arrow-down" acym-data-id="<?php echo intval($followup->id); ?>"></i>
@@ -128,9 +134,11 @@
 					<div class="cell show-for-large large-3 xxlarge-2 acym__campaign__status text-center grid-x">
 						<div class="cell acym__campaign__status__status acym__background-color__green acym__followup_listing_main_element">
                             <?php
-                            echo acym_translationSprintf(
-                                'ACYM_TRIGGERED_FOR_X',
-                                empty($followup->subscribers) ? '0' : $followup->subscribers
+                            echo acym_escapeHtml(
+                                acym_translationSprintf(
+                                    'ACYM_TRIGGERED_FOR_X',
+                                    empty($followup->subscribers) ? '0' : $followup->subscribers
+                                )
                             );
                             ?>
 						</div>
@@ -142,7 +150,7 @@
 						<div class="cell acym__followup_listing_main_element">
                             <?php
                             if (!empty($followup->subscribers) && isset($followup->open)) {
-                                echo $followup->open.'%';
+                                echo acym_escapeHtml($followup->open).'%';
                             } else {
                                 echo '-';
                             }
@@ -156,7 +164,7 @@
 						<div class="cell acym__followup_listing_main_element">
                             <?php
                             if (!empty($followup->subscribers) && isset($followup->click)) {
-                                echo $followup->click.'%';
+                                echo acym_escapeHtml($followup->click).'%';
                             } else {
                                 echo '-';
                             }
@@ -171,7 +179,7 @@
 							<div class="cell acym__followup_listing_main_element">
                                 <?php
                                 if (!empty($followup->sale) && !empty($followup->currency)) {
-                                    echo round($followup->sale, 2).' '.$followup->currency;
+                                    echo acym_escapeHtml(round($followup->sale, 2).' '.$followup->currency);
                                 } else {
                                     echo '-';
                                 }
@@ -184,36 +192,40 @@
                     <?php } ?>
 					<div class="cell small-2 large-1 text-center">
                         <?php
-                        $class = $followup->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
-                            : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
-                        echo '<i data-acy-table="followup" data-acy-field="active" data-acy-elementid="'.acym_escape($followup->id).'" class="acym_toggleable '.$class.'"></i>';
+                        $class = $followup->active == 1 ? 'acymicon-check-circle acym__color__green' : 'acymicon-times-circle acym__color__red';
+                        $newvalue = $followup->active == 1 ? 0 : 1;
+                        echo '<i data-acy-table="followup"
+								data-acy-field="active"
+								data-acy-elementid="'.acym_escape($followup->id).'"
+								data-acy-newvalue="'.acym_escape($newvalue).'"
+								class="acym_toggleable '.acym_escape($class).'"></i>';
                         ?>
 					</div>
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
-						<a href="<?php echo acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$followup->id); ?>">
-							<i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i>
+						<a href="<?php echo acym_escapeUrl(acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$followup->id)); ?>">
+							<i class="acymicon-pencil" title="<?php echo acym_escape(acym_translation('ACYM_EDIT')); ?>"></i>
 						</a>
 						<a><i class="acymicon-content-copy fastActions"
-							  data-action="duplicateFollowup"
-							  data-acy-elementid="<?php echo acym_escape($followup->id); ?>"
-							  title="<?php echo acym_translation('ACYM_DUPLICATE'); ?>"></i>
+						      data-action="duplicateFollowup"
+						      data-acy-elementid="<?php echo acym_escape($followup->id); ?>"
+						      title="<?php echo acym_escape(acym_translation('ACYM_DUPLICATE')); ?>"></i>
 						</a>
                         <?php
                         $mailIds = (isset($followup->mail_ids) && is_array($followup->mail_ids))
                             ? $followup->mail_ids
                             : (isset($followup->mail_ids) ? [$followup->mail_ids]
                                 : []); ?>
-						<a href="<?php echo acym_completeLink('stats&mail_ids[]='.implode('&mail_ids[]=', $mailIds)); ?>">
-							<i class="acymicon-rectangle-bar-chart" title="<?php echo acym_translation('ACYM_STATISTICS'); ?>"></i>
+						<a href="<?php echo acym_escapeUrl(acym_completeLink('stats&mail_ids[]='.implode('&mail_ids[]=', $mailIds))); ?>">
+							<i class="acymicon-rectangle-bar-chart" title="<?php echo acym_escape(acym_translation('ACYM_STATISTICS')); ?>"></i>
 						</a>
 						<i class="cursor-pointer acymicon-delete fastActions deleteFastAction"
 						   data-action="deleteFollowup"
 						   data-acy-elementid="<?php echo acym_escape($followup->id); ?>"
-						   title="<?php echo acym_translation('ACYM_DELETE'); ?>"></i>
+						   title="<?php echo acym_escape(acym_translation('ACYM_DELETE')); ?>"></i>
 
 					</div>
 					<div class="cell show-for-large large-1 text-center acym__listing__text">
-                        <?php echo acym_escape($followup->id); ?>
+                        <?php echo acym_escapeHtml($followup->id); ?>
 					</div>
 				</div>
 			</div>
@@ -221,5 +233,5 @@
         }
         ?>
 	</div>
-    <?php echo $data['pagination']->display('campaigns');
+    <?php $data['pagination']->display('campaigns');
 }

@@ -1,8 +1,12 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <form id="acym_form"
-	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&campaignId='.acym_getVar('string', 'id')); ?>"
-	  method="post"
-	  name="acyForm"
-	  class="acym__form__campaign__edit">
+      action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&campaignId='.acym_getVar('string', 'id'))); ?>"
+      method="post"
+      name="acyForm"
+      class="acym__form__campaign__edit">
 	<input type="hidden" name="campaignId" value="<?php echo acym_escape($data['id']); ?>">
 	<div class="cell grid-x">
 		<div class="cell medium-auto"></div>
@@ -10,7 +14,7 @@
             <?php
             $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
-            echo $workflow->display($this->steps, $this->step, true, false, '', 'campaignId');
+            $workflow->display($this->steps, $this->step, true, false, '', 'campaignId');
             ?>
 			<div class="cell grid-x grid-margin-x" id="campaigns_tests_step">
 				<div class="cell large-5">

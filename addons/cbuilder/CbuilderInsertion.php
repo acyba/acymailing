@@ -22,16 +22,16 @@ trait CbuilderInsertion
             }
 		</script>
         <?php
-        $text = '<div class="grid-x acym__popup__listing">';
+        echo '<div class="grid-x acym__popup__listing">';
 
         $typeinfo = [];
         $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
         $typeinfo[] = acym_selectOption('sender', 'ACYM_SENDER_INFORMATION');
-        $text .= acym_radio($typeinfo, 'typeInfoCB', 'receiver', ['onclick' => 'applyCB(selectedCBUserDText, this)']);
+        acym_radio($typeinfo, 'typeInfoCB', 'receiver', ['onclick' => 'applyCB(selectedCBUserDText, this)']);
 
         $fieldType = acym_loadObjectList('SELECT name, type FROM #__comprofiler_fields', 'name');
 
-        $text .= '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyCB(\'thumb\');" >Thumb Avatar</div>';
+        echo '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyCB(\'thumb\');" >Thumb Avatar</div>';
 
         $fields = acym_getColumns('comprofiler', false);
         foreach ($fields as $fieldname) {
@@ -42,17 +42,19 @@ trait CbuilderInsertion
             if (!empty($fieldType[$fieldname]) && $fieldType[$fieldname]->type == 'image') {
                 $type = '| type:image';
             }
-            $text .= '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyCB(\''.$fieldname.$type.'\', this);" >'.$fieldname.'</div>';
+            echo '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyCB(\''.acym_escape($fieldname.$type).'\', this);" >'.acym_escapeHtml(
+                    $fieldname
+                ).'</div>';
         }
 
-        $otherFields = acym_loadObjectList("SELECT * FROM #__comprofiler_fields WHERE tablecolumns = '' AND published = 1");
+        $otherFields = acym_loadObjectList('SELECT * FROM #__comprofiler_fields WHERE tablecolumns = "" AND published = 1');
         foreach ($otherFields as $oneField) {
-            $text .= '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyCB(\'cbapi_'.$oneField->name.'\');" >'.$oneField->name.'</div>';
+            echo '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyCB(\'cbapi_'.acym_escape($oneField->name).'\');" >'.acym_escapeHtml(
+                    $oneField->name
+                ).'</div>';
         }
 
-        $text .= '</div>';
-
-        echo $text;
+        echo '</div>';
     }
 
     public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void

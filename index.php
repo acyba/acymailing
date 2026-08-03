@@ -5,10 +5,9 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 10.11.1
+ * Version: 11.0.0
  * Text Domain: acymailing
- * Domain Path: /language
- * Requires at least: 5.0
+ * Requires at least: 5.8
  * Requires PHP: 7.4
  */
 
@@ -27,7 +26,6 @@ use AcyMailing\WpInit\Oauth;
 use AcyMailing\WpInit\OverrideEmail;
 use AcyMailing\WpInit\Router;
 use AcyMailing\WpInit\Security;
-use AcyMailing\WpInit\Update;
 use AcyMailing\WpInit\UserSync;
 use AcyMailing\WpInit\WpRocket;
 
@@ -125,7 +123,7 @@ class acymailingLoader
         acym_query('SET SESSION query_cache_type=0;');
         //__END__development_
 
-        new Update();
+
         $router = new Router();
         new Menu($router);
         new UserSync();
@@ -144,9 +142,10 @@ class acymailingLoader
         new Data();
     }
 
+
     private function isCurrentlyOnAcyPage(): bool
     {
-        // Make sure we're on an AcyMailing page
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Make sure we're on an AcyMailing page.
         $page = isset($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';
 
         return !empty($page) && strpos($page, 'acymailing_') !== false;

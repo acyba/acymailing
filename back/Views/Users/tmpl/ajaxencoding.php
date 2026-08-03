@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\UserClass;
@@ -14,7 +16,7 @@ $extension = '.'.acym_fileGetExt($filename);
 $uploadPath = ACYM_MEDIA.'import'.DS.str_replace(['.', ' '], '_', substr($filename, 0, strpos($filename, $extension))).$extension;
 
 if (!file_exists($uploadPath)) {
-    acym_display(acym_translationSprintf('ACYM_FAIL_OPEN', '<b><i>'.acym_escape($uploadPath).'</i></b>'), 'error');
+    acym_display(acym_translationSprintf('ACYM_FAIL_OPEN', '<b><i>'.acym_escapeHtml($uploadPath).'</i></b>'), 'error');
 
     return;
 }
@@ -236,21 +238,29 @@ $nbLines = count($this->lines);
 
             $alreadyFound[] = $selectedField;
 
-            echo '<td valign="top">'.acym_select(
-                    $fieldAssignment,
-                    'fieldAssignment'.$key,
-                    $selectedField,
-                    ['class' => 'fieldAssignment']
-                ).'<br />';
+            echo '<td valign="top">';
+            acym_select(
+                $fieldAssignment,
+                'fieldAssignment'.$key,
+                $selectedField,
+                ['class' => 'fieldAssignment'],
+                'value',
+                'text',
+                null,
+                false,
+                true
+            );
+            echo '<br />';
         }
         echo '</tr>';
 
         // If the first imported line is the header, display a line to show it...
         if (!$noHeader) {
+            echo '<tr class="acym__users__import__generic__column_name">';
             foreach ($columnNames as $key => $oneColumn) {
-                $columnNames[$key] = htmlspecialchars($columnNames[$key], ENT_COMPAT | ENT_IGNORE, 'UTF-8');
+				echo '<td><b>'.acym_escapeHtml($oneColumn).'</b></td>';
             }
-            echo '<tr class="acym__users__import__generic__column_name"><td><b>'.implode('</b></td><td><b>', $columnNames).'</b></td></tr>';
+			echo '</tr>';
         }
 
         // For each imported line, display it so that the user can preview with the right encoding...
@@ -260,7 +270,7 @@ $nbLines = count($this->lines);
             echo '<tr>';
             foreach ($values as &$oneValue) {
                 $oneValue = htmlspecialchars(trim($oneValue, '\'" '), ENT_COMPAT | ENT_IGNORE, 'UTF-8');
-                echo '<td>'.htmlspecialchars_decode($oneValue).'</td>';
+                echo '<td>'.acym_escapeHtml(htmlspecialchars_decode($oneValue)).'</td>';
             }
             echo '</tr>';
         }

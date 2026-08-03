@@ -136,8 +136,9 @@ trait EventsManagerInsertion
 
     public function prepareListing(): string
     {
-        $this->querySelect = 'SELECT post.ID, post.post_title, post.post_date, post.post_content ';
+        $this->querySelect = 'SELECT post.ID, post.post_title, post.post_date, post.post_content, startdate.meta_value AS start_date ';
         $this->query = 'FROM #__posts AS post ';
+        $this->query .= 'JOIN #__postmeta AS startdate ON post.ID = startdate.post_id AND startdate.meta_key = "_event_start" ';
         $this->filters = [];
         $this->filters[] = 'post.post_type = "event"';
         $this->filters[] = 'post.post_status = "publish"';
@@ -147,7 +148,6 @@ trait EventsManagerInsertion
         $this->elementIdColumn = 'ID';
 
         if ($this->getParam('hidepast', '1') === '1') {
-            $this->query .= 'JOIN #__postmeta AS startdate ON post.ID = startdate.post_id AND startdate.meta_key = "_event_start" ';
             $this->filters[] = 'startdate.`meta_value` >= '.acym_escapeDB(gmdate('Y-m-d H:i:s'));
         }
 
@@ -163,11 +163,16 @@ trait EventsManagerInsertion
             'header' => [
                 'post_title' => [
                     'label' => 'ACYM_TITLE',
-                    'size' => '7',
+                    'size' => '5',
                 ],
                 'post_date' => [
                     'label' => 'ACYM_PUBLISHING_DATE',
-                    'size' => '4',
+                    'size' => '3',
+                    'type' => 'date',
+                ],
+                'start_date' => [
+                    'label' => 'ACYM_START_DATE',
+                    'size' => '3',
                     'type' => 'date',
                 ],
                 'ID' => [
@@ -297,18 +302,17 @@ trait EventsManagerInsertion
         $varFields['{simpleenddate}'] = '';
         $varFields['{simplestartdate}'] = '';
         $varFields['{date}'] = '';
-        if (!empty($properties['_event_start']->value)) {
+        if (!empty($properties['_event_start_local']->value)) {
             $allDay = !empty($properties['_event_all_day']->value) && $properties['_event_all_day']->value === '1';
 
-            $startDate = $properties['_event_start']->value;
-            $endDate = empty($properties['_event_end']->value) ? '' : $properties['_event_end']->value;
+            $startDate = $properties['_event_start_local']->value;
+            $endDate = empty($properties['_event_end_local']->value) ? '' : $properties['_event_end_local']->value;
 
+            $varFields['{startdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
+            $varFields['{enddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
 
-            $varFields['{startdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC2'));
-            $varFields['{enddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC2'));
-
-            $varFields['{simplestartdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC1'));
-            $varFields['{simpleenddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC1'));
+            $varFields['{simplestartdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
+            $varFields['{simpleenddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
 
             $varFields['{date}'] = $allDay ? $varFields['{simplestartdate}'] : $varFields['{startdate}'];
             if (!empty($endDate) && $startDate !== $endDate) {
@@ -316,7 +320,7 @@ trait EventsManagerInsertion
                     $endDateDisplay = $varFields['{simpleenddate}'];
                 } else {
                     if ($varFields['{simplestartdate}'] === $varFields['{simpleenddate}']) {
-                        $endDateDisplay = acym_date($endDate, 'H:i');
+                        $endDateDisplay = acym_date($endDate, 'H:i', false);
                     } else {
                         $endDateDisplay = $varFields['{enddate}'];
                     }
@@ -327,7 +331,7 @@ trait EventsManagerInsertion
                 }
             }
         }
-        if (in_array('date', $tag->display) && !empty($properties['_event_start']->value)) {
+        if (in_array('date', $tag->display) && !empty($properties['_event_start_local']->value)) {
             $customFields[] = [
                 $varFields['{date}'],
                 acym_translation('ACYM_DATE'),
@@ -338,7 +342,9 @@ trait EventsManagerInsertion
         // When "No location" or "Physical location" is selected on the event, the value for _event_location_type is NULL for some reason
         if (!empty($properties['_event_location_type']->value) && $properties['_event_location_type']->value === 'url') {
             if (!empty($properties['_event_location_url']->value)) {
-                $varFields['{location}'] = '<a href="'.$properties['_event_location_url']->value.'" target="_blank">'.$properties['_event_location_url_text']->value.'</a>';
+                $varFields['{location}'] = '<a href="'.esc_url($properties['_event_location_url']->value).'" target="_blank">'.esc_html(
+                        $properties['_event_location_url_text']->value
+                    ).'</a>';
             }
         } elseif (!empty($properties['_location_id']->value)) {
             $locationData = acym_loadObject('SELECT * FROM #__em_locations WHERE location_id = '.intval($properties['_location_id']->value));
@@ -365,7 +371,7 @@ trait EventsManagerInsertion
                     $locationLink = get_post_permalink($locationData->post_id);
                 }
 
-                $varFields['{location}'] = '<a href="'.esc_url($locationLink).'" target="_blank">'.$locationData->location_name.'</a>';
+                $varFields['{location}'] = '<a href="'.esc_url($locationLink).'" target="_blank">'.esc_html($locationData->location_name).'</a>';
             }
         }
 
@@ -443,7 +449,7 @@ trait EventsManagerInsertion
         }
 
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
-        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span>';
+        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.esc_html(acym_translation('ACYM_READ_MORE')).'</span>';
         $varFields['{readmore}'] .= '</a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 

@@ -116,7 +116,13 @@ trait AcymAcfInsertion
                     if (!in_array($field['type'], $this->handledFieldTypes)) {
                         continue;
                     }
-                    $customFieldsOptions[$field['ID']] = [$field['label'], false, 'data-group-id="'.intval($groupId).'"'];
+                    $customFieldsOptions[$field['ID']] = [
+                        $field['label'],
+                        false,
+                        [
+                            'data-group-id' => intval($groupId),
+                        ],
+                    ];
                 }
             }
             $displayOptions[] = [
@@ -291,12 +297,14 @@ trait AcymAcfInsertion
         $rows = $this->getElements();
         foreach ($rows as $row) {
             if (str_replace(['wp:core-embed', 'wp:shortcode'], '', $row->post_content) !== $row->post_content) {
-                $row->post_title = acym_tooltip(
-                        [
-                            'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
-                            'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
-                        ]
-                    ).$row->post_title;
+                ob_start();
+                acym_tooltip(
+                    [
+                        'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
+                        'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
+                    ]
+                );
+                $row->post_title = ob_get_clean().$row->post_title;
             }
         }
 
@@ -462,7 +470,7 @@ trait AcymAcfInsertion
         }
 
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
-        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span>';
+        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.esc_html(acym_translation('ACYM_READ_MORE')).'</span>';
         $varFields['{readmore}'] .= '</a>';
 
         if (in_array('readmore', $tag->display)) {
@@ -539,6 +547,7 @@ trait AcymAcfInsertion
             }
         } elseif ($translationTool === 'wpml') {
             if (acym_isExtensionActive('sitepress-multilingual-cms/sitepress.php')) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook for integration.
                 $elementId = apply_filters('wpml_object_id', $elementId, 'post', true, $languageCode);
             }
         }
@@ -597,9 +606,7 @@ trait AcymAcfInsertion
             if (empty($value['url'])) {
                 $value = '';
             } else {
-                $alt = acym_escape($value['alt']);
-
-                $value = '<img alt="'.$alt.'" src="'.$value['url'].'" />';
+                $value = '<img alt="'.esc_attr($value['alt']).'" src="'.$value['url'].'" />';
             }
         } elseif (in_array($field['type'], ['checkbox', 'select'])) {
             if (is_array($value)) {
@@ -611,7 +618,7 @@ trait AcymAcfInsertion
             if (empty($value['link'])) {
                 $value = '';
             } else {
-                $value = '<a href="'.$value['link'].'" target="_blank">'.acym_escape(
+                $value = '<a href="'.$value['link'].'" target="_blank">'.esc_html(
                         $value['filename']
                     ).'</a>';
             }
@@ -622,7 +629,7 @@ trait AcymAcfInsertion
                 $value = gmdate($field['display_format'], strtotime($value));
             }
         } else {
-            $value = acym_escape($value);
+            $value = esc_html($value);
         }
 
         return $value;

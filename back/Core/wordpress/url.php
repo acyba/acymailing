@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 function acym_route(string $url, bool $xhtml = true): string
 {
     return acym_baseURI().$url;
@@ -37,6 +39,7 @@ function acym_rootURI(bool $pathonly = false, ?string $path = 'siteurl'): string
 
     // For WPML
     if (!acym_isAdmin()) {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook for integration.
         $wpmlSiteUrl = apply_filters('wpml_home_url', $rootURI);
         if ($wpmlSiteUrl !== $rootURI) {
             $rootURI = rtrim($wpmlSiteUrl, '/').'/';
@@ -83,4 +86,9 @@ function acym_backendLink(string $link): string
 function acym_getMenu()
 {
     return get_post();
+}
+
+function acym_parseUrl(string $url)
+{
+    return wp_parse_url($url);
 }

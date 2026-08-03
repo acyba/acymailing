@@ -31,6 +31,8 @@ trait LinksDetails
 
     public function exportLinksDetails(): void
     {
+        acym_checkToken();
+
         $data = [];
         if (!$this->prepareDefaultPageInfo($data, true)) {
             return;

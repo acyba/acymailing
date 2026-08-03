@@ -42,7 +42,7 @@ class ConditionClass extends AcymClass
             }
 
             if ($oneAttribute !== 'conditions') {
-                $element->$oneAttribute = is_array($value) ? json_encode($value) : strip_tags($value);
+                $element->$oneAttribute = is_array($value) ? json_encode($value) : acym_stripTags($value);
             }
         }
 
@@ -51,8 +51,16 @@ class ConditionClass extends AcymClass
 
     public function getConditionsByStepId(int $id): array
     {
-        $query = 'SELECT acycondition.* FROM #__acym_condition as acycondition LEFT JOIN #__acym_step AS step ON step.id = acycondition.step_id WHERE step.id = '.intval($id);
+        $conditions = acym_loadObjectList(
+            'SELECT * 
+            FROM #__acym_condition 
+            WHERE `step_id` = '.intval($id)
+        );
 
-        return acym_loadObjectList($query);
+        foreach ($conditions as $condition) {
+            $condition->conditions = empty($condition->conditions) ? [] : json_decode($condition->conditions, true);
+        }
+
+        return $conditions;
     }
 }

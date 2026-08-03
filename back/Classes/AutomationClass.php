@@ -77,7 +77,7 @@ class AutomationClass extends AcymClass
                 continue;
             }
 
-            $element->$oneAttribute = is_array($value) ? json_encode($value) : strip_tags($value);
+            $element->$oneAttribute = is_array($value) ? json_encode($value) : acym_stripTags($value);
         }
 
         return parent::save($element);
@@ -137,7 +137,9 @@ class AutomationClass extends AcymClass
                 $conditions = $conditionClass->getConditionsByStepId($step->id);
                 if (!empty($conditions)) {
                     foreach ($conditions as $condition) {
-                        if (!$this->verifyCondition($condition->conditions, $newData)) continue;
+                        if (!$this->verifyCondition($condition->conditions, $newData)) {
+                            continue;
+                        }
 
                         $actions = $actionClass->getActionsByStepId($step->id);
                         if (empty($actions)) continue;
@@ -242,13 +244,15 @@ class AutomationClass extends AcymClass
         return $this->didAnAction;
     }
 
-    private function verifyCondition($conditions, array $data = []): bool
+    private function verifyCondition(array $conditions, array $data = []): bool
     {
-        if (empty($conditions)) return true;
+        if (empty($conditions)) {
+            return true;
+        }
+
         $userTriggeringAction = empty($data['userId']) ? 0 : $data['userId'];
         $usersTriggeringAction = empty($data['userIds']) ? [] : $data['userIds'];
 
-        $conditions = json_decode($conditions, true);
         $query = new AutomationHelper();
         $initialWhere = ['1 = 1'];
         if (!empty($conditions['type_condition']) && $conditions['type_condition'] == 'user') {

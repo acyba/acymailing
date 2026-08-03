@@ -74,11 +74,6 @@ jQuery(function ($) {
     }
 
     function setSelectFilters(type) {
-        let $options = $('#acym__automation__filter__' + type + '__options');
-        if (!$options.length) return;
-
-        let filters = acym_helper.parseJson($options.val());
-
         $('.acym__automation__select__' + type + '__filter').off('change').on('change', function () {
             const selectedFilter = $(this).val();
             if (selectedFilter === null) {
@@ -91,7 +86,9 @@ jQuery(function ($) {
             let seeUsersFilter = acym_helperSegment.getSeeUserModalButton($(this), $inputAnd.val());
 
             $(this).parent().parent().find('.acym__automation__inserted__filter').remove();
-            const html = filters[selectedFilter]
+
+            const html = $('#acym__automation__filter__' + type + '__template__' + selectedFilter)
+                .html()
                 .replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'))
                 .replace(/__numand__/g, $inputAnd.val());
             if (html.search('acym__filter__noseeuser') != false) {

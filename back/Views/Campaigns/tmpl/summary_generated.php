@@ -1,30 +1,47 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" class="acym__form__campaign__edit">
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm" class="acym__form__campaign__edit">
 	<div class="cell grid-x align-center" id="acym__campaign__summary__generated">
 		<div class="cell medium-7 grid-x acym__content">
-			<h1 class="cell text-center acym__campaign__summary__generated__title "><?php echo $data['mail']->name; ?></h1>
+			<h1 class="cell text-center acym__campaign__summary__generated__title "><?php echo acym_escapeHtml($data['mail']->name); ?></h1>
 			<div class="cell text-center acym__campaign__summary__generated__sub__title margin-bottom-2 margin-top-1">
                 <?php
                 if (!empty($data['parent_campaign']->id)) {
-                    echo acym_translationSprintf(
-                        'ACYM_CAMPAIGN_GENERATED_BY',
-                        '<a href="'.acym_completeLink('campaigns&task=edit&step=editEmail&campaignId='.$data['parent_campaign']->id).'">'.$data['parent_mail']->name.'</a>'
+                    echo acym_escapeHtmlWithAllowedTags(
+                        acym_translationSprintf(
+                            'ACYM_CAMPAIGN_GENERATED_BY',
+                            '<a href="'.acym_escapeUrl(acym_completeLink('campaigns&task=edit&step=editEmail&campaignId='.$data['parent_campaign']->id)).'">'.acym_escapeHtml(
+                                $data['parent_mail']->name
+                            ).'</a>'
+                        ),
+                        [
+                            'a' => [
+                                'href' => true,
+                            ],
+                        ]
                     );
                 } else {
-                    echo acym_translation('ACYM_AUTO_CAMPAIGN_DELETED');
+                    echo acym_escapeHtml(acym_translation('ACYM_AUTO_CAMPAIGN_DELETED'));
                 }
                 ?>
 			</div>
             <?php if (!$data['campaign']->sent && !$data['campaign']->waiting_confirmation) { ?>
 				<div class="cell grid-x acym__campaign__summary__generated__disabled acym_vcenter margin-bottom-2">
-					<div class="cell text-center acym__campaign__summary__generated__disabled__text"><?php echo acym_translation('ACYM_CAMPAIGN_HAS_BEEN_DISABLED'); ?></div>
+					<div class="cell text-center acym__campaign__summary__generated__disabled__text">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_CAMPAIGN_HAS_BEEN_DISABLED')); ?>
+					</div>
 				</div>
             <?php } ?>
 			<div class="cell grid-x acym__campaign__summary__generated__list acym_vcenter margin-bottom-2">
-				<div class="cell shrink acym__campaign__summary__generated__list__title margin-right-1"><?php echo acym_translation('ACYM_LISTS_SUMMARY'); ?></div>
+				<div class="cell shrink acym__campaign__summary__generated__list__title margin-right-1"><?php echo acym_escapeHtml(acym_translation('ACYM_LISTS_SUMMARY')); ?></div>
 				<div class="cell auto grid-x grid-margin-x grid-margin-y">
                     <?php foreach ($data['lists'] as $list) { ?>
-						<div class="cell shrink acym__campaign__summary__generated__list__tag"><i class="acymicon-circle"
-																								  style="color: <?php echo $list->color; ?>;"></i><?php echo $list->name; ?></div>
+						<div class="cell shrink acym__campaign__summary__generated__list__tag">
+							<i class="acymicon-circle"
+							   style="color: <?php echo acym_escape($list->color); ?>;"></i><?php echo acym_escapeHtml($list->name); ?>
+						</div>
                     <?php } ?>
 				</div>
 			</div>
@@ -37,21 +54,29 @@
 				<div class="cell grid-x acym__campaign__summary__generated__mail__one">
 					<div class="cell grid-x acym_vcenter">
 						<div class="cell shrink acym__campaign__summary__generated__mail__one__subject">
-							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?></span>
-							<span class="acym__campaign__summary__email__information-subject"><?php echo $data['mail']->subject; ?></span>
+							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL_SUBJECT')); ?></span>
+							<span class="acym__campaign__summary__email__information-subject"><?php echo acym_escapeHtml($data['mail']->subject); ?></span>
 						</div>
 						<div class="cell auto acym__campaign__summary__generated__mail__one__preview margin-left-1">
-                            <?php echo empty($data['mail']->preheader) ? '' : $data['mail']->preheader; ?>
+                            <?php echo empty($data['mail']->preheader) ? '' : acym_escapeHtml($data['mail']->preheader); ?>
 						</div>
 					</div>
 					<div class="cell grid-x acym__campaign__summary__generated__mail__one__info margin-top-2">
 						<div class="cell auto text-left">
-							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_translation('ACYM_FROM_SUMMARY'); ?></span>
-                            <?php echo $data['mail']->from_name.', <a href="mailto:'.$data['mail']->from_email.'">'.$data['mail']->from_email.'</a>'; ?>
+							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_escapeHtml(acym_translation('ACYM_FROM_SUMMARY')); ?></span>
+                            <?php
+                            echo acym_escapeHtml($data['mail']->from_name).', <a href="mailto:'.acym_escape($data['mail']->from_email).'">';
+                            echo acym_escapeHtml($data['mail']->from_email);
+                            echo '</a>';
+                            ?>
 						</div>
 						<div class="cell auto text-right">
-							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_translation('ACYM_REPLYTO_SUMMARY'); ?></span>
-                            <?php echo $data['mail']->reply_to_name.', <a href="mailto:'.$data['mail']->reply_to_email.'">'.$data['mail']->reply_to_email.'</a>'; ?>
+							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_escapeHtml(acym_translation('ACYM_REPLYTO_SUMMARY')); ?></span>
+                            <?php
+                            echo acym_escapeHtml($data['mail']->reply_to_name).', <a href="mailto:'.acym_escape($data['mail']->reply_to_email).'">';
+                            echo acym_escapeHtml($data['mail']->reply_to_email);
+                            echo '</a>';
+                            ?>
 						</div>
 					</div>
 				</div>
@@ -66,26 +91,28 @@
 			</div>
 			<div class="cell text-right grid-margin-y acym__campaign__summary__generated__action grid-margin-x margin-top-2 grid-x">
 				<div class="cell medium-shrink text-left">
-                    <?php echo acym_backToListing(); ?>
+                    <?php acym_backToListing(); ?>
 				</div>
 				<div class="cell medium-auto align-right grid-margin-x acym_vcenter">
 					<div class="cell medium-auto"></div>
                     <?php if ($data['campaign']->sent) { ?>
 						<p class="cell text-center acym__campaign__summary__generated__action__text">
-                            <?php echo acym_translationSprintf('ACYM_CAMPAIGN_HAS_BEEN_SENT_ON_X', $data['campaign']->sending_date); ?>
+                            <?php echo acym_escapeHtml(acym_translationSprintf('ACYM_CAMPAIGN_HAS_BEEN_SENT_ON_X', $data['campaign']->sending_date)); ?>
 						</p>
                     <?php } elseif ($data['campaign']->waiting_confirmation) { ?>
 						<button type="button" class="cell shrink button acym__button__cancel acy_button_submit" data-task="disableGeneratedCampaign">
-                            <?php echo acym_translation('ACYM_DISABLE'); ?> <i class="acymicon-lock"></i>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_DISABLE')); ?> <i class="acymicon-lock"></i>
 						</button>
-						<button type="button" class="cell shrink button button-send acy_button_submit" data-task="addQueue"><?php echo acym_translation('ACYM_SEND'); ?>
-							<i class="acymicon-paper-plane"></i></button>
+						<button type="button" class="cell shrink button button-send acy_button_submit" data-task="addQueue">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_SEND')); ?>
+							<i class="acymicon-paper-plane"></i>
+						</button>
                     <?php } else { ?>
 						<button type="button" class="cell shrink button acy_button_submit" data-task="enableGeneratedCampaign">
-                            <?php echo acym_translation('ACYM_ENABLE'); ?> <i class="acymicon-unlock"></i>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_ENABLE')); ?> <i class="acymicon-unlock"></i>
 						</button>
 						<button type="button" class="cell shrink disabled button button-send margin-bottom-0" disabled>
-                            <?php echo acym_translation('ACYM_SEND'); ?><i class="acymicon-paper-plane"></i>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_SEND')); ?><i class="acymicon-paper-plane"></i>
 						</button>
                     <?php } ?>
 				</div>

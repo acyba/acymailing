@@ -1,24 +1,27 @@
-<?php $margin = $data['field']->id == $data['languageFieldId'] ? '' : 'margin-top-2'; ?>
-<h2 class="cell acym__title acym__title__secondary <?php echo $margin; ?> acym__fields__edit__section__title" id="acym__fields__edit__section__title--style">
-    <?php echo acym_translation('ACYM_FIELD_STYLE'); ?>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+$margin = $data['field']->id == $data['languageFieldId'] ? '' : 'margin-top-2'; ?>
+<h2 class="cell acym__title acym__title__secondary <?php echo acym_escape($margin); ?> acym__fields__edit__section__title" id="acym__fields__edit__section__title--style">
+    <?php echo acym_escapeHtml(acym_translation('ACYM_FIELD_STYLE')); ?>
 </h2>
 
-<label class="cell large-6 acym__fields__change" id="acym__fields__rows"><?php echo acym_translation('ACYM_ROWS'); ?>
+<label class="cell large-6 acym__fields__change" id="acym__fields__rows"><?php echo acym_escapeHtml(acym_translation('ACYM_ROWS')); ?>
 	<input type="number"
-		   name="field[option][rows]"
-		   value="<?php echo empty($data['field']->option->rows) ? '' : $data['field']->option->rows; ?>">
+	       name="field[option][rows]"
+	       value="<?php echo empty($data['field']->option->rows) ? '' : acym_escape($data['field']->option->rows); ?>">
 </label>
 
-<label class="cell large-6 acym__fields__change" id="acym__fields__columns"><?php echo acym_translation('ACYM_COLUMNS'); ?>
+<label class="cell large-6 acym__fields__change" id="acym__fields__columns"><?php echo acym_escapeHtml(acym_translation('ACYM_COLUMNS')); ?>
 	<input type="number"
-		   name="field[option][columns]"
-		   value="<?php echo empty($data['field']->option->columns) ? '' : $data['field']->option->columns; ?>">
+	       name="field[option][columns]"
+	       value="<?php echo empty($data['field']->option->columns) ? '' : acym_escape($data['field']->option->columns); ?>">
 </label>
 
 <label class="cell large-6 acym__fields__change grid-x" id="acym__fields__size">
-	<span class="cell"><?php echo acym_translation('ACYM_INPUT_WIDTH'); ?></span>
+	<span class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_INPUT_WIDTH')); ?></span>
 	<input type="number"
-		   name="field[option][size]"
-		   value="<?php echo empty($data['field']->option->size) ? '' : $data['field']->option->size; ?>"
-		   class="cell medium-4">
+	       name="field[option][size]"
+	       value="<?php echo empty($data['field']->option->size) ? '' : acym_escape($data['field']->option->size); ?>"
+	       class="cell medium-4">
 </label>

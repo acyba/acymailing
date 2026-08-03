@@ -1,4 +1,13 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate enctype="multipart/form-data"
+<?php
+// context verification
+?>
+<form id="acym_form"
+      action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>"
+      method="post"
+      name="acyForm"
+      data-abide
+      novalidate
+      enctype="multipart/form-data"
     <?php echo !empty($data['menuClass']) ? 'class="'.acym_escape($data['menuClass']).'"' : ''; ?> >
 	<div class="grid-x">
 		<div id="acym__user__edit" class="cell grid-x acym__content">

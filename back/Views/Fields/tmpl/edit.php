@@ -1,10 +1,7 @@
 <?php
-$beforeSave = '';
-if (!empty($data['translation_languages'])) {
-    $beforeSave = 'data-before-action="languageField"';
-}
+// context verification
 ?>
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm" data-abide novalidate>
 	<input type="hidden" name="fieldId" value="<?php echo empty($data['field']->id) ? '' : intval($data['field']->id); ?>">
 	<input type="hidden" name="field[namekey]" value="<?php echo empty($data['field']->namekey) ? '' : acym_escape($data['field']->namekey); ?>">
 	<div id="acym__fields__edit" class="acym__content grid-x cell">
@@ -16,11 +13,7 @@ if (!empty($data['translation_languages'])) {
                 <?php include acym_getView('fields', 'edit_display'); ?>
 			</div>
 
-            <?php
-            $classes = 'cell xlarge-8 grid-x grid-margin-x margin-y margin-bottom-1';
-            $classes .= ' acym__content acym__fields__edit__properties acym_center_baseline';
-            ?>
-			<div class="<?php echo $classes; ?>">
+			<div class="cell xlarge-8 grid-x grid-margin-x margin-y margin-bottom-1 acym__content acym__fields__edit__properties acym_center_baseline">
                 <?php include acym_getView('fields', 'edit_content'); ?>
                 <?php include acym_getView('fields', 'edit_style'); ?>
                 <?php include acym_getView('fields', 'edit_values'); ?>

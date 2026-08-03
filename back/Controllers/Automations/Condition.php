@@ -33,8 +33,9 @@ trait Condition
         $condition['conditions']['type_condition'] = acym_getVar('string', 'type_condition');
 
         if ($isMassAction) {
-            acym_session();
-            $_SESSION['massAction']['conditions'] = $condition['conditions'];
+            $massAction = acym_getVar('array', 'massAction', [], 'SESSION');
+            $massAction['conditions'] = $condition['conditions'];
+            acym_setSession('massAction', $massAction);
 
             return [];
         }
@@ -61,6 +62,8 @@ trait Condition
 
     public function saveExitConditions(): void
     {
+        acym_checkToken();
+
         $this->getSaveConditions();
 
         acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
@@ -70,6 +73,8 @@ trait Condition
 
     public function saveConditions(): void
     {
+        acym_checkToken();
+
         $ids = $this->getSaveConditions();
 
         acym_setVar('id', $ids['automationId']);

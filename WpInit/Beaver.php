@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 class Beaver
 {
     public function __construct()
@@ -19,7 +21,34 @@ class Beaver
 
     public function addAcyscriptBeaver()
     {
-        wp_enqueue_script('select2lib', ACYM_JS.'libraries/select2-full.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2-full.min.js'), ['jquery']);
-        wp_enqueue_script('acym_script_widget_article_beaver', ACYM_JS.'widget.min.js?v='.time(), ['jquery', 'select2lib'], false, true);
+        wp_enqueue_script(
+            'select2lib',
+            ACYM_JS.'libraries/select2-full.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2-full.min.js'),
+            [
+                'jquery',
+            ],
+            '{__VERSION__}',
+            [
+                'in_footer' => false,
+            ]
+        );
+        wp_enqueue_script(
+            'acym_script_widget_article_beaver',
+            ACYM_JS.'widget.min.js?v='.time(),
+            [
+                'jquery',
+                'select2lib',
+            ],
+            '{__VERSION__}',
+            [
+                'in_footer' => true,
+            ]
+        );
+        // CSRF token for the article-search AJAX (dynamics/trigger requires acym_checkToken)
+        wp_add_inline_script(
+            'acym_script_widget_article_beaver',
+            'var acym_widget_nonce = '.json_encode(wp_create_nonce('acymnonce')).';',
+            'before'
+        );
     }
 }

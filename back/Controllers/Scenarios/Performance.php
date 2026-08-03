@@ -135,7 +135,7 @@ trait Performance
 
         $triggerNames = [];
         foreach ($triggers['user'] as $key => $trigger) {
-            $triggerNames[$key] = strtolower(strip_tags($trigger->name));
+            $triggerNames[$key] = strtolower(acym_stripTags($trigger->name));
         }
 
         return $triggerNames;
@@ -148,7 +148,7 @@ trait Performance
 
         $conditionNames = [];
         foreach ($conditions['user'] as $key => $condition) {
-            $conditionNames[$key] = strtolower(strip_tags($condition->name));
+            $conditionNames[$key] = strtolower(acym_stripTags($condition->name));
         }
 
         return $conditionNames;
@@ -161,7 +161,7 @@ trait Performance
 
         $actionNames = [];
         foreach ($actions as $key => $action) {
-            $actionNames[$key] = strtolower(strip_tags($action->name));
+            $actionNames[$key] = strtolower(acym_stripTags($action->name));
         }
 
         return $actionNames;

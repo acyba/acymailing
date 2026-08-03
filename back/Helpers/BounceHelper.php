@@ -200,7 +200,7 @@ class BounceHelper extends AcymObject
         if (empty($login) || isset($login->code)) {
             $warnings = ob_get_clean();
             if ($this->report) {
-                acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_LOGIN', $this->username.':'.$this->password), 'error');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_LOGIN', $this->username), 'error');
             }
             if (!empty($warnings) && $this->report) {
                 acym_display($warnings, 'warning');
@@ -496,7 +496,7 @@ class BounceHelper extends AcymObject
         if (!empty($this->_message->header->sender_email) && preg_match($this->detectEmail, $this->_message->header->sender_email, $results)) {
             $this->_message->header->sender_email = $results[0];
         }
-        $this->_message->header->sender_name = strip_tags(@$this->_message->headerinfo['from'] ?? '');
+        $this->_message->header->sender_name = acym_stripTags(@$this->_message->headerinfo['from'] ?? '');
         $this->_message->header->reply_to_email = $this->_message->header->sender_email;
         $this->_message->header->reply_to_name = $this->_message->header->sender_name;
         $this->_message->header->from_email = $this->_message->header->sender_email;
@@ -669,7 +669,9 @@ class BounceHelper extends AcymObject
             }
 
             /*This is to avoid the blank page... and it apparently works! ;) */
+            // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Disabled to prevent blank output pages.
             @ini_set('output_buffering', 'off');
+            // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Disabled to prevent blank output pages.
             @ini_set('zlib.output_compression', 0);
 
 
@@ -679,16 +681,17 @@ class BounceHelper extends AcymObject
                 }
             }
 
-            //We prepare the area where we will add informations...
-            $disp = "<div style='position:fixed; top:3px;left:3px;background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
-            $disp .= acym_translation('ACYM_BOUNCE_HANDLING');
-            $disp .= ':  <span id="counter">0</span> / '.$maxMessages;
-            $disp .= '</div>';
-            $disp .= '<script type="text/javascript" language="javascript">';
-            $disp .= 'var mycounter = document.getElementById("counter");';
-            $disp .= 'function setCounter(val){ mycounter.innerHTML=val;}';
-            $disp .= '</script>';
-            echo $disp;
+            ?>
+			<div style="position:fixed; top:3px;left:3px;background-color : white;border : 1px solid grey; padding : 3px;font-size:14px">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCE_HANDLING')); ?>
+				: <span id="counter">0</span> / <?php echo intval($maxMessages); ?>
+			</div>
+			<script type="text/javascript" language="javascript">
+                function setCounter(val) {
+                    document.getElementById('counter').innerHTML = val;
+                }
+			</script>
+            <?php
             if (function_exists('ob_flush')) {
                 @ob_flush();
             }
@@ -725,7 +728,7 @@ class BounceHelper extends AcymObject
 
         while (($msgNB > 0) && ($this->_message = $this->getMessage($msgNB))) {
             if ($this->report) {
-                echo '<script type="text/javascript" language="javascript">setCounter('.($maxMessages - $msgNB + 1).')</script>';
+                echo '<script type="text/javascript" language="javascript">setCounter('.acym_escapeHtml($maxMessages - $msgNB + 1).')</script>';
                 if (function_exists('ob_flush')) {
                     @ob_flush();
                 }
@@ -752,7 +755,7 @@ class BounceHelper extends AcymObject
                 $this->_message->analyseText .= ' '.$this->_message->header->from_email;
             }
             $this->display(
-                '<b>'.acym_translation('ACYM_EMAIL_SUBJECT').' : '.strip_tags($this->_message->subject).'</b>',
+                '<b>'.acym_translation('ACYM_EMAIL_SUBJECT').' : '.acym_stripTags($this->_message->subject).'</b>',
                 self::MESSAGE_TYPE_SUCCESS,
                 $maxMessages - $this->_message->messageNB + 1
             );
@@ -1202,6 +1205,7 @@ class BounceHelper extends AcymObject
             $data[] = 'ACY_RULE::'.$oneRule->id.' '.$oneRule->name;
             $data[] = 'REPLYTO_ADDRESS::'.$this->_message->header->reply_to_name.' ( '.$this->_message->header->reply_to_email.' )';
             $data[] = 'FROM_ADDRESS::'.$this->_message->header->from_name.' ( '.$this->_message->header->from_email.' )';
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Logging information.
             $data[] = @htmlentities(print_r($this->_message->headerinfo, true), ENT_COMPAT, 'UTF-8');
             if (empty($this->_message->mailid)) {
                 $this->_message->mailid = 0;
@@ -1259,6 +1263,7 @@ class BounceHelper extends AcymObject
 
             //We add all other extra information just in case of we could use them...
             //original-rcpt-to ?   http://tools.ietf.org/html/rfc5965
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Logging information.
             $this->mailer->Body .= print_r($this->_message->headerinfo, true);
             $replyAddress = trim(@$this->_message->header->reply_to_email, '<> ');
             if (!empty($replyAddress)) {
@@ -1328,12 +1333,12 @@ class BounceHelper extends AcymObject
         }
 
         if (!empty($num)) {
-            echo '<br />'.$num.' : ';
+            echo '<br />'.acym_escapeHtml($num).' : ';
         } else {
             echo '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
         }
 
-        echo '<span style="color: '.$color.'">'.$message.'</span>';
+        echo '<span style="color: '.acym_escape($color).'">'.acym_escapeHtml($message).'</span>';
 
         if (function_exists('ob_flush')) {
             @ob_flush();

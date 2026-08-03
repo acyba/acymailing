@@ -6,52 +6,56 @@ use AcyMailing\Core\AcymObject;
 
 class CaptchaHelper extends AcymObject
 {
-    public function display(string $formName = '', bool $loadJsModule = false): string
+    public function display(string $formName = '', bool $loadJsModule = false): void
     {
         if (!acym_level(ACYM_ESSENTIAL)) {
-            return '';
+            return;
         }
 
         $captchaPluginName = $this->config->get('captcha', 'none');
         if ($captchaPluginName === 'none') {
-            return '';
+            return;
         }
 
         $id = empty($formName) ? 'acym-captcha' : $formName.'-captcha';
 
         if (in_array($captchaPluginName, ['acym_ireCaptcha', 'acym_reCaptcha_v3'])) {
             $pubkey = $this->config->get('recaptcha_sitekey', '');
-            if (empty($pubkey)) return '';
+            if (empty($pubkey)) {
+                return;
+            }
 
-            $return = '';
             if ($captchaPluginName === 'acym_ireCaptcha') {
                 $jsScript = 'https://www.google.com/recaptcha/api.js?render=explicit&hl='.acym_getLanguageTag(true);
             } else {
                 $jsScript = 'https://www.google.com/recaptcha/api.js?render='.acym_escape($pubkey);
             }
+
             if ($loadJsModule) {
-                $return .= '<script src="'.$jsScript.'" type="text/javascript" defer async></script>';
+                // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Option to include the JS inside the module.
+                echo '<script src="'.acym_escapeUrl($jsScript).'" type="text/javascript" defer async></script>';
             } else {
                 acym_addScript(false, $jsScript, ['defer' => true, 'async' => true]);
             }
 
-            return $return.'<div id="'.acym_escape($id).'" data-size="invisible" class="acyg-recaptcha" data-sitekey="'.acym_escape($pubkey).'"data-captchaname="'.acym_escape(
-                    $captchaPluginName
-                ).'"></div>';
+            echo '<div id="'.acym_escape($id).'" 
+                    data-size="invisible" 
+                    class="acyg-recaptcha" 
+                    data-sitekey="'.acym_escape($pubkey).'" 
+                    data-captchaname="'.acym_escape($captchaPluginName).'"></div>';
         } elseif ($captchaPluginName === 'acym_hcaptcha') {
             $siteKey = $this->config->get('hcaptcha_sitekey');
-            $return = '<div class="h-captcha" data-sitekey="'.$siteKey.'"></div>';
+            echo '<div class="h-captcha" data-sitekey="'.acym_escape($siteKey).'"></div>';
             $jsScript = 'https://js.hcaptcha.com/1/api.js';
 
             if ($loadJsModule) {
-                $return .= '<script src="'.$jsScript.'" type="text/javascript" defer async></script>';
+                // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Option to include the JS inside the module.
+                echo '<script src="'.acym_escapeUrl($jsScript).'" type="text/javascript" defer async></script>';
             } else {
                 acym_addScript(false, $jsScript, ['defer' => true, 'async' => true]);
             }
-
-            return $return;
         } else {
-            return acym_loadCaptcha($captchaPluginName, $id);
+            acym_loadCaptcha($captchaPluginName, $id);
         }
     }
 
@@ -68,7 +72,8 @@ class CaptchaHelper extends AcymObject
 
         // The security key can be used for direct subscription links
         $secKey = acym_getVar('string', 'seckey', 'none');
-        if ($secKey === $this->config->get('security_key')) {
+        $securityKey = $this->config->get('security_key');
+        if (!empty($securityKey) && hash_equals((string)$securityKey, (string)$secKey)) {
             return true;
         }
 
@@ -101,7 +106,7 @@ class CaptchaHelper extends AcymObject
         } elseif ($captchaPluginName === 'acym_hcaptcha') {
             $data = [
                 'secret' => $this->config->get('hcaptcha_secretkey'),
-                'response' => $_REQUEST['h-captcha-response'],
+                'response' => acym_getVar('string', 'h-captcha-response'),
             ];
 
             $responseData = acym_makeCurlCall(

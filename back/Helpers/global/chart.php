@@ -1,6 +1,7 @@
 <?php
+// context verification
 
-function acym_lineChart(array $dataMonth, array $dataDay, array $dataHour, bool $ajax = false): string
+function acym_lineChart(array $dataMonth, array $dataDay, array $dataHour, bool $ajax = false): void
 {
     acym_initializeChart();
 
@@ -9,9 +10,9 @@ function acym_lineChart(array $dataMonth, array $dataDay, array $dataHour, bool 
     $clickMonth = [];
 
     foreach ($dataMonth as $key => $data) {
-        $month[] = '"'.$key.'"';
-        $openMonth[] = '"'.$data['open'].'"';
-        $clickMonth[] = '"'.$data['click'].'"';
+        $month[] = $key;
+        $openMonth[] = $data['open'];
+        $clickMonth[] = $data['click'];
     }
 
     $day = [];
@@ -19,9 +20,9 @@ function acym_lineChart(array $dataMonth, array $dataDay, array $dataHour, bool 
     $clickDay = [];
 
     foreach ($dataDay as $key => $data) {
-        $day[] = '"'.$key.'"';
-        $openDay[] = '"'.$data['open'].'"';
-        $clickDay[] = '"'.$data['click'].'"';
+        $day[] = $key;
+        $openDay[] = $data['open'];
+        $clickDay[] = $data['click'];
     }
 
     $hour = [];
@@ -29,15 +30,14 @@ function acym_lineChart(array $dataMonth, array $dataDay, array $dataHour, bool 
     $clickHour = [];
 
     foreach ($dataHour as $key => $data) {
-        $hour[] = '"'.$key.'"';
-        $openHour[] = '"'.$data['open'].'"';
-        $clickHour[] = '"'.$data['click'].'"';
+        $hour[] = $key;
+        $openHour[] = $data['open'];
+        $clickHour[] = $data['click'];
     }
 
-    $randNumber = rand(1000, 9000);
+    $randNumber = acym_rand(1000, 9000);
     $idCanvas = 'acy_canvas_rand_id'.$randNumber;
     $idLegend = 'acy_legend_rand_id'.$randNumber;
-    $return = '';
 
     $nbDataDay = count($dataDay);
     $nbDataHour = count($dataHour);
@@ -61,176 +61,202 @@ function acym_lineChart(array $dataMonth, array $dataDay, array $dataHour, bool 
         $clickDisplayed = $clickMonth;
         $openDisplayed = $openMonth;
     }
+    ?>
 
+	<div class="acym__chart__line__container">
+		<div class="acym__chart__line__choose__by">
+			<p class="acym__chart__line__choose__by__one <?php echo acym_escape($selectedChartMonth); ?>" onclick="acymChartLineUpdate(this, 'month')">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_BY_MONTH')); ?>
+			</p>
+			<p class="acym__chart__line__choose__by__one <?php echo acym_escape($selectedChartDay); ?>" onclick="acymChartLineUpdate(this, 'day')">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_BY_DAY')); ?>
+			</p>
+			<p class="acym__chart__line__choose__by__one <?php echo acym_escape($selectedChartHour); ?>" onclick="acymChartLineUpdate(this, 'hour')">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_BY_HOUR')); ?>
+			</p>
+		</div>
+		<div class="acym__chart__line__legend" id="<?php echo acym_escape($idLegend); ?>"></div>
+		<canvas id="<?php echo acym_escape($idCanvas); ?>" height="400" width="400"></canvas>
+	</div>
 
-    $return .= '<div class="acym__chart__line__container">
-                    <div class="acym__chart__line__choose__by">
-                        <p class="acym__chart__line__choose__by__one '.$selectedChartMonth.'" onclick="acymChartLineUpdate(this, \'month\')">'.acym_translation('ACYM_BY_MONTH').'</p>
-                        <p class="acym__chart__line__choose__by__one '.$selectedChartDay.'" onclick="acymChartLineUpdate(this, \'day\')">'.acym_translation('ACYM_BY_DAY').'</p>
-                        <p class="acym__chart__line__choose__by__one '.$selectedChartHour.'" onclick="acymChartLineUpdate(this, \'hour\')">'.acym_translation('ACYM_BY_HOUR').'</p>
-                    </div>
-                    <div class="acym__chart__line__legend" id="'.$idLegend.'"></div>
-                    <canvas id="'.$idCanvas.'" height="400" width="400"></canvas>
-                </div>';
+	<script>
+        <?php echo $ajax ? '' : 'document.addEventListener("DOMContentLoaded", function () {'; ?>
+        const ctx = document.getElementById(<?php echo json_encode($idCanvas); ?>).getContext('2d');
 
-    $return .= '<script>
-                '.($ajax ? '' : 'document.addEventListener("DOMContentLoaded", function () {').'
-                    var ctx = document.getElementById("'.$idCanvas.'").getContext("2d");
-                    
-                    //Background color under the line
-                    var gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradientBlue.addColorStop(0, "rgba(128,182,244,0.5)"); 
-                    gradientBlue.addColorStop(0.5, "rgba(128,182,244,0.25)"); 
-                    gradientBlue.addColorStop(1, "rgba(128,182,244,0)"); 
-                    
-                    var gradientRed = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradientRed.addColorStop(0., "rgba(255,82,89,0.5)"); 
-                    gradientRed.addColorStop(0.5, "rgba(255,82,89,0.25)"); 
-                    gradientRed.addColorStop(1, "rgba(255,82,89,0)"); 
-                    
-                    //config of the chart line
-                    var config = {
-                        type: "line",
-                        data: {
-                            labels: ["'.acym_translation('ACYM_SENT').'", '.implode(',', $displayed).'],
-                            datasets: [{ //We place the open before, because there are less than the clicks
-                                label: "'.acym_translation('ACYM_CLICK').'",
-                                data: ["0", '.implode(',', $clickDisplayed).'],
-                                borderColor: "#00a4ff",
-                                fill: true,
-                                backgroundColor: gradientBlue,
-                                borderWidth: 3,
-                                pointBackgroundColor: "#ffffff",
-                                pointRadius: 5,
-                            },{
-                                label: "'.acym_translation('ACYM_OPEN').'",
-                                data: ["0", '.implode(',', $openDisplayed).'],
-                                borderColor: "#ff5259",
-                                fill: true,
-                                backgroundColor: gradientRed,
-                                borderWidth: 3,
-                                pointBackgroundColor: "#ffffff",
-                                pointRadius: 5,
-                            },]
-                        }, options: {
-                            responsive: true,
-                             legend: { //We make custom legends
-                                display: false,
-                             }, 
-                            tooltips: { //on hover the dot
-                                backgroundColor: "#fff",
-                                borderWidth: 2,
-                                borderColor: "#303e46",
-                                titleFontSize: 16,
-                                titleFontColor: "#303e46",
-                                bodyFontColor: "#303e46",
-                                bodyFontSize: 14,
-                                displayColors: false
-                            },
-                            maintainAspectRatio: false, //to fit in the div
-                            scales: {
-                                yAxes: [{
-                                    gridLines: {
-                                        display: false
-                                    },
-                                    ticks: { //label on the axesY
-                                        display: true,
-                                        fontColor: "#0a0a0a"
-                                    }
-                                }],
-                                xAxes: [{
-                                    gridLines: {
-                                        display: false
-                                    },
-                                    ticks: { //label on the axesX
-                                        display: true,
-                                        fontSize: 14,
-                                        fontColor: "#0a0a0a"
-                                    }
-                                }],
-                            },
-                            legendCallback: function(chart) { //custom legends
-                                var text = [];
-                                for (var i = 0; i < chart.data.datasets.length; i++) {
-                                  if (chart.data.datasets[i].label) {
-                                    text.push(\'<div onclick="updateDataset(event, \'+ chart.legend.legendItems[i].datasetIndex + \', this)" class="acym_chart_line_labels"><div class="acym_chart_line_labels_circle" style="background-color: \' + chart.data.datasets[i].borderColor + \'"></div><span>\' + chart.data.datasets[i].label+\'</span></div>\');
+        //Background color under the line
+        const gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientBlue.addColorStop(0, 'rgba(128,182,244,0.5)');
+        gradientBlue.addColorStop(0.5, 'rgba(128,182,244,0.25)');
+        gradientBlue.addColorStop(1, 'rgba(128,182,244,0)');
 
-                                  }
-                                }
-                                return text.join("");
-                            },
-                        }
-                    };
-                    var chart = new Chart(ctx, config);
-                    document.getElementById("'.$idLegend.'").innerHTML = (chart.generateLegend());
-                    updateDataset = function(e, datasetIndex, element) { //hide and show dataset for the custom legends
-                        element = element.children[1];
-                        var index = datasetIndex;
-                        var ci = e.view.chart;
-                        var meta = ci.getDatasetMeta(index);
-                        
-                        meta.hidden = meta.hidden === null? !ci.data.datasets[index].hidden : null;
-                        
-                        if(element.style.textDecoration == "line-through"){
-                            element.style.textDecoration = "none";
-                        }else{
-                            element.style.textDecoration = "line-through";
-                        }
-                        
-                        ci.update();
-                    };
-                    acymChartLineUpdate = function(elem, by){
-                        document.getElementById("acym__time__linechart__input").value = by;
-                    	var chartLineLabels = document.getElementsByClassName("acym_chart_line_labels");
-                    	for	(var i = 0; i < chartLineLabels.length; i++){
-                    		chartLineLabels[i].getElementsByTagName("span")[0].style.textDecoration = "none";
-                    	}
-                        if(by === "month"){
-                            var labels = ["'.acym_translation('ACYM_SENT').'", '.implode(',', $month).'];
-                            var dataOpen = ["0", '.implode(',', $openMonth).'];
-                            var dataClick = ["0", '.implode(',', $clickMonth).'];
-                        }else if(by == "day"){
-                            var labels = ["'.acym_translation('ACYM_SENT').'", '.implode(',', $day).'];
-                            var dataOpen = ["0", '.implode(',', $openDay).'];
-                            var dataClick = ["0", '.implode(',', $clickDay).'];
-                        }else if(by == "hour"){
-                            var labels = ["'.acym_translation('ACYM_SENT').'", '.implode(',', $hour).'];
-                            var dataOpen = ["0", '.implode(',', $openHour).'];
-                            var dataClick = ["0", '.implode(',', $clickHour).'];
-                        }
-                        chart.config.data.labels = labels,
-                        chart.config.data.datasets = [{ //We place the open before, because there are less than the clicks
-                                label: "'.acym_translation('ACYM_CLICK').'",
-                                data: dataClick,
-                                borderColor: "#00a4ff",
-                                fill: true,
-                                backgroundColor: gradientBlue,
-                                borderWidth: 3,
-                                pointBackgroundColor: "#ffffff",
-                                pointRadius: 5,
-                            },{
-                                label: "'.acym_translation('ACYM_OPEN').'",
-                                data: dataOpen,
-                                borderColor: "#ff5259",
-                                fill: true,
-                                backgroundColor: gradientRed,
-                                borderWidth: 3,
-                                pointBackgroundColor: "#ffffff",
-                                pointRadius: 5,
-                            }
-                        ];
-                        chart.update();
-                        var allChooseBy = document.getElementsByClassName("acym__chart__line__choose__by__one");
-                        for(var i = 0; i < allChooseBy.length;i++){
-                            allChooseBy[i].classList.remove("selected__choose_by");
-                        }
-                        elem.classList.add("selected__choose_by");
+        const gradientRed = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientRed.addColorStop(0., 'rgba(255,82,89,0.5)');
+        gradientRed.addColorStop(0.5, 'rgba(255,82,89,0.25)');
+        gradientRed.addColorStop(1, 'rgba(255,82,89,0)');
+
+        const config = {
+            type: 'line',
+            data: {
+                labels: <?php echo json_encode(array_merge([acym_translation('ACYM_SENT')], $displayed)); ?>,
+                datasets: [
+                    {
+                        label: <?php echo json_encode(acym_translation('ACYM_CLICK')); ?>,
+                        data: <?php echo json_encode(array_merge(['0'], $clickDisplayed)); ?>,
+                        borderColor: '#00a4ff',
+                        fill: true,
+                        backgroundColor: gradientBlue,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointRadius: 5
+                    },
+                    {
+                        label: <?php echo json_encode(acym_translation('ACYM_OPEN')); ?>,
+                        data: <?php echo json_encode(array_merge(['0'], $openDisplayed)); ?>,
+                        borderColor: '#ff5259',
+                        fill: true,
+                        backgroundColor: gradientRed,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointRadius: 5
                     }
-                    document.querySelector(".selected__choose_by").click();
-                '.($ajax ? '' : '});').'
-                </script>';
+                ]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    backgroundColor: '#fff',
+                    borderWidth: 2,
+                    borderColor: '#303e46',
+                    titleFontSize: 16,
+                    titleFontColor: '#303e46',
+                    bodyFontColor: '#303e46',
+                    bodyFontSize: 14,
+                    displayColors: false
+                },
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [
+                        {
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: {
+                                display: true,
+                                fontColor: '#0a0a0a'
+                            }
+                        }
+                    ],
+                    xAxes: [
+                        {
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: {
+                                display: true,
+                                fontSize: 14,
+                                fontColor: '#0a0a0a'
+                            }
+                        }
+                    ]
+                },
+                legendCallback: function (chart) {
+                    const text = [];
+                    for (let i = 0 ; i < chart.data.datasets.length ; i++) {
+                        if (chart.data.datasets[i].label) {
+                            text.push(`<div onclick="updateDataset(event, ${chart.legend.legendItems[i].datasetIndex}, this)" class="acym_chart_line_labels">
+									<div class="acym_chart_line_labels_circle" style="background-color: ${chart.data.datasets[i].borderColor}"></div>
+									<span>${chart.data.datasets[i].label}</span>
+								</div>`);
+                        }
+                    }
+                    return text.join('');
+                }
+            }
+        };
 
-    return $return;
+        const chart = new Chart(ctx, config);
+        document.getElementById(<?php echo json_encode($idLegend); ?>).innerHTML = chart.generateLegend();
+
+        updateDataset = function (e, datasetIndex, element) {
+            element = element.children[1];
+            const index = datasetIndex;
+            const ci = e.view.chart;
+            const meta = ci.getDatasetMeta(index);
+
+            meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+
+            if (element.style.textDecoration === 'line-through') {
+                element.style.textDecoration = 'none';
+            } else {
+                element.style.textDecoration = 'line-through';
+            }
+
+            ci.update();
+        };
+
+        acymChartLineUpdate = function (elem, by) {
+            document.getElementById('acym__time__linechart__input').value = by;
+            const chartLineLabels = document.getElementsByClassName('acym_chart_line_labels');
+            for (let i = 0 ; i < chartLineLabels.length ; i++) {
+                chartLineLabels[i].getElementsByTagName('span')[0].style.textDecoration = 'none';
+            }
+
+            let labels = [];
+            let dataOpen = [];
+            let dataClick = [];
+
+            if (by === 'month') {
+                labels = <?php echo json_encode(array_merge([acym_translation('ACYM_SENT')], $month)); ?>;
+                dataOpen = <?php echo json_encode(array_merge(['0'], $openMonth)); ?>;
+                dataClick = <?php echo json_encode(array_merge(['0'], $clickMonth)); ?>;
+            } else if (by === 'day') {
+                labels = <?php echo json_encode(array_merge([acym_translation('ACYM_SENT')], $day)); ?>;
+                dataOpen = <?php echo json_encode(array_merge(['0'], $openDay)); ?>;
+                dataClick = <?php echo json_encode(array_merge(['0'], $clickDay)); ?>;
+            } else if (by === 'hour') {
+                labels = <?php echo json_encode(array_merge([acym_translation('ACYM_SENT')], $hour)); ?>;
+                dataOpen = <?php echo json_encode(array_merge(['0'], $openHour)); ?>;
+                dataClick = <?php echo json_encode(array_merge(['0'], $clickHour)); ?>;
+            }
+
+            chart.config.data.labels = labels;
+            chart.config.data.datasets = [
+                {
+                    label: <?php echo json_encode(acym_translation('ACYM_CLICK')); ?>,
+                    data: dataClick,
+                    borderColor: '#00a4ff',
+                    fill: true,
+                    backgroundColor: gradientBlue,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ffffff',
+                    pointRadius: 5
+                },
+                {
+                    label: <?php echo json_encode(acym_translation('ACYM_OPEN')); ?>,
+                    data: dataOpen,
+                    borderColor: '#ff5259',
+                    fill: true,
+                    backgroundColor: gradientRed,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ffffff',
+                    pointRadius: 5
+                }
+            ];
+            chart.update();
+            const allChooseBy = document.getElementsByClassName('acym__chart__line__choose__by__one');
+            for (let i = 0 ; i < allChooseBy.length ; i++) {
+                allChooseBy[i].classList.remove('selected__choose_by');
+            }
+            elem.classList.add('selected__choose_by');
+        };
+
+        document.querySelector('.selected__choose_by').click();
+        <?php echo $ajax ? '' : '});'; ?>
+	</script>
+    <?php
 }
 
 function acym_initializeChart(): void
@@ -243,15 +269,15 @@ function acym_initializeChart(): void
     }
 }
 
-function acym_roundChart($percentage, string $type = '', string $class = '', string $topLabel = ''): string
+function acym_displayRoundChart($percentage, string $type = '', string $class = '', string $topLabel = ''): void
 {
     if (empty($percentage) && $percentage !== 0) {
-        return '';
+        return;
     }
 
     acym_initializeChart();
 
-    $randNumber = rand(1000, 9000);
+    $randNumber = acym_rand(1000, 9000);
     $id = 'acy_round_chart_rand_id'.$randNumber;
     $idCanvas = 'acy_canvas_rand_id'.$randNumber;
 
@@ -294,90 +320,103 @@ function acym_roundChart($percentage, string $type = '', string $class = '', str
     if (!$isFixColor) {
         if ($percentage >= $valueHigh) {
             $color = $isInverted ? $red : $green;
-        } elseif ($percentage < $valueHigh && $percentage >= $valueLow) {
+        } elseif ($percentage >= $valueLow) {
             $color = $orange;
-        } elseif ($percentage < $valueLow) {
+        } else {
             $color = $isInverted ? $green : $red;
         }
     }
+    ?>
 
-    $return = '<div class="'.$class.' acym__chart__doughnut text-center">
-                        <p class="text-center acym__chart__doughnut__container__top-label">'.$topLabel.'</p>
-                        <div class="acym__chart__doughnut__container" id="'.$id.'">
-                            <canvas id="'.$idCanvas.'" width="200" height="200"></canvas>
-                        </div>
-                </div>';
-    $return .= '<script>
-            //Override to add text in the middle of chart
-            document.addEventListener("DOMContentLoaded", function () {
+	<div class="<?php echo acym_escape($class); ?> acym__chart__doughnut text-center">
+		<p class="text-center acym__chart__doughnut__container__top-label"><?php echo acym_escapeHtmlWithAllowedTags($topLabel, ['span' => ['class' => true], 'label' => []]); ?></p>
+		<div class="acym__chart__doughnut__container" id="<?php echo acym_escape($id); ?>">
+			<canvas id="<?php echo acym_escape($idCanvas); ?>" width="200" height="200"></canvas>
+		</div>
+	</div>
+
+	<script>
+        // Override to add text in the middle of chart
+        document.addEventListener('DOMContentLoaded', function () {
             Chart.pluginService.register({
-                beforeDraw: function(chart){
-                    if(chart.config.options.elements.center){
-                        //Get ctx from string
-                        var ctx = chart.chart.ctx;
-        
+                beforeDraw: function (chart) {
+                    if (chart.config.options.elements.center) {
+                        const ctx = chart.chart.ctx;
+
                         //Get options from the center object in options
-                        var centerConfig = chart.config.options.elements.center;
-                        var fontStyle = centerConfig.fontStyle || "Arial";
-                        var txt = centerConfig.text;
-                        var color = centerConfig.color || "#000";
+                        const centerConfig = chart.config.options.elements.center;
+                        const fontStyle = centerConfig.fontStyle || 'Arial';
+                        const txt = centerConfig.text;
+                        const color = centerConfig.color || '#000';
                         //Set font settings to draw it correctly.
-                        ctx.textAlign = "center";
-                        ctx.textBaseline = "middle";
-                        var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
-                        var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-                        ctx.font = "15px " + fontStyle;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        const centerX = (
+                            (
+                                chart.chartArea.left + chart.chartArea.right
+                            ) / 2
+                        );
+                        const centerY = (
+                            (
+                                chart.chartArea.top + chart.chartArea.bottom
+                            ) / 2
+                        );
+                        ctx.font = '15px ' + fontStyle;
                         ctx.fillStyle = color;
-        
+
                         //Draw text in center
                         ctx.fillText(txt, centerX, centerY);
                     }
                 }
             });
-            var ctx = document.getElementById("'.$idCanvas.'").getContext("2d");
-            var config = {
-                type: "doughnut", data: {
-                    datasets: [{
-                        data: ['.$percentage.', (100 - '.$percentage.')], //Data of chart
-                         backgroundColor: ["'.$color.'", "#f1f1f1"], //Two color of chart
-                         borderWidth: 0 //no border
-                    }]
-                }, options: {
-                    responsive: true,
-                     legend: {
-                        display: false,
-                     }, 
-                    elements: {
-                        //This is for the text
-                        center: {
-                            text: "'.$percentage.'%", color: "#363636", 
-                            fontStyle: "Poppins", 
-                            sidePadding: 70 
+
+            const ctx = document.getElementById(<?php echo json_encode($idCanvas); ?>).getContext('2d');
+            const config = {
+                type: 'doughnut',
+                data: {
+                    datasets: [
+                        {
+                            data: <?php echo json_encode([$percentage, 100 - $percentage]); ?>,
+                            backgroundColor: <?php echo json_encode([$color, "#f1f1f1"]); ?>,
+                            borderWidth: 0
                         }
-                    }, 
-                    cutoutPercentage: 90, //thickness donut
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        display: false
+                    },
+                    elements: {
+                        center: {
+                            text: <?php echo json_encode($percentage.'%'); ?>,
+                            color: '#363636',
+                            fontStyle: 'Poppins',
+                            sidePadding: 70
+                        }
+                    },
+                    cutoutPercentage: 90, // Thickness
                     tooltips: {
-                        enabled: false //disable the tooltips on hover
+                        enabled: false // Disable tooltips on hover
                     }
                 }
             };
-            var chart = new Chart(ctx, config);
-            });
-        </script>';
 
-
-    return $return;
+            new Chart(ctx, config);
+        });
+	</script>
+    <?php
 }
 
-function acym_pieChart(array $data = [], string $class = '', string $topLabel = '', bool $cap = true, bool $perList = false): string
+function acym_pieChart(array $data = [], string $class = '', string $topLabel = '', bool $cap = true, bool $perList = false): void
 {
     if (empty($data)) {
-        return '';
+        return;
     }
 
     acym_initializeChart();
 
-    $randNumber = rand(1000, 9000);
+    $randNumber = acym_rand(1000, 9000);
     $id = 'acy_pie_chart_rand_id'.$randNumber;
     $idCanvas = 'acy_canvas_rand_id'.$randNumber;
     $idLegend = 'acy_legend_rand_id'.$randNumber;
@@ -436,82 +475,83 @@ function acym_pieChart(array $data = [], string $class = '', string $topLabel = 
         $allLabelsArray[] = acym_translation('ACYM_OTHER');
         $colors[] = acym_getChartColor($position);
     }
+    ?>
+	<div class="<?php echo acym_escape($class); ?> acym__chart__pie grid-x">
+		<p class="text-center acym__chart__pie__container__top-label cell medium-6"><?php echo acym_escapeHtmlWithAllowedTags($topLabel, ['span' => ['class' => true], 'label' => []]); ?></p>
+		<div class="acym__chart__pie__container grid-x cell" id="<?php echo acym_escape($id); ?>">
+			<div class="acym__chart__pie__canvas_container cell medium-6">
+				<canvas id="<?php echo acym_escape($idCanvas); ?>" width="200" height="200"></canvas>
+			</div>
+			<div class="acym__chart__pie__legend cell medium-6 padding-left-1" id="<?php echo acym_escape($idLegend); ?>"></div>
+		</div>
+	</div>
 
-    $allNumbers = implode(',', $data);
-    $allLabels = "'".implode("', '", $allLabelsArray)."'";
-    $allColors = "'".implode("', '", $colors)."'";
-
-    $return = '<div class="'.$class.' acym__chart__pie grid-x">
-                        <p class="text-center acym__chart__pie__container__top-label cell medium-6">'.$topLabel.'</p>
-                        <div class="acym__chart__pie__container grid-x cell" id="'.$id.'">
-                            <div class="acym__chart__pie__canvas_container cell medium-6">                            
-                                <canvas id="'.$idCanvas.'" width="200" height="200"></canvas> 
-                            </div>
-                            <div class="acym__chart__pie__legend cell medium-6 padding-left-1" id="'.$idLegend.'"></div>
-                        </div>
-                </div>';
-
-    $return .= '<script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const ctx = document.getElementById("'.$idCanvas.'").getContext("2d");
-            const config = {
-                type: "pie",
-                 data: {
-                    datasets: [{
-                        data: ['.$allNumbers.'],
-                        backgroundColor: ['.$allColors.'],
-                    }],
-                    labels: ['.$allLabels.']
-                }, options: {
+	<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chart = new Chart(document.getElementById(<?php echo json_encode($idCanvas); ?>).getContext('2d'), {
+                type: 'pie',
+                data: {
+                    datasets: [
+                        {
+                            data: <?php echo json_encode($data); ?>,
+                            backgroundColor: <?php echo json_encode($colors); ?>,
+                        }
+                    ],
+                    labels: <?php echo json_encode($allLabelsArray); ?>
+                },
+                options: {
                     responsive: true,
                     legend: {
-                        display: false,
-                     }, 
-                    tooltips: {
-                        backgroundColor: "#fff",
-                        borderWidth: 2,
-                        borderColor: "#303e46",
-                        titleFontSize: 16,
-                        titleFontColor: "#303e46",
-                        bodyFontColor: "#303e46",
-                        bodyFontSize: 14,
+                        display: false
                     },
-                    legendCallback: function(chart) {
+                    tooltips: {
+                        backgroundColor: '#fff',
+                        borderWidth: 2,
+                        borderColor: '#303e46',
+                        titleFontSize: 16,
+                        titleFontColor: '#303e46',
+                        bodyFontColor: '#303e46',
+                        bodyFontSize: 14
+                    },
+                    legendCallback: function (chart) {
                         const dataSets = chart.data.datasets;
                         const colors = dataSets[0].backgroundColor;
                         const numbers = dataSets[0].data;
                         const labels = chart.data.labels;
                         const text = [];
-                        
-                        if (colors.length !== labels.length) {
-                            return "";
-                        }
-                        
-                        for (let i = 0; i < labels.length; i++) {
-                            text.push(\'<div class="acym_chart_pie_labels"><div class="acym_chart_pie_labels_circle" style="background-color: \' + colors[i] + \'"></div>\' + labels[i] + " (" + numbers[i] + ")" + \'</div>\');
-                        }
-                        
-                        return text.join("");
-                    },
-                }
-            };
-            const chart = new Chart(ctx, config);
-            document.getElementById("'.$idLegend.'").innerHTML = (chart.generateLegend());
-        });
-</script>';
 
-    return $return;
+                        if (colors.length !== labels.length) {
+                            return '';
+                        }
+
+                        for (let i = 0 ; i < labels.length ; i++) {
+                            text.push(`
+								<div class="acym_chart_pie_labels">
+									<div class="acym_chart_pie_labels_circle" style="background-color: ${colors[i]}"></div>
+									${labels[i]} (${numbers[i]})
+								</div>`);
+                        }
+
+                        return text.join('');
+                    }
+                }
+            });
+
+            document.getElementById(<?php echo json_encode($idLegend); ?>).innerHTML = chart.generateLegend();
+        });
+	</script>
+    <?php
 }
 
-function acym_barChart(array $data = [], string $topLabel = ''): string
+function acym_displayBarChart(array $data = [], string $topLabel = ''): void
 {
     if (empty($data)) {
-        return '';
+        return;
     }
 
     acym_initializeChart();
 
-    $randNumber = rand(1000, 9000);
+    $randNumber = acym_rand(1000, 9000);
     $id = 'acy_pie_chart_rand_id'.$randNumber;
     $idCanvas = 'acy_canvas_rand_id'.$randNumber;
     $idLegend = 'acy_legend_rand_id'.$randNumber;
@@ -543,97 +583,101 @@ function acym_barChart(array $data = [], string $topLabel = ''): string
         $allLabelsArray[] = acym_translation('ACYM_OTHER');
         $colors[] = acym_getChartColor($position);
     }
+    ?>
 
-    $allNumbers = implode(',', $data);
-    $allLabels = "'".implode("', '", $allLabelsArray)."'";
-    $allColors = "'".implode("', '", $colors)."'";
+	<div class="acym__chart__pie grid-x">
+		<p class="text-center acym__chart__pie__container__top-label cell medium-6"><?php echo acym_escapeHtmlWithAllowedTags($topLabel, ['span' => ['class' => true], 'label' => []]); ?></p>
+		<div class="acym__chart__pie__container grid-x cell" id="<?php echo acym_escape($id); ?>">
+			<div class="acym__chart__pie__canvas_container cell medium-6">
+				<canvas id="<?php echo acym_escape($idCanvas); ?>" width="200" height="200"></canvas>
+			</div>
+			<div class="acym__chart__pie__legend cell medium-6 padding-left-1" id="<?php echo acym_escape($idLegend); ?>"></div>
+		</div>
+	</div>
 
-    $return = '<div class="acym__chart__pie grid-x">
-                        <p class="text-center acym__chart__pie__container__top-label cell medium-6">'.$topLabel.'</p>
-                        <div class="acym__chart__pie__container grid-x cell" id="'.$id.'">
-                            <div class="acym__chart__pie__canvas_container cell medium-6">                            
-                                <canvas id="'.$idCanvas.'" width="200" height="200"></canvas> 
-                            </div>
-                            <div class="acym__chart__pie__legend cell medium-6 padding-left-1" id="'.$idLegend.'"></div>
-                        </div>
-                </div>';
-    $return .= '<script>
-
-        document.addEventListener("DOMContentLoaded", function () {
-            var ctx = document.getElementById("'.$idCanvas.'").getContext("2d");
-            var config = {
-                type: "bar",
-                 data: {
-                    datasets: [{
-                        data: ['.$allNumbers.'], //Data of chart
-                        backgroundColor: ['.$allColors.'],
-                    }],
-                    labels: ['.$allLabels.']
-                }, options: {
+	<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById("<?php echo acym_escape($idCanvas); ?>").getContext('2d');
+            const config = {
+                type: 'bar',
+                data: {
+                    datasets: [
+                        {
+                            data: <?php echo json_encode(array_values($data)); ?>,
+                            backgroundColor: <?php echo json_encode($colors); ?>,
+                        }
+                    ],
+                    labels: <?php echo json_encode($allLabelsArray); ?>
+                },
+                options: {
                     responsive: true,
                     legend: {
-                        display: false,
-                     }, 
-                    tooltips: {
-                        backgroundColor: "#fff",
-                        borderWidth: 2,
-                        borderColor: "#303e46",
-                        titleFontSize: 16,
-                        titleFontColor: "#303e46",
-                        bodyFontColor: "#303e46",
-                        bodyFontSize: 14,
+                        display: false
                     },
-                    legendCallback: function(chart) {
+                    tooltips: {
+                        backgroundColor: '#fff',
+                        borderWidth: 2,
+                        borderColor: '#303e46',
+                        titleFontSize: 16,
+                        titleFontColor: '#303e46',
+                        bodyFontColor: '#303e46',
+                        bodyFontSize: 14
+                    },
+                    legendCallback: function (chart) {
                         let dataSets = chart.data.datasets;
                         let colors = dataSets[0].backgroundColor;
                         let numbers = dataSets[0].data;
                         let labels = chart.data.labels;
                         let text = [];
-                        
+
                         if (colors.length !== labels.length) {
-                            return "";
+                            return '';
                         }
-                        
-                        for (let i = 0; i < labels.length; i++) {
-                            text.push(\'<div class="acym_chart_pie_labels"><div class="acym_chart_pie_labels_circle" style="background-color: \' + colors[i] + \'"></div>\' + labels[i] + " (" + numbers[i] + "%)" + \'</div>\');
+
+                        for (let i = 0 ; i < labels.length ; i++) {
+                            text.push(`<div class="acym_chart_pie_labels">
+                            	<div class="acym_chart_pie_labels_circle" style="background-color: ${colors[i]}"></div>
+                            	${labels[i]} (${numbers[i]}%)
+                            	</div>`);
                         }
-                        
-                        return text.join("");
+
+                        return text.join('');
                     },
-                  
+
                     scales: {
-                      xAxes: [
-                        {
-                            gridLines:{
-                                drawTicks:false
-                            },
-                            ticks: {
-                            display: false
+                        xAxes: [
+                            {
+                                gridLines: {
+                                    drawTicks: false
+                                },
+                                ticks: {
+                                    display: false
+                                }
                             }
-                        }
-                    ],
-                      yAxes: [
-                        {
-                            gridLines:{
-                                drawTicks:false, 
-                            },
-                          ticks: {
-                            min: 0,
-                            max: 100,
-                            padding: 10
-                          },
-                        },
-                      ],
-                    },
+                        ],
+                        yAxes: [
+                            {
+                                gridLines: {
+                                    drawTicks: false
+                                },
+                                ticks: {
+                                    min: 0,
+                                    max: 100,
+                                    padding: 10
+                                }
+                            }
+                        ]
+                    }
 
                 }
             };
-            var chart = new Chart(ctx, config);
-            document.getElementById("'.$idLegend.'").innerHTML = (chart.generateLegend());
+            const chart = new Chart(ctx, config);
+            document.getElementById(<?php echo json_encode($idLegend); ?>).innerHTML = (
+                chart.generateLegend()
+            );
         });
-</script>';
-
-    return $return;
+	</script>
+    <?php
 }
 
 function acym_getChartColor(int $position): string

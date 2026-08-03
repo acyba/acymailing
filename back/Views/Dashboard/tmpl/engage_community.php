@@ -1,10 +1,12 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 $community_content = $data['engage_community'];
 ?>
 
 <div class="acym__content cell">
 	<div style="display: flex; justify-content: space-between;">
-		<div class="shrink acym__title acym__dashboard__title"><?php echo acym_translation('ACYM_ENGAGE_COMMUNITY'); ?></div>
+		<div class="shrink acym__title acym__dashboard__title"><?php echo acym_escapeHtml(acym_translation('ACYM_ENGAGE_COMMUNITY')); ?></div>
 		<div style="user-select: none;">
 			<i id="prevBtn" class="acymicon-keyboard-arrow-left disabled"></i>
 			<i id="nextBtn" class="acymicon-keyboard-arrow-right"></i>
@@ -21,17 +23,17 @@ $community_content = $data['engage_community'];
                     ?>
 					<div class="acym_vcenter slide gap-1">
 						<div>
-							<i class="<?php echo $content['icon']; ?> community-icons"></i>
+							<i class="<?php echo acym_escape($content['icon']); ?> community-icons"></i>
 						</div>
 						<div>
 
-							<h5><a href="<?php echo $content['link'] ? acym_completeLink($content['link']) : $content['link_doc']; ?>" target="_blank">
-                                    <?php echo acym_escape(
+							<h5><a href="<?php echo acym_escapeUrl($content['link'] ? acym_completeLink($content['link']) : $content['link_doc']); ?>" target="_blank">
+                                    <?php echo acym_escapeHtml(
                                         acym_translation(
                                             $content['title']
                                         )
                                     ); ?><i class="acymicon-external-link small-icon"></i></a></h5>
-							<p><?php echo acym_escape(acym_translation($content['text'])); ?></p>
+							<p><?php echo acym_escapeHtml(acym_translation($content['text'])); ?></p>
 						</div>
 					</div>
                     <?php

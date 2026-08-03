@@ -22,14 +22,6 @@ const acym_helper = {
     ctrlLists: ACYM_IS_ADMIN ? 'lists' : 'frontlists',
     ctrlUsers: ACYM_IS_ADMIN ? 'users' : 'frontusers',
     ctrlCampaigns: ACYM_IS_ADMIN ? 'campaigns' : 'frontcampaigns',
-    config_get: function (field) {
-        const controller = ACYM_IS_ADMIN ? 'configuration' : 'frontconfiguration';
-        return jQuery.ajax({
-            type: 'GET',
-            url: ACYM_AJAX_URL + '&ctrl=' + controller + '&task=getOption&field=' + field,
-            dataType: 'json'
-        });
-    },
     emailValid: function (email) {
         return email.match(ACYM_REGEX_EMAIL) !== null;
     },
@@ -209,9 +201,9 @@ const acym_helper = {
         document.cookie = newCookie;
     },
     get: function (url = ACYM_AJAX_URL, data = {}) {
+        // handleErrors must be the rejection handler of the then, a fail() would keep the promise rejected and drop its return
         return jQuery.get(url, data)
-                     .then(acym_helper.parseResponse)
-                     .fail(acym_helper.handleErrors);
+                     .then(acym_helper.parseResponse, acym_helper.handleErrors);
     },
     post: function (url = ACYM_AJAX_URL, data = {}, needAbort = false) {
         const query = jQuery.post(url, data);
@@ -220,7 +212,7 @@ const acym_helper = {
             query.then(acym_helper.parseJson).fail(acym_helper.handleErrors);
             return query;
         }
-        return query.then(acym_helper.parseResponse).fail(acym_helper.handleErrors);
+        return query.then(acym_helper.parseResponse, acym_helper.handleErrors);
     },
     parseResponse: function (response) {
         if (typeof response !== 'object') response = acym_helper.parseJson(response);

@@ -12,13 +12,18 @@ class DelayType extends AcymObject
     const TYPE_HOURS_DAYS_WEEKS_MONTHS = 3;
     const TYPE_WEEKS_MONTHS = 4;
 
-    public function display(string $map, int $value, int $type = 1, string $inputClass = '', string $hiddenInputClass = ''): string
-    {
+    public function display(
+        string $map,
+        int    $value,
+        int    $type = 1,
+        string $inputClass = '',
+        string $hiddenInputClass = ''
+    ): void {
         static $num = 0;
         $num++;
 
         $js = '
-        function updateDelay'.$num.'(){
+        function updateDelay'.$num.'() {
             delayvar = window.document.getElementById("delayvar'.$num.'");
             delaytype = window.document.getElementById("delaytype'.$num.'").value;
             delayvalue = window.document.getElementById("delayvalue'.$num.'");
@@ -58,26 +63,29 @@ class DelayType extends AcymObject
         }
 
         $return = $this->get($value, $type);
-        $delayValue = '<input class="intext_input '.acym_escape($inputClass).'" 
-                            onchange="'.$updateFunction.'" 
-                            type="number" 
-                            min="0" 
-                            id="delayvalue'.$num.'" 
-                            value="'.acym_escape($return->value).'" /> ';
-        $delayVar = '<input class="'.acym_escape($hiddenInputClass).'" type="hidden" name="'.acym_escape($map).'" id="delayvar'.$num.'" value="'.$value.'"/>';
+        echo '<input class="intext_input '.acym_escape($inputClass).'" 
+                    onchange="'.acym_escape($updateFunction).'" 
+                    type="number" 
+                    min="0" 
+                    id="delayvalue'.acym_escape($num).'" 
+                    value="'.acym_escape($return->value).'" /> ';
 
-        return $delayValue.acym_select(
-                $values,
-                'delaytype'.$num,
-                $return->type,
-                [
-                    'class' => 'intext_select',
-                    'onchange' => $updateFunction,
-                ],
-                'value',
-                'text',
-                'delaytype'.$num
-            ).$delayVar;
+        acym_select(
+            $values,
+            'delaytype'.$num,
+            $return->type,
+            [
+                'class' => 'intext_select',
+                'onchange' => $updateFunction,
+            ],
+            'value',
+            'text',
+            'delaytype'.$num,
+            false,
+            true
+        );
+
+        echo '<input class="'.acym_escape($hiddenInputClass).'" type="hidden" name="'.acym_escape($map).'" id="delayvar'.acym_escape($num).'" value="'.acym_escape($value).'"/>';
     }
 
     public function get(int $value, int $type): object

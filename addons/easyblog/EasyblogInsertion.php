@@ -359,7 +359,7 @@ trait EasyblogInsertion
         $varFields['{cat}'] = [];
         foreach ($rawCategories as $category) {
             $linkCat = $this->finalizeLink('index.php?option=com_easyblog&view=categories&layout=listings&id='.$category->id, $tag);
-            $varFields['{cat}'][] = '<a href="'.$linkCat.'" target="_blank">'.acym_escape($category->title).'</a>';
+            $varFields['{cat}'][] = '<a href="'.$linkCat.'" target="_blank">'.acym_escapeHtml($category->title).'</a>';
         }
         $varFields['{cat}'] = implode(', ', $varFields['{cat}']);
         if (in_array('cat', $tag->display)) {
@@ -370,7 +370,7 @@ trait EasyblogInsertion
         }
 
         $readMoreText = acym_translation('ACYM_READ_MORE');
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escapeHtml(
                 $readMoreText
             ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];

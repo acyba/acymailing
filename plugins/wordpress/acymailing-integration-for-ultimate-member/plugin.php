@@ -22,34 +22,12 @@ class plgAcymUltimatemember extends AcymPlugin
         ?>
 		<div class="cell grid-x grid-margin-x">
             <?php
-            echo wp_kses(
-                acym_switch(
-                    'config[regacy_use_ultimate_member]',
-                    $this->config->get('regacy_use_ultimate_member', 0),
-                    acym_translation('ACYM_DISPLAY_FORM_ON_ULTIMATE_MEMBER'),
-                    [],
-                    'xlarge-3 medium-5 small-9'
-                ),
-                [
-                    'div' => ['class' => [], 'data-toggle-showmore' => []],
-                    'label' => ['for' => [], 'class' => [], 'data-acym-tooltip' => []],
-                    'i' => ['class' => []],
-                    'input' => [
-                        'type' => [],
-                        'name' => [],
-                        'id' => [],
-                        'value' => [],
-                        'checked' => [],
-                        'disabled' => [],
-                        'class' => [],
-                        'data-switch' => [],
-                        'data-toggle-switch' => [],
-                        'data-toggle-switch-open' => [],
-                        'v-model' => [],
-                    ],
-                    'span' => ['class' => [], 'aria-hidden' => []],
-                ]
-            );
+            acym_switch([
+                'name' => 'config[regacy_use_ultimate_member]',
+                'value' => $this->config->get('regacy_use_ultimate_member', 0),
+                'label' => acym_translation('ACYM_DISPLAY_FORM_ON_ULTIMATE_MEMBER'),
+                'labelClass' => 'xlarge-3 medium-5 small-9',
+            ]);
             ?>
 		</div>
         <?php

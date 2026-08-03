@@ -20,6 +20,7 @@ class MailerHelper extends Mailer
 {
     const NEW_TRY_ERRORS = [1, 6];
     const REGEX_URL = '#<[^>]* href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui';
+    const AUTOLOGIN_PARAMS = 'autoSubId=%7Bsubscriber:id%7D&amp;subKey=%7Bsubscriber:autologin_token%7Curlencode%7D';
 
     // Redefine PHPMailer protected attributes for dynamic texts system
     public $to = [];
@@ -59,7 +60,6 @@ class MailerHelper extends Mailer
 
     public string $reportMessage = '';
     public bool $dtextsFailed = false;
-    private array $originalDynamicUrls = [];
 
     // Should we track the sending of a	message (used for welcoming message)
     public bool $trackEmail = false;
@@ -156,19 +156,17 @@ class MailerHelper extends Mailer
             $this->Encoding = '8bit';
         }
 
+        // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- This is for big regex, the default value is 100 000.
         @ini_set('pcre.backtrack_limit', 1000000);
 
         $this->SMTPOptions = ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]];
-
-        // Dynamic text for debug purposes
-        $this->addParamInfo();
     }
 
     public function setSendingMethodSetting(): void
     {
         $externalSendingMethod = [];
         acym_trigger('onAcymGetSendingMethods', [&$externalSendingMethod, true]);
-        $externalSendingMethod = array_keys($externalSendingMethod['sendingMethods']);
+        $externalSendingMethod = !empty($externalSendingMethod['sendingMethods']) ? array_keys($externalSendingMethod['sendingMethods']) : [];
 
         $mailerMethodConfig = $this->getSendingMethod();
         $this->currentSendingMethod = $mailerMethodConfig;
@@ -652,7 +650,7 @@ class MailerHelper extends Mailer
 
         if (empty($receiver->email)) {
             $this->errorNumber = 4;
-            $this->reportMessage = acym_translationSprintf('ACYM_SEND_ERROR_USER', '<b><i>'.acym_escape($user).'</i></b>');
+            $this->reportMessage = acym_translationSprintf('ACYM_SEND_ERROR_USER', '<b><i>'.acym_escapeHtml(is_object($user) ? $user->email : $user).'</i></b>');
             if ($this->report) {
                 acym_enqueueMessage($this->reportMessage, 'error');
             }
@@ -682,13 +680,12 @@ class MailerHelper extends Mailer
         $this->prepareBcc($mailId, $options);
         $this->prepareAttachments($mailId, $options);
         $this->replaceDynamicContent($mailId);
-        $this->extractOriginalDynamicUrls();
+        $this->prepareTracking($mailId, $receiver);
         if (!$this->handleDtexts($receiver)) {
             $this->dtextsFailed = true;
 
             return false;
         }
-        $this->prepareTracking($mailId, $receiver);
 
         $status = $this->send();
 
@@ -808,6 +805,7 @@ class MailerHelper extends Mailer
         foreach ($results[1] as $i => $url) {
             $urlsNotToTrack = [
                 'task=unsub',
+                'task=disableTracking',
                 'fonts.googleapis.com',
             ];
 
@@ -879,52 +877,16 @@ class MailerHelper extends Mailer
             }
 
             if (strpos($trackingSystem, 'acymailing') !== false) {
-                $isAutologin = false;
-                $autologinParams = 'autoSubId=%7Bsubscriber:id%7D&amp;subKey=%7Bsubscriber:autologin_token%7Curlencode%7D';
-                if (strpos($url, $autologinParams) !== false) {
-                    $isAutologin = true;
-                    $url = str_replace(
-                        [
-                            '?'.$autologinParams.'&amp;',
-                            '?'.$autologinParams,
-                            '&amp;'.$autologinParams,
-                        ],
-                        [
-                            '?',
-                            '',
-                            '',
-                        ],
-                        $url
-                    );
+                $isAutologin = strpos($url, self::AUTOLOGIN_PARAMS) !== false;
+                if ($isAutologin) {
+                    $url = $this->stripAutologinParams($url);
                 }
 
-                if (preg_match('#passw|modify|\{|%7B#i', $url)) {
+                if (preg_match('#passw|modify#i', $url)) {
                     continue;
                 }
 
                 $urlForRegistration = $url;
-                if (!empty($this->originalDynamicUrls[$i])) {
-                    $urlForRegistration = $this->originalDynamicUrls[$i];
-
-                    if (strpos($urlForRegistration, $autologinParams) !== false) {
-                        $isAutologin = true;
-                    }
-
-                    $urlForRegistration = str_replace(
-                        [
-                            '?'.$autologinParams.'&amp;',
-                            '?'.$autologinParams,
-                            '&amp;'.$autologinParams,
-                        ],
-                        ['?', '', ''],
-                        $urlForRegistration
-                    );
-
-                    if (preg_match('#[?&](idU=\d+)#', $url, $idUMatch)) {
-                        $separator = strpos($urlForRegistration, '?') === false ? '?' : '&amp;';
-                        $urlForRegistration .= $separator.$idUMatch[1];
-                    }
-                }
 
                 if (!$fromStat) {
                     $mytracker = $urlClass->getUrl($urlForRegistration, $mailId, $userid, $userkey);
@@ -935,12 +897,8 @@ class MailerHelper extends Mailer
                 }
 
                 if ($isAutologin) {
-                    $mytracker .= strpos($mytracker, '?') === false ? '?' : '&amp;';
-                    if (!empty($this->originalDynamicUrls[$i]) && preg_match('#autoSubId=[^&"]+&amp;subKey=[^&"]+#', $url, $resolvedAutologinMatch)) {
-                        $mytracker .= $resolvedAutologinMatch[0];
-                    } else {
-                        $mytracker .= $autologinParams;
-                    }
+                    $separator = strpos($mytracker, '?') === false ? '?' : '&amp;';
+                    $mytracker .= $separator.self::AUTOLOGIN_PARAMS;
                 }
 
                 $urls[$results[0][$i]] = str_replace($results[1][$i], $mytracker, $results[0][$i]);
@@ -994,7 +952,7 @@ class MailerHelper extends Mailer
         $text = preg_replace('#(&lt;|&\#60;)([^ \n\r\t])#i', '&lt; ${2}', $text);
 
         //BE CAREFUL!!!! This space is not a space, it's a ALT0160!! which means &nbsp;
-        $text = str_replace([" ", "&nbsp;"], ' ', strip_tags($text));
+        $text = str_replace([" ", "&nbsp;"], ' ', acym_stripTags($text));
         //BE CAREFUL!! That is magic code :) :) :)
 
         //@ is added on the call of html_entity_decode because on PHP 4, warnings are displayed using this function with utf-8 characters.
@@ -1084,25 +1042,6 @@ class MailerHelper extends Mailer
         return trim(preg_replace('/(%0A|%0D|\n+|\r+)/i', '', (string)$text));
     }
 
-    public function addParamInfo(): void
-    {
-        if (!empty($_SERVER)) {
-            $serverinfo = [];
-            foreach ($_SERVER as $oneKey => $oneInfo) {
-                $serverinfo[] = $oneKey.' => '.strip_tags(print_r($oneInfo, true));
-            }
-            $this->addParam('serverinfo', implode('<br />', $serverinfo));
-        }
-
-        if (!empty($_REQUEST)) {
-            $postinfo = [];
-            foreach ($_REQUEST as $oneKey => $oneInfo) {
-                $postinfo[] = $oneKey.' => '.strip_tags(print_r($oneInfo, true));
-            }
-            $this->addParam('postinfo', implode('<br />', $postinfo));
-        }
-    }
-
     /**
      * Adds shortcodes available in the email content
      */
@@ -1148,9 +1087,11 @@ class MailerHelper extends Mailer
 
         $errorCode = 0;
         $errorMessage = 0;
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fsockopen -- Connectivity test for SMTP ports.
         $fp = @fsockopen($targetServer, $port, $errorCode, $errorMessage, 5);
 
         if (is_resource($fp)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing the socket resource opened above, not a filesystem handle.
             fclose($fp);
 
             return true;
@@ -1275,7 +1216,7 @@ class MailerHelper extends Mailer
         }
 
         if (empty($receiver)) {
-            throw new Exception(acym_translation('ACYM_USER_NOT_FOUND'));
+            throw new Exception(acym_escape(acym_translation('ACYM_USER_NOT_FOUND')));
         }
 
         $this->userLanguage = empty($receiver->language) ? acym_getLanguageTag() : $receiver->language;
@@ -1328,7 +1269,7 @@ class MailerHelper extends Mailer
     private function prepareHeaders(int $mailId, int $receiverId, array $options): void
     {
         // Specify a messageID which will be kept by most mail clients and in the feedback loop
-        $subject = base64_encode(rand(0, 9999999)).'AC'.$receiverId.'Y'.$this->defaultMail[$mailId]->id.'BA'.base64_encode(time().rand(0, 99999));
+        $subject = base64_encode(acym_rand(0, 9999999)).'AC'.$receiverId.'Y'.$this->defaultMail[$mailId]->id.'BA'.base64_encode(time().acym_rand(0, 99999));
         $this->MessageID = '<'.preg_replace('|[^a-z0-9+_]|i', '', $subject).'@'.$this->serverHostname().'>';
         $this->addCustomHeader('Feedback-ID', $this->defaultMail[$mailId]->id.':'.$receiverId.':'.$this->defaultMail[$mailId]->type.':'.base64_encode(ACYM_ROOT));
 
@@ -1384,10 +1325,18 @@ class MailerHelper extends Mailer
 
         if (!empty($bccAddresses)) {
             $bccAddresses = array_filter($bccAddresses);
+
+            // loadUser() overwrites the current receiver, keep the real one
+            $receiverEmail = $this->receiverEmail;
+            $userLanguage = $this->userLanguage;
+
             foreach ($bccAddresses as $oneBccAddress) {
                 $this->loadUser($oneBccAddress, true);
                 $this->addBCC($oneBccAddress);
             }
+
+            $this->receiverEmail = $receiverEmail;
+            $this->userLanguage = $userLanguage;
         }
     }
 
@@ -1447,25 +1396,13 @@ class MailerHelper extends Mailer
         $this->links_language = $this->defaultMail[$mailId]->links_language;
     }
 
-    private function extractOriginalDynamicUrls(): void
+    private function stripAutologinParams(string $url): string
     {
-        $this->originalDynamicUrls = [];
-        $absoluteBody = acym_absoluteURL($this->body);
-        preg_match_all(
-            self::REGEX_URL,
-            $absoluteBody,
-            $results
+        return str_replace(
+            ['?'.self::AUTOLOGIN_PARAMS.'&amp;', '?'.self::AUTOLOGIN_PARAMS, '&amp;'.self::AUTOLOGIN_PARAMS],
+            ['?', '', ''],
+            $url
         );
-
-        if (empty($results[1])) {
-            return;
-        }
-
-        foreach ($results[1] as $i => $url) {
-            if (preg_match('#\{|%7B#i', $url)) {
-                $this->originalDynamicUrls[$i] = $url;
-            }
-        }
     }
 
     private function prepareTracking(int $mailId, object $receiver): void
@@ -1720,8 +1657,8 @@ class MailerHelper extends Mailer
             return;
         }
 
-        global $emogrifiedMediaCSS;
-        $emogrifiedMediaCSS = '';
+        global $acymailingEmogrifiedMediaCSS;
+        $acymailingEmogrifiedMediaCSS = '';
 
         $style = $this->getEmailStylesheet($mail);
         // Inline styles for mail client compatibility: https://www.caniemail.com/features/html-style/
@@ -1771,8 +1708,8 @@ class MailerHelper extends Mailer
         //TODO maybe insert this CSS to a second <head> tag?
         // Source: https://designmodo.com/html-css-emails/#:~:text=words%20of%20wisdom-,Internal%C2%A0CSS,-Undoubtedly%2C%20one%20of
         // Apparently only for Yahoo on Android: https://www.caniemail.com/features/html-style/
-        global $emogrifiedMediaCSS;
-        $finalContent .= '<style>'.$emogrifiedMediaCSS.'</style>';
+        global $acymailingEmogrifiedMediaCSS;
+        $finalContent .= '<style>'.$acymailingEmogrifiedMediaCSS.'</style>';
         $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
         $finalContent .= '<!--[if !mso]><!--><style>#acym__wysid__template center > table { width: 100%; }</style><!--<![endif]-->';
 

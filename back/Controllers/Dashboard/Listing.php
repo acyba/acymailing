@@ -29,7 +29,7 @@ trait Listing
 
         $data = [
             'page_title' => true,
-            'mail_filter' => '',
+            'mail_filter_options' => [],
             'stats_export' => '',
             'selectedMailid' => '',
             'show_date_filters' => false,
@@ -121,7 +121,6 @@ trait Listing
 
         $statsController->prepareOpenTimeChart($data);
         $statsController->preparecharts($data);
-        $statsController->prepareDefaultRoundCharts($data);
         $statsController->prepareDefaultLineChart($data);
         $statsController->prepareDefaultDevicesChart($data);
         $statsController->prepareDefaultBrowsersChart($data);
@@ -131,17 +130,6 @@ trait Listing
         $statsEvolution = json_decode($this->config->get('statsEvolution', '{}'));
         $data['newSubscribers'] = $statsEvolution->totalNewSubscribersEvolution ?? 0;
         parent::display($data);
-    }
-
-    private function doDisplayBeginnerSteps(array $data): void
-    {
-        if ($this->config->get('install_date', time()) < strtotime('-14 days')) {
-            $this->config->saveConfig(['show_beginner_steps' => 0]);
-        } elseif (!$data['listCreated'] || $data['totalSubscribers'] <= 1 || !$data['campaignCreated'] || !$data['campaignSent'] || $data['mailStatsCheckedOnce'] != 1) {
-            $this->config->saveConfig(['show_beginner_steps' => 1]);
-        } else {
-            $this->config->saveConfig(['show_beginner_steps' => 0]);
-        }
     }
 
     public function getDashboardNotifications(array &$data): void
@@ -191,6 +179,16 @@ trait Listing
         $data['dashboardNotifications'] .= '</div>';
     }
 
+    private function doDisplayBeginnerSteps(array $data): void
+    {
+        if ($this->config->get('install_date', time()) < strtotime('-14 days')) {
+            $this->config->saveConfig(['show_beginner_steps' => 0]);
+        } elseif (!$data['listCreated'] || $data['totalSubscribers'] <= 1 || !$data['campaignCreated'] || !$data['campaignSent'] || $data['mailStatsCheckedOnce'] != 1) {
+            $this->config->saveConfig(['show_beginner_steps' => 1]);
+        } else {
+            $this->config->saveConfig(['show_beginner_steps' => 0]);
+        }
+    }
 
     private function prepareStatsView(array &$data): void
     {
@@ -218,7 +216,7 @@ trait Listing
         ];
     }
 
-    public function getCurrentCampaigns(array &$data): void
+    private function getCurrentCampaigns(array &$data): void
     {
         $queueClass = new QueueClass();
         $campaignsPerPage = 3;
@@ -239,7 +237,7 @@ trait Listing
         $data['campaigns'] = array_merge($pausedCampaigns['elements'], $activeCampaigns['elements']);
     }
 
-    public function getLastTwoCampaigns(array &$data): void
+    private function getLastTwoCampaigns(array &$data): void
     {
         $campaignsPerPage = 2;
         $campaignClass = new CampaignClass();
@@ -256,7 +254,7 @@ trait Listing
         $data['recent_campaigns'] = $lastTwoCampaigns['elements'];
     }
 
-    public function getMainLists(array &$data): void
+    private function getMainLists(array &$data): void
     {
         $listClass = new ListClass();
         $listPerPage = 5;
@@ -272,7 +270,7 @@ trait Listing
         $data['main_lists'] = $mainLists['elements'];
     }
 
-    public function getUsersCount(array &$data): void
+    private function getUsersCount(array &$data): void
     {
         $userClass = new UserClass();
         $matchingUsers = $userClass->getMatchingElements(

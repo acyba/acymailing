@@ -2,6 +2,8 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\PluginClass;
 
 class Router
@@ -70,9 +72,11 @@ class Router
 
     public function protectAcyMailingPages()
     {
-        // Make sure we're on an AcyMailing page
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Make sure we're on an AcyMailing page.
         $page = isset($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';
-        if (empty($page) || strpos($page, 'acymailing_') === false) return;
+        if (empty($page) || strpos($page, 'acymailing_') === false) {
+            return;
+        }
 
         wp_dequeue_script('responsive-lightbox-admin-select2');
         wp_dequeue_style('responsive-lightbox-admin-select2');
@@ -137,7 +141,7 @@ class Router
 
     public function router(bool $front = false): void
     {
-        displayFreeTrialMessage();
+        acym_displayFreeTrialMessage();
 
         //__START__demo_
         if (!ACYM_PRODUCTION && acym_isAdmin()) {
@@ -151,13 +155,18 @@ class Router
 
         if (!$front) {
             auth_redirect();
+
+            // The router only enforces auth_redirect() and the 'dashboard' controller is exempt from call()'s ACL, so mirror Menu.php's back-office access gate (wp_access groups) to keep arbitrary logged-in users out.
+            if (!acym_hasBackofficeAccess()) {
+                wp_die(esc_html(acym_translation('ACYM_ACCESS_DENIED')), '', ['response' => 403]);
+            }
         }
 
         if (file_exists(ACYM_FOLDER.'update.php')) {
             $acyActivation = new Activation();
             if (is_multisite()) {
                 $currentBlog = get_current_blog_id();
-                $sites = function_exists('get_sites') ? get_sites() : wp_get_sites();
+                $sites = get_sites();
 
                 foreach ($sites as $site) {
                     if (is_object($site)) {
@@ -173,7 +182,7 @@ class Router
                 $acyActivation->updateAcym();
             }
 
-            unlink(ACYM_FOLDER.'update.php');
+            acym_deleteFile(ACYM_FOLDER.'update.php');
         }
 
         $config = acym_config(true);
@@ -182,7 +191,7 @@ class Router
         $ctrl = acym_getVar('cmd', 'ctrl', '');
         $task = acym_getVar('cmd', 'task', '');
 
-        if (!$front && acym_isAdmin() && file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
+        if (!$front && acym_isAdmin() && file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON) && acym_isWritable(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
             $ctrl = 'dashboard';
             $task = 'features';
             acym_setVar('ctrl', $ctrl);
@@ -200,7 +209,7 @@ class Router
             $ctrl = str_replace(ACYM_COMPONENT.'_', '', acym_getVar('cmd', 'page', ''));
 
             if (empty($ctrl)) {
-                echo acym_translation('ACYM_PAGE_NOT_FOUND');
+                echo esc_html(acym_translation('ACYM_PAGE_NOT_FOUND'));
 
                 // For Google search console in the frontend to prevent from doing 404 errors
                 $noCache = acym_getVar('int', 'nocache', 0);
@@ -219,7 +228,7 @@ class Router
         $controllerNamespace = 'AcyMailing\\'.$subNamespace.'Controllers\\'.ucfirst($ctrl).'Controller';
 
         if (!class_exists($controllerNamespace)) {
-            echo acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl;
+            echo esc_html(acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl);
 
             return;
         }
@@ -227,16 +236,15 @@ class Router
         if (!$front && acym_isAdmin() && $task != 'edit' && !(defined('DOING_AJAX') && DOING_AJAX)) {
             $pluginClass = new PluginClass();
             $installedPlugins = $pluginClass->getAll('title');
-            $newPlugins = json_decode(ACYM_AVAILABLE_PLUGINS);
-            foreach ($newPlugins as $onePlugin) {
-                if (empty($installedPlugins[$onePlugin->name])) continue;
-                if ($installedPlugins[$onePlugin->name]->type !== 'ADDON') continue;
+            foreach (ACYM_AVAILABLE_PLUGINS as $onePlugin) {
+                if (empty($installedPlugins[$onePlugin['name']])) continue;
+                if ($installedPlugins[$onePlugin['name']]->type !== 'ADDON') continue;
 
                 acym_enqueueMessage(
                     acym_translationSprintf(
                         'ACYM_NEW_PLUGIN_FORMAT',
-                        $onePlugin->name,
-                        '<a target="_blank" style="color: #00a5ff;" href="'.$onePlugin->downloadlink.'">'.acym_translation('ACYM_CLICK_HERE').'</a>'
+                        $onePlugin['name'],
+                        '<a target="_blank" style="color: #00a5ff;" href="'.$onePlugin['downloadlink'].'">'.acym_translation('ACYM_CLICK_HERE').'</a>'
                     ),
                     'error'
                 );

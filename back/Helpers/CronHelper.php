@@ -159,7 +159,7 @@ class CronHelper extends AcymObject
         }
 
         // Prepare the cron file path
-        $reportPath = str_replace(['{year}', '{month}'], [date('Y'), date('m')], $reportPath);
+        $reportPath = str_replace(['{year}', '{month}'], [gmdate('Y'), gmdate('m')], $reportPath);
         $reportPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode($reportPath)));
         acym_createDir(dirname($reportPath), true, true);
 

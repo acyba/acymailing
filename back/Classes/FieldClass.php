@@ -3,6 +3,7 @@
 namespace AcyMailing\Classes;
 
 use AcyMailing\Core\AcymClass;
+use AcyMailing\Helpers\SecurityHelper;
 
 class FieldClass extends AcymClass
 {
@@ -142,7 +143,8 @@ class FieldClass extends AcymClass
 
     public function store(int $userID, array $fields, bool $ajax = false): void
     {
-        if (!empty($_FILES['customField'])) {
+        $customField = acym_getVar('array', 'customField', [], 'FILES');
+        if (!empty($customField)) {
             $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
             $uploadPath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$userID.DS);
             if (!file_exists($uploadPath)) {
@@ -150,12 +152,12 @@ class FieldClass extends AcymClass
             }
             $allowedExtensions = explode(',', $this->config->get('allowed_files'));
 
-            foreach ($_FILES['customField']['tmp_name'] as $key => $value) {
+            foreach ($customField['tmp_name'] as $key => $value) {
                 if (is_array($value) && isset($value[0])) $value = $value[0];
                 if (empty($value)) continue;
 
                 // Get the uploaded file name
-                $fileName = $_FILES['customField']['name'][$key];
+                $fileName = $customField['name'][$key];
                 while (is_array($fileName) && isset($fileName[0])) {
                     $fileName = $fileName[0];
                 }
@@ -165,14 +167,14 @@ class FieldClass extends AcymClass
                     if ($ajax) {
                         $this->errors[] = acym_translationSprintf(
                             'ACYM_ACCEPTED_TYPE',
-                            acym_escape($ext),
+                            acym_escapeHtml($ext),
                             implode(', ', $allowedExtensions)
                         );
                     } else {
                         acym_enqueueMessage(
                             acym_translationSprintf(
                                 'ACYM_ACCEPTED_TYPE',
-                                acym_escape($ext),
+                                acym_escapeHtml($ext),
                                 implode(', ', $allowedExtensions)
                             ),
                             'error',
@@ -192,7 +194,7 @@ class FieldClass extends AcymClass
 
                     continue;
                 }
-                $fields[$key] = $_FILES['customField']['name'][$key];
+                $fields[$key] = $customField['name'][$key];
             }
         }
 
@@ -263,7 +265,7 @@ class FieldClass extends AcymClass
                     if (!file_exists($filePath)) {
                         $filePath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$fileName);
                     }
-                    acym_deleteFile($filePath, false);
+                    acym_deleteFile($filePath);
                 }
             }
 
@@ -440,36 +442,36 @@ class FieldClass extends AcymClass
      * @param mixed $defaultValue
      */
     public function displayField(
-        object  $field,
-                $defaultValue,
-        array   $valuesArray,
-        bool    $displayOutside = true,
-        bool    $displayFront = false,
+        object $field,
+        $defaultValue,
+        array $valuesArray,
+        bool $displayOutside = true,
+        bool $displayFront = false,
         ?object $user = null,
-        bool    $showField = true
-    ): string {
+        bool $showField = true
+    ): void {
         if (intval($field->active) === 0 && intval($field->core) !== 1) {
-            return '';
+            return;
         }
 
         $extraErrors = $this->config->get('extra_errors', '0');
         $isCoreField = $field->core == 1;
 
         if (!$isCoreField && !acym_level(ACYM_ENTERPRISE)) {
-            return '';
+            return;
         }
 
         if (!$showField) {
             if (!acym_isAdmin()) {
-                return '';
+                return;
             }
 
             if (acym_isAdmin() && acym_level(ACYM_ENTERPRISE) && !$isCoreField) {
-                return '';
+                return;
             }
         }
 
-        $return = '';
+        $data = [];
 
         $cmsUser = false;
         if ($displayFront && !empty($user->id)) {
@@ -527,34 +529,37 @@ class FieldClass extends AcymClass
 
         $field->name = acym_translation($field->name);
 
-        if (empty((array)$field->option) || !isset($field->option->authorized_content)) {
-            $authorizedContent = '';
-        } else {
+        if (!empty((array)$field->option) && isset($field->option->authorized_content)) {
             if (empty($field->option->error_message_invalid)) {
                 $field->option->authorized_content->message = acym_translationSprintf('ACYM_INCORRECT_FIELD_VALUE', $field->name);
             } else {
                 $field->option->authorized_content->message = $field->option->error_message_invalid;
             }
-            $authorizedContent = ' data-authorized-content="'.acym_escape($field->option->authorized_content, false).'"';
+            $data['authorizedContent'] = json_encode($field->option->authorized_content);
         }
 
         $attributesSelectField = [];
-        $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
-        $style = '';
+        if (!empty($field->option->max_characters)) {
+            $data['maxCharacters'] = $field->option->max_characters;
+        }
         if (!empty($field->option->size)) {
             $attributesSelectField['style'] = 'width:'.$field->option->size.'px';
-            $style = ' style="width:'.$field->option->size.'px"';
+            $data['style'] = 'width:'.$field->option->size.'px';
         }
 
-        $placeholder = '';
         if (!$displayOutside) {
-            $placeholder = ' placeholder="'.acym_escape($field->name).'" aria-label="'.acym_escape($field->name).'"';
+            $data['placeholder'] = $field->name;
         }
 
         $name = 'customField['.intval($field->id).']';
-        $nameAttribute = ' name="'.$name.'"';
         if ($field->type === 'text') {
-            $value = ' value="'.acym_escape($defaultValue).'"';
+            $data['value'] = empty($defaultValue)
+                ? ''
+                : (
+                is_scalar($defaultValue)
+                    ? $defaultValue
+                    : json_encode($defaultValue)
+                );
         }
 
         if (
@@ -564,16 +569,17 @@ class FieldClass extends AcymClass
                 || in_array($field->type, ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language'])
             )
         ) {
-            $return .= '<label class="cell margin-top-1"><span class="acym__users__creation__fields__title">'.$field->name.'</span>';
+            echo '<label class="cell margin-top-1"><span class="acym__users__creation__fields__title">'.acym_escapeHtml($field->name).'</span>';
         }
         if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
-            $return .= '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.$field->name.'</div>';
+            echo '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.acym_escapeHtml($field->name).'</div>';
         }
 
         $messageRequired = empty($field->option->error_message) ? '' : acym_translation($field->option->error_message);
         $requiredJson = json_encode(['type' => $field->type, 'message' => $messageRequired]);
         $required = '';
         if ($field->required) {
+            $data['data-required'] = $requiredJson;
             $required = ' data-required="'.acym_escape($requiredJson).'"';
             $attributesSelectField['data-required'] = $requiredJson;
         }
@@ -584,79 +590,112 @@ class FieldClass extends AcymClass
             unset($attributesSelectField['data-required']);
             $readonly = ' disabled ';
             $required = '';
+            $data['disabled'] = true;
+            unset($data['data-required']);
         }
 
         $defaultValue = $this->prepareDefaultValue($defaultValue, $field->type, $user);
 
         if ($field->id == 1) {
-            $nameAttribute = ' name="user[name]"';
-            $inputTmp = '<input autocomplete="name" '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.$readonly.' type="text" class="cell">';
-            if (!empty($readonly)) {
-                $inputTmp = acym_tooltip(
+            $data['type'] = 'text';
+            $data['name'] = 'user[name]';
+            $data['autocomplete'] = 'name';
+            $data['class'] = 'cell';
+
+            if (empty($readonly)) {
+                include acym_getPartial('fields', 'input');
+            } else {
+                ob_start();
+                include acym_getPartial('fields', 'input');
+                $input = ob_get_clean();
+
+                acym_tooltip(
                     [
-                        'hoveredText' => $inputTmp,
+                        'hoveredText' => $input,
                         'textShownInTooltip' => acym_translation('ACYM_CF_EDITION_BLOCKED'),
                     ]
                 );
             }
-            $return .= $inputTmp;
         } elseif ($field->id == 2) {
-            $nameAttribute = ' name="user[email]"';
-            $uniqueId = 'email_field_'.rand(100, 900);
-            $inputTmp = '<input 
-                    autocomplete="email" 
-                    id="'.$uniqueId.'" 
-                    '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.$readonly.' 
-                    required 
-                    type="email" 
-                    class="cell acym__user__edit__email"
-                    '.($cmsUser ? 'readonly="readonly"' : '').'>';
-            if (!empty($readonly)) {
-                $inputTmp = acym_tooltip(
+            $uniqueId = 'email_field_'.acym_rand(100, 900);
+
+            unset($data['data-required']);
+            $data['type'] = 'email';
+            $data['name'] = 'user[email]';
+            $data['autocomplete'] = 'email';
+            $data['id'] = $uniqueId;
+            $data['class'] = 'cell acym__user__edit__email';
+            $data['required'] = true;
+            $data['readonly'] = $cmsUser;
+
+            if (empty($readonly)) {
+                include acym_getPartial('fields', 'input');
+            } else {
+                ob_start();
+                include acym_getPartial('fields', 'input');
+                $input = ob_get_clean();
+
+                acym_tooltip(
                     [
-                        'hoveredText' => $inputTmp,
+                        'hoveredText' => $input,
                         'textShownInTooltip' => acym_translation('ACYM_CF_EDITION_BLOCKED'),
                     ]
                 );
             }
-            $return .= $inputTmp;
+
             if ($displayFront && !$cmsUser && !empty($this->config->get('email_spellcheck'))) {
-                $return .= '<ul acym-data-field="'.$uniqueId.'" class="acym_email_suggestions" style="display: none;"></ul>';
+                echo '<ul acym-data-field="'.acym_escape($uniqueId).'" class="acym_email_suggestions" style="display: none;"></ul>';
             }
         } elseif ($field->type === 'language') {
             $attributesSelectField['class'] = 'acym__select';
-            $selectTmp = acym_select(
-                $this->getLanguagesForDropdown(),
-                'user[language]',
-                $defaultValue,
-                $attributesSelectField
-            );
-
-            if (!empty($readonly)) {
-                $selectTmp = acym_tooltip(
+            if (empty($readonly)) {
+                acym_select(
+                    $this->getLanguagesForDropdown(),
+                    'user[language]',
+                    $defaultValue,
+                    $attributesSelectField,
+                    'value',
+                    'text',
+                    null,
+                    false,
+                    true
+                );
+            } else {
+                acym_tooltip(
                     [
-                        'hoveredText' => $selectTmp,
+                        'hoveredText' => acym_select(
+                            $this->getLanguagesForDropdown(),
+                            'user[language]',
+                            $defaultValue,
+                            $attributesSelectField
+                        ),
                         'textShownInTooltip' => acym_translation('ACYM_CF_EDITION_BLOCKED'),
                     ]
                 );
             }
-            $return .= $selectTmp;
         } elseif ($field->type === 'text') {
-            $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text">';
+            $data['type'] = 'text';
+            $data['name'] = $name;
+            include acym_getPartial('fields', 'input');
         } elseif ($field->type === 'textarea') {
-            $return .= '<textarea '.$nameAttribute.$required.$maxCharacters.' rows="'.intval($field->option->rows).'" cols="'.intval(
-                    $field->option->columns
-                ).'">'.$defaultValue.'</textarea>';
+            echo '<textarea name="'.acym_escape($name).'"';
+            if (!empty($data['data-required'])) {
+                echo ' data-required="'.acym_escape($data['data-required']).'"';
+            }
+            if (isset($data['maxCharacters'])) {
+                echo ' maxlength="'.acym_escape($data['maxCharacters']).'"';
+            }
+            echo ' rows="'.intval($field->option->rows).'" cols="'.intval($field->option->columns).'">';
+            echo acym_escapeHtml(is_scalar($defaultValue) ? $defaultValue : '');
+            echo '</textarea>';
         } elseif ($field->type === 'radio') {
             if ($displayFront) {
-                foreach ($valuesArray as $key => $oneValue) {
-                    $isCkecked = $defaultValue == $key ? 'checked' : '';
-                    $return .= '<label><input '.$nameAttribute.$required.' type="radio" value="'.acym_escape(
-                            $key
-                        ).'" '.$isCkecked.'> '.$oneValue.'</label>';
-                }
+                $data['name'] = $name;
+                $data['values'] = $valuesArray;
+                $data['value'] = $defaultValue;
+                include acym_getPartial('fields', 'radio');
             } else {
-                $return .= acym_radio(
+                acym_radio(
                     $valuesArray,
                     $name.'[]',
                     $defaultValue,
@@ -664,45 +703,42 @@ class FieldClass extends AcymClass
                 );
             }
         } elseif ($field->type === 'checkbox') {
-            $return .= '<input type="hidden" name="'.acym_escape($name).'" value="">';
-            if ($displayFront) {
-                foreach ($valuesArray as $key => $oneValue) {
-                    $checked = in_array($key, $defaultValue) ? 'checked' : '';
-                    $return .= '<label><input '.$required.' type="checkbox" name="'.$name.'['.acym_escape($key).']" value="'.acym_escape(
-                            $key
-                        ).'" '.$checked.'> '.$oneValue.'</label>';
-                }
-            } else {
-                foreach ($valuesArray as $key => $oneValue) {
-                    if (in_array($key, $defaultValue)) {
-                        $labelClass = '';
-                        $attributes = 'checked '.$required;
-                    } else {
-                        $labelClass = 'class="cell margin-top-1"';
-                        $attributes = '';
-                    }
-                    $return .= '<label '.$labelClass.'>';
-                    $return .= '<input '.$attributes.' type="checkbox" name="'.$name.'['.acym_escape(
-                            $key
-                        ).']" class="acym__users__creation__fields__checkbox">'.$oneValue.'</label>';
-                }
-            }
+            $data['name'] = $name;
+            $data['values'] = $valuesArray;
+            $data['value'] = $defaultValue;
+            $data['displayFront'] = $displayFront;
+            include acym_getPartial('fields', 'checkbox');
         } elseif ($field->type === 'single_dropdown') {
             $attributesSelectField['class'] = 'acym__custom__fields__select__form acym__select';
-            $return .= acym_select(
+            acym_select(
                 $valuesArray,
                 $name,
                 $defaultValue,
-                $attributesSelectField
+                $attributesSelectField,
+                'value',
+                'text',
+                null,
+                false,
+                true
             );
         } elseif ($field->type === 'multiple_dropdown') {
             $attributes = [
                 'class' => 'acym__custom__fields__select__multiple__form acym__select',
                 'style' => empty($field->option->size) ? '' : 'width:'.$field->option->size.'px',
             ];
-            if ($field->required) $attributes['data-required'] = $displayFront ? acym_escape($requiredJson) : $requiredJson;
+            if ($field->required) {
+                $attributes['data-required'] = $displayFront ? acym_escape($requiredJson) : $requiredJson;
+            }
 
-            $return .= acym_selectMultiple($valuesArray, $name, $defaultValue, $attributes);
+            acym_selectMultiple(
+                $valuesArray,
+                $name,
+                $defaultValue,
+                $attributes,
+                'value',
+                'text',
+                true
+            );
         } elseif ($field->type === 'date') {
             $attributes = [
                 'class' => 'acym__custom__fields__select__form acym__select',
@@ -711,15 +747,33 @@ class FieldClass extends AcymClass
             if (!empty($required)) {
                 $attributes['data-required'] = $requiredJson;
             }
-            $return .= acym_displayDateFormat(
-                $field->option->format,
-                $name.'[]',
-                $defaultValue,
-                $attributes
+
+            echo acym_escapeHtmlWithAllowedTags(
+                acym_displayDateFormat(
+                    $field->option->format,
+                    $name.'[]',
+                    $defaultValue,
+                    $attributes
+                ),
+                array_merge_recursive(
+                    SecurityHelper::ALLOWED_HTML_SELECT,
+                    [
+                        'select' => [
+                            'data-required' => true,
+                            'acym-field-type' => true,
+                        ],
+                        'div' => [
+                            'class' => true,
+                        ],
+                    ]
+                )
             );
         } elseif ($field->type === 'file') {
             if ($displayFront) {
-                $return .= '<input '.$nameAttribute.$required.' type="file">';
+                unset($data['placeholder'], $data['value'], $data['authorizedContent'], $data['style'], $data['maxCharacters']);
+                $data['type'] = 'file';
+                $data['name'] = $name;
+                include acym_getPartial('fields', 'input');
             } else {
                 $downloadUrl = '';
                 if (!empty($defaultValue) && !empty($user->id)) {
@@ -736,39 +790,52 @@ class FieldClass extends AcymClass
                         }
                     }
                 }
-                $return .= acym_inputFile($name.'[]', $defaultValue, '', $required, $downloadUrl);
+                $attributes = [];
+                if (!empty($required)) {
+                    $attributes['data-required'] = $requiredJson;
+                }
+                acym_inputFile($name.'[]', $defaultValue, '', $attributes, $downloadUrl);
             }
         } elseif ($field->type === 'phone') {
             $indicator = !empty($defaultValue[0]) ? $defaultValue[0] : '';
             $number = !empty($defaultValue[1]) ? $defaultValue[1] : '';
 
-            if ($displayOutside) $return .= '<div class="cell margin-top-1 grid-x"><div class="acym__users__creation__fields__title cell">'.$field->name.'</div>';
-            $return .= '<div class="cell large-5 medium-4 padding-next-1">';
-            $return .= acym_generateCountryNumber($name.'[code]', $indicator);
-            $return .= '</div>';
-            $return .= '<input autocomplete="tel-national" '.$placeholder.$required.$style.$maxCharacters.' class="cell large-7 medium-8" type="tel" name="'.$name.'[phone]" value="'.acym_escape(
-                    $number
-                ).'">';
-            if ($displayOutside) $return .= '</div>';
+            if ($displayOutside) {
+                echo '<div class="cell margin-top-1 grid-x"><div class="acym__users__creation__fields__title cell">'.acym_escapeHtml($field->name).'</div>';
+            }
+            echo '<div class="cell large-5 medium-4 padding-next-1">';
+            acym_generateCountryNumber($name.'[code]', $indicator);
+            echo '</div>';
+
+            unset($data['authorizedContent']);
+            $data['type'] = 'tel';
+            $data['name'] = $name.'[phone]';
+            $data['autocomplete'] = 'tel-national';
+            $data['class'] = 'cell large-7 medium-8';
+            $data['value'] = $number;
+            include acym_getPartial('fields', 'input');
+
+            if ($displayOutside) {
+                echo '</div>';
+            }
         } elseif ($field->type === 'custom_text') {
-            $return .= $field->option->custom_text;
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Admin-defined custom HTML content, intentionally rendered as-is.
+            echo $field->option->custom_text;
         }
 
         $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'language'];
         if ($displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, $labelTypes))) {
-            $return .= '</label>';
+            echo '</label>';
         }
         if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
-            $return .= '</div>';
+            echo '</div>';
         }
 
-        $return .= '<div class="acym__field__error__block" data-acym-field-id="'.intval($field->id).'"></div>';
+        echo '<div class="acym__field__error__block" data-acym-field-id="'.intval($field->id).'"></div>';
         if ($displayFront && $extraErrors && !acym_isAdmin()) {
-            $return .= '<div class="acym__message__invalid__field acym__color__error" style="display: none;">';
-            $return .= '<i class="acymicon-times-circle acym__cross__invalid acym__color__error"></i>'.acym_translation('ACYM_THANKS_TO_FILL_IN_THIS_FIELD').'</div>';
+            echo '<div class="acym__message__invalid__field acym__color__error" style="display: none;">';
+            echo '<i class="acymicon-times-circle acym__cross__invalid acym__color__error"></i>'.acym_escapeHtml(acym_translation('ACYM_THANKS_TO_FILL_IN_THIS_FIELD')).'</div>';
         }
-
-        return $return;
     }
 
     /**
@@ -907,43 +974,42 @@ class FieldClass extends AcymClass
         return $dataLanguages;
     }
 
-    public function setEmailConfirmationField(bool $displayOutside, object $field, string $container = 'div', bool $displayInline = false): string
+    public function setEmailConfirmationField(bool $displayOutside, object $field, string $container = 'div', bool $displayInline = false): void
     {
-        $uniqueId = 'email_confirmation_field_'.rand(100, 900);
+        $uniqueId = 'email_confirmation_field_'.acym_rand(100, 900);
 
-        $return = '<'.$container.' class="onefield acym_email_confirmation_field acyfield_text">';
+        echo '<'.acym_escape($container).' class="onefield acym_email_confirmation_field acyfield_text">';
         if ($displayOutside) {
-            $return .= '<label class="cell margin-top-1">';
-            $return .= '<span class="acym__users__creation__fields__title">'.acym_translation('ACYM_EMAIL_CONFIRMATION').'</span>';
+            echo '<label class="cell margin-top-1">';
+            echo '<span class="acym__users__creation__fields__title">'.acym_escapeHtml(acym_translation('ACYM_EMAIL_CONFIRMATION')).'</span>';
         }
 
-        $style = empty($field->option->size) ? '' : ' style="width:'.intval($field->option->size).'px"';
         $placeholder = !$displayOutside ? acym_translation('ACYM_EMAIL_CONFIRMATION') : '';
-        $return .= '<input id="'.acym_escape($uniqueId).'" 
-                        '.$style.' 
+        echo '<input id="'.acym_escape($uniqueId).'" 
+                        '.(empty($field->option->size) ? '' : ' style="width:'.intval($field->option->size).'px"').' 
                         required 
                         type="email" 
                         class="cell acym__user__edit__email" 
                         name="user[email_confirmation]" 
                         placeholder="'.acym_escape($placeholder).'" />';
-        $return .= '<span class="acym__field__error__block"></span>';
+        echo '<span class="acym__field__error__block"></span>';
 
         $extraErrors = $this->config->get('extra_errors', '0');
         if ($extraErrors && !acym_isAdmin()) {
-            $return .= '<span class="acym__message__invalid__field acym__color__error" style="display: none;">';
-            $return .= '<i class="acymicon-times-circle acym__cross__invalid acym__color__error"></i>'.acym_translation('ACYM_THANKS_TO_FILL_IN_THIS_FIELD').'</span>';
+            echo '<span class="acym__message__invalid__field acym__color__error" style="display: none;">';
+            echo '<i class="acymicon-times-circle acym__cross__invalid acym__color__error"></i>';
+            echo acym_escapeHtml(acym_translation('ACYM_THANKS_TO_FILL_IN_THIS_FIELD'));
+            echo '</span>';
         }
 
         if ($displayOutside) {
-            $return .= '</label>';
+            echo '</label>';
         }
-        $return .= '</'.$container.'>';
+        echo '</'.acym_escape($container).'>';
 
         if ($container === 'td' && !$displayInline) {
             //TODO either open tr here, or close it where setEmailConfirmationField is called
-            $return .= '</tr>';
+            echo '</tr>';
         }
-
-        return $return;
     }
 }

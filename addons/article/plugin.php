@@ -631,7 +631,7 @@ class plgAcymArticle extends AcymPlugin
         }
 
         $category = acym_loadResult('SELECT title FROM #__categories WHERE id = '.intval($element->catid));
-        $varFields['{cat}'] = '<a href="'.$this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid, $tag).'" target="_blank">'.acym_escape(
+        $varFields['{cat}'] = '<a href="'.$this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid, $tag).'" target="_blank">'.acym_escapeHtml(
                 $category
             ).'</a>';
         if (in_array('cat', $tag->display)) {
@@ -649,7 +649,7 @@ class plgAcymArticle extends AcymPlugin
                   AND map.content_item_id = '.intval($tag->id)
         );
         foreach ($tags as $i => $oneTag) {
-            $tags[$i] = '<a href="'.$this->finalizeLink('index.php?option=com_tags&view=tag&id='.$oneTag->id.':'.$oneTag->alias, $tag).'" target="_blank">'.acym_escape(
+            $tags[$i] = '<a href="'.$this->finalizeLink('index.php?option=com_tags&view=tag&id='.$oneTag->id.':'.$oneTag->alias, $tag).'" target="_blank">'.acym_escapeHtml(
                     $oneTag->title
                 ).'</a>';
         }
@@ -665,7 +665,7 @@ class plgAcymArticle extends AcymPlugin
         $this->prepareCustomFields($tag, $customFields, $varFields);
 
         $readMoreText = empty($tag->readmore) ? acym_translation('ACYM_READ_MORE') : $tag->readmore;
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escapeHtml(
                 $readMoreText
             ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];

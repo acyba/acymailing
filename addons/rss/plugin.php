@@ -235,7 +235,7 @@ class plgAcymRss extends AcymPlugin
             $result = $this->pluginHelper->getFormattedResult($resultfeeds, $parameter);
 
             // Make sure there are no internal links
-            $baseURL = 'https://'.parse_url($parameter->url, PHP_URL_HOST);
+            $baseURL = 'https://'.acym_parseUrl($parameter->url, PHP_URL_HOST);
             $result = str_replace(['href="/', 'src="/'], ['href="'.$baseURL.'/', 'src="'.$baseURL.'/'], $result);
 
             $this->tags[$oneTag] = $result;

@@ -64,29 +64,22 @@ jQuery(function ($) {
                 showSettings: {}
             },
             mounted: function () {
-                acym_helper.config_get('level').done((resConfig) => {
-                    if (resConfig.error) {
-                        acym_helperNotification.addNotification(resConfig.message, 'error');
-
-                        return false;
-                    }
-                    this.allPlugins = acym_helper.parseJson(document.getElementById('acym__plugins__all').value);
-                    // We delete this element to prevent an error when saving the form
-                    document.getElementById('acym__plugins__all').remove();
-                    this.currentLevel = resConfig.data.value.toLowerCase();
-                    this.resetDisplay();
-                    if (this.displayedPlugins.length === 0) {
-                        this.noPluginTodisplay = true;
-                    }
-                    this.fillPluginToggling();
-                    this.fillUpdating();
-                    acym_helper.setSubmitButtonGlobal();
-                    this.loading = false;
-                    setTimeout(() => {
-                        this.$forceUpdate();
-                        this.afterRender();
-                    }, 100);
-                });
+                this.allPlugins = window.acymailingAddons;
+                this.currentLevel = (
+                    typeof ACYM_LEVEL === 'undefined' ? '' : ACYM_LEVEL
+                ).toLowerCase();
+                this.resetDisplay();
+                if (this.displayedPlugins.length === 0) {
+                    this.noPluginTodisplay = true;
+                }
+                this.fillPluginToggling();
+                this.fillUpdating();
+                acym_helper.setSubmitButtonGlobal();
+                this.loading = false;
+                setTimeout(() => {
+                    this.$forceUpdate();
+                    this.afterRender();
+                }, 100);
             },
             methods: {
                 afterRender() {
@@ -166,10 +159,14 @@ jQuery(function ($) {
                 },
                 filterPlugin() {
                     return this.allPlugins.filter((plugin) => {
-                        return (plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1)
-                               && (plugin.category.toLowerCase()
-                                         .indexOf(this.type.toLowerCase()) !== -1)
-                               && (plugin.folder_name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1);
+                        return (
+                                   plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1
+                               ) && (
+                                   plugin.category.toLowerCase()
+                                         .indexOf(this.type.toLowerCase()) !== -1
+                               ) && (
+                                   plugin.folder_name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1
+                               );
                     });
                 },
                 toggleUptodateCurrentApp(pluginId) {
@@ -231,8 +228,7 @@ jQuery(function ($) {
                     }
 
                     if (type === 'PLUGIN') {
-                        const pluginDefinitions = acym_helper.parseJson(ACYM_AVAILABLE_PLUGINS);
-                        const matchingPlugin = pluginDefinitions.find(plugin => plugin.file_name === pluginName);
+                        const matchingPlugin = window.acymailingAvailableAddons.find(plugin => plugin.file_name === pluginName);
                         if (matchingPlugin) {
                             return matchingPlugin.documentation;
                         }

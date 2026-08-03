@@ -7,13 +7,13 @@
         "@acymailing/svg-to-woff": "^0.0.8",
         "@babel/polyfill": "7.7.0",
         "axios": "^0.27.2",
+        "baseline-browser-mapping": "^2.10.40",
+        "caniuse-lite": "^1.0.30001800",
         "dateformat": "^3.0.3",
         "fs": "^0.0.1-security",
         "gulp": "^4.0.2",
         "gulp-cached": "^1.1.1",
         "gulp-clean": "^0.4.0",
-        "gulp-sass": "^5.1.0",
-        "sass": "^1.72.0",
         "gulp-concat": "^2.6.1",
         "gulp-cssmin": "^0.2.0",
         "gulp-file": "^0.4.0",
@@ -28,9 +28,11 @@
         "gulp-rename": "^1.4.0",
         "gulp-replace": "^1.0.0",
         "gulp-run-command": "0.0.10",
+        "gulp-sass": "^5.1.0",
         "gulp-tar": "^2.1.0",
         "gulp-zip": "^5.1.0",
-        "node-cron": "^3.0.1"
+        "node-cron": "^3.0.1",
+        "sass": "^1.72.0"
     },
     "devDependencies": {
         "@babel/cli": "7.7.5",

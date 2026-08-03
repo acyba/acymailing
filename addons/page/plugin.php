@@ -143,12 +143,14 @@ class plgAcymPage extends AcymPlugin
         $rows = $this->getElements();
         foreach ($rows as $i => $row) {
             if (str_replace(['wp:core-embed', 'wp:shortcode'], '', $row->post_content) !== $row->post_content) {
-                $rows[$i]->post_title = acym_tooltip(
-                        [
-                            'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
-                            'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
-                        ]
-                    ).$rows[$i]->post_title;
+                ob_start();
+                acym_tooltip(
+                    [
+                        'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
+                        'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
+                    ]
+                );
+                $rows[$i]->post_title = ob_get_clean().$rows[$i]->post_title;
             }
         }
 
@@ -228,7 +230,7 @@ class plgAcymPage extends AcymPlugin
 
         $customFields = [];
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.esc_html(
                 acym_translation('ACYM_READ_MORE')
             ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
@@ -271,6 +273,7 @@ class plgAcymPage extends AcymPlugin
             }
         } elseif ($translationTool === 'wpml') {
             if (acym_isExtensionActive('sitepress-multilingual-cms/sitepress.php')) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook for integration.
                 $elementId = apply_filters('wpml_object_id', $elementId, 'post', true, $languageCode);
             }
         }

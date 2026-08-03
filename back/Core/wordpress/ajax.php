@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 function acym_sendAjaxResponse(string $message = '', array $data = [], bool $success = true): void
 {
     $response = [

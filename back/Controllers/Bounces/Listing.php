@@ -83,6 +83,8 @@ trait Listing
     // When one of the raw of the listing is moved we set the ordering
     public function ajaxSetOrdering(): void
     {
+        acym_checkToken();
+
         $order = json_decode(acym_getVar('string', 'order'), true);
         if (empty($order)) {
             $order = [];
@@ -102,6 +104,8 @@ trait Listing
     // Click on the button Run Bounce Handling
     public function test(): void
     {
+        acym_checkToken();
+
         $ruleClass = new RuleClass();
 
         if ($ruleClass->getOrderingNumber() < 1) {
@@ -140,6 +144,8 @@ trait Listing
     // Process bounce handling after clicking on the button Run Bounce Handling
     public function process(): void
     {
+        acym_checkToken();
+
         acym_increasePerf();
 
         $bounceHelper = new BounceHelper();
@@ -152,11 +158,21 @@ trait Listing
 
             return;
         }
-        $disp = "<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />\n";
-        $disp .= '<title>'.addslashes(acym_translation('ACYM_BOUNCE_PROCESS')).'</title>'."\n";
-        $disp .= "<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;padding-top:30px;}</style>\n</head>\n<body>";
-        echo $disp;
-
+        ?>
+		<html>
+		<head>
+			<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+			<title><?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCE_PROCESS')); ?></title>
+			<style>
+				body{
+					font-size: 12px;
+					font-family: Arial, Helvetica, sans-serif;
+					padding-top: 30px;
+				}
+			</style>
+		</head>
+		<body>
+        <?php
         acym_display(acym_translationSprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')), 'success');
         $nbMessages = $bounceHelper->getNBMessages();
         $nbMessagesReport = acym_translationSprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
@@ -175,13 +191,13 @@ trait Listing
 
         if ($this->config->get('bounce_max', 0) != 0 && $nbMessages > $this->config->get('bounce_max', 0)) {
             //We still have some messages...
-            $url = acym_completeLink('bounces&task=process&continuebounce=1', true, true);
+            $url = acym_completeLink('bounces&task=process&continuebounce=1', true, true).'&'.acym_getFormToken();
             if (acym_getVar('int', 'continuebounce')) {
                 //We already started the bounce handling and we should resume it until the end...
-                echo '<script type="text/javascript">document.location.href=\''.$url.'\';</script>';
+                echo '<script type="text/javascript">document.location.href = '.json_encode($url).';</script>';
             } else {
                 //We should propose to the user to resume the bounce process until the end...
-                echo '<div style="padding:20px;"><a href="'.$url.'">'.acym_translation('ACYM_CLICK_HANDLE_ALL_BOUNCES').'</a></div>';
+                echo '<div style="padding:20px;"><a href="'.acym_escapeUrl($url).'">'.acym_escapeHtml(acym_translation('ACYM_CLICK_HANDLE_ALL_BOUNCES')).'</a></div>';
             }
         }
 
@@ -196,6 +212,8 @@ trait Listing
     // Click on the button Reset to default rules
     public function reinstall(): void
     {
+        acym_checkToken();
+
         $ruleClass = new RuleClass();
         $ruleClass->cleanTable();
 
@@ -213,6 +231,8 @@ trait Listing
 
     public function delete(): void
     {
+        acym_checkToken();
+
         $rulesSelected = acym_getVar('array', 'elements_checked', []);
 
         if (in_array(RuleClass::FINAL_RULE_ID, $rulesSelected)) {
@@ -232,6 +252,8 @@ trait Listing
 
     public function setInactive(): void
     {
+        acym_checkToken();
+
         $rulesSelected = acym_getVar('array', 'elements_checked', []);
         $ruleClass = new RuleClass();
         $ruleClass->setInactive($rulesSelected);
@@ -241,6 +263,8 @@ trait Listing
 
     public function setActive(): void
     {
+        acym_checkToken();
+
         $rulesSelected = acym_getVar('array', 'elements_checked', []);
         $ruleClass = new RuleClass();
         $ruleClass->setActive($rulesSelected);

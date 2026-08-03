@@ -1,4 +1,8 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm">
     <?php
     $isEmpty = empty($data['allCampaigns']) && empty($data['search']) && empty($data['status']) && empty($data['tag']);
     if (!$isEmpty) {
@@ -8,7 +12,7 @@
 	<div id="acym__campaigns" class="acym__content">
         <?php
         $workflow = $data['workflowHelper'];
-        echo $workflow->displayTabs($this->tabs, $data['typeWorkflowTab']);
+        $workflow->displayTabs($this->tabs, $data['typeWorkflowTab']);
 
         if ($isEmpty) {
             include acym_getView('campaigns', 'listing_empty', true);
@@ -18,6 +22,6 @@
         ?>
 	</div>
     <?php acym_formOptions(true, 'specificListing'); ?>
-	<input type="hidden" name="type" value="<?php echo empty($data['type']) ? '' : $data['type']; ?>">
-	<input type="hidden" name="email_type" value="<?php echo empty($data['type']) ? '' : $data['type']; ?>">
+	<input type="hidden" name="type" value="<?php echo empty($data['type']) ? '' : acym_escape($data['type']); ?>">
+	<input type="hidden" name="email_type" value="<?php echo empty($data['type']) ? '' : acym_escape($data['type']); ?>">
 </form>

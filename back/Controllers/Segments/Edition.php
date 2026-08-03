@@ -38,9 +38,17 @@ trait Edition
 
     private function store(): int
     {
+        acym_checkToken();
+
         $segmentId = acym_getVar('int', 'segmentId');
         $filters = acym_getVar('array', 'acym_action');
         $segmentRequest = acym_getVar('array', 'segment');
+
+        if (acym_conditionsContainRestrictedFilter($filters) && !acym_hasAdminPermissions()) {
+            acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'error');
+
+            return 0;
+        }
 
         $segmentClass = new SegmentClass();
 
@@ -65,9 +73,12 @@ trait Edition
 
     public function countResultsTotal(): void
     {
+        acym_checkToken();
+
         $segmentSelected = acym_getVar('int', 'segment_selected');
         if (empty($segmentSelected)) {
             $stepAutomation = acym_getVar('array', 'acym_action', []);
+            acym_blockRestrictedFilterAjax($stepAutomation);
         } else {
             $segmentClass = new SegmentClass();
             $segment = $segmentClass->getOneById($segmentSelected);
@@ -140,9 +151,12 @@ trait Edition
 
     public function countResults(): void
     {
+        acym_checkToken();
+
         $and = acym_getVar('int', 'and');
         $or = acym_getVar('int', 'or');
         $stepAutomation = acym_getVar('array', 'acym_action');
+        acym_blockRestrictedFilterAjax($stepAutomation);
 
         //if we are in the campaign edition
         $listsIds = acym_getVar('string', 'list_selected', '');
@@ -168,7 +182,11 @@ trait Edition
         $messages = acym_trigger('onAcymProcessFilterCount_'.$filterName, [&$automationHelper, &$options, &$and]);
         $messages = $messages[0];
 
-        if (!empty($listsIds)) $messages .= acym_info(['textShownInTooltip' => 'ACYM_CONDITION_WITH_LISTS_COUNT', 'classText' => 'wysid_tooltip']);
+        if (!empty($listsIds)) {
+            ob_start();
+            acym_info(['textShownInTooltip' => 'ACYM_CONDITION_WITH_LISTS_COUNT', 'classText' => 'wysid_tooltip']);
+            $messages .= ob_get_clean();
+        }
 
         acym_sendAjaxResponse($messages);
     }
@@ -182,6 +200,7 @@ trait Edition
         $and = acym_getVar('int', 'and');
         $or = acym_getVar('int', 'or');
         $stepAutomation = acym_getVar('array', 'acym_action');
+        acym_blockRestrictedFilterAjax($stepAutomation);
 
         if (empty($stepAutomation['filters'][$or][$and])) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);

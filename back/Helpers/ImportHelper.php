@@ -50,7 +50,7 @@ class ImportHelper extends AcymObject
         $extension = strtolower(acym_fileGetExt($importFile['name']));
 
         if (!preg_match('#^(csv)$#Ui', $extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui', $importFile['name'])) {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_ACCEPTED_TYPE', acym_escape($extension), $this->config->get('allowed_files')), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_ACCEPTED_TYPE', acym_escapeHtml($extension), $this->config->get('allowed_files')), 'error');
 
             return false;
         }
@@ -85,17 +85,14 @@ class ImportHelper extends AcymObject
         acym_setVar('acym_import_filename', $filename);
 
         if (!acym_uploadFile($importFile['tmp_name'], $uploadPath.$filename)) {
-            if (!move_uploaded_file($importFile['tmp_name'], $uploadPath.$filename)) {
-                //If we can not do it with a simple method, let's do it with Joomla and FTP
-                acym_enqueueMessage(
-                    acym_translationSprintf(
-                        'ACYM_FAIL_UPLOAD',
-                        '<b><i>'.acym_escape($importFile['tmp_name']).'</i></b>',
-                        '<b><i>'.acym_escape($uploadPath.$filename).'</i></b>'
-                    ),
-                    'error'
-                );
-            }
+            acym_enqueueMessage(
+                acym_translationSprintf(
+                    'ACYM_FAIL_UPLOAD',
+                    '<b><i>'.acym_escapeHtml($importFile['tmp_name']).'</i></b>',
+                    '<b><i>'.acym_escapeHtml($uploadPath.$filename).'</i></b>'
+                ),
+                'error'
+            );
         }
 
         return true;
@@ -202,7 +199,7 @@ class ImportHelper extends AcymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time() - date('Z'))).' 
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(gmdate('Y-m-d H:i:s', time())).' 
                     FROM #__acym_list AS list, #__acym_user AS user ';
         $conditions = [];
         $conditions[] = 'list.`id` IN ('.implode(',', $listsSubscribe).')';
@@ -214,7 +211,7 @@ class ImportHelper extends AcymObject
                 $conditions[] = '`map`.`group_id` IN ('.implode(', ', $groups).')';
             } else {
                 $query .= ' JOIN #__usermeta AS `meta` ON meta.user_id = `user`.`cms_id` AND `meta`.`meta_key` = "#__capabilities"';
-                $conditions[] = '`meta`.`meta_value` LIKE ('.implode(' OR `meta`.`meta_value` LIKE ', $groups).')';
+                $conditions[] = '(`meta`.`meta_value` LIKE '.implode(' OR `meta`.`meta_value` LIKE ', $groups).')';
             }
         }
 
@@ -438,7 +435,7 @@ class ImportHelper extends AcymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time() - date('Z'))).' 
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(gmdate('Y-m-d H:i:s', time())).' 
                     FROM #__acym_list AS list, #__acym_user AS user 
                     WHERE list.`id` IN ('.implode(',', $listsSubscribe).') 
                         AND user.`email` IN (SELECT '.acym_secureDBColumn($select['`email`']).' FROM '.acym_secureDBColumn($table).')';
@@ -497,7 +494,7 @@ class ImportHelper extends AcymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time() - date('Z'))).'
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(gmdate('Y-m-d H:i:s', time())).'
                     FROM #__acym_list AS list, #__acym_user AS user ';
         $conditions = [];
         $conditions[] = 'list.`id` IN ('.implode(',', $listsSubscribe).')';
@@ -587,7 +584,7 @@ class ImportHelper extends AcymObject
         $this->handleContent($contentFile);
 
         //We can now delete the file
-        unlink($uploadPath);
+        acym_deleteFile($uploadPath);
         $this->cleanImportFolder();
 
         return true;
@@ -662,9 +659,9 @@ class ImportHelper extends AcymObject
             acym_createDir($folderPath, true, true);
         }
 
-        if (!is_writable($folderPath)) {
-            @chmod($folderPath, '0755');
-            if (!is_writable($folderPath)) {
+        if (!acym_isWritable($folderPath)) {
+            acym_chmod($folderPath, 0755);
+            if (!acym_isWritable($folderPath)) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_WRITABLE_FOLDER', $folderPath), 'warning');
             }
         }
@@ -698,7 +695,7 @@ class ImportHelper extends AcymObject
 
         //Step 3 : we make sure the header of the file is correct (so it does correspond to columns from the database)
         if (!$this->autoDetectHeader()) {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_HEADER', acym_escape($this->header)), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_HEADER', acym_escapeHtml($this->header)), 'error');
             acym_enqueueMessage(acym_translation('ACYM_IMPORT_EMAIL'), 'error');
 
             return;
@@ -854,7 +851,7 @@ class ImportHelper extends AcymObject
 
             // Handle email column first to be able to use it with listids and listname
             $emailKey = array_search('email', $this->columns);
-            $newUser->email = trim(strip_tags($data[$emailKey]), '\'" ');
+            $newUser->email = trim(acym_stripTags($data[$emailKey]), '\'" ');
             // Remove all whitespace type
             $newUser->email = preg_replace("/\s+/u", '', $newUser->email);
             if (!empty($newUser->email)) {
@@ -907,7 +904,7 @@ class ImportHelper extends AcymObject
                             $newList->name = $onelistName;
                             $newList->active = 1;
                             $colors = ['#3366ff', '#7240A4', '#7A157D', '#157D69', '#ECE649'];
-                            $newList->color = $colors[rand(0, count($colors) - 1)];
+                            $newList->color = $colors[acym_rand(0, count($colors) - 1)];
                             $listid = $listClass->save($newList);
                             $newList->id = $listid;
                             $allLists[$onelistName] = $newList;
@@ -956,7 +953,7 @@ class ImportHelper extends AcymObject
 
                 // If we assigned the data to an Acy custom field
                 if (strpos($field, 'cf_') === 0) {
-                    $newUser->customfields[substr($field, 3)] = trim(strip_tags($value), '\'" 	');
+                    $newUser->customfields[substr($field, 3)] = trim(acym_stripTags($value), '\'" 	');
                     continue;
                 }
 
@@ -964,7 +961,7 @@ class ImportHelper extends AcymObject
                     $newUser->$field = '';
                 } else {
                     //We remove anything which should not be there (quotes or spaces or return char or html tags)
-                    $newUser->$field = trim(strip_tags($value), '\'" 	');
+                    $newUser->$field = trim(acym_stripTags($value), '\'" 	');
                 }
             }
 
@@ -1144,7 +1141,7 @@ class ImportHelper extends AcymObject
         }
 
         if (is_numeric($user->creation_date)) {
-            $user->creation_date = date('Y-m-d H:i:s', $user->creation_date);
+            $user->creation_date = gmdate('Y-m-d H:i:s', $user->creation_date);
         }
 
         if (!isset($user->active) || strlen($user->active) == 0) {
@@ -1207,7 +1204,7 @@ class ImportHelper extends AcymObject
                 acym_enqueueMessage(
                     acym_translationSprintf(
                         'ACYM_IMPORT_ERROR_FIELD',
-                        '<b>'.acym_escape($this->columns[$i]).'</b>',
+                        '<b>'.acym_escapeHtml($this->columns[$i]).'</b>',
                         '<b>'.implode('</b> | <b>', array_diff($columns, ['id', 'cms_id'])).'</b>'
                     ),
                     'error'
@@ -1232,7 +1229,7 @@ class ImportHelper extends AcymObject
                 continue;
             }
             if (filectime($oneFile) < time() - 86400) {
-                unlink($oneFile);
+                acym_deleteFile($oneFile);
             }
         }
     }
@@ -1244,7 +1241,7 @@ class ImportHelper extends AcymObject
             return;
         }
 
-        $subdate = date('Y-m-d H:i:s', time() - date('Z'));
+        $subdate = gmdate('Y-m-d H:i:s', time());
 
         $listClass = new ListClass();
         $lists = $this->getImportedLists();

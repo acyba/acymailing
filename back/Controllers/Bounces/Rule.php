@@ -53,6 +53,8 @@ trait Rule
 
     public function storeRule(): void
     {
+        acym_checkToken();
+
         $rule = acym_getVar('array', 'bounce');
 
         $ruleClass = new RuleClass();
@@ -85,7 +87,7 @@ trait Rule
             if (is_array($value) || is_object($value)) {
                 $ruleObject->$column = json_encode($value);
             } else {
-                $ruleObject->$column = strip_tags($value);
+                $ruleObject->$column = acym_stripTags($value);
             }
         }
 

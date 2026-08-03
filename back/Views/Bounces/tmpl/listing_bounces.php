@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
 
 use AcyMailing\Classes\RuleClass;
 use AcyMailing\Helpers\BounceHelper;
@@ -15,7 +17,8 @@ if (acym_getVar('boolean', 'runBounce')) {
         ];
 
         if (!empty($nbMessages)) {
-            $messages[] = acym_modal(
+            ob_start();
+            acym_modal(
                 acym_translation('ACYM_CLICK_BOUNCE'),
                 '',
                 null,
@@ -27,6 +30,7 @@ if (acym_getVar('boolean', 'runBounce')) {
                     'style' => 'margin: 0',
                 ]
             );
+            $messages[] = ob_get_clean();
         }
 
         acym_display('<div>'.implode('</div><div>', $messages).'</div>', 'info', false);
@@ -42,7 +46,7 @@ $finalRule = RuleClass::FINAL_RULE_ID;
         'setInactive' => acym_translation('ACYM_DISABLE'),
         'delete' => acym_translation('ACYM_DELETE'),
     ];
-    echo acym_listingActions($actions);
+    acym_listingActions($actions);
     ?>
 </div>
 
@@ -54,19 +58,19 @@ $finalRule = RuleClass::FINAL_RULE_ID;
 		<div class="cell small-1"></div>
 		<div class="cell small-10 medium-auto grid-x">
 			<div class="cell small-10 medium-4 acym__listing__header__title">
-                <?php echo acym_translation('ACYM_BOUNCE_RULE'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCE_RULE')); ?>
 			</div>
 			<div class="cell hide-for-small-only medium-3 acym__listing__header__title">
-                <?php echo acym_translation('ACYM_ACTION_ON_USER'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_ACTION_ON_USER')); ?>
 			</div>
 			<div class="cell hide-for-small-only medium-3 acym__listing__header__title">
-                <?php echo acym_translation('ACYM_ACTION_ON_EMAIL'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_ACTION_ON_EMAIL')); ?>
 			</div>
 			<div class="cell small-2 medium-1 acym__listing__header__title text-center">
-                <?php echo acym_translation('ACYM_ACTIVE'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_ACTIVE')); ?>
 			</div>
 			<div class="cell hide-for-small-only medium-1 text-center acym__listing__header__title">
-                <?php echo acym_translation('ACYM_ID'); ?>
+                <?php echo acym_escapeHtml(acym_translation('ACYM_ID')); ?>
 			</div>
 		</div>
 	</div>
@@ -75,12 +79,12 @@ $finalRule = RuleClass::FINAL_RULE_ID;
         foreach ($data['allRules'] as $oneRule) {
             ?>
 			<div class="grid-x cell align-middle acym__listing__row <?php echo (intval($oneRule->id) === $finalRule) ? 'acym__no__sortable' : ''; ?>"
-				 data-id-element="<?php echo acym_escape($oneRule->id); ?>">
+			     data-id-element="<?php echo acym_escape($oneRule->id); ?>">
 				<div class="cell small-1 medium-shrink acym_vcenter">
 					<input id="checkbox_<?php echo acym_escape($oneRule->id); ?>"
-						   type="checkbox"
-						   name="elements_checked[]"
-						   value="<?php echo acym_escape($oneRule->id); ?>">
+					       type="checkbox"
+					       name="elements_checked[]"
+					       value="<?php echo acym_escape($oneRule->id); ?>">
 				</div>
 				<div class="cell small-1 acym_vcenter align-center acym__bounce__listing__handle">
                     <?php if (intval($oneRule->id) !== $finalRule) { ?>
@@ -92,13 +96,13 @@ $finalRule = RuleClass::FINAL_RULE_ID;
 				</div>
 				<div class="cell small-10 medium-auto grid-x acym__field__listing acym_vcenter">
 					<div class="cell small-10 medium-4 acym__listing__title">
-						<a href="<?php echo acym_completeLink('bounces&task=rule&ruleId='.$oneRule->id); ?>"
+						<a href="<?php echo acym_escapeUrl(acym_completeLink('bounces&task=rule&ruleId='.$oneRule->id)); ?>"
 						   class="shrink">
 							<h6 class="acym__listing__title__important">
                                 <?php
-                                echo acym_escape(acym_translation($oneRule->name));
+                                echo acym_escapeHtml(acym_translation($oneRule->name));
                                 if (!empty($oneRule->description)) {
-                                    echo acym_info(
+                                    acym_info(
                                         [
                                             'textShownInTooltip' => acym_translation($oneRule->description),
                                         ]
@@ -111,22 +115,22 @@ $finalRule = RuleClass::FINAL_RULE_ID;
 					<div class="cell hide-for-small-only medium-3 acym__listing__text">
 						<h6>
                             <?php if (in_array('delete_user_subscription', $oneRule->action_user)) {
-                                echo acym_translation('ACYM_REMOVE_SUB').'<br />';
+                                echo acym_escapeHtml(acym_translation('ACYM_REMOVE_SUB')).'<br />';
                             }
                             if (in_array('unsubscribe_user', $oneRule->action_user)) {
-                                echo acym_translation('ACYM_UNSUB_USER').'<br />';
+                                echo acym_escapeHtml(acym_translation('ACYM_UNSUB_USER')).'<br />';
                             }
                             if (in_array('subscribe_user', $oneRule->action_user)) {
-                                echo acym_translation('ACYM_SUBSCRIBE_USER').' ( '.$data['lists'][$oneRule->action_user['subscribe_user_list']].' )<br />';
+                                echo acym_escapeHtml(acym_translation('ACYM_SUBSCRIBE_USER').' ( '.$data['lists'][$oneRule->action_user['subscribe_user_list']]).' )<br />';
                             }
                             if (in_array('block_user', $oneRule->action_user)) {
-                                echo acym_translation('ACYM_BLOCK_USER').'<br />';
+                                echo acym_escapeHtml(acym_translation('ACYM_BLOCK_USER')).'<br />';
                             }
                             if (in_array('delete_user', $oneRule->action_user)) {
-                                echo acym_translation('ACYM_DELETE_USER').'<br />';
+                                echo acym_escapeHtml(acym_translation('ACYM_DELETE_USER')).'<br />';
                             }
                             if (in_array('empty_queue_user', $oneRule->action_user)) {
-                                echo acym_translation('ACYM_EMPTY_QUEUE_USER');
+                                echo acym_escapeHtml(acym_translation('ACYM_EMPTY_QUEUE_USER'));
                             }
                             ?>
 						</h6>
@@ -134,23 +138,23 @@ $finalRule = RuleClass::FINAL_RULE_ID;
 					<div class="cell hide-for-small-only medium-3 acym__listing__text">
 						<h6>
                             <?php if (in_array('save_message', $oneRule->action_message)) {
-                                echo acym_translation('ACYM_SAVE_MESSAGE_DATABASE').'<br />';
+                                echo acym_escapeHtml(acym_translation('ACYM_SAVE_MESSAGE_DATABASE')).'<br />';
                             }
                             if (in_array('delete_message', $oneRule->action_message)) {
-                                echo acym_translation('ACYM_DELETE_MESSAGE_FROM_MAILBOX').'<br />';
+                                echo acym_escapeHtml(acym_translation('ACYM_DELETE_MESSAGE_FROM_MAILBOX')).'<br />';
                             }
                             if (in_array('forward_message', $oneRule->action_message) && !empty($oneRule->action_message['forward_to'])) {
-                                echo acym_translation('ACYM_FORWARD_EMAIL').' '.$oneRule->action_message['forward_to'];
+                                echo acym_escapeHtml(acym_translation('ACYM_FORWARD_EMAIL').' '.$oneRule->action_message['forward_to']);
                             } ?>
 						</h6>
 					</div>
 					<div class="cell small-2 medium-1 text-center acym__listing__controls">
                         <?php
-                        $class = $oneRule->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
-                            : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                        $class = $oneRule->active == 1 ? 'acymicon-check-circle acym__color__green' : 'acymicon-times-circle acym__color__red';
+                        $newvalue = $oneRule->active == 1 ? 0 : 1;
                         echo '<i data-acy-table="rule" data-acy-field="active" data-acy-elementid="'.acym_escape(
                                 $oneRule->id
-                            ).'" class="acym_toggleable cursor-pointer '.$class.'"></i>';
+                            ).'" data-acy-newvalue="'.acym_escape($newvalue).'" class="acym_toggleable cursor-pointer '.acym_escape($class).'"></i>';
                         ?>
 					</div>
 					<div class="cell hide-for-small-only medium-1 text-center acym__listing__header__title">

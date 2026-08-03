@@ -302,7 +302,7 @@ trait DefaultData
                 $notif->settings = $oneNotif['settings'] ?? '';
                 $notif->drag_editor = $oneNotif['drag_editor'] ?? 1;
                 $notif->creator_id = acym_currentUserId();
-                $notif->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
+                $notif->creation_date = gmdate('Y-m-d H:i:s', time());
                 $notif->name = $oneNotif['name'];
                 $notif->subject = $oneNotif['subject'];
                 $notif->body = $oneNotif['content'];
@@ -358,7 +358,7 @@ trait DefaultData
 
             $mail = new \stdClass();
             $mail->name = $oneOverride['name'];
-            $mail->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
+            $mail->creation_date = gmdate('Y-m-d H:i:s', time());
             $mail->type = MailClass::TYPE_OVERRIDE;
             $mail->subject = $oneOverride['new_subject'];
             $mail->body = $this->getFormatedNotification($oneOverride['new_body']);
@@ -448,7 +448,7 @@ trait DefaultData
         $mailAutomation->type = MailClass::TYPE_AUTOMATION;
         $mailAutomation->drag_editor = 1;
         $mailAutomation->creator_id = acym_currentUserId();
-        $mailAutomation->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
+        $mailAutomation->creation_date = gmdate('Y-m-d H:i:s', time());
         $mailAutomation->name = acym_translation($info[$title]->emailTitle);
         $mailAutomation->subject = acym_translation($info[$title]->emailSubject);
         $mailAutomation->body = $this->getFormatedNotification($info[$title]->emailContent);

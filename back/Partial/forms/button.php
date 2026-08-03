@@ -1,3 +1,7 @@
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
 <div class="acym__subscription__form__button">
     <?php
     if (empty($form->settings['button']['text'])) {
@@ -16,23 +20,23 @@
     }
     ?>
 	<button type="submit">
-        <?php echo acym_escape(acym_translation($form->settings['button']['text'])); ?>
+        <?php echo acym_escapeHtml(acym_translation($form->settings['button']['text'])); ?>
 	</button>
 	<style>
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__button{
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__button{
 			display: flex;
 			justify-content: center;
 			align-items: center
 		}
 
-		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__button button{
-			background-color: <?php echo $form->settings['button']['background_color']; ?>;
-			color: <?php echo $form->settings['button']['text_color']; ?>;
-			border-width: <?php echo $form->settings['button']['border_size']; ?>px;
-			border-style: <?php echo $form->settings['button']['border_type']; ?>;
-			border-color: <?php echo $form->settings['button']['border_color']; ?>;
-			border-radius: <?php echo $form->settings['button']['border_radius']; ?>px;
-			padding: <?php echo $form->settings['button']['size']['height']; ?>px <?php echo $form->settings['button']['size']['width']; ?>px;
+		<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name).' '; ?>.acym__subscription__form__button button{
+			background-color: <?php echo acym_escapeHtml($form->settings['button']['background_color']); ?>;
+			color: <?php echo acym_escapeHtml($form->settings['button']['text_color']); ?>;
+			border-width: <?php echo acym_escapeHtml($form->settings['button']['border_size']); ?>px;
+			border-style: <?php echo acym_escapeHtml($form->settings['button']['border_type']); ?>;
+			border-color: <?php echo acym_escapeHtml($form->settings['button']['border_color']); ?>;
+			border-radius: <?php echo acym_escapeHtml($form->settings['button']['border_radius']); ?>px;
+			padding: <?php echo acym_escapeHtml($form->settings['button']['size']['height']); ?>px <?php echo acym_escapeHtml($form->settings['button']['size']['width']); ?>px;
 		}
 	</style>
 </div>

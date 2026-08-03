@@ -48,6 +48,9 @@ class RegacyHelper extends AcymObject
         if ('wordpress' === ACYM_CMS) {
             // If editing a user, get its lists
             $currentCMSId = acym_getVar('int', 'user_id', 0);
+            if (!empty($currentCMSId) && !current_user_can('edit_user', $currentCMSId)) {
+                $currentCMSId = 0;
+            }
             if (empty($currentCMSId)) $currentCMSId = acym_currentUserId();
         } else {
             if (acym_isAdmin()) {
@@ -107,15 +110,18 @@ class RegacyHelper extends AcymObject
         $checkedListsOnAjaxUpdate = acym_getVar('array', $base.'_visible_lists_checked', []);
         $result = '<table class="acym__'.$base.'__lists" style="border:0">';
         foreach ($this->lists as $id => $oneList) {
-            $checked = $oneList['checked'] || in_array($id, $checkedListsOnAjaxUpdate) ? 'checked="checked"' : '';
             $result .= '<tr style="border:0">
                             <td style="border:0">
                                 <input type="checkbox" id="acym__'.$base.'__lists-'.intval(
                     $id
-                ).'" class="acym_checkbox" name="'.$base.'_visible_lists_checked[]" '.$checked.' value="'.intval($id).'"/>
+                ).'" class="acym_checkbox" name="'.$base.'_visible_lists_checked[]" '.acym_checked(
+                    $oneList['checked'] || in_array($id, $checkedListsOnAjaxUpdate),
+                    true,
+                    false
+                ).' value="'.intval($id).'"/>
                             </td>
                             <td style="border:0; padding-left:10px;">
-                                <label for="acym__'.$base.'__lists-'.intval($id).'" class="acym__'.$base.'__lists__label">'.acym_escape($oneList['name']).'</label>
+                                <label for="acym__'.$base.'__lists-'.intval($id).'" class="acym__'.$base.'__lists__label">'.acym_escapeHtml($oneList['name']).'</label>
                             </td>
                         </tr>';
         }

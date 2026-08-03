@@ -71,7 +71,7 @@ class MailboxClass extends AcymClass
                 continue;
             }
 
-            $originalName = $mailbox->name;
+            $originalName = $mailbox->name ?? '';
             unset($mailbox->id);
             $mailbox->active = 0;
             $mailbox->name .= '_copy';

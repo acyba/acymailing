@@ -122,7 +122,7 @@ trait SubscriptionAutomationActions
             );
         }
 
-        $unsubscribeDate = date('Y-m-d H:i:s', time() - date('Z'));
+        $unsubscribeDate = gmdate('Y-m-d H:i:s', time());
         $nbAffected = acym_query(
             'UPDATE #__acym_user_has_list 
             SET `status` = 0, `unsubscribe_date` = '.acym_escapeDB($unsubscribeDate).'

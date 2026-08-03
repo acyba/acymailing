@@ -2,9 +2,10 @@
 
 namespace AcyMailing\WpInit;
 
+defined('ABSPATH') || die('Restricted Access');
+
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
-use AcyMailing\Classes\UserClass;
 use AcyMailing\Core\AcymParameter;
 
 class Gutenberg
@@ -44,13 +45,19 @@ class Gutenberg
     {
         wp_register_script(
             'gutenberg-acymailing-subscription-form',
-            ACYM_JS.'gutenberg/subscription.min.js?time='.time()
+            ACYM_JS.'gutenberg/subscription.min.js?time='.time(),
+            [],
+            '{__VERSION__}',
+            [
+                'in_footer' => false,
+            ]
         );
         wp_add_inline_script(
             'gutenberg-acymailing-subscription-form',
             'var acym_lists = '.json_encode($this->lists).';
             var ACYM_JS_TXT = '.acym_getJSMessages().';
-            var acym_fields = '.json_encode($this->fields).';'
+            var acym_fields = '.json_encode($this->fields).';
+            var acym_subscription_nonce = '.json_encode(wp_create_nonce('acymnonce')).';'
         );
 
         $basicAttribute = [
@@ -97,6 +104,10 @@ class Gutenberg
             'privacypolicyURL' => [
                 'type' => 'string',
                 'default' => '',
+            ],
+            'trackingconsent' => [
+                'type' => 'string',
+                'default' => '0',
             ],
             'unsub' => [
                 'type' => 'string',
@@ -199,10 +210,13 @@ class Gutenberg
         }
         $params = new AcymParameter($block_attributes);
 
-        return acym_renderForm(
+        ob_start();
+        acym_renderForm(
             $params,
             ['disableButtons' => strpos(acym_currentURL(), 'block-renderer') !== false]
         );
+
+        return ob_get_clean();
     }
 
     public function registerBlockProfile()
@@ -211,7 +225,12 @@ class Gutenberg
 
         wp_register_script(
             'gutenberg-acymailing-profile',
-            ACYM_JS.'gutenberg/profile.min.js?time='.time()
+            ACYM_JS.'gutenberg/profile.min.js?time='.time(),
+            [],
+            '{__VERSION__}',
+            [
+                'in_footer' => false,
+            ]
         );
         wp_add_inline_script(
             'gutenberg-acymailing-profile',
@@ -278,7 +297,12 @@ class Gutenberg
 
         wp_register_script(
             'gutenberg-acymailing-archive',
-            ACYM_JS.'gutenberg/archive.min.js?time='.time()
+            ACYM_JS.'gutenberg/archive.min.js?time='.time(),
+            [],
+            '{__VERSION__}',
+            [
+                'in_footer' => false,
+            ]
         );
         wp_add_inline_script(
             'gutenberg-acymailing-archive',

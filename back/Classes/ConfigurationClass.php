@@ -82,7 +82,7 @@ class ConfigurationClass extends AcymClass
 
             // We do a strip tags to avoid HTML injections
             if ($escape && !is_null($value)) {
-                $params[] = '('.acym_escapeDB(strip_tags($name)).','.acym_escapeDB(strip_tags($value)).')';
+                $params[] = '('.acym_escapeDB(acym_stripTags($name)).','.acym_escapeDB(acym_stripTags($value)).')';
             } else {
                 $params[] = '('.acym_escapeDB($name).','.acym_escapeDB($value).')';
             }
@@ -112,7 +112,7 @@ class ConfigurationClass extends AcymClass
         }
 
         if ($status === false) {
-            acym_display(isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200).'...', 'error');
+            acym_display(isset($e) ? $e->getMessage() : substr(acym_stripTags(acym_getDBError()), 0, 200).'...', 'error');
         }
 
         $newFollowupPriority = $this->get('followup_max_priority', 0) == 1;

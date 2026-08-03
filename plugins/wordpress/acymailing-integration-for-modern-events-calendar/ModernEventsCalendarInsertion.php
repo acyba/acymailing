@@ -498,7 +498,7 @@ trait ModernEventsCalendarInsertion
             ];
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.esc_html(
                 acym_translation('ACYM_READ_MORE')
             ).'</span></a>';
         if ($tag->readmore === '1') {

@@ -1,4 +1,8 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
+// context verification
+?>
+<form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm" data-abide novalidate>
     <?php
     $isEmpty = empty($data['allElements']) && empty($data['search']) && empty($data['tag']) && empty($data['status']);
     if (!$isEmpty) {
@@ -8,28 +12,28 @@
 	<div id="acym__queue" class="acym__content">
         <?php
         $workflow = $data['workflowHelper'];
-        echo $workflow->displayTabs($this->steps, 'scheduled');
+        $workflow->displayTabs($this->steps, 'scheduled');
         ?>
 
         <?php if ($isEmpty) { ?>
 			<div class="grid-x text-center">
-				<h1 class="acym__listing__empty__title cell"><?php echo acym_translation('ACYM_YOU_DONT_HAVE_ANY_CAMPAIGN_IN_QUEUE'); ?></h1>
-				<h1 class="acym__listing__empty__subtitle cell"><?php echo acym_translation('ACYM_SEND_ONE_AND_SEE_HOW_AMAZING_QUEUE_IS'); ?></h1>
+				<h1 class="acym__listing__empty__title cell"><?php echo acym_escapeHtml(acym_translation('ACYM_YOU_DONT_HAVE_ANY_CAMPAIGN_IN_QUEUE')); ?></h1>
+				<h1 class="acym__listing__empty__subtitle cell"><?php echo acym_escapeHtml(acym_translation('ACYM_SEND_ONE_AND_SEE_HOW_AMAZING_QUEUE_IS')); ?></h1>
 			</div>
         <?php } else { ?>
             <?php if (empty($data['allElements'])) { ?>
-				<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
+				<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_escapeHtml(acym_translation('ACYM_NO_RESULTS_FOUND')); ?></h1>
             <?php } else { ?>
 				<div class="grid-x acym__listing acym__listing__view__squeue">
 					<div class="cell grid-x acym__listing__header hide-for-small-only">
 						<div class="acym__listing__header__title cell medium-auto">
-                            <?php echo acym_translation('ACYM_MAILS'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_MAILS')); ?>
 						</div>
 						<div class="acym__listing__header__title cell large-3 hide-for-medium-only text-center">
-                            <?php echo acym_translation('ACYM_RECIPIENTS'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_RECIPIENTS')); ?>
 						</div>
 						<div class="acym__listing__header__title cell medium-4 text-center">
-                            <?php echo acym_translation('ACYM_SENDING_DATE'); ?>
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_SENDING_DATE')); ?>
 						</div>
 						<div class="cell medium-2"></div>
 					</div>
@@ -47,8 +51,8 @@
                                     }
                                     $afterName = empty($afterName) ? '' : ' - '.$afterName
                                     ?>
-									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo acym_escape($row->name.$afterName); ?></h6>
-									<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escape($row->subject); ?></span>
+									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo acym_escapeHtml($row->name.$afterName); ?></h6>
+									<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escapeHtml($row->subject); ?></span>
 								</div>
 							</div>
 							<div class="cell large-3 hide-for-medium-only hide-for-small-only text-center">
@@ -58,7 +62,7 @@
                                     $class = 'acym_subscription acymicon-circle';
                                     foreach ($row->lists as $oneList) {
                                         if ($i === 6) {
-                                            echo acym_tooltip(
+                                            acym_tooltip(
                                                 [
                                                     'hoveredText' => '<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>',
                                                     'textShownInTooltip' => acym_translation('ACYM_SHOW_ALL_LISTS'),
@@ -66,9 +70,9 @@
                                             );
                                             $class .= ' is-hidden';
                                         }
-                                        echo acym_tooltip(
+                                        acym_tooltip(
                                             [
-                                                'hoveredText' => '<i class="'.$class.'" style="color:'.$oneList->color.'"></i>',
+                                                'hoveredText' => '<i class="'.acym_escape($class).'" style="color:'.acym_escape($oneList->color).'"></i>',
                                                 'textShownInTooltip' => $oneList->name,
                                             ]
                                         );
@@ -78,14 +82,14 @@
 								</div>
 							</div>
 							<div class="cell medium-4 small-9">
-                                <?php echo acym_date($row->sending_date, acym_getDateTimeFormat()); ?>
+                                <?php echo acym_escapeHtml(acym_date($row->sending_date, acym_getDateTimeFormat())); ?>
 							</div>
 							<div class="cell medium-2 small-3">
 								<div class="acym_vcenter">
                                     <?php
                                     // Now display the action buttons
                                     echo '<div class="acym_action_buttons">';
-                                    echo acym_tooltip(
+                                    acym_tooltip(
                                         [
                                             'hoveredText' => '<i class="acymicon-times-circle acym__queue__cancel__button" mailid="'.$row->id.'"></i>',
                                             'textShownInTooltip' => acym_translation('ACYM_CANCEL_SCHEDULING'),
@@ -98,7 +102,7 @@
 						</div>
                     <?php } ?>
 				</div>
-                <?php echo $data['pagination']->display('squeue'); ?>
+                <?php $data['pagination']->display('squeue'); ?>
             <?php } ?>
         <?php } ?>
         <?php acym_formOptions(true, 'scheduled'); ?>

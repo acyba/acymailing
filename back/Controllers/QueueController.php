@@ -31,9 +31,11 @@ class QueueController extends AcymController
 
     public function continuesend(): void
     {
+        acym_checkToken();
+
         //Are we configured to use the automatic send process only?
         //If so, we don't allow the user to access this feature!
-        if ($this->config->get('queue_type') == 'onlyauto') {
+        if ($this->config->get('queue_type') === 'onlyauto') {
             acym_setNoTemplate();
             acym_display(acym_translation('ACYM_ONLYAUTOPROCESS'), 'warning');
 
