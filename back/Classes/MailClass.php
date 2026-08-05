@@ -1537,9 +1537,9 @@ class MailClass extends AcymClass
         );
     }
 
-    public function hasUserAccess(int $mailId, bool $write = false): bool
+    public function hasUserAccess(int $mailId, bool $write = false, ?int $userId = null): bool
     {
-        $userId = acym_currentUserId();
+        $userId = $userId ?? acym_currentUserId();
         if (empty($userId)) {
             return false;
         }
@@ -1672,20 +1672,5 @@ class MailClass extends AcymClass
     public function getMailType(int $mailId): string
     {
         return (string)acym_loadResult('SELECT type FROM #__acym_mail WHERE id = '.intval($mailId));
-    }
-
-    public function isPublicArchive(int $mailId): bool
-    {
-        $publicCampaign = acym_loadResult(
-            'SELECT COUNT(campaign.id)
-            FROM #__acym_campaign AS campaign
-            JOIN #__acym_mail AS mail ON campaign.mail_id = mail.id
-            WHERE campaign.mail_id = '.intval($mailId).'
-                AND campaign.active = 1
-                AND campaign.sent = 1
-                AND mail.type = '.acym_escapeDB(MailClass::TYPE_STANDARD)
-        );
-
-        return !empty($publicCampaign);
     }
 }

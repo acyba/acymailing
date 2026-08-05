@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, e-commerce, digital store
 Tested up to: 7.0
-Stable tag: 4.1
+Stable tag: 4.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

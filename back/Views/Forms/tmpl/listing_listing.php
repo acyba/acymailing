@@ -36,7 +36,7 @@ if (empty($data['allForms'])) { ?>
                     ],
                     'forms',
                     $data['ordering'],
-                    'asc'
+                    $data['orderingSortOrder']
                 ); ?>
 			</div>
 		</div>

@@ -1246,7 +1246,7 @@ class MailerHelper extends Mailer
         }
 
         if (!empty($this->defaultMail[$mailId]->preheader)) {
-            $preHeader = '<!--[if !mso 9]><!--><div style="visibility:hidden;mso-hide:all;font-size:0;color:transparent;height:0;line-height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;">';
+            $preHeader = '<!--[if !mso 9]><!--><div style="visibility:hidden;mso-hide:all;font-size:0;height:0;line-height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;">';
             $preHeader .= $this->defaultMail[$mailId]->preheader;
             $preHeader .= '</div><!--<![endif]-->';
 

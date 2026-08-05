@@ -3,6 +3,7 @@
 namespace AcyMailing\FrontControllers;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\HistoryClass;
 use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\UserClass;
@@ -123,12 +124,21 @@ class ArchiveController extends AcymController
         }
 
         $mailClass = new MailClass();
-        if ($mailClass->hasUserAccess($mailId) || $mailClass->isPublicArchive($mailId)) {
+        if ($mailClass->hasUserAccess($mailId)) {
             return true;
         }
 
-        // Other types (automation, followup, welcome, unsubscribe...): the "view online" link embedded in
-        // the sent email carries the recipient's per-user secret key as userid=id-key.
+        $campaignClass = new CampaignClass();
+        $campaign = $campaignClass->getOneByMailId($mailId);
+        if (
+            !empty($campaign)
+            && (int)$campaign->visible === 1
+            && (int)$campaign->active === 1
+            && (int)$campaign->sent === 1
+        ) {
+            return true;
+        }
+
         $userKeys = acym_getVar('string', 'userid', '');
         $separatorPosition = strpos($userKeys, '-');
         if ($separatorPosition === false) {
@@ -141,10 +151,25 @@ class ArchiveController extends AcymController
             return false;
         }
 
+        $historyClass = new HistoryClass();
+        $userHistory = $historyClass->getHistoryOfOneById($userId);
+        foreach ($userHistory as $userHistoryItem) {
+            if ((int)$userHistoryItem->mail_id === $mailId && $userHistoryItem->action === 'test_sent') {
+                return true;
+            }
+        }
+
+        acym_setVar('id', $userId);
+        acym_setVar('key', $userKey);
         $userClass = new UserClass();
-        $user = $userClass->getOneById($userId);
-        if (empty($user) || !hash_equals((string)$user->key, $userKey)) {
+        $user = $userClass->identify(true);
+
+        if (empty($user)) {
             return false;
+        }
+
+        if (!empty($user->cms_id) && $mailClass->hasUserAccess($mailId, false, $user->cms_id)) {
+            return true;
         }
 
         $userStatClass = new UserStatClass();
@@ -241,7 +266,7 @@ class ArchiveController extends AcymController
             $params['displayUserListOnly'] = $viewParams['displayUserListOnly'];
         }
 
-        $params['page'] = $this->getVarFiltersListing('int', 'archive_pagination_page', 1);
+        $params['page'] = max(1, $this->getVarFiltersListing('int', 'archive_pagination_page', 1));
         $campaignClass = new CampaignClass();
         $pagination = new PaginationHelper();
         $params['numberPerPage'] = (int)$viewParams['nbNewslettersPerPage'];

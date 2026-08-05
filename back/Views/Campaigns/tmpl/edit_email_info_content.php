@@ -9,7 +9,7 @@
 			       name="mail[subject]"
 			       type="text"
 			       class="cell auto acy_required_field"
-			       value="<?php echo acym_escape($data['mailInformation']->subject); ?>"
+			       value="<?php echo acym_escape($data['mailInformation']->subject ?? ''); ?>"
 			       required>
 		</div>
 	</label>
@@ -20,6 +20,6 @@
         echo acym_escapeHtml(acym_translation('ACYM_EMAIL_PREHEADER'));
         acym_info(['textShownInTooltip' => 'ACYM_EMAIL_PREHEADER_DESC']);
         ?>
-		<input id="acym_preheader_field" name="mail[preheader]" type="text" maxlength="255" value="<?php echo acym_escape($data['mailInformation']->preheader); ?>">
+		<input id="acym_preheader_field" name="mail[preheader]" type="text" maxlength="255" value="<?php echo acym_escape($data['mailInformation']->preheader ?? ''); ?>">
 	</label>
 </div>

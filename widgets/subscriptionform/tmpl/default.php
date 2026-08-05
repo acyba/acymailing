@@ -110,10 +110,11 @@ if ($listPosition === 'before') {
             }
         }
 
-        if (!empty($showTrackingConsent) && empty($identifiedUser->id)) {
+        if (!empty($showTrackingConsent)) {
+            $trackingChecked = (int)($identifiedUser->tracking ?? 0) === 1;
             echo '<td class="acytracking" '.($displayOutside && !$displayInline ? 'colspan="2"' : '').'>';
             echo '<input type="hidden" name="user[tracking]" value="0"/>';
-            echo '<input id="mailingdata_tracking_'.esc_attr($formName).'" class="checkbox" type="checkbox" name="user[tracking]" value="1"/> '.esc_html(
+            echo '<input id="mailingdata_tracking_'.esc_attr($formName).'" class="checkbox" type="checkbox" name="user[tracking]" value="1" '.acym_checked($trackingChecked, true, false).'/> '.esc_html(
                     acym_translation('ACYM_TRACKING_CONSENT')
                 );
             echo '</td>';

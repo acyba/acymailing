@@ -192,7 +192,7 @@ use AcyMailing\Helpers\EntitySelectHelper;
                             foreach ($data['checkedElements'] as $id) {
                                 $user = $data['userClass']->getOneById($id);
                                 echo '<div class="cell grid-x acym__listing__row">';
-                                echo '    <div class="cell small-6">'.acym_escapeHtml($user->name).'</div>
+                                echo '    <div class="cell small-6">'.acym_escapeHtml($user->name ?? '').'</div>
                                       <div class="cell small-6">'.acym_escapeHtml($user->email).'</div>';
                                 echo '</div>';
                             }

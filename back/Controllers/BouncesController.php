@@ -66,7 +66,7 @@ class BouncesController extends AcymController
     {
         $data['search'] = $this->getVarFiltersListing('string', 'mailboxes_search', '');
         $data['status'] = $this->getVarFiltersListing('string', 'mailboxes_status', '');
-        $data['ordering'] = $this->getVarFiltersListing('string', 'mailboxes_ordering', 'id');
-        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'mailboxes_ordering_sort_order', 'desc');
+        $data['ordering'] = $this->getVarFiltersListing('cmd', 'mailboxes_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', 'mailboxes_ordering_sort_order', 'desc');
     }
 }

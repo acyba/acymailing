@@ -38,7 +38,8 @@ if (empty($data['lists'])) { ?>
                         'visible' => acym_translation('ACYM_VISIBLE'),
                     ],
                     'lists',
-                    $data['ordering']
+                    $data['ordering'],
+                    $data['orderingSortOrder']
                 ); ?>
 			</div>
 		</div>

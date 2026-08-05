@@ -18,8 +18,8 @@ trait Listing
         acym_setVar('layout', 'listing');
 
         $data = [];
-        $data['ordering'] = $this->getVarFiltersListing('string', 'users_ordering', 'id');
-        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'users_ordering_sort_order', 'desc');
+        $data['ordering'] = $this->getVarFiltersListing('cmd', 'users_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', 'users_ordering_sort_order', 'desc');
         $data['pagination'] = new PaginationHelper();
 
         $this->prepareSegmentField($data);

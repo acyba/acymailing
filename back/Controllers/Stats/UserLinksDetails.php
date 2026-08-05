@@ -56,8 +56,8 @@ trait UserLinksDetails
     private function prepareUserLinksDetailsListing(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'user_links_details_search', '');
-        $data['ordering'] = $this->getVarFiltersListing('string', 'user_links_details_ordering', 'user_id');
-        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'user_links_details_ordering_sort_order', 'desc');
+        $data['ordering'] = $this->getVarFiltersListing('cmd', 'user_links_details_ordering', 'user_id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', 'user_links_details_ordering_sort_order', 'desc');
 
         if (base64_encode(base64_decode($data['search'])) === $data['search']) {
             $data['search'] = base64_decode($data['search']);

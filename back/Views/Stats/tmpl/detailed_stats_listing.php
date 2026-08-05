@@ -39,7 +39,8 @@
                                 'sent' => acym_translation('ACYM_SENT'),
                             ],
                             'detailed_stats',
-                            $data['ordering']
+                            $data['ordering'],
+                            $data['orderingSortOrder']
                         ); ?>
 					</div>
 				</div>
@@ -78,7 +79,8 @@
                                 'sent' => acym_translation('ACYM_SENT'),
                             ],
                             'detailed_stats',
-                            $data['ordering']
+                            $data['ordering'],
+                            $data['orderingSortOrder']
                         ); ?>
 					</div>
 				</div>
@@ -169,9 +171,9 @@
 							<div class="xlarge-1 hide-for-large-only hide-for-medium-only hide-for-small-only cell acym__listing__header__title">
                                 <?php if (acym_isAllowed('users')) { ?>
 									<a href="<?php echo acym_escapeUrl(acym_completeLink('users&task=edit&userId='.$detailed_stat->user_id)); ?>"
-									   class="acym__color__blue word-break"><?php echo acym_escapeHtml($detailed_stat->username); ?></a>
+									   class="acym__color__blue word-break"><?php echo acym_escapeHtml($detailed_stat->username ?? ''); ?></a>
                                 <?php } else { ?>
-                                    <?php echo acym_escapeHtml($detailed_stat->username); ?>
+                                    <?php echo acym_escapeHtml($detailed_stat->username ?? ''); ?>
                                 <?php } ?>
 							</div>
 							<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center">

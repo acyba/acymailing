@@ -118,8 +118,8 @@ trait Edition
         $campaignClass = new CampaignClass();
         $searchFilter = $this->getVarFiltersListing('string', 'mailchoose_search', '');
         $tagFilter = $this->getVarFiltersListing('string', 'mailchoose_tag', '');
-        $ordering = $this->getVarFiltersListing('string', 'mailchoose_ordering', 'creation_date');
-        $orderingSortOrder = $this->getVarFiltersListing('string', 'mailchoose_ordering_sort_order', 'DESC');
+        $ordering = $this->getVarFiltersListing('cmd', 'mailchoose_ordering', 'creation_date');
+        $orderingSortOrder = $this->getVarFiltersListing('cmd', 'mailchoose_ordering_sort_order', 'DESC');
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
         $campaignType = $this->getVarFiltersListing('string', 'campaign_type', 'now');
         $abTest = acym_getVar('bool', 'abtest', false);

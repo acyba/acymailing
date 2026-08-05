@@ -6,7 +6,7 @@
 	<div class="cell large-6">
 		<label>
             <?php echo acym_escapeHtml(acym_translation('ACYM_CAMPAIGN_NAME')); ?>
-			<input name="mail[name]" type="text" value="<?php echo acym_escape($data['mailInformation']->name); ?>">
+			<input name="mail[name]" type="text" value="<?php echo acym_escape($data['mailInformation']->name ?? ''); ?>">
 		</label>
 	</div>
 	<div class="cell large-6">

@@ -2,10 +2,10 @@
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
 // context verification
 ?>
-<div class="acym_front_page <?php echo acym_escape($data['paramsCMS']['suffix']); ?>">
+<div class="acym_front_page <?php echo acym_escape($data['paramsCMS']['suffix'] ?? ''); ?>">
     <?php
     if (!empty($data['paramsCMS']['show_page_heading'])) {
-        echo '<h1 class="contentheading '.acym_escape($data['paramsCMS']['suffix']).'">'.acym_escapeHtml($data['paramsCMS']['page_heading']).'</h1>';
+        echo '<h1 class="contentheading '.acym_escape($data['paramsCMS']['suffix'] ?? '').'">'.acym_escapeHtml($data['paramsCMS']['page_heading'] ?? '').'</h1>';
     }
     ?>
 	<div class="acym__front__archive">

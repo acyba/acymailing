@@ -85,14 +85,14 @@ class HistoryClass extends AcymClass
     /**
      * Get all history lines for one user order by date descending
      */
-    public function getHistoryOfOneById(int $id): array
+    public function getHistoryOfOneById(int $userId): array
     {
-        $query = 'SELECT h.*, m.id, m.subject FROM #__acym_'.$this->table.' AS h ';
-        $query .= 'LEFT JOIN #__acym_mail AS m ON h.mail_id = m.id ';
-        $query .= 'WHERE h.user_id = '.intval($id);
-        $query .= ' ORDER BY h.date DESC';
-
-        return acym_loadObjectList($query);
+        return acym_loadObjectList(
+            'SELECT h.*, m.id, m.subject FROM #__acym_history AS h 
+	        LEFT JOIN #__acym_mail AS m ON h.mail_id = m.id 
+            WHERE h.user_id = '.intval($userId).' 
+            ORDER BY h.date DESC'
+        );
     }
 
     public function getAllUnsubReasons(): array

@@ -23,7 +23,8 @@
                                 'url_id' => acym_translation('ACYM_URL_ID'),
                             ],
                             'user_links_details',
-                            $data['ordering']
+                            $data['ordering'],
+                            $data['orderingSortOrder']
                         ); ?>
 					</div>
 				</div>
@@ -62,7 +63,8 @@
                                 'click' => acym_translation('ACYM_TOTAL_CLICKS'),
                             ],
                             'user_links_details',
-                            $data['ordering']
+                            $data['ordering'],
+                            $data['orderingSortOrder']
                         ); ?>
 					</div>
 				</div>

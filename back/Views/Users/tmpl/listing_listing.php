@@ -42,7 +42,8 @@ if (empty($data['allUsers'])) { ?>
                         'cms_id' => acym_translation('ACYM_USER_CMSID'),
                     ],
                     'users',
-                    $data['ordering']
+                    $data['ordering'],
+                    $data['orderingSortOrder']
                 ); ?>
 			</div>
 		</div>
@@ -107,7 +108,7 @@ if (empty($data['allUsers'])) { ?>
 						</a>
 					</div>
 					<div class="cell hide-for-small-only hide-for-medium-only large-2">
-                        <?php echo acym_escapeHtml($user->name); ?>
+                        <?php echo acym_escapeHtml($user->name ?? ''); ?>
 					</div>
 					<div class="cell hide-for-small-only hide-for-medium-only large-2 xlarge-1">
                         <?php

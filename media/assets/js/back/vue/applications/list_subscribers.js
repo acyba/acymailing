@@ -47,6 +47,7 @@ jQuery(function ($) {
                 } else {
                     this.getAllSubscribers();
                 }
+                this.restoreSortState();
             },
             methods: {
                 loadMoreSubscriber() {
@@ -76,6 +77,7 @@ jQuery(function ($) {
 
                         if (0 === res.data.subscribers.length) {
                             this.loading = false;
+                            this.restoreSortState();
                             return true;
                         }
 
@@ -87,6 +89,7 @@ jQuery(function ($) {
 
                         if (nbLoaded < subPerCalls) {
                             this.loading = false;
+                            this.restoreSortState();
                             return true;
                         }
                         this.getAllSubscribers();
@@ -115,63 +118,61 @@ jQuery(function ($) {
                     this.loading = true;
                     this.getAllSubscribers();
                 },
+                sortBy(column, ascending) {
+                    const dir = ascending ? 1 : -1;
+                    this.displayedSubscribers.sort((a, b) => {
+                        const nameA = String(a[column]).toLowerCase();
+                        const nameB = String(b[column]).toLowerCase();
+                        const dateA = Date.parse(nameA);
+                        const dateB = Date.parse(nameB);
+
+                        if (!isNaN(dateA) && !isNaN(dateB)) {
+                            if (dateA < dateB) return -1 * dir;
+                            if (dateA > dateB) return 1 * dir;
+                            return 0;
+                        }
+
+                        if (nameA < nameB) return -1 * dir;
+                        if (nameA > nameB) return 1 * dir;
+                        return 0;
+                    });
+                },
                 orderByTable(column) {
                     //if the last sorted column is the same we want to sort, we sort the column in DESC and we empty 'columnOrderSelected'
                     if (this.columnOrderSelected == column) {
-                        this.displayedSubscribers.sort((a, b) => {
-                            const nameA = String(a[this.columnOrderSelected]).toLowerCase();
-                            const nameB = String(b[this.columnOrderSelected]).toLowerCase();
-                            const dateA = Date.parse(nameA);
-                            const dateB = Date.parse(nameB);
-
-                            if (!isNaN(dateA) && !isNaN(dateB)) {
-                                if (dateA < dateB) {
-                                    return 1;
-                                } else if (dateA > dateB) {
-                                    return -1;
-                                } else {
-                                    return 0;
-                                }
-                            }
-
-                            if (nameA > nameB) {
-                                return -1;
-                            } else if (nameA < nameB) {
-                                return 1;
-                            } else {
-                                return 0;
-                            }
-                        });
+                        this.sortBy(column, false);
                         this.columnOrderSelected = '';
+                        this.saveSortState();
                         return;
                     }
                     //else we sort the column in ASC and we save the sorted column in 'columnOrderSelected'
                     this.columnOrderSelected = column;
                     this.columnOrderSelectedCss = column;
-                    this.displayedSubscribers.sort((a, b) => {
-                        const nameA = String(a[this.columnOrderSelected]).toLowerCase();
-                        const nameB = String(b[this.columnOrderSelected]).toLowerCase();
-                        const dateA = Date.parse(nameA);
-                        const dateB = Date.parse(nameB);
-
-                        if (!isNaN(dateA) && !isNaN(dateB)) {
-                            if (dateA < dateB) {
-                                return -1;
-                            } else if (dateA > dateB) {
-                                return 1;
-                            } else {
-                                return 0;
-                            }
-                        }
-
-                        if (nameA < nameB) {
-                            return -1;
-                        } else if (nameA > nameB) {
-                            return 1;
-                        } else {
-                            return 0;
-                        }
-                    });
+                    this.sortBy(column, true);
+                    this.saveSortState();
+                },
+                saveSortState() {
+                    try {
+                        localStorage.setItem('acym_list_subscribers_sort', JSON.stringify({
+                            columnOrderSelected: this.columnOrderSelected,
+                            columnOrderSelectedCss: this.columnOrderSelectedCss
+                        }));
+                    } catch (e) {
+                    }
+                },
+                restoreSortState() {
+                    let saved = null;
+                    try {
+                        saved = JSON.parse(localStorage.getItem('acym_list_subscribers_sort'));
+                    } catch (e) {
+                        saved = null;
+                    }
+                    if (!saved || !saved.columnOrderSelectedCss) return;
+                    this.columnOrderSelected = saved.columnOrderSelected;
+                    this.columnOrderSelectedCss = saved.columnOrderSelectedCss;
+                    //ascending state is encoded by columnOrderSelected being the sorted column; empty means the last applied sort was DESC
+                    const ascending = saved.columnOrderSelected !== '' && saved.columnOrderSelected === saved.columnOrderSelectedCss;
+                    this.sortBy(saved.columnOrderSelectedCss, ascending);
                 }
             },
             watch: {

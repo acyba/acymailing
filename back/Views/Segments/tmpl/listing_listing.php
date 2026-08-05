@@ -36,7 +36,7 @@ if (empty($data['segments'])) { ?>
                     ],
                     'segments',
                     $data['ordering'],
-                    'asc'
+                    $data['orderingSortOrder']
                 ); ?>
 			</div>
 		</div>

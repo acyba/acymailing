@@ -667,8 +667,8 @@ trait GlobalStats
     private function prepareLinksDetailsListing(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'links_details_search', '');
-        $data['ordering'] = $this->getVarFiltersListing('string', 'links_details_ordering', 'id');
-        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'links_details_ordering_sort_order', 'desc');
+        $data['ordering'] = $this->getVarFiltersListing('cmd', 'links_details_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', 'links_details_ordering_sort_order', 'desc');
 
         if (empty($this->selectedMailIds)) return;
 

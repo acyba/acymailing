@@ -25,7 +25,8 @@
                                 'unique_click' => acym_translation('ACYM_UNIQUE_CLICKS'),
                             ],
                             'links_details',
-                            $data['ordering']
+                            $data['ordering'],
+                            $data['orderingSortOrder']
                         ); ?>
 					</div>
 				</div>
@@ -61,7 +62,8 @@
                                 'unique_click' => acym_translation('ACYM_UNIQUE_CLICKS'),
                             ],
                             'links_details',
-                            $data['ordering']
+                            $data['ordering'],
+                            $data['orderingSortOrder']
                         ); ?>
 					</div>
 				</div>

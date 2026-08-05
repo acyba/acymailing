@@ -71,8 +71,8 @@ trait Detailed
     private function prepareDetailedListing(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'detailed_stats_search', '');
-        $data['ordering'] = $this->getVarFiltersListing('string', 'detailed_stats_ordering', 'send_date');
-        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'detailed_stats_ordering_sort_order', 'desc');
+        $data['ordering'] = $this->getVarFiltersListing('cmd', 'detailed_stats_ordering', 'send_date');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', 'detailed_stats_ordering_sort_order', 'desc');
 
         if (empty($this->selectedMailIds)) {
             return;

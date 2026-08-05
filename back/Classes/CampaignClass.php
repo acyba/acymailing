@@ -154,9 +154,10 @@ class CampaignClass extends AcymClass
 
         $query .= ' GROUP BY campaign.id';
 
-        if (!empty($settings['ordering']) && !empty($settings['ordering_sort_order'])) {
+        if (!empty($settings['ordering'])) {
             $table = in_array($settings['ordering'], ['name', 'creation_date']) ? 'mail' : 'campaign';
-            $query .= ' ORDER BY '.$table.'.'.acym_secureDBColumn($settings['ordering']).' '.acym_secureDBColumn(strtoupper($settings['ordering_sort_order']));
+            $order = isset($settings['ordering_sort_order']) && strtolower($settings['ordering_sort_order']) === 'asc' ? 'ASC' : 'DESC';
+            $query .= ' ORDER BY '.$table.'.'.acym_secureDBColumn($settings['ordering']).' '.acym_secureDBColumn($order);
         }
 
         if (empty($settings['offset']) || $settings['offset'] < 0) {
@@ -334,6 +335,17 @@ class CampaignClass extends AcymClass
         $campaign = parent::getOneById($id);
 
         return empty($campaign) ? null : $this->decode($campaign);
+    }
+
+    public function getOneByMailId(int $mailId): ?object
+    {
+        $campaign = acym_loadObject(
+            'SELECT *
+            FROM #__acym_campaign
+            WHERE `mail_id` = '.intval($mailId)
+        );
+
+        return empty($campaign) ? null : $campaign;
     }
 
     public function getOneByIdWithMail(int $id): ?object

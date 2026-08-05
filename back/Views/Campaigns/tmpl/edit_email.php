@@ -14,11 +14,11 @@
             echo '<input type="hidden" name="editor_stylesheet" value="'.acym_escape($data['needDisplayStylesheet']).'">';
         }
         ?>
-		<input type="hidden" name="editor_headers" value="<?php echo acym_escape($data['mailInformation']->headers); ?>">
-		<input type="hidden" name="from_email" value="<?php echo acym_escape($data['mailInformation']->from_email); ?>">
-		<input type="hidden" name="from_name" value="<?php echo acym_escape($data['mailInformation']->from_name); ?>">
-		<input type="hidden" name="reply_to_email" value="<?php echo acym_escape($data['mailInformation']->reply_to_email); ?>">
-		<input type="hidden" name="reply_to_name" value="<?php echo acym_escape($data['mailInformation']->reply_to_name); ?>">
+		<input type="hidden" name="editor_headers" value="<?php echo acym_escape($data['mailInformation']->headers ?? ''); ?>">
+		<input type="hidden" name="from_email" value="<?php echo acym_escape($data['mailInformation']->from_email ?? ''); ?>">
+		<input type="hidden" name="from_name" value="<?php echo acym_escape($data['mailInformation']->from_name ?? ''); ?>">
+		<input type="hidden" name="reply_to_email" value="<?php echo acym_escape($data['mailInformation']->reply_to_email ?? ''); ?>">
+		<input type="hidden" name="reply_to_name" value="<?php echo acym_escape($data['mailInformation']->reply_to_name ?? ''); ?>">
 		<div class="grid-x">
 			<div class="cell medium-auto"></div>
 			<div class="cell <?php echo acym_escape($data['containerClass']); ?> grid-x grid-margin-x acym__content acym__editor__area margin-y margin-bottom-1">

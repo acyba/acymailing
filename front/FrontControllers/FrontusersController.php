@@ -832,6 +832,9 @@ class FrontusersController extends UsersController
         if (!in_array('2', $values->fields) && !in_array(2, $values->fields)) {
             $values->fields[] = '2';
         }
+        if (!isset($values->page_heading)) {
+            $values->page_heading = '';
+        }
         if (!isset($values->introtext)) {
             $values->introtext = '';
         }

@@ -203,7 +203,7 @@ $formName = acym_getModuleFormName();
 		<input type="hidden" name="hiddenlists" value="<?php echo acym_escape(implode(',', $data['hiddenlists'])); ?>" />
 		<input type="hidden" name="user[id]" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="userId" value="<?php echo acym_escape($data['user']->id); ?>" />
-		<input type="hidden" name="userKey" value="<?php echo acym_escape($data['user']->key); ?>" />
+		<input type="hidden" name="userKey" value="<?php echo acym_escape($data['user']->key ?? ''); ?>" />
 		<input type="hidden" name="ajax" value="1" />
 		<input type="hidden" name="acyprofile" value="1" />
 

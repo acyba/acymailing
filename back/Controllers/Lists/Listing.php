@@ -16,8 +16,8 @@ trait Listing
         $data = [];
         $data['search'] = $this->getVarFiltersListing('string', 'lists_search', '');
         $data['tag'] = $this->getVarFiltersListing('string', 'lists_tag', '');
-        $data['ordering'] = $this->getVarFiltersListing('string', 'lists_ordering', 'id');
-        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'lists_ordering_sort_order', 'desc');
+        $data['ordering'] = $this->getVarFiltersListing('cmd', 'lists_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', 'lists_ordering_sort_order', 'desc');
         $data['status'] = $this->getVarFiltersListing('string', 'lists_status', '');
         $data['allTags'] = $tagClass->getAllTagsByType(TagClass::TYPE_LIST);
         $data['pagination'] = new PaginationHelper();

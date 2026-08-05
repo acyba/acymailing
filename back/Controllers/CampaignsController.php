@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\HistoryClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
@@ -137,7 +138,6 @@ class CampaignsController extends AcymController
         }
 
         $mailerHelper = new MailerHelper();
-        $mailerHelper->autoAddUser = true;
         $mailerHelper->report = false;
         if (!empty($specificMailId)) {
             $mailerHelper->isAbTest = $campaignClass->isAbTestMail($specificMailId);
@@ -169,20 +169,19 @@ class CampaignsController extends AcymController
             return;
         }
 
+        $historyClass = new HistoryClass();
+
         foreach ($testEmails as $oneAddress) {
+            if (is_numeric($oneAddress)) {
+                $receiver = $userClass->getOneById($oneAddress);
+            } else {
+                $receiver = $userClass->getOneByEmail($oneAddress, true);
+            }
+
             $mailId = $specificMailId;
             if (empty($mailId)) {
                 if (acym_isMultilingual()) {
-                    if (is_numeric($oneAddress)) {
-                        $user = $userClass->getOneById($oneAddress);
-                    } else {
-                        $user = $userClass->getOneByEmail($oneAddress);
-                    }
-                    if (empty($user)) {
-                        $mailId = $campaign->mail_id;
-                    } else {
-                        $mailId = empty($translatedMails[$user->language]) ? $campaign->mail_id : $translatedMails[$user->language]->id;
-                    }
+                    $mailId = empty($receiver) || empty($translatedMails[$receiver->language]) ? $campaign->mail_id : $translatedMails[$receiver->language]->id;
                 } else {
                     $mailId = $campaign->mail_id;
                 }
@@ -192,7 +191,9 @@ class CampaignsController extends AcymController
                 'isTest' => true,
                 'testNote' => $testNote,
             ];
-            if (!$mailerHelper->sendOne($mailId, $oneAddress, $options)) {
+            if ($mailerHelper->sendOne($mailId, $receiver, $options)) {
+                $historyClass->insert($receiver->id, 'test_sent', [], $mailId);
+            } else {
                 $success = false;
             }
 

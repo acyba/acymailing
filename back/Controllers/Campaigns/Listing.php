@@ -136,11 +136,11 @@ trait Listing
         $data['status'] = '';
         if (isset($data['campaign_type'])) {
             $data['status'] = $this->getVarFiltersListing('string', $data['campaign_type'].'_status', '');
-            $data['ordering'] = $this->getVarFiltersListing('string', $data['campaign_type'].'_ordering', 'id');
-            $data['orderingSortOrder'] = $this->getVarFiltersListing('string', $data['campaign_type'].'_ordering_sort_order', 'desc');
+            $data['ordering'] = $this->getVarFiltersListing('cmd', $data['campaign_type'].'_ordering', 'id');
+            $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', $data['campaign_type'].'_ordering_sort_order', 'desc');
         } elseif (isset($data['email_type'])) {
-            $data['ordering'] = $this->getVarFiltersListing('string', $data['email_type'].'_ordering', 'id');
-            $data['orderingSortOrder'] = $this->getVarFiltersListing('string', $data['email_type'].'_ordering_sort_order', 'desc');
+            $data['ordering'] = $this->getVarFiltersListing('cmd', $data['email_type'].'_ordering', 'id');
+            $data['orderingSortOrder'] = $this->getVarFiltersListing('cmd', $data['email_type'].'_ordering_sort_order', 'desc');
         }
 
         if (!empty($data['tag'])) {

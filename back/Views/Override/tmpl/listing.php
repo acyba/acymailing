@@ -37,7 +37,8 @@
                             'active' => acym_translation('ACYM_ACTIVE'),
                         ],
                         'override',
-                        $data['ordering']
+                        $data['ordering'],
+                        $data['orderingSortOrder']
                     ); ?>
 				</div>
 			</div>

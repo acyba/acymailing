@@ -18,7 +18,7 @@ trait Listing
         // Get filters data
         $searchFilter = $this->getVarFiltersListing('string', 'mails_search', '');
         $tagFilter = $this->getVarFiltersListing('string', 'mails_tag', '');
-        $ordering = $this->getVarFiltersListing('string', 'mails_ordering', 'creation_date');
+        $ordering = $this->getVarFiltersListing('cmd', 'mails_ordering', 'creation_date');
         $orderingSortOrder = $this->getVarFiltersListing('cmd', 'mails_ordering_sort_order', 'desc');
 
         $pagination = new PaginationHelper();

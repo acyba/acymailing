@@ -15,8 +15,8 @@ trait Listing
         $searchFilter = $this->getVarFiltersListing('string', 'forms_search', '');
         $status = $this->getVarFiltersListing('string', 'forms_status', '');
         $tagFilter = $this->getVarFiltersListing('string', 'forms_tag', '');
-        $ordering = $this->getVarFiltersListing('string', 'forms_ordering', 'id');
-        $orderingSortOrder = $this->getVarFiltersListing('string', 'forms_ordering_sort_order', 'asc');
+        $ordering = $this->getVarFiltersListing('cmd', 'forms_ordering', 'id');
+        $orderingSortOrder = $this->getVarFiltersListing('cmd', 'forms_ordering_sort_order', 'asc');
         $formClass = new FormClass();
 
         // Get pagination data
