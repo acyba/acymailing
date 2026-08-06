@@ -56,7 +56,7 @@ trait SubscriptionAutomationActions
         } elseif ($action['list_actions'] === 'remove') {
             $queryToProcess = 'DELETE FROM #__acym_user_has_list WHERE list_id = '.intval($action['list_id']).' AND user_id IN ('.$query->getQuery(['user.id']).')';
         } elseif ($action['list_actions'] === 'unsub') {
-            $queryToProcess = 'UPDATE #__acym_user_has_list SET status = 0 WHERE list_id = '.intval($action['list_id']).' AND user_id IN ('.$query->getQuery(['user.id']).')';
+            $queryToProcess = 'UPDATE #__acym_user_has_list SET status = 0, `unsubscribe_date` = '.acym_escapeDB(gmdate('Y-m-d H:i:s', time())).' WHERE list_id = '.intval($action['list_id']).' AND user_id IN ('.$query->getQuery(['user.id']).')';
         }
 
         $nbAffected = acym_query($queryToProcess);

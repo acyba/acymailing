@@ -88,15 +88,18 @@
 						<h6 class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_ALL_TRIGGER')); ?></h6>
 						<div class="cell acym__automation__all-trigger__classic grid-x">
 							<!-- TODO : Handle the escape of ->option var in the addons themself -->
-                            <?php foreach ($data['classic'] as $key => $classic) {
+                            <?php
+                            $allowedTriggerNameTags = [
+                                'div' => ['class' => true],
+                                'span' => ['class' => true],
+                            ];
+                            foreach ($data['classic'] as $key => $classic) {
                                 echo '<div '.(in_array(
                                         $key,
                                         $data['defaultValues']
                                     ) ? 'style="display: none"' : '').' class="acym__automation__trigger__droppable__classic margin-top-1 cell" data-trigger="'.acym_escape(
                                         $key
-                                    ).'"><span class="acym__automation__trigger__name">'.acym_escapeHtml(
-                                        $classic->name
-                                    ).'</span><span class="acym__automation__trigger__action">'.$classic->option.'</span></div>';
+                                    ).'"><span class="acym__automation__trigger__name">'.acym_escapeHtmlWithAllowedTags($classic->name, $allowedTriggerNameTags).'</span><span class="acym__automation__trigger__action">'.$classic->option.'</span></div>';
                             } ?>
 						</div>
 					</div>
@@ -113,7 +116,7 @@
                                 ?>
 								<div class="acym__automation__droppable__trigger margin-top-1">
 									<div class="acym__automation__one__trigger">
-										<span class="acym__automation__trigger__name"><?php echo acym_escapeHtml($classic->name); ?></span>
+										<span class="acym__automation__trigger__name"><?php echo acym_escapeHtmlWithAllowedTags($classic->name, $allowedTriggerNameTags); ?></span>
 										<span class="acym__automation__trigger__action"><?php echo $classic->option; ?></span>
 									</div>
 									<i data-trigger-show="<?php echo acym_escape($key); ?>"
@@ -138,9 +141,7 @@
                                         $data['defaultValues']
                                     ) ? 'style="display: none"' : '').' class="acym__automation__trigger__droppable__action margin-top-1 cell" data-trigger="'.acym_escape(
                                         $key
-                                    ).'"><span class="acym__automation__trigger__name">'.acym_escapeHtml(
-                                        $triggerUser->name
-                                    ).'</span><span class="acym__automation__trigger__action">'.$triggerUser->option.'</span></div>';
+                                    ).'"><span class="acym__automation__trigger__name">'.acym_escapeHtmlWithAllowedTags($triggerUser->name, $allowedTriggerNameTags).'</span><span class="acym__automation__trigger__action">'.$triggerUser->option.'</span></div>';
                             }
                             ?>
 						</div>
@@ -157,9 +158,7 @@
                                 if (!in_array($key, $data['defaultValues'])) continue;
                                 ?>
 								<div class="acym__automation__droppable__trigger margin-top-1">
-									<div class="acym__automation__one__trigger"><span class="acym__automation__trigger__name"><?php echo acym_escapeHtml(
-                                                $triggerUser->name
-                                            ); ?></span></b>
+									<div class="acym__automation__one__trigger"><span class="acym__automation__trigger__name"><?php echo acym_escapeHtmlWithAllowedTags($triggerUser->name, $allowedTriggerNameTags); ?></span></b>
 										<span class="acym__automation__trigger__action"><?php echo $triggerUser->option; ?></span>
 									</div>
 									<i data-trigger-show="<?php echo acym_escape($key); ?>"

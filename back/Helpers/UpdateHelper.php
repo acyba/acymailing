@@ -16,6 +16,7 @@ class UpdateHelper extends AcymObject
     use Update\Patchv8;
     use Update\Patchv9;
     use Update\Patchv10;
+    use Update\Patchv11;
 
     const FIRST_EMAIL_NAME_KEY = 'ACYM_FIRST_EMAIL_NAME';
     const BOUNCE_VERSION = 9;

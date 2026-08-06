@@ -69,8 +69,8 @@ function acym_displayLanguageRadio(array $languages, string $name, $translation,
     ?>
 
 	<div class="cell grid-x grid-margin-x acym__multilingual__selection" id="acym__multilingual__selection-<?php echo acym_escape($type); ?>">
-		<input type="hidden" class="acym__multilingual__selection__translation" name="<?php echo acym_escape($name); ?>" value="<?php echo acym_escape($translation); ?>">
-		<input type="hidden" class="acym__multilingual__selection__translation__default" value="<?php echo acym_escape($default); ?>">
+		<input type="hidden" class="acym__multilingual__selection__translation" name="<?php echo acym_escape($name); ?>" value="<?php echo acym_escape($translation ?? ''); ?>">
+		<input type="hidden" class="acym__multilingual__selection__translation__default" value="<?php echo acym_escape($default ?? ''); ?>">
 		<input type="hidden" class="acym__multilingual__selection__main-language" value="<?php echo acym_escape($defaultLanguage); ?>">
 		<h4 class="cell shrink acym__title">
             <?php echo acym_escapeHtml(acym_translation('ACYM_LANGUAGE')); ?>

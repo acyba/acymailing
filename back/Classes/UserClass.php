@@ -592,8 +592,7 @@ class UserClass extends AcymClass
             foreach ($currentSubscription as $oneList) {
                 if ($oneList->status == 1) {
                     $currentlySubscribed[$oneList->id] = $oneList;
-                }
-                if ($oneList->status == 0) {
+                } else {
                     $currentlyUnsubscribed[$oneList->id] = $oneList;
                 }
             }

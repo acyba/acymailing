@@ -29,7 +29,7 @@
                 }
                 ?>
 				<div class="acym__selection__card acym__selection__select-card cell xxlarge-2 xlarge-3 medium-4 text-center <?php echo acym_escape($selected); ?>"
-				     acym-data-link="<?php echo acym_escape($block['link']); ?>">
+				     acym-data-link="<?php echo acym_escapeUrl($block['link']); ?>">
 					<i class="<?php echo acym_escape($block['icon']); ?> acym__selection__card__icon"></i>
 					<h1 class="acym__selection__card__title"><?php echo acym_escapeHtml($block['name']); ?></h1>
 					<p class="acym__selection__card__description"><?php echo acym_escapeHtml($block['description']); ?></p>

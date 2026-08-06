@@ -71,7 +71,7 @@
                                     $afterName = empty($afterName) ? '' : ' - '.$afterName
                                     ?>
 									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo acym_escapeHtml($row->name.$afterName); ?></h6>
-									<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escapeHtml($row->subject); ?></span>
+									<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escapeHtml($row->subject ?? ''); ?></span>
 									<p class="acym__listing__title__secondary">
                                         <?php echo acym_escapeHtml(acym_date($row->sending_date, acym_getDateTimeFormat())); ?>
 									</p>

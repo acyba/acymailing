@@ -348,10 +348,11 @@ trait SubscriberAutomationActions
             if (empty($mail)) {
                 $automationAction = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_AN_EMAIL').'</span>';
             } else {
+                $queueTime = empty($automationAction['acy_add_queue']['time']) ? '[time]' : $automationAction['acy_add_queue']['time'];
                 $automationAction = acym_translationSprintf(
                     'ACYM_ACTION_ADD_QUEUE_SUMMARY',
                     $mail->name,
-                    acym_date(acym_replaceDate($automationAction['acy_add_queue']['time']), 'd M Y H:i')
+                    acym_date(acym_replaceDate($queueTime), 'd M Y H:i')
                 );
             }
         }

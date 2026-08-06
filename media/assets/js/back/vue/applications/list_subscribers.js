@@ -120,7 +120,7 @@ jQuery(function ($) {
                 },
                 sortBy(column, ascending) {
                     const dir = ascending ? 1 : -1;
-                    this.displayedSubscribers.sort((a, b) => {
+                    this.subscribed.sort((a, b) => {
                         const nameA = String(a[column]).toLowerCase();
                         const nameB = String(b[column]).toLowerCase();
                         const dateA = Date.parse(nameA);
@@ -136,6 +136,9 @@ jQuery(function ($) {
                         if (nameA > nameB) return 1 * dir;
                         return 0;
                     });
+                    this.displayedSubscribers = '' === this.searchSubscribers
+                        ? this.subscribed.slice(0, start)
+                        : search(this.subscribed, this.searchSubscribers, columns);
                 },
                 orderByTable(column) {
                     //if the last sorted column is the same we want to sort, we sort the column in DESC and we empty 'columnOrderSelected'

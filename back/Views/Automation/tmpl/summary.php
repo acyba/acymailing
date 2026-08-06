@@ -92,6 +92,7 @@ $summaryAllowedTags = [
                                             ).'</span><br />';
                                     }
                                     foreach ($orValues as $and => $andValue) {
+                                        if (is_array($andValue)) continue;
                                         if ($andNum > 0) {
                                             echo '<span class="acym__automation__summary__information__one__title">'.acym_escapeHtml(acym_translation('ACYM_AND')).'</span><br />';
                                         }
@@ -121,6 +122,7 @@ $summaryAllowedTags = [
                             ).'</span></div><div class="acym__automation__summary__information__one">';
                         $andNum = 0;
                         foreach ($data['action']->actions as $and => $andValue) {
+                            if (is_array($andValue)) continue;
                             if ($andNum > 0) echo '<span class="acym__automation__summary__information__one__title">'.acym_escapeHtml(acym_translation('ACYM_AND')).'</span><br />';
                             echo acym_escapeHtmlWithAllowedTags((string)$andValue, $summaryAllowedTags).'<br />';
                             $andNum++;
@@ -150,6 +152,7 @@ $summaryAllowedTags = [
                             $andNum = 0;
                             if ($orNum > 0) echo '<span class="acym__automation__summary__information__one__title">'.acym_escapeHtml(acym_translation('ACYM_OR')).'</span><br />';
                             foreach ($orValues as $and => $andValue) {
+                                if (is_array($andValue)) continue;
                                 if ($andNum > 0) {
                                     echo '<span class="acym__automation__summary__information__one__title">'.acym_escapeHtml(
                                             acym_translation('ACYM_AND')

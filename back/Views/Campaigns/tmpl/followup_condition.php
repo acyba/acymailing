@@ -24,6 +24,12 @@
 		<h5 class="cell padding-left-1 acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_SEND_FOLLOW_UP_EMAIL_IF')); ?></h5>
 		<div class="cell grid-x padding-left-1">
             <?php
+            $allowedConditionTags = [
+                'span' => ['class' => true],
+                'select' => ['class' => true, 'name' => true, 'id' => true, 'multiple' => true],
+                'option' => ['value' => true, 'selected' => true, 'disabled' => true],
+                'input' => ['type' => true, 'name' => true, 'value' => true],
+            ];
             if (!empty($data['followup']->condition) && empty($data['additionalCondition']) && !in_array($data['trigger'], ['user_subscribe', 'user_creation'])) {
                 echo '<p class="cell acym__color__orange padding-left-1"><b>'.acym_escapeHtml(acym_translation('ACYM_MISSING_ADDON')).'</b></p>';
             }
@@ -38,30 +44,33 @@
 
             ?>
             <?php if ($data['trigger'] === 'user_subscribe') { ?>
-				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_escapeHtml(
+				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_escapeHtmlWithAllowedTags(
                         acym_translationSprintf(
                             $data['lists_subscribe_translation'],
                             $data['select_status_lists'],
                             $data['lists_multiselect']
-                        )
+                        ),
+                        $allowedConditionTags
                     ); ?></span>
             <?php } ?>
 			<h5 class="cell acym__title__primary__color margin-top-2 padding-left-1"><?php echo acym_escapeHtml(acym_translation('ACYM_CLASSIC_CONDITIONS')); ?></h5>
             <?php if ($data['trigger'] !== 'user_subscribe') { ?>
-				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_escapeHtml(
+				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_escapeHtmlWithAllowedTags(
                         acym_translationSprintf(
                             $data['lists_subscribe_translation'],
                             $data['select_status_lists'],
                             $data['lists_multiselect']
-                        )
+                        ),
+                        $allowedConditionTags
                     ); ?></span>
             <?php } ?>
-			<span class="cell grid-x acym_vcenter padding-left-2"><?php echo acym_escapeHtml(
+			<span class="cell grid-x acym_vcenter padding-left-2"><?php echo acym_escapeHtmlWithAllowedTags(
                     acym_translationSprintf(
                         'ACYM_FOLLOW_UP_CONDITION_USER_SEGMENT',
                         $data['select_status_segments'],
                         $data['segments_multiselect']
-                    )
+                    ),
+                    $allowedConditionTags
                 ); ?></span>
 		</div>
 		<div class="cell grid-x">

@@ -99,7 +99,7 @@ trait Listing
     {
         acym_checkToken();
 
-        $automationIds = acym_getVar('int', 'elements_checked');
+        $automationIds = acym_getVar('array', 'elements_checked', []);
 
         if (empty($automationIds)) {
             $this->listing();

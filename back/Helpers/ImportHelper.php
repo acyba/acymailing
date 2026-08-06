@@ -1291,7 +1291,7 @@ class ImportHelper extends AcymObject
 
                 if ($val == -1) {
                     $dateColumn = 'unsubscribe_date';
-                    $status = -1;
+                    $status = 0;
                 } else {
                     $dateColumn = 'subscription_date';
                     $status = 1;
@@ -1310,7 +1310,7 @@ class ImportHelper extends AcymObject
                     if ($b > 200) {
                         $query = rtrim($query, ',');
                         if ($val == -1) {
-                            $query .= ' ON DUPLICATE KEY UPDATE status = -1';
+                            $query .= ' ON DUPLICATE KEY UPDATE status = 0';
                             $nbsubscribed = -acym_loadResult(
                                 'SELECT COUNT(*) FROM #__acym_listsub WHERE `list_id` = '.intval($listid).' AND status != -1 AND `user_id` IN ('.implode(',', $currentSubids).')'
                             );
@@ -1326,7 +1326,7 @@ class ImportHelper extends AcymObject
                 }
                 $query = rtrim($query, ',');
                 if ($val == -1) {
-                    $query .= ' ON DUPLICATE KEY UPDATE status = -1';
+                    $query .= ' ON DUPLICATE KEY UPDATE status = 0';
                     // It could be empty if we imported exactly 200, 400, 600... users
                     if (!empty($currentSubids)) {
                         $nbsubscribed = -acym_loadResult(
