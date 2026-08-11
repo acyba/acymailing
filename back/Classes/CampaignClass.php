@@ -382,9 +382,20 @@ class CampaignClass extends AcymClass
         acym_arrayToInteger($listsIds);
         if (empty($listsIds)) return false;
 
-        $values = [];
         $listsIds = array_unique($listsIds);
-        foreach ($listsIds as $listId) {
+
+        $existingListsIds = acym_loadResultArray('SELECT `id` FROM #__acym_list WHERE `id` IN ('.implode(',', $listsIds).')');
+        acym_arrayToInteger($existingListsIds);
+
+        $unknownListsIds = array_diff($listsIds, $existingListsIds);
+        if (!empty($unknownListsIds)) {
+            $this->errors[] = acym_translationSprintf('ACYM_LIST_NOT_FOUND', implode(', ', $unknownListsIds));
+        }
+
+        if (empty($existingListsIds)) return false;
+
+        $values = [];
+        foreach ($existingListsIds as $listId) {
             $values[] = '('.intval($mailId).', '.intval($listId).')';
         }
 

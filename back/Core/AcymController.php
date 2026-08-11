@@ -62,7 +62,9 @@ abstract class AcymController extends AcymObject
         }
 
         $this->initSession();
-        $returnValue = acym_getVar($type, $varName);
+
+        $isVarInRequest = !is_null(acym_getVar('raw', $varName, null, '', ACYM_ALLOWRAW));
+        $returnValue = $isVarInRequest ? acym_getVar($type, $varName) : null;
 
         if (is_null($returnValue) && $overrideIfNull) {
             $returnValue = $default;

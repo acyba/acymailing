@@ -21,10 +21,9 @@ jQuery(function ($) {
     }
 
     function rebuildConditions() {
-        let $conditionElement = $('#conditions');
-        if (!$conditionElement.length) return;
+        let conditions = (window.acymAutomationCondition || {}).conditions;
+        if (!conditions) return;
 
-        let conditions = acym_helper.parseJson($conditionElement.val());
         let type = conditions['type_condition'];
 
         let or = 0;
@@ -82,10 +81,8 @@ jQuery(function ($) {
     }
 
     function setSelectConditions(type) {
-        let $options = $('#acym__automation__condition__' + type + '__options');
-        if (!$options.length) return;
-
-        let conditions = acym_helper.parseJson($options.val());
+        let conditions = ((window.acymAutomationCondition || {}).options || {})[type];
+        if (!conditions) return;
 
         $('.acym__automation__select__' + type + '__condition').off('change').on('change', function () {
             let $inputAnd = $('#acym__automation__conditions__count__and');

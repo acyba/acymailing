@@ -65,18 +65,18 @@ class getAcymTab extends cbTabHandler
         foreach ($visibleListsArray as $listId) {
             $listsHtml .= '<tr>
                                 <td>
-                                    <input type="checkbox" class="acym_checkbox" id="acym_'.$listId.'" name="acymcb[list][]" '.checked(
+                                    <input type="checkbox" class="acym_checkbox" id="acym_'.intval($listId).'" name="acymcb[list][]" '.acym_checked(
                     in_array($listId, $checkedListsArray),
                     true,
                     false
                 ).' value="'.intval($listId).'"/>
                                 </td>
                                 <td>
-                                    <label for="acym_'.$listId.'">'.$allLists[$listId]->name.'</label>
+                                    <label for="acym_'.$listId.'">'.acym_escapeHtml($allLists[$listId]->name).'</label>
                                 </td>
                             </tr>';
         }
-        $listsHtml .= '</table><input type="hidden" name="visibleLists" value="'.implode(',', $visibleListsArray).'" />';
+        $listsHtml .= '</table><input type="hidden" name="visibleLists" value="'.acym_escape(implode(',', $visibleListsArray)).'" />';
         $return[] = cbTabs::_createPseudoField($tab, acym_translation($label), $listsHtml, '', 'acymailingdataLists', false);
 
         return $return;
@@ -86,7 +86,7 @@ class getAcymTab extends cbTabHandler
     {
         // Compatibility with CB profile pro
         if (file_exists(JPATH_SITE.DS.'components'.DS.'com_cbprofilepro')) {
-            if (!empty($_REQUEST['task']) && $_REQUEST['task'] == 'userdetails') {
+            if (!empty($_REQUEST['task']) && $_REQUEST['task'] === 'userdetails') {
                 return $this->getEditTab($tab, $cbUser, $ui);
             }
             if (empty($cbUser->user_id) && empty($cbUser->id)) {
@@ -108,7 +108,7 @@ class getAcymTab extends cbTabHandler
         $requireConfirmation = $config->get('require_confirmation');
         if (0 === intval($acyUser->confirmed) && 1 === intval($requireConfirmation)) {
             $myLink = acym_frontendLink('frontusers&task=confirm&id='.$acyUser->id.'&key='.urlencode($acyUser->key));
-            acym_display('<a target="_blank" href="'.$myLink.'">'.acym_translation('ACYM_CONFIRM_SUBSCRIPTION').'</a>', 'warning');
+            acym_display('<a target="_blank" href="'.acym_escapeUrl($myLink).'">'.acym_escapeHtml(acym_translation('ACYM_CONFIRM_SUBSCRIPTION')).'</a>', 'warning');
         }
 
         $lists = $this->getParam('listsprofile', '');
@@ -292,16 +292,16 @@ class getAcymTab extends cbTabHandler
             $return .= '<div class="acym_introtext">'.$introText.'</div>';
         }
 
-        $return .= '<table class="acym_cb_subscription '.$mode.'">';
+        $return .= '<table class="acym_cb_subscription '.acym_escape($mode).'">';
 
         if ('edition' === $mode) {
-            $return .= '<th>'.acym_translation('ACYM_SUBSCRIPTION').'</th>
-                        <th>'.acym_translation('ACYM_LIST').'</th>';
+            $return .= '<th>'.acym_escapeHtml(acym_translation('ACYM_SUBSCRIPTION')).'</th>
+                        <th>'.acym_escapeHtml(acym_translation('ACYM_LIST')).'</th>';
         }
 
         $k = 0;
         foreach ($visibleListsArray as $listId) {
-            $return .= '<tr class="acym_list row'.$k.'">';
+            $return .= '<tr class="acym_list row'.intval($k).'">';
             if ('edition' === $mode) {
                 $return .= '<td class="acym_list_status">';
                 ob_start();
@@ -312,7 +312,7 @@ class getAcymTab extends cbTabHandler
                 $return .= ob_get_clean();
                 $return .= '</td>';
             }
-            $return .= '<td class="acym_list_name">'.$allLists[$listId]->name.'</td>';
+            $return .= '<td class="acym_list_name">'.acym_escapeHtml($allLists[$listId]->name).'</td>';
             $return .= '</tr>';
             $k = 1 - $k;
         }
@@ -342,7 +342,7 @@ class getAcymTab extends cbTabHandler
             $requireConfirmation = $config->get('require_confirmation');
             if (0 === intval($acyUser->confirmed) && 1 === intval($requireConfirmation)) {
                 $myLink = acym_frontendLink('frontusers&task=confirm&id='.$acyUser->id.'&key='.urlencode($acyUser->key));
-                acym_display('<a target="_blank" href="'.$myLink.'">'.acym_translation('ACYM_CONFIRM_SUBSCRIPTION').'</a>', 'warning');
+                acym_display('<a target="_blank" href="'.acym_escapeUrl($myLink).'">'.acym_escapeHtml(acym_translation('ACYM_CONFIRM_SUBSCRIPTION')).'</a>', 'warning');
             }
         }
 

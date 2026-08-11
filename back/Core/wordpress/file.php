@@ -130,7 +130,7 @@ function acym_uploadFile(string $src, string $dest): bool
         && $wp_filesystem->move($src, $dest, true)
     ) {
         // Short circuit to prevent file permission errors
-        if ($wp_filesystem->chmod($dest, FS_CHMOD_FILE)) {
+        if (acym_chmod($dest, FS_CHMOD_FILE)) {
             return true;
         } else {
             acym_enqueueMessage(acym_translation('ACYM_FILE_REJECTED_SAFETY_REASON'), 'error');
@@ -189,7 +189,17 @@ function acym_chmod(string $path, int $mode): bool
         WP_Filesystem();
     }
 
-    return $wp_filesystem->chmod($path, $mode);
+    $applied = $wp_filesystem instanceof \WP_Filesystem_Base && $wp_filesystem->chmod($path, $mode);
+
+    clearstatcache(true, $path);
+    $currentMode = @fileperms($path);
+
+    if ($applied && $currentMode !== false && ($currentMode & 0777) === $mode) {
+        return true;
+    }
+
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- Fallback
+    return @chmod($path, $mode);
 }
 
 function acym_deleteFile(string $file): bool

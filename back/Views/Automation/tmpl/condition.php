@@ -3,7 +3,6 @@
 ?>
 <form id="acym_form" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm" data-abide novalidate>
 	<input type="hidden" name="id" value="<?php echo empty($data['id']) ? '' : intval($data['id']); ?>">
-	<input type="hidden" id="conditions" value="<?php echo acym_escape(json_encode($data['condition']->conditions)); ?>">
 	<input type="hidden" name="stepAutomationId" value="<?php echo empty($data['step_automation_id']) ? '' : intval($data['step_automation_id']); ?>">
 	<input type="hidden" name="conditionId" value="<?php echo empty($data['condition']->id) ? '' : intval($data['condition']->id); ?>">
 	<input type="hidden" id="acym__automation__conditions__count__and" value="0">
@@ -93,7 +92,6 @@
 
 		<div class="cell grid-x acym__automation__condition__container"
 		     id="acym__automation__conditions__type__classic" <?php echo $data['type_condition'] == 'classic' ? '' : 'style="display:none;"'; ?>>
-			<input type="hidden" value="<?php echo acym_escape(json_encode($data['classic_option'])); ?>" id="acym__automation__condition__classic__options">
 			<div class="cell grid-x acym__content acym__automation__group__condition" data-condition-number="0">
 				<div class="cell grid-x acym__automation__one__condition acym__automation__one__condition__classic">
 					<div class="medium-5 cell">
@@ -130,7 +128,6 @@
 
 		<div class="cell grid-x acym__automation__condition__container"
 		     id="acym__automation__conditions__type__user" <?php echo $data['type_condition'] === 'classic' ? 'style="display:none;"' : ''; ?>>
-			<input type="hidden" value="<?php echo acym_escape(json_encode($data['user_option'])); ?>" id="acym__automation__condition__user__options">
 			<div class="cell grid-x acym__content acym__automation__group__condition" data-condition-number="0">
 				<div class="cell grid-x acym__automation__one__condition acym__automation__one__condition__user">
 					<div class="medium-5 cell">

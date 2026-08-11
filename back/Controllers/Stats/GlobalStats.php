@@ -373,17 +373,14 @@ trait GlobalStats
 
     public function prepareStatByList(array &$data): void
     {
-        $mailid = (count(array_unique($data['selectedMailid'])) != 1) ? 0 : $data['selectedMailid'][0];
+        $selectedMailIds = array_unique($data['selectedMailid']);
+        $mailid = count($selectedMailIds) !== 1 ? 0 : (int)reset($selectedMailIds);
 
         if (empty($mailid)) {
             return;
         }
 
-        $mailSelected = $this->getVarFiltersListing('int', 'mail_id_language', $mailid);
-
-        $mailClass = new MailClass();
-        $mail = $mailClass->getOneById($mailSelected);
-        $mainMailId = empty($mail->parent_id) ? $mail->id : $mail->parent_id;
+        $mailSelected = (int)$this->getVarFiltersListing('int', 'mail_id_language', $mailid);
 
         $data['lists'] = [];
         $data['emailsSent'] = [];
@@ -394,10 +391,24 @@ trait GlobalStats
         $data['listsStats'] = [];
         $data['userPerList'] = [];
 
+        $mailClass = new MailClass();
+        $mail = $mailClass->getOneById($mailSelected);
+
+        if (empty($mail) || !in_array($mailid, [$mail->id, $mail->parent_id])) {
+            $mailSelected = $mailid;
+            $mail = $mailClass->getOneById($mailSelected);
+        }
+
+        if (empty($mail)) {
+            return;
+        }
+
+        $mainMailId = empty($mail->parent_id) ? $mail->id : $mail->parent_id;
+
         // get lists from the selected campaign
         $query = 'SELECT l.id, l.name, l.color FROM #__acym_list l';
         $query .= ' JOIN #__acym_mail_has_list ml on l.id = ml.list_id';
-        $query .= ' WHERE ml.mail_id = '.$mainMailId;
+        $query .= ' WHERE ml.mail_id = '.intval($mainMailId);
 
         $data['lists'] = acym_loadObjectList($query, 'id');
         $listIds = implode(',', array_keys($data['lists']));

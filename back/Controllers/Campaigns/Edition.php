@@ -101,7 +101,7 @@ trait Edition
         parent::display($data);
     }
 
-    private function prepareSegmentDisplay(array &$data, array $sendingParams): void
+    private function prepareSegmentDisplay(array &$data, ?array $sendingParams): void
     {
         $data['menuClass'] = $this->menuClass;
         $data['displaySegmentTab'] = !empty($sendingParams) && array_key_exists('segment', $sendingParams);
@@ -619,7 +619,7 @@ trait Edition
             $campaign = new stdClass();
             $campaign->draft = 1;
             $campaign->active = 0;
-            $campaign->sending_type = $types[$campaignType];
+            $campaign->sending_type = $types[$campaignType] ?? CampaignClass::SENDING_TYPE_NOW;
             $campaign->sent = 0;
             $campaign->sending_params = [];
         } else {

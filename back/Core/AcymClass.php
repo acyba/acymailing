@@ -181,14 +181,15 @@ abstract class AcymClass extends AcymObject
         }
 
         foreach ($this->jsonColumns as $oneColumn) {
-            if (!isset($element->$oneColumn)) {
+            if (!property_exists($element, $oneColumn)) {
                 continue;
             }
 
             if (empty($element->$oneColumn)) {
                 $element->$oneColumn = [];
             } elseif (is_string($element->$oneColumn)) {
-                $element->$oneColumn = json_decode($element->$oneColumn, true);
+                $decodedColumn = json_decode($element->$oneColumn, true);
+                $element->$oneColumn = is_array($decodedColumn) ? $decodedColumn : [];
             }
         }
     }

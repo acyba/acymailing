@@ -79,4 +79,22 @@ class SecurityHelper extends AcymObject
             'src' => true,
         ],
     ];
+
+    const ALLOWED_HTML_INTRO = [
+        'i' => [
+            'class' => true,
+        ],
+        'b' => [
+            'class' => true,
+        ],
+        'p' => [
+            'class' => true,
+        ],
+        'strong' => [
+            'class' => true,
+        ],
+        'span' => [
+            'class' => true,
+        ],
+    ];
 }

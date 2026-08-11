@@ -80,16 +80,33 @@ trait ModuleInsertion
 
     public function replaceIndividualContent(object $tag): string
     {
-        $module = acym_loadObject('SELECT * FROM #__modules WHERE id = '.intval($tag->id));
+        static $moduleOutputs = [];
+
+        $language = empty($tag->language) ? '' : $tag->language;
+        $cacheKey = intval($tag->id).'|'.$language;
+        if (array_key_exists($cacheKey, $moduleOutputs)) {
+            return $moduleOutputs[$cacheKey];
+        }
+
+        $module = acym_loadObject(
+            'SELECT * FROM #__modules
+            WHERE id = '.intval($tag->id).'
+                AND published = 1
+                AND client_id = 0'
+        );
         if (empty($module)) {
+            $moduleOutputs[$cacheKey] = '';
+
             return '';
         }
+
+        // Keep the empty result if anything below fails, a module we can't load won't load on the next email either
+        $moduleOutputs[$cacheKey] = '';
 
         $url = ACYM_LIVE.'index.php?option=com_acym&tmpl=component&ctrl=moduleloader&task=loadAjax&moduleId='.$tag->id;
         $url .= '&seckey='.urlencode($this->config->get('security_key'));
         $url .= '&time='.time();
 
-        $language = empty($tag->language) && !empty($email->language) ? $email->language : $tag->language;
         if (!empty($language)) {
             $url .= '&lang='.$language;
         } else {
@@ -114,6 +131,8 @@ trait ModuleInsertion
         // Clean the module output from any javascript code
         $moduleOutput = preg_replace("#(onclick|onfocus|onload|onblur) *= *\"(?:(?!\").)*\"#Ui", '', $moduleOutput);
         $moduleOutput = preg_replace("#< *script(?:(?!< */ *script *>).)*< */ *script *>#Uis", '', $moduleOutput);
+
+        $moduleOutputs[$cacheKey] = $moduleOutput;
 
         return $moduleOutput;
     }

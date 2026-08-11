@@ -144,7 +144,7 @@ class FieldClass extends AcymClass
     public function store(int $userID, array $fields, bool $ajax = false): void
     {
         $customField = acym_getVar('array', 'customField', [], 'FILES');
-        if (!empty($customField)) {
+        if (!empty($customField['tmp_name'])) {
             $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
             $uploadPath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$userID.DS);
             if (!file_exists($uploadPath)) {
@@ -562,16 +562,16 @@ class FieldClass extends AcymClass
                 );
         }
 
-        if (
-            $displayOutside
-            && (
-                in_array($field->id, [1, 2])
-                || in_array($field->type, ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language'])
-            )
-        ) {
+        $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'language'];
+        $titleTypes = ['date', 'radio', 'checkbox', 'file'];
+
+        $useLabel = $displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, $labelTypes));
+        $useTitle = $displayOutside && in_array($field->type, $titleTypes);
+
+        if ($useLabel) {
             echo '<label class="cell margin-top-1"><span class="acym__users__creation__fields__title">'.acym_escapeHtml($field->name).'</span>';
         }
-        if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
+        if ($useTitle) {
             echo '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.acym_escapeHtml($field->name).'</div>';
         }
 
@@ -823,11 +823,10 @@ class FieldClass extends AcymClass
             echo $field->option->custom_text;
         }
 
-        $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'language'];
-        if ($displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, $labelTypes))) {
+        if ($useLabel) {
             echo '</label>';
         }
-        if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
+        if ($useTitle) {
             echo '</div>';
         }
 

@@ -130,6 +130,16 @@ trait Campaigns
                 }
             }
 
+            $providedSendingParams = $decodedData['sending_params'] ?? [];
+            if (!is_array($providedSendingParams)) {
+                $this->sendJsonResponse(['message' => '\'sending_params\' must be an object.'], 422);
+            }
+
+            $campaign->sending_params = array_merge(
+                $providedSendingParams,
+                empty($campaign->sending_params) || !is_array($campaign->sending_params) ? [] : $campaign->sending_params
+            );
+
             $campaignId = $campaignClass->save($campaign);
 
             if (empty($campaignId)) {
@@ -144,7 +154,12 @@ trait Campaigns
             }
             $campaignClass->manageListsToCampaign($lists, $mailId, $unselectedLists);
 
-            $this->sendJsonResponse(['campaignId' => $campaignId], isset($decodedData['campaignId']) ? 201 : 200);
+            $responseData = ['campaignId' => $campaignId];
+            if (!empty($campaignClass->errors)) {
+                $responseData['errors'] = $campaignClass->errors;
+            }
+
+            $this->sendJsonResponse($responseData, isset($decodedData['campaignId']) ? 201 : 200);
         } catch (\Exception $e) {
             $this->sendJsonResponse(['message' => 'Error: '.$e->getMessage()], 500);
         }
@@ -176,6 +191,8 @@ trait Campaigns
         if (empty($campaign)) {
             $this->sendJsonResponse(['message' => 'Campaign not found.'], 404);
         }
+
+        $campaign->listIds = empty($campaign->mail_id) ? [] : $campaignClass->getListsByMailId((int)$campaign->mail_id);
 
         $this->sendJsonResponse([$campaign]);
     }
