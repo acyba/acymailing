@@ -559,12 +559,14 @@ class BounceHelper extends AcymObject
                 $this->_message->html = str_replace(array_keys($this->inlineImages), $this->inlineImages, $this->_message->html);
             }
         } else {
+            $body = $this->callImapFunction('imap_body', [$this->mailbox, $this->_message->messageNB]);
+            $decodedBody = empty($body) ? '' : $this->decodeContent($body, $this->_message->structure);
             if ($this->_message->structure->subtype === 'HTML') {
                 $this->_message->contentType = 1;
-                $this->_message->html = $this->decodeContent($this->callImapFunction('imap_body', [$this->mailbox, $this->_message->messageNB]), $this->_message->structure);
+                $this->_message->html = $decodedBody;
             } else {
                 $this->_message->contentType = 0;
-                $this->_message->text = $this->decodeContent($this->callImapFunction('imap_body', [$this->mailbox, $this->_message->messageNB]), $this->_message->structure);
+                $this->_message->text = $decodedBody;
             }
         }
 
@@ -631,7 +633,14 @@ class BounceHelper extends AcymObject
             $filename = $filename.'_('.$fileNumber.')';
         }
 
-        $data = $this->decodeContent($this->callImapFunction('imap_fetchbody', [$this->mailbox, $this->_message->messageNB, $num]), $attachment);
+        $content = $this->callImapFunction('imap_fetchbody', [$this->mailbox, $this->_message->messageNB, $num]);
+
+        // We could not fetch the part, there is nothing to upload
+        if (empty($content)) {
+            return;
+        }
+
+        $data = $this->decodeContent($content, $attachment);
 
         try {
             if (acym_writeFile($pathToUpload.$filename.'.'.$extension, $data)) {

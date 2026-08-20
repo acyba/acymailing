@@ -869,6 +869,9 @@ class ListClass extends AcymClass
             return false;
         }
 
+        acym_arrayToInteger($listIds);
+        $listIds = array_filter($listIds);
+
         if (!$this->removeWelcomeUnsubByMailId($mailId, $listIds, $column)) {
             return false;
         }
@@ -876,7 +879,7 @@ class ListClass extends AcymClass
         foreach ($listIds as $listId) {
             $list = $this->getOneById($listId);
             if (empty($list)) {
-                return false;
+                continue;
             }
 
             $list->{$column} = $mailId;

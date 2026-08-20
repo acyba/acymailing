@@ -569,10 +569,16 @@ class FieldClass extends AcymClass
         $useTitle = $displayOutside && in_array($field->type, $titleTypes);
 
         if ($useLabel) {
-            echo '<label class="cell margin-top-1"><span class="acym__users__creation__fields__title">'.acym_escapeHtml($field->name).'</span>';
+            echo '<label class="cell margin-top-1"><span class="acym__users__creation__fields__title">'.acym_escapeHtmlWithAllowedTags(
+                    $field->name,
+                    SecurityHelper::ALLOWED_HTML_FIELD_NAME
+                ).'</span>';
         }
         if ($useTitle) {
-            echo '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.acym_escapeHtml($field->name).'</div>';
+            echo '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.acym_escapeHtmlWithAllowedTags(
+                    $field->name,
+                    SecurityHelper::ALLOWED_HTML_FIELD_NAME
+                ).'</div>';
         }
 
         $messageRequired = empty($field->option->error_message) ? '' : acym_translation($field->option->error_message);
@@ -801,7 +807,10 @@ class FieldClass extends AcymClass
             $number = !empty($defaultValue[1]) ? $defaultValue[1] : '';
 
             if ($displayOutside) {
-                echo '<div class="cell margin-top-1 grid-x"><div class="acym__users__creation__fields__title cell">'.acym_escapeHtml($field->name).'</div>';
+                echo '<div class="cell margin-top-1 grid-x"><div class="acym__users__creation__fields__title cell">'.acym_escapeHtmlWithAllowedTags(
+                        $field->name,
+                        SecurityHelper::ALLOWED_HTML_FIELD_NAME
+                    ).'</div>';
             }
             echo '<div class="cell large-5 medium-4 padding-next-1">';
             acym_generateCountryNumber($name.'[code]', $indicator);

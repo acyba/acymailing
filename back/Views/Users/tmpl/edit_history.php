@@ -39,7 +39,7 @@ if (!empty($data['user-information']->id)) { ?>
                     <?php foreach ($data['userMailHistory'] as $oneMailHistory) { ?>
 						<div class="grid-x cell text-center acym__listing__row grid-margin-x">
 							<div class="medium-4 cell acym__users__email__history__subject">
-								<a href="<?php echo acym_escapeUrl(acym_frontendLink('archive&task=view&id='.$oneMailHistory->id.'&'.acym_noTemplate())); ?>"
+								<a href="<?php echo acym_escapeUrl(acym_frontendLink('archive&task=view&id='.$oneMailHistory->id.'&userid='.$data['user-information']->id.'-'.$data['user-information']->key.'&'.acym_noTemplate())); ?>"
 								   target="_blank"><?php echo acym_escapeHtml($oneMailHistory->subject); ?></a>
 							</div>
 							<div class="medium-2 cell">

@@ -223,6 +223,8 @@ function acym_loadCaptcha(string $captchaPluginName, string $id): void
         }
 
         echo $captcha->display('acym-captcha', $id);
+
+        return;
     }
 
     PluginHelper::importPlugin('captcha', $captchaPluginName);
@@ -243,7 +245,7 @@ function acym_checkCaptcha(string $captchaPluginName, ?string $response = null):
         if (ACYM_J40) {
             $captcha = Captcha::getInstance($captchaPluginName);
             if (empty($captcha) || !method_exists($captcha, 'checkAnswer')) {
-                return '';
+                return false;
             }
 
             return (bool)$captcha->checkAnswer($response);

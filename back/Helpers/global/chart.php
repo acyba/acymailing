@@ -493,7 +493,7 @@ function acym_pieChart(array $data = [], string $class = '', string $topLabel = 
                 data: {
                     datasets: [
                         {
-                            data: <?php echo json_encode($data); ?>,
+                            data: <?php echo json_encode(array_values($data)); ?>,
                             backgroundColor: <?php echo json_encode($colors); ?>,
                         }
                     ],

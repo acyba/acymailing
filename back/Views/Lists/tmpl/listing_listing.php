@@ -132,7 +132,7 @@ if (empty($data['lists'])) { ?>
 				</div>
 				<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 					<div class="cell auto grid-x acym__listing__title">
-						<i class='cell shrink acymicon-circle' style="color:<?php echo acym_escape($list->color); ?>"></i>
+						<i class='cell shrink acymicon-circle' style="color:<?php echo acym_escape($list->color ?? '#4A412A'); ?>"></i>
 						<a class="cell auto" href="<?php echo acym_escapeUrl($linkList); ?>">
                             <?php
                             echo '<h6 class="acym__listing__title__primary">'.acym_escapeHtml($list->name).'</h6>';

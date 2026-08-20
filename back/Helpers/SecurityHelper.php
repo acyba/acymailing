@@ -80,6 +80,17 @@ class SecurityHelper extends AcymObject
         ],
     ];
 
+    const ALLOWED_HTML_FIELD_NAME = [
+        'b' => [],
+        'br' => [],
+        'strong' => [],
+        'em' => [],
+        'i' => [],
+        'span' => [
+            'class' => true,
+        ],
+    ];
+
     const ALLOWED_HTML_INTRO = [
         'i' => [
             'class' => true,

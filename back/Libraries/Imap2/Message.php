@@ -152,6 +152,33 @@ class Message
         return $headers;
     }
 
+    /**
+     * Picks the requested message in a fetch result.
+     * The result is keyed by sequence number, and it may also contain unsolicited FETCH responses
+     * the server sent for other messages (flag updates for instance), so we can't simply take the first one.
+     *
+     * @return object|null
+     */
+    private static function findMessage($messages, $messageNum, bool $isUid)
+    {
+        if (empty($messages) || !is_array($messages)) {
+            return null;
+        }
+
+        if (!$isUid) {
+            return $messages[$messageNum] ?? null;
+        }
+
+        // On a UID FETCH the server has to include the UID in its response, that's the only reliable way to identify the message
+        foreach ($messages as $message) {
+            if (isset($message->uid) && intval($message->uid) === intval($messageNum)) {
+                return $message;
+            }
+        }
+
+        return null;
+    }
+
     public static function body($imap, $messageNum, $flags = 0)
     {
         if (!is_a($imap, Connection::class)) {
@@ -165,7 +192,13 @@ class Message
 
         $messages = $client->fetch($imap->getMailboxName(), $messageNum, $isUid, ['BODY[TEXT]']);
 
-        return $messages[$messageNum]->bodypart['TEXT'];
+        $message = self::findMessage($messages, $messageNum, $isUid);
+
+        if ($message === null) {
+            return false;
+        }
+
+        return $message->bodypart['TEXT'] ?? false;
     }
 
     public static function fetchBody($imap, $messageNum, $section, $flags = 0)
@@ -177,20 +210,27 @@ class Message
         $client = $imap->getClient();
         #$client->setDebug(true);
 
-        $isUid = boolval($flags & FT_UID);
-        $messages = $client->fetch($imap->getMailboxName(), $messageNum, $isUid, ['BODY['.$section.']']);
-
-        if (empty($messages)) {
+        if ($messageNum <= 0 || !is_int($messageNum)) {
             trigger_error(Errors::badMessageNumber(debug_backtrace(), 1), E_USER_WARNING);
 
             return false;
         }
 
-        if ($section) {
-            return $messages[$messageNum]->bodypart[$section];
+        $isUid = boolval($flags & FT_UID);
+        $messages = $client->fetch($imap->getMailboxName(), $messageNum, $isUid, ['BODY['.$section.']']);
+
+        $message = self::findMessage($messages, $messageNum, $isUid);
+
+        // The message may have been expunged, the section may not exist, or the connection may have dropped
+        if ($message === null) {
+            return false;
         }
 
-        return $messages[$messageNum]->body;
+        if ($section) {
+            return $message->bodypart[$section] ?? false;
+        }
+
+        return $message->body ?? false;
     }
 
     public static function fetchMime($imap, $messageNum, $section, $flags = 0)
@@ -213,15 +253,17 @@ class Message
         $sectionKey = $section.'.MIME';
         $messages = $client->fetch($imap->getMailboxName(), $messageNum, $isUid, ['BODY['.$sectionKey.']']);
 
-        if (empty($messages)) {
-            return "";
+        $message = self::findMessage($messages, $messageNum, $isUid);
+
+        if ($message === null) {
+            return '';
         }
 
-        if ($section && isset($messages[$messageNum]->bodypart[$sectionKey])) {
-            return $messages[$messageNum]->bodypart[$sectionKey];
+        if ($section && isset($message->bodypart[$sectionKey])) {
+            return $message->bodypart[$sectionKey];
         }
 
-        return $messages[$messageNum]->body;
+        return $message->body ?? '';
     }
 
     public static function saveBody($imap, $file, $messageNum, $section = "", $flags = 0)
@@ -232,7 +274,13 @@ class Message
 
             $messages = $client->fetch($imap->getMailboxName(), $messageNum, false, ['BODY['.$section.']']);
 
-            $body = $section ? $messages[$messageNum]->bodypart[$section] : $messages[$messageNum]->body;
+            $message = self::findMessage($messages, $messageNum, false);
+
+            if ($message === null) {
+                return false;
+            }
+
+            $body = $section ? ($message->bodypart[$section] ?? '') : ($message->body ?? '');
 
             return file_put_contents($file, $body);
         }

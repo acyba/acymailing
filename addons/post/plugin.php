@@ -278,20 +278,6 @@ class plgAcymPost extends AcymPlugin
             $this->filters[] = 'cat.term_taxonomy_id = '.intval($this->pageInfo->filter_cat);
         }
 
-        $rows = $this->getElements();
-        foreach ($rows as $i => $row) {
-            if (str_replace(['wp:core-embed', 'wp:shortcode'], '', $row->post_content) !== $row->post_content) {
-                ob_start();
-                acym_tooltip(
-                    [
-                        'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
-                        'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
-                    ]
-                );
-                $rows[$i]->post_title = ob_get_clean().$rows[$i]->post_title;
-            }
-        }
-
         $listingOptions = [
             'header' => [
                 'post_title' => [
@@ -310,7 +296,7 @@ class plgAcymPost extends AcymPlugin
                 ],
             ],
             'id' => 'ID',
-            'rows' => $rows,
+            'rows' => $this->getElements(),
         ];
 
         return $this->getElementsListing($listingOptions);

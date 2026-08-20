@@ -1,7 +1,7 @@
 === AcyMailing integration for Learndash ===
 Contributors: acyba
 Tags: newsletter, acymailing, learndash, subscription
-Tested up to: 7.0
+Tested up to: 7.1
 Stable tag: 2.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
