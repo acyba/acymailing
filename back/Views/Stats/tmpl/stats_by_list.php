@@ -57,7 +57,9 @@
 
 		<div class="acym__content acym__stats">
             <?php
-            if (count(array_unique($data['selectedMailid'])) != 1) {
+            if (!empty($data['anonymousStats'])) {
+                echo '<h1 class="acym__listing__empty__title text-center cell">'.acym_escapeHtml(acym_translation('ACYM_STATS_NOT_AVAILABLE_ANONYMOUS')).'</h1>';
+            } elseif (count(array_unique($data['selectedMailid'])) != 1) {
                 echo '<h1 class="acym__listing__empty__title text-center cell">'.acym_escapeHtml(acym_translation('ACYM_FEATURE_WORKS_WHEN_ONLY_ONE_CAMPAIGN_SELECTED')).'</h1>';
             } elseif (empty($data['listsStats'])) {
                 echo '<h1 class="acym__listing__empty__title text-center cell">'.acym_escapeHtml(acym_translation('ACYM_NO_LIST_WITH_THIS_CAMPAIGN')).'</h1>';

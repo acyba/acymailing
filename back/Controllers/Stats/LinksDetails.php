@@ -16,6 +16,7 @@ trait LinksDetails
             return;
         }
 
+        $data['anonymousStats'] = !empty($this->config->get('anonymous_stats', 0));
         $this->prepareLinksDetailsListing($data);
         if (count($this->selectedMailIds) == 1) {
             if ($data['isAbTest']) {

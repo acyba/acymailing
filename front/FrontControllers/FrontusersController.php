@@ -584,7 +584,10 @@ class FrontusersController extends UsersController
         $campaignListOnly = $this->config->get('unsubscribe_campaign_list_only', '0') === '1';
         $displaySurvey = $this->config->get('unsubpage_survey', '0') === '1';
         $surveyAnswers = $this->config->get('unsub_survey', '[]');
-        $unsubscribeColor = $this->config->get('unsubscribe_color', '#00a4ff');
+        $unsubscribeColor = $this->config->get('unsubscribe_color');
+        if (empty($unsubscribeColor)) {
+            $unsubscribeColor = '#0079d3';
+        }
         $hoverColor = $this->darkenRGBColor($unsubscribeColor, 20);
 
         $surveyAnswers = json_decode($surveyAnswers, true);
@@ -633,12 +636,8 @@ class FrontusersController extends UsersController
             $data['surveyAnswers'] = array_combine($data['surveyAnswers'], $data['surveyAnswers']);
         }
 
-        if (!empty($this->config->get('unsubscribe_color'))) {
-            $unsubscribeColor = $this->config->get('unsubscribe_color');
-            $hoverColor = $this->darkenRGBColor($unsubscribeColor, 20);
-            $data['unsubscribeColor'] = $unsubscribeColor;
-            $data['hoverColor'] = $hoverColor;
-        }
+        $data['unsubscribeColor'] = $unsubscribeColor;
+        $data['hoverColor'] = $hoverColor;
         $data['svgImage'] = $this->getSVGImage($unsubscribeColor, $hoverColor);
 
         acym_setVar('layout', 'unsubscribepage');
@@ -1082,7 +1081,7 @@ class FrontusersController extends UsersController
         $output = '';
         $types = ['success', 'info', 'warning', 'error'];
         foreach ($types as $type) {
-            $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION');
+            $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION', ACYM_ALLOWHTML);
             if (empty($messages)) {
                 continue;
             }

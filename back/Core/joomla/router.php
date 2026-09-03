@@ -3,6 +3,88 @@
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 
+/**
+ * Joomla lets a template ship its own version of an extension's media file by dropping it in templates/<template>/<css|js>/com_acym/<file>
+ */
+function acym_mediaOverrideUrl(string $url): string
+{
+    static $resolved = [];
+
+    if (array_key_exists($url, $resolved)) {
+        return $resolved[$url];
+    }
+
+    $resolved[$url] = $url;
+
+    // Only our files
+    $cleanUrl = explode('?', $url, 2)[0];
+    $mediaPosition = strpos($cleanUrl, ACYM_MEDIA_RELATIVE);
+    if ($mediaPosition === false) {
+        return $url;
+    }
+
+    // "css/front/archive.min.css" gives "css" as the asset folder and "front/archive.min.css" as the file
+    $assetPath = substr($cleanUrl, $mediaPosition + strlen(ACYM_MEDIA_RELATIVE));
+    $separatorPosition = strpos($assetPath, '/');
+    if ($separatorPosition === false) {
+        return $url;
+    }
+
+    $folder = substr($assetPath, 0, $separatorPosition);
+    $file = substr($assetPath, $separatorPosition + 1);
+    if (!in_array($folder, ['css', 'js'], true) || empty($file)) {
+        return $url;
+    }
+
+    $acyapp = acym_getGlobal('app');
+    if (empty($acyapp) || !method_exists($acyapp, 'getTemplate')) {
+        return $url;
+    }
+
+    // Search in the template in use, then in its parent
+    $activeTemplate = $acyapp->getTemplate(true);
+    $templates = [];
+    if (is_object($activeTemplate)) {
+        if (!empty($activeTemplate->template)) {
+            $templates[] = $activeTemplate->template;
+        }
+        if (!empty($activeTemplate->parent)) {
+            $templates[] = $activeTemplate->parent;
+        }
+    } elseif (is_string($activeTemplate) && !empty($activeTemplate)) {
+        $templates[] = $activeTemplate;
+    }
+
+    if (empty($templates)) {
+        return $url;
+    }
+
+    // Both ".min.css" and ".css" are acceptable
+    $fileNames = [$file];
+    $minifiedSuffix = '.min.'.$folder;
+    if (substr($file, -strlen($minifiedSuffix)) === $minifiedSuffix) {
+        $fileNames[] = substr($file, 0, -strlen($minifiedSuffix)).'.'.$folder;
+    }
+
+    $templateFolder = acym_isAdmin() ? 'administrator/templates' : 'templates';
+
+    foreach ($templates as $oneTemplate) {
+        foreach ($fileNames as $oneFileName) {
+            $relativePath = $templateFolder.'/'.$oneTemplate.'/'.$folder.'/'.ACYM_COMPONENT.'/'.$oneFileName;
+            $overridePath = ACYM_ROOT.str_replace('/', DS, $relativePath);
+            if (!is_file($overridePath)) {
+                continue;
+            }
+
+            $resolved[$url] = acym_rootURI().$relativePath.'?v='.filemtime($overridePath);
+
+            return $resolved[$url];
+        }
+    }
+
+    return $url;
+}
+
 function acym_addScript(bool $raw, string $script, array $params = []): string
 {
     $acyDocument = acym_getGlobal('doc');
@@ -10,6 +92,8 @@ function acym_addScript(bool $raw, string $script, array $params = []): string
     if ($raw) {
         $acyDocument->addScriptDeclaration($script, 'text/javascript');
     } else {
+        $script = acym_mediaOverrideUrl($script);
+
         if (!isset($params['defer'])) {
             $params['defer'] = true;
         }
@@ -39,6 +123,8 @@ function acym_addStyle(bool $raw, string $style): void
     if ($raw) {
         $acyDocument->addStyleDeclaration($style, 'text/css');
     } else {
+        $style = acym_mediaOverrideUrl($style);
+
         if (ACYM_J37) {
             $acyDocument->addStyleSheet($style, [], ['type' => 'text/css']);
         } else {

@@ -39,6 +39,7 @@ trait UserLinksDetails
         if (!$this->prepareDefaultPageInfo($data, true)) {
             return;
         }
+        $data['anonymousStats'] = !empty($this->config->get('anonymous_stats', 0));
 
         $this->prepareUserLinksDetailsListing($data);
         if (count($this->selectedMailIds) == 1) {

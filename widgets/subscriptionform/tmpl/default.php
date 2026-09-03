@@ -15,7 +15,8 @@ if (!function_exists('acymailing_displayWidgetLists')) {
         }
         ?>
 
-		<table class="acym_lists">
+		<div class="acym_lists__group" role="group" aria-label="<?php echo acym_escape(acym_translation('ACYM_NEWSLETTERS')); ?>">
+		<table class="acym_lists" role="presentation">
             <?php foreach ($visibleLists as $myListId) { ?>
 				<tr>
 					<td>
@@ -32,6 +33,7 @@ if (!function_exists('acymailing_displayWidgetLists')) {
 				</tr>
             <?php } ?>
 		</table>
+		</div>
         <?php
     }
 }
@@ -40,7 +42,7 @@ if ($listPosition === 'before') {
 }
 ?>
 
-<table class="acym_form">
+<table class="acym_form" role="presentation">
 	<tr>
         <?php
         foreach ($fields as $field) {
@@ -97,13 +99,15 @@ if ($listPosition === 'before') {
 
         if (!empty($termslink)) {
             echo '<td class="acyterms" '.($displayOutside && !$displayInline ? 'colspan="2"' : '').'>';
-            echo '<input id="mailingdata_terms_'.esc_attr($formName).'" class="checkbox" type="checkbox" name="terms" title="'.esc_attr(
+            echo '<label for="mailingdata_terms_'.acym_escape($formName).'">';
+            echo '<input id="mailingdata_terms_'.esc_attr($formName).'" class="checkbox" type="checkbox" name="terms" aria-required="true" title="'.esc_attr(
                     acym_translation('ACYM_TERMS_CONDITIONS')
                 ).'"/> ';
             echo wp_kses(
                 $termslink,
                 SecurityHelper::ALLOWED_HTML_TERMS
             );
+            echo '</label>';
             echo '</td>';
             if (!$displayInline) {
                 echo '</tr><tr>';
@@ -113,10 +117,12 @@ if ($listPosition === 'before') {
         if (!empty($showTrackingConsent)) {
             $trackingChecked = (int)($identifiedUser->tracking ?? 0) === 1;
             echo '<td class="acytracking" '.($displayOutside && !$displayInline ? 'colspan="2"' : '').'>';
+            echo '<label for="mailingdata_tracking_'.acym_escape($formName).'">';
             echo '<input type="hidden" name="user[tracking]" value="0"/>';
             echo '<input id="mailingdata_tracking_'.esc_attr($formName).'" class="checkbox" type="checkbox" name="user[tracking]" value="1" '.acym_checked($trackingChecked, true, false).'/> '.esc_html(
                     acym_translation('ACYM_TRACKING_CONSENT')
                 );
+            echo '</label>';
             echo '</td>';
             if (!$displayInline) {
                 echo '</tr><tr>';

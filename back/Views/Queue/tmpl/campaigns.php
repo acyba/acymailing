@@ -97,7 +97,7 @@
                                             }
                                             acym_tooltip(
                                                 [
-                                                    'hoveredText' => '<i class="'.acym_escape($class).'" style="color:'.acym_escape($oneList->color).'"></i>',
+                                                    'hoveredText' => '<i class="'.acym_escape($class).'" style="color:'.acym_escape($oneList->color ?? '#0079d3').'"></i>',
                                                     'textShownInTooltip' => $oneList->name,
                                                 ]
                                             );

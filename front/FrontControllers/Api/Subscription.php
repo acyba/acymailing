@@ -28,6 +28,9 @@ trait Subscription
         $offset = acym_getVar('int', 'offset', 0);
         $limit = $this->getRequestedLimit(100);
         $connector = acym_getVar('bool', 'connector', false);
+        $ordering = $this->getRequestedOrdering(
+            array_merge(self::ORDERABLE_USER_COLUMNS, self::ORDERABLE_SUBSCRIPTION_COLUMNS)
+        );
 
         if (empty($listIds)) {
             $this->sendJsonResponse(['message' => 'List IDs not provided in the query parameters.'], 422);
@@ -35,12 +38,15 @@ trait Subscription
 
         acym_arrayToInteger($listIds);
 
-        $options = [
-            'listIds' => $listIds,
-            'offset' => $offset,
-            'limit' => $limit,
-            'status' => 0,
-        ];
+        $options = array_merge(
+            [
+                'listIds' => $listIds,
+                'offset' => $offset,
+                'limit' => $limit,
+                'status' => 0,
+            ],
+            $ordering
+        );
 
         if ($connector) {
             $lastTriggerDate = $this->config->get('connector_trigger_getUnsubscribedUsersFromLists');
@@ -73,6 +79,9 @@ trait Subscription
         $offset = acym_getVar('int', 'offset', 0);
         $limit = $this->getRequestedLimit(100);
         $connector = acym_getVar('bool', 'connector', false);
+        $ordering = $this->getRequestedOrdering(
+            array_merge(self::ORDERABLE_USER_COLUMNS, self::ORDERABLE_SUBSCRIPTION_COLUMNS)
+        );
 
         if (empty($listIds)) {
             $this->sendJsonResponse(['message' => 'List IDs not provided in the query parameters.'], 422);
@@ -80,12 +89,15 @@ trait Subscription
 
         acym_arrayToInteger($listIds);
 
-        $options = [
-            'listIds' => $listIds,
-            'offset' => $offset,
-            'limit' => $limit,
-            'status' => 1,
-        ];
+        $options = array_merge(
+            [
+                'listIds' => $listIds,
+                'offset' => $offset,
+                'limit' => $limit,
+                'status' => 1,
+            ],
+            $ordering
+        );
 
         if ($connector) {
             $lastTriggerDate = $this->config->get('zapier_trigger_getSubscribersFromLists');

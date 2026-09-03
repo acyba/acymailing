@@ -41,6 +41,29 @@ class ApiController extends AcymController
 
     private const MAX_API_LIMIT = 500;
 
+    private const ORDERABLE_USER_COLUMNS = [
+        'id',
+        'name',
+        'email',
+        'creation_date',
+        'active',
+        'source',
+        'confirmed',
+        'confirmation_date',
+        'deactivation_date',
+        'tracking',
+        'language',
+        'last_sent_date',
+        'last_open_date',
+        'last_click_date',
+    ];
+
+    private const ORDERABLE_SUBSCRIPTION_COLUMNS = [
+        'status',
+        'subscription_date',
+        'unsubscribe_date',
+    ];
+
     private const COLUMNS_TO_RETURN_FOR_GET = [
         self::TYPE_TEMPLATE => [
             'id',
@@ -165,17 +188,42 @@ class ApiController extends AcymController
         $this->authenticate($taskCalled === 'authenticate');
     }
 
-    /**
-     * Read the requested "limit" and cap it so an unbounded value cannot dump the whole dataset (PII).
-     */
     private function getRequestedLimit(int $default = 100): int
     {
-        $limit = acym_getVar('int', 'limit', $default);
-        if ($limit < 1) {
-            $limit = $default;
+        $requestedLimit = acym_getVar('int', 'limit', $default);
+        $limit = $requestedLimit < 1 ? $default : min($requestedLimit, self::MAX_API_LIMIT);
+
+        acym_header('X-Acym-Max-Limit: '.self::MAX_API_LIMIT);
+        acym_header('X-Acym-Limit: '.$limit);
+        if ($requestedLimit > self::MAX_API_LIMIT) {
+            acym_header('X-Acym-Limit-Capped: 1');
         }
 
-        return min($limit, self::MAX_API_LIMIT);
+        return $limit;
+    }
+
+    private function getRequestedOrdering(array $allowedColumns): array
+    {
+        $orderBy = acym_getVar('string', 'orderBy', '');
+        if (!empty($orderBy) && !in_array($orderBy, $allowedColumns, true)) {
+            $this->sendJsonResponse(
+                [
+                    'message' => 'Ordering by "'.$orderBy.'" is not supported.',
+                    'allowedColumns' => $allowedColumns,
+                ],
+                422
+            );
+        }
+
+        $orderBySort = strtolower(acym_getVar('string', 'orderBySort', ''));
+        if (!empty($orderBySort) && !in_array($orderBySort, ['asc', 'desc'], true)) {
+            $this->sendJsonResponse(['message' => 'The parameter "orderBySort" must be either "asc" or "desc".'], 422);
+        }
+
+        return [
+            'orderBy' => $orderBy,
+            'orderBySort' => $orderBySort,
+        ];
     }
 
     /**

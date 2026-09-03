@@ -174,7 +174,7 @@
 
                                 acym_tooltip(
                                     [
-                                        'hoveredText' => '<i class="'.acym_escape($classes).'" style="color:'.acym_escape($list->color).'"></i>',
+                                        'hoveredText' => '<i class="'.acym_escape($classes).'" style="color:'.acym_escape($list->color ?? '#0079d3').'"></i>',
                                         'textShownInTooltip' => acym_escapeHtml($list->name),
                                     ]
                                 );

@@ -583,10 +583,10 @@ class FollowupClass extends AcymClass
         return acym_loadObjectList('SELECT * FROM #__acym_followup WHERE `trigger` IN ('.implode(',', $safeTriggers).') AND active  = 1');
     }
 
-    public function queueForSubscribers(int $emailId): bool
+    public function queueForSubscribers(int $emailId): ?int
     {
         if (empty($emailId)) {
-            return false;
+            return null;
         }
 
         $mailInfo = acym_loadObject(
@@ -596,7 +596,7 @@ class FollowupClass extends AcymClass
                 ON followup.id = map.followup_id 
             WHERE map.mail_id = '.intval($emailId)
         );
-        if (empty($mailInfo)) return false;
+        if (empty($mailInfo)) return null;
 
         $this->addMailStat($mailInfo->mail_id);
 
@@ -607,7 +607,9 @@ class FollowupClass extends AcymClass
                 WHERE status = 1 
                     AND list_id = '.intval($mailInfo->list_id);
 
-        return (bool)acym_query($query);
+        $addedEmails = acym_query($query);
+
+        return $addedEmails === false || $addedEmails === null ? null : intval($addedEmails);
     }
 
     public function getXFollowups(array $options): array

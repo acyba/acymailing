@@ -3,7 +3,6 @@
 namespace AcyMailing\Classes;
 
 use AcyMailing\Core\AcymClass;
-use AcyMailing\Helpers\ScenarioHelper;
 
 
 class UrlClickClass extends AcymClass
@@ -36,11 +35,6 @@ class UrlClickClass extends AcymClass
 
         if (!empty($urlClick['click'])) {
             $onDuplicate[] = 'click = click + 1';
-            $automationClass = new AutomationClass();
-            $automationClass->trigger('user_click', ['userId' => $urlClick['user_id'], 'mailId' => $urlClick['mail_id']]);
-
-            $scenarioHelper = new ScenarioHelper();
-            $scenarioHelper->trigger('user_click', ['userId' => $urlClick['user_id'], 'mailId' => $urlClick['mail_id']]);
         }
 
         if (!empty($onDuplicate)) {
@@ -58,7 +52,9 @@ class UrlClickClass extends AcymClass
     {
         acym_arrayToInteger($mailIds);
 
-        $query = 'SELECT COUNT(DISTINCT user_id) FROM #__acym_url_click AS url_click';
+        // In anonymous mode clicks are aggregated with user_id = 0, so counting distinct users is meaningless: return the total number of clicks (consistent with the click totals shown in the statistics page)
+        $countSelect = !empty(acym_config()->get('anonymous_stats', 0)) ? 'SUM(`url_click`.`click`)' : 'COUNT(DISTINCT user_id)';
+        $query = 'SELECT '.$countSelect.' FROM #__acym_url_click AS url_click';
         $isMultilingual = acym_isMultilingual();
 
         if (!empty($mailIds) && ($isMultilingual || $isAbTest)) {

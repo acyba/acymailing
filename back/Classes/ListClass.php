@@ -321,7 +321,10 @@ class ListClass extends AcymClass
         $limit = $options['limit'] ?? 100;
         $status = $options['status'] ?? null;
         $orderBy = $options['orderBy'] ?? '';
-        $orderBySort = $options['orderBySort'] ?? '';
+        $orderBySort = strtolower((string)($options['orderBySort'] ?? ''));
+        if (!in_array($orderBySort, ['asc', 'desc'], true)) {
+            $orderBySort = empty($orderBy) ? 'asc' : 'desc';
+        }
         $subscribedAfter = $options['subscribed_after'] ?? null;
         $unsubscribedAfter = $options['unsubscribed_after'] ?? null;
 
@@ -348,9 +351,12 @@ class ListClass extends AcymClass
         $requestSub .= ' LEFT JOIN #__acym_user_has_list AS user_list ON user.id = user_list.user_id';
         $requestSub .= ' WHERE user.active = 1 AND user_list.list_id IN ('.implode(', ', $listIds).')'.$statusCondition;
 
-        if (!empty($orderBy)) {
-            if (empty($orderBySort)) $orderBySort = 'desc';
-            $requestSub .= ' ORDER BY '.acym_secureDBColumn($orderBy).' '.acym_secureDBColumn($orderBySort);
+        $orderByColumn = empty($orderBy) ? 'user.id' : acym_secureDBColumn($orderBy);
+        $requestSub .= ' ORDER BY '.$orderByColumn.' '.$orderBySort;
+
+        // Any other column can hold duplicates, we need a unique one to break the ties
+        if (!in_array($orderByColumn, ['id', 'user.id'], true)) {
+            $requestSub .= ', user.id ASC';
         }
 
         return acym_loadObjectList(

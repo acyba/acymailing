@@ -40,6 +40,7 @@ class FrontmailsController extends MailsController
                 'getMailByIdAjax',
                 'apply',
                 'edit',
+                'loadCSS',
             ],
             'index.php?option=com_acym&view=frontcampaigns&layout=campaigns' => [
                 'autoSave',
@@ -51,6 +52,7 @@ class FrontmailsController extends MailsController
                 'saveAjax',
                 'save',
                 'apply',
+                'loadCSS',
             ],
         ];
     }

@@ -256,10 +256,17 @@ class CampaignClass extends AcymClass
         $element->click = 0;
 
         if (!empty($element->subscribers)) {
-            $element->open = number_format($element->open_unique / $element->subscribers * 100, 2);
-
+            // In anonymous mode opens/clicks are counted globally (totals, not unique subscribers), so a percentage of recipients is meaningless: expose the average number of opens/clicks per email sent instead (e.g. 3.25), rendered as "3.25×" in the view
+            $anonymousStats = !empty($this->config->get('anonymous_stats', 0));
             $clicksNb = $urlClickClass->getNumberUsersClicked([$element->mail_id], $isAbTest);
-            $element->click = number_format($clicksNb / $element->subscribers * 100, 2);
+
+            if ($anonymousStats) {
+                $element->open = number_format($element->open_unique / $element->subscribers, 2);
+                $element->click = number_format($clicksNb / $element->subscribers, 2);
+            } else {
+                $element->open = number_format($element->open_unique / $element->subscribers * 100, 2);
+                $element->click = number_format($clicksNb / $element->subscribers * 100, 2);
+            }
         }
     }
 
@@ -306,8 +313,16 @@ class CampaignClass extends AcymClass
         }
 
         if (!empty($element->subscribers)) {
-            $element->open = number_format($element->open / $element->subscribers * 100, 2);
-            $element->click = number_format($element->click / $element->subscribers * 100, 2);
+            // In anonymous mode opens/clicks are counted globally (totals, not unique subscribers), so expose the average number of opens/clicks per email sent (e.g. 3.25) instead of a percentage, rendered as "3.25×" in the view
+            $anonymousStats = !empty($this->config->get('anonymous_stats', 0));
+
+            if ($anonymousStats) {
+                $element->open = number_format($element->open / $element->subscribers, 2);
+                $element->click = number_format($element->click / $element->subscribers, 2);
+            } else {
+                $element->open = number_format($element->open / $element->subscribers * 100, 2);
+                $element->click = number_format($element->click / $element->subscribers * 100, 2);
+            }
         }
 
         //Tracking sales

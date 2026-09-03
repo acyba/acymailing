@@ -50,7 +50,9 @@ function acym_getArticleURL(int $id, bool $popup, string $text): string
         $url .= (strpos($url, '?') ? '&' : '?').acym_noTemplate();
         $url = acym_frontModal($url, $text, false);
     } else {
-        $url = '<a title="'.acym_translation($text, true).'" href="'.acym_escape($url).'" target="_blank">'.acym_translation($text).'</a>';
+        $url = '<a title="'.acym_translation($text, true).'" href="'.acym_escape($url).'" target="_blank" rel="noopener noreferrer" aria-label="'.acym_escape(
+                acym_translation($text).', '.acym_translation('ACYM_OPENS_NEW_WINDOW')
+            ).'">'.acym_translation($text).'</a>';
     }
 
     return $url;

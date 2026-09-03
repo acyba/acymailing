@@ -29,7 +29,7 @@ function acym_enqueueMessage($message, string $type = 'success', bool $addNotifi
     }
 
     if (in_array($type, $handledTypes) && $addHeaderNotification) {
-        $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION');
+        $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION', ACYM_ALLOWHTML);
 
         if (empty($messages) || !in_array($message, $messages)) {
             if (empty($notification->id)) {
@@ -76,7 +76,7 @@ function acym_displayMessages(): void
 {
     $types = ['success', 'info', 'warning', 'error'];
     foreach ($types as $type) {
-        $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION');
+        $messages = acym_getVar('array', 'acymessage'.$type, [], 'SESSION', ACYM_ALLOWHTML);
         if (empty($messages)) {
             continue;
         }

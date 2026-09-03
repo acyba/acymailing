@@ -48,7 +48,7 @@ class HistoryClass extends AcymClass
         $history->mail_id = $mailid;
         $history->ip = acym_getIP();
 
-        if (!empty($_SERVER)) {
+        if (!empty($_SERVER) && empty($this->config->get('anonymous_stats', 0))) {
             $source = [];
             $vars = [
                 'HTTP_REFERER',

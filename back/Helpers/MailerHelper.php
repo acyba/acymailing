@@ -1011,20 +1011,22 @@ class MailerHelper extends Mailer
             $path = acym_internalUrlToPath($url);
             $path = $this->removeAdditionalParams($path);
 
+            // The file has to be an image located in the website's folder
+            $path = $this->getEmbeddableImagePath($path);
+            if (empty($path)) {
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            if (!isset($mimetypes[$ext])) {
+                continue;
+            }
+
             $filename = str_replace(['%', ' '], '_', basename($url));
             $filename = $this->removeAdditionalParams($filename);
 
             $md5 = md5($filename);
             $cid = 'cid:'.$md5;
-            $fileParts = explode(".", $filename);
-            if (empty($fileParts[1])) {
-                continue;
-            }
-            $ext = strtolower($fileParts[1]);
-            // We only embed image files
-            if (!isset($mimetypes[$ext])) {
-                continue;
-            }
 
             // We only change the url if we were able to embed the image.
             if ($this->addEmbeddedImage($path, $md5, $filename, 'base64', $mimetypes[$ext])) {
@@ -1035,6 +1037,32 @@ class MailerHelper extends Mailer
         }
 
         return $embedSuccess;
+    }
+
+    private function getEmbeddableImagePath(string $path): string
+    {
+        // No url and no stream wrapper, we only read local files
+        if (empty($path) || preg_match('#^[a-z][a-z\d+.-]*://#i', $path) === 1) {
+            return '';
+        }
+
+        // The file must be inside the website's folder
+        $root = rtrim(ACYM_ROOT, DS).DS;
+        if (strpos($path, $root) !== 0 || preg_match('#(^|[/\\\\])\.\.([/\\\\]|$)#', substr($path, strlen($root))) === 1) {
+            return '';
+        }
+
+        if (!is_file($path) || !is_readable($path)) {
+            return '';
+        }
+
+        // An image extension doesn't tell what the file actually contains, so we check the content itself
+        $imageInfo = @getimagesize($path);
+        if (empty($imageInfo['mime']) || strpos($imageInfo['mime'], 'image/') !== 0) {
+            return '';
+        }
+
+        return $path;
     }
 
     public function cleanText(?string $text): string

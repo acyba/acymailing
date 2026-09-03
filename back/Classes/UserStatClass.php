@@ -47,11 +47,6 @@ class UserStatClass extends AcymClass
 
         if (!empty($userStat['open'])) {
             $onDuplicate[] = 'open = open + 1';
-            $automationClass = new AutomationClass();
-            $automationClass->trigger('user_open', ['userId' => $userStat['user_id'], 'mailId' => $userStat['mail_id']]);
-
-            $scenarioHelper = new ScenarioHelper();
-            $scenarioHelper->trigger('user_open', ['userId' => $userStat['user_id'], 'mailId' => $userStat['mail_id']]);
         }
 
         if (!empty($userStat['open_date'])) {
@@ -84,6 +79,14 @@ class UserStatClass extends AcymClass
         }
 
         return (int)acym_query($query);
+    }
+
+    public static function triggerActivity(string $event, int $userId, int $mailId): void
+    {
+        $payload = ['userId' => $userId, 'mailId' => $mailId];
+
+        (new AutomationClass())->trigger($event, $payload);
+        (new ScenarioHelper())->trigger($event, $payload);
     }
 
     public function getOneByMailAndUserId(int $mailId, int $userId): ?object
@@ -227,12 +230,12 @@ class UserStatClass extends AcymClass
 
         return [
             'total_open' => acym_loadResult(
-                'SELECT SUM(`open`) 
-                FROM #__acym_user_stat 
+                'SELECT SUM(`open`)
+                FROM #__acym_user_stat
                 WHERE open_date IS NOT NULL '.$specificMailsCondition
             ),
             'stats' => acym_loadObjectList(
-                'SELECT 
+                'SELECT
                     SUM(`open`) AS `open_total`,
                     DATE_FORMAT(DATE_ADD(open_date, INTERVAL '.$offsetSeconds.' SECOND), "%w") AS `day`,
                     FORMAT(CONVERT(DATE_FORMAT(DATE_ADD(open_date, INTERVAL '.$offsetSeconds.' SECOND), "%H"), SIGNED INTEGER) / 3, 0) AS `hour`,
@@ -242,7 +245,7 @@ class UserStatClass extends AcymClass
                         FORMAT(CONVERT(DATE_FORMAT(DATE_ADD(open_date, INTERVAL '.$offsetSeconds.' SECOND), "%H"), SIGNED INTEGER) / 3, 0)
                     ) AS `date_id`
                 FROM `#__acym_user_stat`
-                WHERE open_date IS NOT NULL '.$specificMailsCondition.' 
+                WHERE open_date IS NOT NULL '.$specificMailsCondition.'
                 GROUP BY date_id',
                 'date_id'
             ),

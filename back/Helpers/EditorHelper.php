@@ -162,8 +162,11 @@ class EditorHelper extends AcymObject
                 $this->editorConfig['custom_css_url'] = $cssurl;
                 $this->editorConfig['custom_css_file'] = $fileurl;
                 $this->editorConfig['custom_css_path'] = $filepath;
-                //Can be useful for JCE integration for example.
-                acym_setVar('acycssfile', $fileurl);
+
+                // Can be useful for JCE integration for example
+                if (!empty($filepath)) {
+                    acym_setVar('acycssfile', $fileurl);
+                }
             }
         }
 

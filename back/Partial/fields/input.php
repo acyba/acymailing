@@ -17,9 +17,14 @@
     }
     if (!empty($data['placeholder'])) {
         echo ' placeholder="'.acym_escape($data['placeholder']).'" aria-label="'.acym_escape($data['placeholder']).'"';
+    } elseif (!empty($data['aria-label'])) {
+        echo ' aria-label="'.acym_escape($data['aria-label']).'"';
     }
     if (!empty($data['data-required'])) {
         echo ' data-required="'.acym_escape($data['data-required']).'"';
+    }
+    if (!empty($data['aria-required'])) {
+        echo ' aria-required="true"';
     }
     if (isset($data['value'])) {
         echo ' value="'.acym_escape($data['value']).'"';

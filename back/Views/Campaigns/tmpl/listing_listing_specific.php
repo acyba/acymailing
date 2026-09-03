@@ -134,7 +134,7 @@
                             foreach ($campaign->lists as $list) {
                                 acym_tooltip(
                                     [
-                                        'hoveredText' => '<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color).'"></i>',
+                                        'hoveredText' => '<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color ?? '#0079d3').'"></i>',
                                         'textShownInTooltip' => acym_escapeHtml($list->name),
                                     ]
                                 );

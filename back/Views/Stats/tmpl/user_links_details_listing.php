@@ -4,7 +4,9 @@
 ?>
 	<div class="acym__content acym__stats" id="acym_stats_user_links_details">
         <?php
-        if (empty($data['user_links_details'])) { ?>
+        if (!empty($data['anonymousStats'])) { ?>
+			<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_escapeHtml(acym_translation('ACYM_STATS_NOT_AVAILABLE_ANONYMOUS')); ?></h1>
+        <?php } elseif (empty($data['user_links_details'])) { ?>
 			<div class="cell grid-x">
 				<div class="cell grid-x auto">
 					<div class="cell grid-x auto">

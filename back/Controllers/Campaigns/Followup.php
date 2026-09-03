@@ -216,9 +216,9 @@ trait Followup
             if (!empty($newlyCreatedEmail)) {
                 $numberOfSubscribers = $followupClass->getNumberSubscribersByListId($followup->list_id, true);
                 if (!empty($numberOfSubscribers)) {
-                    $message = '<span class="acym__followup__add_queue" data-acym-email-id="'.intval($newlyCreatedEmail).'">';
+                    $message = '<button type="button" class="acym__followup__add_queue" data-acym-email-id="'.intval($newlyCreatedEmail).'">';
                     $message .= acym_translationSprintf('ACYM_FOLLOWUP_ADD_QUEUE', $numberOfSubscribers);
-                    $message .= '</span>';
+                    $message .= '</button>';
                     acym_enqueueMessage($message, 'info', false);
                 }
             }

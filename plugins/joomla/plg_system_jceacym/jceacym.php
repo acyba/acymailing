@@ -11,7 +11,8 @@ class plgSystemJceacym extends CMSPlugin
 {
     public function onBeforeWfEditorRender(&$settings)
     {
-        if (empty($_REQUEST['option']) || $_REQUEST['option'] !== 'com_acym') {
+        // We read the input instead of $_REQUEST: when the SEF is active, $_REQUEST is empty as Joomla doesn't populate it anymore
+        if ((empty($_REQUEST['option']) || $_REQUEST['option'] !== 'com_acym') && Factory::getApplication()->input->getCmd('option', '') !== 'com_acym') {
             return;
         }
 

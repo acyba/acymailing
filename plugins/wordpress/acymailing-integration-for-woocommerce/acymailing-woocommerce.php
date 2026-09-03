@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 7.8
+ * Version: 7.9
  * Requires Plugins: acymailing, woocommerce
 */
 

@@ -12,7 +12,11 @@ trait Lists
         if (!$this->prepareDefaultPageInfo($data, true)) {
             return;
         }
-        $this->prepareStatByList($data);
+        $data['anonymousStats'] = !empty($this->config->get('anonymous_stats', 0));
+        if (!$data['anonymousStats']) {
+            $this->prepareStatByList($data);
+        }
+
         if (count($this->selectedMailIds) == 1) {
             if ($data['isAbTest']) {
                 $this->prepareAbTestMails($data);

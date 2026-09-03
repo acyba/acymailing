@@ -58,7 +58,7 @@ if (!empty($data['translation_languages'])) {
 		</div>
 		<p class="cell margin-bottom-1 small-6" id="acym__lists__settings__list-color">
             <?php echo acym_escapeHtml(acym_translation('ACYM_COLOR')); ?> :
-			<input type="text" name="list[color]" id="acym__list__settings__color-picker" value="<?php echo acym_escape($data['listInformation']->color); ?>" />
+			<input type="text" name="list[color]" id="acym__list__settings__color-picker" value="<?php echo acym_escape($data['listInformation']->color ?? '#0079d3'); ?>" />
 		</p>
 		<div class="cell grid-x acym__list__settings__visible small-6">
             <?php acym_switch(

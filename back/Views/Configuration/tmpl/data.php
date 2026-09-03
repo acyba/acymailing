@@ -140,6 +140,17 @@
 				</div>
 			</div>
 		</div>
+		<div class="grid-x grid-margin-x margin-y margin-top-1">
+            <?php
+            acym_switch([
+                'name' => 'config[anonymous_stats]',
+                'value' => $this->config->get('anonymous_stats', 0),
+                'label' => acym_translation('ACYM_ANONYMOUS_STATS'),
+                'tip' => ['textShownInTooltip' => 'ACYM_ANONYMOUS_STATS_DESC'],
+                'labelClass' => 'xlarge-3 medium-5 small-9',
+            ]);
+            ?>
+		</div>
 	</div>
 	<div class="cell margin-bottom-2">
 		<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_DATA_MANAGEMENT')); ?></div>

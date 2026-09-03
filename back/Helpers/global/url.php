@@ -152,11 +152,26 @@ function acym_internalUrlToPath(string $url): string
     $base = str_replace(['http://www.', 'https://www.', 'http://', 'https://'], '', ACYM_LIVE);
     $replacements = ['https://www.'.$base, 'http://www.'.$base, 'https://'.$base, 'http://'.$base];
     foreach ($replacements as $oneReplacement) {
-        if (strpos($url, $oneReplacement) === false) {
+        $position = strpos($url, $oneReplacement);
+        if ($position === false) {
             continue;
         }
 
-        return str_replace([$oneReplacement, '/'], [ACYM_ROOT, DS], urldecode($url));
+        // Remove parameters
+        $relativeUrl = substr($url, $position + strlen($oneReplacement));
+        $relativeUrl = preg_replace('/[?#].*$/', '', $relativeUrl);
+
+        // Remove encoded / and .
+        $segments = [];
+        foreach (explode('/', $relativeUrl) as $oneSegment) {
+            $decodedSegment = urldecode($oneSegment);
+            if (preg_match('#[/\\\\?\#]#', $decodedSegment) === 1 || in_array($decodedSegment, ['.', '..'], true)) {
+                return $url;
+            }
+            $segments[] = $decodedSegment;
+        }
+
+        return ACYM_ROOT.implode(DS, $segments);
     }
 
     return $url;

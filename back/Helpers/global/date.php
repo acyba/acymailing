@@ -242,7 +242,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
                         $days,
                         $name,
                         empty($defaultDate[2]) || $defaultDate[2] === '00' ? '' : $defaultDate[2],
-                        $attributes,
+                        array_merge($attributes, ['aria-label' => acym_translation('ACYM_DAY')]),
                         'value',
                         'text',
                         $name.'-'.$one
@@ -258,7 +258,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
                         $month,
                         $name,
                         empty($defaultDate[1]) || $defaultDate[1] === '00' ? '' : $defaultDate[1],
-                        $attributes,
+                        array_merge($attributes, ['aria-label' => acym_translation('ACYM_MONTH')]),
                         'value',
                         'text',
                         $name.'-'.$one
@@ -274,7 +274,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
                         $year,
                         $name,
                         empty($defaultDate[0]) || $defaultDate[0] === '0000' ? '' : $defaultDate[0],
-                        $attributes,
+                        array_merge($attributes, ['aria-label' => acym_translation('ACYM_YEAR')]),
                         'value',
                         'text',
                         $name.'-'.$one

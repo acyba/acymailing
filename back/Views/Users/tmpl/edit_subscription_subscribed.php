@@ -7,7 +7,7 @@
         <?php foreach ($data['subscriptions'] as $oneSubscription) { ?>
 			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="grid-x small-6 large-8 cell acym__users__display__list__name">
-                    <?php echo '<i class="cell shrink acymicon-circle" style="color:'.acym_escape($oneSubscription->color).'"></i>'; ?>
+                    <?php echo '<i class="cell shrink acymicon-circle" style="color:'.acym_escape($oneSubscription->color ?? '#0079d3').'"></i>'; ?>
 					<h6 class="cell auto"><?php echo acym_escapeHtml($oneSubscription->name); ?></h6>
 					<span class="cell medium-auto">
 					<?php

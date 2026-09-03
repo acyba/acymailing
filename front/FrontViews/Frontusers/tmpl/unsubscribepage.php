@@ -8,7 +8,7 @@
             <?php if (!empty($this->config->get('unsubscribe_image'))) { ?>
 				<img class="cell padding-3"
 				     src="<?php echo acym_escapeUrl($this->config->get('unsubscribe_image')); ?>"
-				     alt="Unsubscribe Image">
+				     alt="">
             <?php } else { ?>
 				<div class="cell padding-3 acym__unsubscribe__image__svg">
                     <?php
@@ -29,7 +29,7 @@
 						<div class="acy__unsubscribe__form__header margin-bottom-3">
 							<div class="acym__unsubscribe__form__header__image cell padding-bottom-1">
                                 <?php if (!empty($this->config->get('unsubscribe_logo'))) { ?>
-									<img class="cell" src="<?php echo acym_escape($this->config->get('unsubscribe_logo')); ?>" alt="Unsubscribe Logo">
+									<img class="cell" src="<?php echo acym_escape($this->config->get('unsubscribe_logo')); ?>" alt="<?php echo acym_escape(acym_getCMSConfig('sitename')); ?>">
                                 <?php } ?>
 							</div>
 							<h1 class="acym__title acym__unsubscribe__title margin-bottom-1">
@@ -100,7 +100,7 @@
                                         $data['surveyAnswers'],
                                         'unsubscribe_selector_reason',
                                         'acym__unsubscribe__reason__select',
-                                        null,
+                                        ['aria-label' => acym_translation('ACYM_SHARE_YOUR_REASONS')],
                                         'value',
                                         'text',
                                         null,

@@ -92,7 +92,7 @@ $formName = acym_getModuleFormName();
             if (!empty($data['user']->id) && !(empty($exportButton) && empty($deleteButton))) {
                 ?>
 				<div id="acyuseractions">
-					<table>
+					<table role="presentation">
 						<tr>
                             <?php
                             if ($exportButton == 1) {

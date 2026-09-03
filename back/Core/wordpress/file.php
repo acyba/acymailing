@@ -208,7 +208,9 @@ function acym_deleteFile(string $file): bool
         return true;
     }
 
-    return wp_delete_file($file);
+    $deleted = wp_delete_file($file);
+
+    return ($deleted || is_null($deleted));
 }
 
 

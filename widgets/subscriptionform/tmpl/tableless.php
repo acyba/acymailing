@@ -15,7 +15,7 @@ if (!function_exists('acymailing_displayWidgetLists')) {
         }
         ?>
 
-		<div class="acym_lists">
+		<div class="acym_lists" role="group" aria-label="<?php echo acym_escape(acym_translation('ACYM_NEWSLETTERS')); ?>">
             <?php foreach ($visibleLists as $myListId) { ?>
 				<div class="onelist">
 					<input type="checkbox"
@@ -83,7 +83,7 @@ if ($listPosition === 'before') {
     if (!empty($termslink)) {
         echo '<div class="onefield fieldacyterms" id="field_terms_'.esc_attr($formName).'">';
         echo '<label for="mailingdata_terms_'.esc_attr($formName).'">';
-        echo '<input id="mailingdata_terms_'.esc_attr($formName).'" class="checkbox" type="checkbox" name="terms" title="'.esc_attr(
+        echo '<input id="mailingdata_terms_'.esc_attr($formName).'" class="checkbox" type="checkbox" name="terms" aria-required="true" title="'.esc_attr(
                 acym_translation(
                     'ACYM_TERMS_CONDITIONS'
                 )

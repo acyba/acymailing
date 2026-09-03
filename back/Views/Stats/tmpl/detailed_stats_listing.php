@@ -4,7 +4,9 @@
 ?>
 	<div class="acym__content acym__stats" id="acym_stats_detailed">
         <?php
-        if (empty($data['selectedMailid'])) { ?>
+        if (!empty($data['anonymousStats'])) { ?>
+			<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_escapeHtml(acym_translation('ACYM_STATS_NOT_AVAILABLE_ANONYMOUS')); ?></h1>
+        <?php } elseif (empty($data['selectedMailid'])) { ?>
 			<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_escapeHtml(acym_translation('ACYM_SELECT_AN_EMAIL_FIRST')); ?></h1>
         <?php } elseif (!empty($data['emptyDetailed']) && $data['emptyDetailed'] == 'campaigns') { ?>
 			<h1 class="acym__listing__empty__title text-center cell">

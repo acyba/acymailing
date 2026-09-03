@@ -188,6 +188,10 @@ trait Edition
         $mailId = acym_getVar('int', 'from', 0);
         $mailClass = new MailClass();
         $data['mailClass'] = $mailClass;
+
+        if ($mailId > 0 && !$mailClass->hasUserAccess($mailId)) {
+            die('Access denied for this email');
+        }
         // Check autosave only if mail already saved in campaign and not just selected template (from parameter)
         $checkAutosave = empty($mailId);
         $editLink = 'campaigns&task=edit&step=editEmail';

@@ -16,6 +16,8 @@ trait Detailed
 
         $this->prepareDefaultPageInfo($data);
 
+        $data['anonymousStats'] = !empty($this->config->get('anonymous_stats', 0));
+
         $this->prepareDetailedListing($data);
         if (count($this->selectedMailIds) == 1) {
             if ($data['isAbTest']) {

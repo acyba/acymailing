@@ -162,7 +162,7 @@ class MailStatClass extends AcymClass
             $condMailIds = 'WHERE mail_id IN ('.implode(',', $mailsIds).')';
         }
 
-        $query = 'SELECT SUM(sent) AS sent, SUM(open_unique) AS open, SUM(fail) AS fails, SUM(bounce_unique) AS bounces FROM #__acym_mail_stat '.$condMailIds;
+        $query = 'SELECT SUM(sent) AS sent, SUM(open_unique) AS open, SUM(open_total) AS open_total, SUM(click_unique) AS click_unique, SUM(click_total) AS click_total, SUM(fail) AS fails, SUM(bounce_unique) AS bounces FROM #__acym_mail_stat '.$condMailIds;
 
         return acym_loadObject($query);
     }
@@ -262,5 +262,93 @@ class MailStatClass extends AcymClass
         $firstSentEmail = acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE sent > 0');
 
         return !empty($firstSentEmail);
+    }
+
+    public function incrementDetail(int $mailId, string $type, string $key): void
+    {
+        if (empty($mailId) || $type === '') {
+            return;
+        }
+
+        acym_query(
+            'INSERT INTO #__acym_mail_stat_detail (`mail_id`, `detail_type`, `detail_key`, `number`)
+            VALUES ('.intval($mailId).', '.acym_escapeDB($type).', '.acym_escapeDB($key).', 1)
+            ON DUPLICATE KEY UPDATE `number` = `number` + 1'
+        );
+    }
+
+    public function getAnonDevices(array $mailIds = []): array
+    {
+        return $this->getAnonGroupedDetail($mailIds, 'device', 'device');
+    }
+
+    public function getAnonOpenSources(array $mailIds = []): array
+    {
+        return $this->getAnonGroupedDetail($mailIds, 'client', 'opened_with');
+    }
+
+    private function getAnonGroupedDetail(array $mailIds, string $type, string $alias): array
+    {
+        acym_arrayToInteger($mailIds);
+        $condMailIds = empty($mailIds) ? '' : ' AND mail_id IN ('.implode(',', $mailIds).')';
+
+        return acym_loadObjectList(
+            'SELECT detail_key AS `'.acym_secureDBColumn($alias).'`, SUM(number) AS number
+            FROM #__acym_mail_stat_detail
+            WHERE detail_type = '.acym_escapeDB($type).$condMailIds.'
+            GROUP BY detail_key'
+        );
+    }
+
+    public function getAnonOpensByFormat(array $mailIds, string $format, string $start = '', string $end = ''): array
+    {
+        return $this->getAnonTimeSeries($mailIds, 'open_time', $format, 'open', 'open_date', $start, $end);
+    }
+
+    private function getAnonTimeSeries(array $mailIds, string $type, string $format, string $countAlias, string $dateAlias, string $start, string $end): array
+    {
+        acym_arrayToInteger($mailIds);
+        $cond = empty($mailIds) ? '' : ' AND mail_id IN ('.implode(',', $mailIds).')';
+        if (!empty($start)) {
+            $cond .= ' AND detail_key >= '.acym_escapeDB($start);
+        }
+        if (!empty($end)) {
+            $cond .= ' AND detail_key <= '.acym_escapeDB($end);
+        }
+
+        return acym_loadObjectList(
+            'SELECT SUM(number) AS `'.acym_secureDBColumn($countAlias).'`, DATE_FORMAT(detail_key, '.acym_escapeDB($format).') AS `'.acym_secureDBColumn($dateAlias).'`
+            FROM #__acym_mail_stat_detail
+            WHERE detail_type = '.acym_escapeDB($type).$cond.'
+            GROUP BY `'.acym_secureDBColumn($dateAlias).'`'
+        );
+    }
+
+    public function getAnonOpenTimeStats(array $mailIds): array
+    {
+        acym_arrayToInteger($mailIds);
+        $cond = empty($mailIds) ? '' : ' AND mail_id IN ('.implode(',', $mailIds).')';
+        $offsetSeconds = (int)acym_getTimeOffsetCMS();
+
+        return [
+            'total_open' => acym_loadResult(
+                'SELECT SUM(number) FROM #__acym_mail_stat_detail WHERE detail_type = '.acym_escapeDB('open_time').$cond
+            ),
+            'stats' => acym_loadObjectList(
+                'SELECT
+                    SUM(number) AS `open_total`,
+                    DATE_FORMAT(DATE_ADD(detail_key, INTERVAL '.$offsetSeconds.' SECOND), "%w") AS `day`,
+                    FORMAT(CONVERT(DATE_FORMAT(DATE_ADD(detail_key, INTERVAL '.$offsetSeconds.' SECOND), "%H"), SIGNED INTEGER) / 3, 0) AS `hour`,
+                    CONCAT(
+                        DATE_FORMAT(DATE_ADD(detail_key, INTERVAL '.$offsetSeconds.' SECOND), "%w"),
+                        "_",
+                        FORMAT(CONVERT(DATE_FORMAT(DATE_ADD(detail_key, INTERVAL '.$offsetSeconds.' SECOND), "%H"), SIGNED INTEGER) / 3, 0)
+                    ) AS `date_id`
+                FROM #__acym_mail_stat_detail
+                WHERE detail_type = '.acym_escapeDB('open_time').$cond.'
+                GROUP BY date_id',
+                'date_id'
+            ),
+        ];
     }
 }

@@ -74,7 +74,7 @@ class FollowupsController extends AcymController
         $followupClass = new FollowupClass();
         $queued = $followupClass->queueForSubscribers($emailId);
 
-        if ($queued === false) {
+        if ($queued === null) {
             acym_sendAjaxResponse(acym_translation('ACYM_ERROR_ADD_QUEUE'), [], false);
         }
 

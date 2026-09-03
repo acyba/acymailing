@@ -1835,6 +1835,11 @@ class UserClass extends AcymClass
         $limit = $options['limit'] ?? 10;
         $offset = $options['offset'] ?? 0;
         $filters = $options['filters'] ?? [];
+        $orderBy = $options['orderBy'] ?? '';
+        $orderBySort = strtolower((string)($options['orderBySort'] ?? ''));
+        if (!in_array($orderBySort, ['asc', 'desc'], true)) {
+            $orderBySort = 'asc';
+        }
 
         $conditions = [];
         foreach ($filters as $column => $filter) {
@@ -1856,6 +1861,14 @@ class UserClass extends AcymClass
         $query = 'SELECT * FROM #__acym_user';
         if (!empty($conditions)) {
             $query .= ' WHERE '.implode(' AND ', $conditions);
+        }
+
+        $orderByColumn = empty($orderBy) ? $this->pkey : acym_secureDBColumn($orderBy);
+        $query .= ' ORDER BY '.$orderByColumn.' '.$orderBySort;
+
+        // Any other column can hold duplicates, we need a unique one to break the ties
+        if ($orderByColumn !== $this->pkey) {
+            $query .= ', '.$this->pkey.' ASC';
         }
 
         return acym_loadObjectList($query, $this->pkey, $offset, $limit);

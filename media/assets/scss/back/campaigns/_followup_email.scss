@@ -1,10 +1,21 @@
 #acym_wrapper {
     .acym__followup__add_queue {
+        display: inline;
+        padding: 0;
+        border: 0;
+        background: none;
+        font: inherit;
+        line-height: inherit;
+        text-align: inherit;
+        vertical-align: baseline;
+        white-space: normal;
+        max-width: 100%;
         color: $blue-green;
         cursor: pointer;
+        text-decoration: underline;
 
-        &:hover {
-            text-decoration: underline;
+        &:hover, &:focus {
+            text-decoration: none;
         }
     }
 

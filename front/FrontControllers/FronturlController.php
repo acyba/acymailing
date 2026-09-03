@@ -56,34 +56,52 @@ class FronturlController extends AcymController
             acym_redirect($this->resolveSubscriberTags($urlObject->url, $userId), '', 'message', false);
         }
 
+        $anonymousStats = !empty($this->config->get('anonymous_stats', 0));
+
         $urlClick = new \stdClass();
         $urlClick->mail_id = $mailId;
         $urlClick->url_id = $urlObject->id;
         $urlClick->click = 1;
-        $urlClick->user_id = $userId;
+        $urlClick->user_id = $anonymousStats ? 0 : $userId;
         $urlClick->date_click = acym_date('now', 'Y-m-d H:i:s', false);
 
         $mailStatClass = new MailStatClass();
         $urlClickClass = new UrlClickClass();
         $urlClickClass->save($urlClick);
 
-        if (empty($userStat->open)) {
-            $userStatToInsert = new \stdClass();
-            $userStatToInsert->user_id = $userId;
-            $userStatToInsert->mail_id = $mailId;
-            $userStatToInsert->open = 1;
-            $userStatToInsert->open_date = acym_date('now', 'Y-m-d H:i:s', false);
-            $userStatClass->save($userStatToInsert);
+        UserStatClass::triggerActivity('user_click', $userId, $mailId);
 
+        if (!$anonymousStats) {
+            if (empty($userStat->open)) {
+                $userStatToInsert = new \stdClass();
+                $userStatToInsert->user_id = $userId;
+                $userStatToInsert->mail_id = $mailId;
+                $userStatToInsert->open = 1;
+                $userStatToInsert->open_date = acym_date('now', 'Y-m-d H:i:s', false);
+                $userStatClass->save($userStatToInsert);
+
+                $mailStat = new \stdClass();
+                $mailStat->mail_id = $mailId;
+                $mailStat->open_unique = 1;
+                $mailStat->open_total = 1;
+                $mailStatClass->save($mailStat);
+
+                UserStatClass::triggerActivity('user_open', $userId, $mailId);
+            }
+
+            $clickStats = $urlClickClass->getOneByMailIdAndUserId($mailId, $userId);
+            $mailStatClass->incrementClicks($mailId, $clickStats->click == 1);
+        } else {
+            $mailStatClass->incrementClicks($mailId, true);
+
+            // Anonymous mode tracks totals only and keeps no per-recipient open state, so this is not deduplicated.
             $mailStat = new \stdClass();
             $mailStat->mail_id = $mailId;
             $mailStat->open_unique = 1;
             $mailStat->open_total = 1;
             $mailStatClass->save($mailStat);
+            $mailStatClass->incrementDetail($mailId, 'open_time', acym_date('now', 'Y-m-d H', false).':00:00');
         }
-
-        $clickStats = $urlClickClass->getOneByMailIdAndUserId($mailId, $userId);
-        $mailStatClass->incrementClicks($mailId, $clickStats->click == 1);
 
         $userClass = new UserClass();
         $subscriber = $userClass->getOneById($userId);

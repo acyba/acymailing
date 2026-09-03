@@ -90,6 +90,8 @@ if (typeof submitAcymForm !== 'function') {
         if (invalidFields.length !== 0) {
             for (let i = 0 ; i < invalidFields.length ; i++) {
                 invalidFields[i].classList.remove('acym_invalid_field');
+                invalidFields[i].removeAttribute('aria-invalid');
+                invalidFields[i].removeAttribute('aria-describedby');
             }
         }
 
@@ -437,6 +439,7 @@ if (typeof submitAcymForm !== 'function') {
         let container = elToInvalidate[0].closest('.onefield');
         for (let i = 0 ; i < elToInvalidate.length ; i++) {
             elToInvalidate[i].classList.add('acym_invalid_field');
+            elToInvalidate[i].setAttribute('aria-invalid', 'true');
         }
 
         if (container && container.length !== 0) {
@@ -448,6 +451,12 @@ if (typeof submitAcymForm !== 'function') {
                 let errorZone = container.querySelector('.acym__field__error__block');
                 errorZone.innerText = message;
                 errorZone.classList.add('acym__field__error__block__active');
+                if (!errorZone.id) {
+                    errorZone.id = 'acym__field__error__' + window.acyFormName + '__' + elemName.replace(/[^a-zA-Z0-9_-]/g, '');
+                }
+                for (let j = 0 ; j < elToInvalidate.length ; j++) {
+                    elToInvalidate[j].setAttribute('aria-describedby', errorZone.id);
+                }
             }
         }
 
@@ -469,6 +478,9 @@ if (typeof submitAcymForm !== 'function') {
 
         //We reset the class name to responseContainer
         responseContainer.className = 'responseContainer';
+
+        responseContainer.setAttribute('role', 'alert');
+        responseContainer.setAttribute('aria-live', 'assertive');
 
         const form = document.getElementById(window.acyFormName);
 

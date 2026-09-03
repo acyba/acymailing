@@ -269,13 +269,19 @@ function acym_initializeChart(): void
     }
 }
 
-function acym_displayRoundChart($percentage, string $type = '', string $class = '', string $topLabel = ''): void
+function acym_displayRoundChart($percentage, string $type = '', string $class = '', string $topLabel = '', string $centerText = ''): void
 {
     if (empty($percentage) && $percentage !== 0) {
         return;
     }
 
     acym_initializeChart();
+
+    // A total-based value can exceed 100% (e.g. anonymized opens/clicks): clamp the ring so it never overflows
+    $gauge = max(0, min(100, (float)$percentage));
+    if ($centerText === '') {
+        $centerText = $percentage.'%';
+    }
 
     $randNumber = acym_rand(1000, 9000);
     $id = 'acy_round_chart_rand_id'.$randNumber;
@@ -376,7 +382,7 @@ function acym_displayRoundChart($percentage, string $type = '', string $class = 
                 data: {
                     datasets: [
                         {
-                            data: <?php echo json_encode([$percentage, 100 - $percentage]); ?>,
+                            data: <?php echo json_encode([$gauge, 100 - $gauge]); ?>,
                             backgroundColor: <?php echo json_encode([$color, "#f1f1f1"]); ?>,
                             borderWidth: 0
                         }
@@ -389,7 +395,7 @@ function acym_displayRoundChart($percentage, string $type = '', string $class = 
                     },
                     elements: {
                         center: {
-                            text: <?php echo json_encode($percentage.'%'); ?>,
+                            text: <?php echo json_encode($centerText); ?>,
                             color: '#363636',
                             fontStyle: 'Poppins',
                             sidePadding: 70

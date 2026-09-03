@@ -116,6 +116,11 @@
 							</div>
 							<div class="large-2 medium-3 small-4 cell acym__listing__links_details__content text-center">
                                 <?php
+                                echo !empty($data['anonymousStats']) ? '-' : (empty($linkDetails->unique_click) ? 0 : acym_escapeHtml($linkDetails->unique_click));
+                                ?>
+							</div>
+							<div class="large-2 medium-3 small-4 cell acym__listing__links_details__content text-center">
+                                <?php
                                 echo empty($linkDetails->total_click) ? 0 : acym_escapeHtml($linkDetails->total_click);
                                 ?>
 							</div>

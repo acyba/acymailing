@@ -63,6 +63,10 @@ trait Edition
         $fromMail = '';
 
         if (!empty($fromId)) {
+            if (!$mailClass->hasUserAccess($fromId)) {
+                die('Access denied for this email');
+            }
+
             $fromMail = $mailClass->getOneById($fromId);
         }
 
@@ -1035,6 +1039,10 @@ trait Edition
 
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($idMail);
+
+        if (empty($mail)) {
+            exit;
+        }
 
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returning content as text/css, need to output raw content.
         echo $mailClass->buildCSS($mail->stylesheet);

@@ -302,6 +302,7 @@ function acym_renderForm(AcymParameter $params, array $args = []): void
 			      id="<?php echo esc_attr($formName); ?>"
 			      name="<?php echo esc_attr($formName); ?>"
 			      method="POST"
+			      aria-label="<?php echo acym_escape(acym_translation('ACYM_SUBSCRIPTION')); ?>"
 			      action="<?php echo esc_attr($formAction); ?>"
 			      onsubmit="return submitAcymForm('subscribe','<?php echo esc_attr($formName); ?>')">
 				<div class="acym_module_form">

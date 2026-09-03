@@ -12,4 +12,21 @@ trait Patchv11
 
         $this->updateQuery('UPDATE #__acym_user_has_list SET `status` = 0 WHERE `status` = -1');
     }
+
+    private function updateFor1105(): void
+    {
+        if ($this->isPreviousVersionAtLeast('11.0.5')) {
+            return;
+        }
+
+        $this->updateQuery(
+            'CREATE TABLE IF NOT EXISTS `#__acym_mail_stat_detail` (
+            `mail_id` INT NOT NULL,
+            `detail_type` VARCHAR(20) NOT NULL,
+            `detail_key` VARCHAR(100) NOT NULL,
+            `number` INT NOT NULL DEFAULT 0,
+            PRIMARY KEY (`mail_id`, `detail_type`, `detail_key`)
+            )'
+        );
+    }
 }

@@ -133,8 +133,10 @@ trait Edition
     {
         $data['percentageOpen'] = 0;
         $data['percentageClick'] = 0;
+        $data['anonymousStats'] = !empty($this->config->get('anonymous_stats', 0));
 
-        if (empty($userId)) return;
+        // Individual open/click rates are an individual statistic: don't compute them when anonymizing
+        if (empty($userId) || $data['anonymousStats']) return;
 
         $userStatClass = new UserStatClass();
         $userStatFromDB = $userStatClass->getAllUserStatByUserId($userId);

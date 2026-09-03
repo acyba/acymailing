@@ -94,7 +94,7 @@
                 ob_start();
                 acym_tooltip(
                     [
-                        'hoveredText' => acym_translation('ACYM_OPEN_RATE'),
+                        'hoveredText' => acym_translation(empty($data['anonymousStats']) ? 'ACYM_OPEN_RATE' : 'ACYM_OPENS'),
                         'textShownInTooltip' => $data['mail']->allOpen,
                     ]
                 );
@@ -103,7 +103,8 @@
                     $data['mail']->percentageOpen,
                     'open',
                     '',
-                    $tooltip
+                    $tooltip,
+                    empty($data['anonymousStats']) ? '' : (string)$data['mail']->openCount
                 ); ?>
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
@@ -111,7 +112,7 @@
                 ob_start();
                 acym_tooltip(
                     [
-                        'hoveredText' => acym_translation('ACYM_CLICK_RATE'),
+                        'hoveredText' => acym_translation(empty($data['anonymousStats']) ? 'ACYM_CLICK_RATE' : 'ACYM_CLICKS'),
                         'textShownInTooltip' => $data['mail']->allClick,
                     ]
                 );
@@ -120,7 +121,8 @@
                     $data['mail']->percentageClick,
                     'click',
                     '',
-                    $tooltip
+                    $tooltip,
+                    empty($data['anonymousStats']) ? '' : (string)$data['mail']->clickCount
                 ); ?>
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">

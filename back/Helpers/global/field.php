@@ -687,6 +687,7 @@ function acym_generateCountryNumber(string $name, string $defaultvalue = ''): vo
         [
             'class' => 'acym__select__country acym__select',
             'autocomplete' => 'tel-country-code',
+            'aria-label' => acym_translation('ACYM_PHONE_COUNTRY_CODE'),
         ],
         'value',
         'text',

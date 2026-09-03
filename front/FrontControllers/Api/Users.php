@@ -9,11 +9,14 @@ trait Users
 {
     public function getUsers(): void
     {
-        $options = [
-            'offset' => acym_getVar('int', 'offset', 0),
-            'limit' => $this->getRequestedLimit(100),
-            'filters' => acym_getVar('array', 'filters', []),
-        ];
+        $options = array_merge(
+            [
+                'offset' => acym_getVar('int', 'offset', 0),
+                'limit' => $this->getRequestedLimit(100),
+                'filters' => acym_getVar('array', 'filters', []),
+            ],
+            $this->getRequestedOrdering(self::ORDERABLE_USER_COLUMNS)
+        );
 
         $connector = acym_getVar('bool', 'connector', false);
         if ($connector) {

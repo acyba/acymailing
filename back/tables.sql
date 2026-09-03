@@ -269,6 +269,16 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 	ENGINE = InnoDB
 	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
+CREATE TABLE IF NOT EXISTS `#__acym_mail_stat_detail` (
+	`mail_id` INT NOT NULL,
+	`detail_type` VARCHAR(20) NOT NULL,
+	`detail_key` VARCHAR(100) NOT NULL,
+	`number` INT NOT NULL DEFAULT 0,
+	PRIMARY KEY (`mail_id`, `detail_type`, `detail_key`)
+)
+	ENGINE = InnoDB
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
+
 CREATE TABLE IF NOT EXISTS `#__acym_user_stat` (
 	`user_id` INT NOT NULL,
 	`mail_id` INT NOT NULL,

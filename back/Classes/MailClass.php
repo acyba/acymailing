@@ -1544,7 +1544,7 @@ class MailClass extends AcymClass
             return false;
         }
 
-        $mail = acym_loadObject('SELECT `creator_id`, `type` FROM #__acym_mail WHERE id = '.intval($mailId));
+        $mail = acym_loadObject('SELECT `creator_id`, `type`, `access` FROM #__acym_mail WHERE id = '.intval($mailId));
         if (empty($mail)) {
             return false;
         }
@@ -1557,7 +1557,22 @@ class MailClass extends AcymClass
             return true;
         }
 
-        return !$write && $mail->type === self::TYPE_TEMPLATE;
+        return !$write && $mail->type === self::TYPE_TEMPLATE && $this->isAccessAllowedForUser($mail->access, $userId);
+    }
+
+    private function isAccessAllowedForUser(?string $access, int $userId): bool
+    {
+        if (empty($access)) {
+            return false;
+        }
+
+        foreach (acym_getGroupsByUser($userId) as $userGroup) {
+            if (strpos($access, ','.$userGroup.',') !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function isTypeAllowed(?string $type): bool

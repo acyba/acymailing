@@ -12,17 +12,13 @@
 			acym-data-cookie="'.intval($cookieExpiration).'" 
 			action="'.acym_escapeUrl($form->form_tag_action).'" 
 			id="'.acym_escape($form->form_tag_name).'" 
-			name="'.acym_escape($form->form_tag_name).'" 
-			enctype="multipart/form-data" 
+			name="'.acym_escape($form->form_tag_name).'"
+			aria-label="'.acym_escape(acym_translation('ACYM_SUBSCRIPTION')).'"
+			enctype="multipart/form-data"
 			onsubmit="return submitAcymForm(\'subscribe\',\''.acym_escape($form->form_tag_name).'\', \'acymSubmitSubForm\')">';
     }
-    $files = [
-        0 => $form->settings['style']['position'] == 'button-right' ? 'fields' : 'button',
-        1 => $form->settings['style']['position'] == 'button-right' ? 'button' : 'fields',
-    ];
-
-    include acym_getPartial('forms', $files[0]);
-    include acym_getPartial('forms', $files[1]);
+    include acym_getPartial('forms', 'fields');
+    include acym_getPartial('forms', 'button');
     include acym_getPartial('forms', 'hidden_params');
 
     echo '</form>';
@@ -63,9 +59,38 @@
 		align-items: center
 	}
 
+    <?php if (($form->settings['style']['position'] ?? '') !== 'button-right') { ?>
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer .acym__subscription__form__button{
+		order: -1;
+	}
+    <?php } ?>
+
 	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>
 	.acym__users__creation__fields__title{
 		margin: 0.5rem
+	}
+
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer,
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer <?php echo '#'.acym_escapeHtml($form->form_tag_name); ?>,
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer .acym__subscription__form__fields{
+		flex-wrap: wrap;
+		max-width: 100%;
+	}
+
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer{
+		height: auto;
+		min-height: <?php echo acym_escapeHtml($form->settings['style']['size']['height']); ?>px;
+	}
+
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer .acym__subscription__form__fields .onefield{
+		width: auto;
+	}
+
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer .acym__subscription__form__fields .onefield input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer .acym__subscription__form__fields .onefield select,
+	<?php echo '#acym_fulldiv_'.acym_escapeHtml($form->form_tag_name); ?>.acym__subscription__form__footer .acym__subscription__form__fields .onefield textarea{
+		width: auto;
+		max-width: 220px;
 	}
 </style>
 <?php if (!$edition) include acym_getPartial('forms', 'cookie'); ?>

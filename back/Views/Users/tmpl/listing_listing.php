@@ -156,7 +156,7 @@ if (empty($data['allUsers'])) { ?>
 
                                 acym_tooltip(
                                     [
-                                        'hoveredText' => '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color).'" '.$toggleAttributes.'></i>',
+                                        'hoveredText' => '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color ?? '#0079d3').'" '.$toggleAttributes.'></i>',
                                         'textShownInTooltip' => acym_translationSprintf(
                                             $newvalue === 0 ? 'ACYM_SUBSCRIBED_TO_LIST' : 'ACYM_UNSUBSCRIBED_FROM_LIST',
                                             acym_escapeHtml($oneSub->name)

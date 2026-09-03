@@ -65,6 +65,8 @@ class SecurityHelper extends AcymObject
             'target' => true,
             'title' => true,
             'class' => true,
+            'rel' => true,
+            'aria-label' => true,
             'data-acym-modal' => true,
         ],
         'div' => [

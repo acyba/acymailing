@@ -201,7 +201,7 @@
 								<input type="text"
 								       name="config[unsubscribe_color]"
 								       id="acym__config__settings__color-picker"
-								       value="<?php echo acym_escape($this->config->get('unsubscribe_color', '#00a4ff')); ?>" />
+								       value="<?php echo acym_escape($this->config->get('unsubscribe_color') ?: '#0079d3'); ?>" />
 							</p>
 						</div>
 						<div class="cell grid-x margin-bottom-1">

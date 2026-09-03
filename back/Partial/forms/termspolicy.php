@@ -23,11 +23,17 @@ if (empty($termspolicy['terms_type']) || $termspolicy['terms_type'] === 'article
 }
 
 if (!empty($termspolicy['privacy_type']) && $termspolicy['privacy_type'] === 'url' && !empty($privacyURL)) {
-    $privacyURL = '<a href="'.acym_escapeUrl($privacyURL).'" target="_blank">'.acym_escapeHtml(acym_translation('ACYM_PRIVACY_POLICY')).'</a>';
+    $privacyLabel = acym_translation('ACYM_PRIVACY_POLICY');
+    $privacyURL = '<a href="'.acym_escapeUrl($privacyURL).'" target="_blank" rel="noopener noreferrer" aria-label="'.acym_escape(
+            $privacyLabel.', '.acym_translation('ACYM_OPENS_NEW_WINDOW')
+        ).'">'.acym_escapeHtml($privacyLabel).'</a>';
 }
 
 if (!empty($termspolicy['terms_type']) && $termspolicy['terms_type'] === 'url' && !empty($termsURL)) {
-    $termsURL = '<a href="'.acym_escapeUrl($termsURL).'" target="_blank">'.acym_escapeHtml(acym_translation('ACYM_TERMS_CONDITIONS')).'</a>';
+    $termsLabel = acym_translation('ACYM_TERMS_CONDITIONS');
+    $termsURL = '<a href="'.acym_escapeUrl($termsURL).'" target="_blank" rel="noopener noreferrer" aria-label="'.acym_escape(
+            $termsLabel.', '.acym_translation('ACYM_OPENS_NEW_WINDOW')
+        ).'">'.acym_escapeHtml($termsLabel).'</a>';
 }
 
 
@@ -45,7 +51,7 @@ if (!empty($termslink)) {
     echo '<div class="acym__subscription__form__termscond">';
     echo '<div class="onefield fieldacyterms" id="field_terms_'.acym_escape($form->form_tag_name).'">';
     echo '<label for="mailingdata_terms_'.acym_escape($form->form_tag_name).'">';
-    echo '<input id="mailingdata_terms_'.acym_escape($form->form_tag_name).'" class="checkbox" type="checkbox" name="terms" title="'.acym_escape(
+    echo '<input id="mailingdata_terms_'.acym_escape($form->form_tag_name).'" class="checkbox" type="checkbox" name="terms" aria-required="true" title="'.acym_escape(
             acym_translation('ACYM_TERMS_CONDITIONS')
         ).'"/> ';
     echo acym_escapeHtmlWithAllowedTags(

@@ -40,7 +40,7 @@
                     <?php foreach ($data['lists'] as $list) { ?>
 						<div class="cell shrink acym__campaign__summary__generated__list__tag">
 							<i class="acymicon-circle"
-							   style="color: <?php echo acym_escape($list->color); ?>;"></i><?php echo acym_escapeHtml($list->name); ?>
+							   style="color: <?php echo acym_escape($list->color ?? '#0079d3'); ?>;"></i><?php echo acym_escapeHtml($list->name); ?>
 						</div>
                     <?php } ?>
 				</div>

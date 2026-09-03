@@ -242,7 +242,7 @@ trait GlobalStats
             }
         }
 
-        $lastOpen = end($campaignOpens);
+        $lastOpen = empty($campaignOpens) ? null : end($campaignOpens);
         $endDate = $lastOpen->open_date ?? null;
         if (!empty($campaignClicks)) {
             $lastClick = end($campaignClicks);
@@ -289,24 +289,35 @@ trait GlobalStats
 
     public function prepareLineChart(object &$statsCampaignSelected, array $mailIdsOfCampaign, string $newStart = '', string $newEnd = ''): void
     {
-        $campaignClass = new CampaignClass();
         $statsCampaignSelected->hasStats = true;
+        $anonymousStats = !empty($this->config->get('anonymous_stats', 0));
 
         //We get the opening by month, day, hour
-        $campaignOpenByMonth = $campaignClass->getOpenByMonth($mailIdsOfCampaign, $newStart, $newEnd);
-        $campaignOpenByDay = $campaignClass->getOpenByDay($mailIdsOfCampaign, $newStart, $newEnd);
-        $campaignOpenByHour = $campaignClass->getOpenByHour($mailIdsOfCampaign, $newStart, $newEnd);
-
-        if (empty($campaignOpenByMonth) || empty($campaignOpenByDay) || empty($campaignOpenByHour)) {
-            $statsCampaignSelected->hasStats = false;
-
-            return;
+        if ($anonymousStats) {
+            $mailStatClass = new MailStatClass();
+            $campaignOpenByMonth = $mailStatClass->getAnonOpensByFormat($mailIdsOfCampaign, '%Y-%m', $newStart, $newEnd);
+            $campaignOpenByDay = $mailStatClass->getAnonOpensByFormat($mailIdsOfCampaign, '%Y-%m-%d', $newStart, $newEnd);
+            $campaignOpenByHour = $mailStatClass->getAnonOpensByFormat($mailIdsOfCampaign, '%Y-%m-%d %H:00:00', $newStart, $newEnd);
+        } else {
+            $campaignClass = new CampaignClass();
+            $campaignOpenByMonth = $campaignClass->getOpenByMonth($mailIdsOfCampaign, $newStart, $newEnd);
+            $campaignOpenByDay = $campaignClass->getOpenByDay($mailIdsOfCampaign, $newStart, $newEnd);
+            $campaignOpenByHour = $campaignClass->getOpenByHour($mailIdsOfCampaign, $newStart, $newEnd);
         }
 
         $urlClickClass = new UrlClickClass();
         $campaignClickByMonth = $urlClickClass->getAllClickByMailMonth($mailIdsOfCampaign, $newStart, $newEnd);
         $campaignClickByDay = $urlClickClass->getAllClickByMailDay($mailIdsOfCampaign, $newStart, $newEnd);
         $campaignClickByHour = $urlClickClass->getAllClickByMailHour($mailIdsOfCampaign, $newStart, $newEnd);
+
+        // In anonymous mode a click doesn't register an open, and in any mode a link can be clicked without the open pixel firing: gating on opens alone wrongly hid the whole chart.
+        $hasOpens = !empty($campaignOpenByMonth) && !empty($campaignOpenByDay) && !empty($campaignOpenByHour);
+        $hasClicks = !empty($campaignClickByMonth) && !empty($campaignClickByDay) && !empty($campaignClickByHour);
+        if (!$hasOpens && !$hasClicks) {
+            $statsCampaignSelected->hasStats = false;
+
+            return;
+        }
 
         $statsCampaignSelected->month = $this->getValues('day', 'P1M', $campaignOpenByMonth, $campaignClickByMonth, 'Y-m');
         $statsCampaignSelected->day = $this->getValues('hour', 'P1D', $campaignOpenByDay, $campaignClickByDay, 'Y-m-d');
@@ -343,7 +354,12 @@ trait GlobalStats
     public function prepareOpenTimeChart(array &$data): void
     {
         $userStatClass = new UserStatClass();
-        $statsDB = $userStatClass->getOpenTimeStats($this->selectedMailIds);
+        if (!empty($this->config->get('anonymous_stats', 0))) {
+            $mailStatClass = new MailStatClass();
+            $statsDB = $mailStatClass->getAnonOpenTimeStats($this->selectedMailIds);
+        } else {
+            $statsDB = $userStatClass->getOpenTimeStats($this->selectedMailIds);
+        }
 
         if (empty($statsDB['total_open'])) {
             $data['openTime'] = $userStatClass->getDefaultStat();
@@ -530,8 +546,13 @@ trait GlobalStats
 
     private function prepareDevicesStats(array &$data): void
     {
-        $campaignClass = new CampaignClass();
-        $devicesCampaign = $campaignClass->getDevicesWithCountByMailId($this->selectedMailIds);
+        if (!empty($this->config->get('anonymous_stats', 0))) {
+            $mailStatClass = new MailStatClass();
+            $devicesCampaign = $mailStatClass->getAnonDevices($this->selectedMailIds);
+        } else {
+            $campaignClass = new CampaignClass();
+            $devicesCampaign = $campaignClass->getDevicesWithCountByMailId($this->selectedMailIds);
+        }
 
         $defaultDataDevices = [
             'ACYM_MOBILE' => 0,
@@ -566,8 +587,13 @@ trait GlobalStats
 
     private function prepareOpenSourcesStats(array &$data): void
     {
-        $userStatClass = new UserStatClass();
-        $openedFromStats = $userStatClass->getOpenSourcesStats($this->selectedMailIds);
+        if (!empty($this->config->get('anonymous_stats', 0))) {
+            $mailStatClass = new MailStatClass();
+            $openedFromStats = $mailStatClass->getAnonOpenSources($this->selectedMailIds);
+        } else {
+            $userStatClass = new UserStatClass();
+            $openedFromStats = $userStatClass->getOpenSourcesStats($this->selectedMailIds);
+        }
 
         $data['openedWith'] = [];
         foreach ($openedFromStats as $oneSource) {
@@ -608,27 +634,43 @@ trait GlobalStats
                 $data['mail']->totalMail
             );
 
+        // Anonymized mode has no per-subscriber data: show total opens/clicks instead of unique counts
+        $anonymousStats = !empty($this->config->get('anonymous_stats', 0));
+        $data['anonymousStats'] = $anonymousStats;
+
+        if ($anonymousStats) {
+            $cumulatedTotals = $mailStatClass->getCumulatedStatsByMailIds($this->selectedMailIds);
+            $openCount = (int)($cumulatedTotals->open ?? 0);
+            $clickCount = (int)($cumulatedTotals->click_unique ?? 0);
+            $openSent = (int)$data['mail']->sent;
+        } else {
+            $openRateCampaign = empty($this->selectedMailIds) ? $campaignClass->getOpenRateAllCampaign() : $campaignClass->getOpenRateCampaigns($this->selectedMailIds);
+            $openCount = (int)$openRateCampaign->open_unique;
+            $openSent = (int)$openRateCampaign->sent;
+            $clickCount = $urlClickClass->getNumberUsersClicked($this->selectedMailIds);
+        }
+
         //open rate
-        $openRateCampaign = empty($this->selectedMailIds) ? $campaignClass->getOpenRateAllCampaign() : $campaignClass->getOpenRateCampaigns($this->selectedMailIds);
-        $data['mail']->percentageOpen = empty($openRateCampaign->sent) ? 0 : number_format(($openRateCampaign->open_unique * 100) / $openRateCampaign->sent, 2);
-        $data['mail']->allOpen = empty($openRateCampaign->sent)
-            ? acym_translationSprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0)
-            : acym_translationSprintf(
-                'ACYM_X_MAIL_OPENED_OF_X',
-                $openRateCampaign->open_unique,
-                $openRateCampaign->sent
-            );
+        // In anonymous mode $openCount is a total number of opens (not a unique-user count), so use a wording that reflects the total number of times mails were opened
+        $openLabelKey = $anonymousStats ? 'ACYM_X_MAIL_OPENED_TIMES_OF_X' : 'ACYM_X_MAIL_OPENED_OF_X';
+        $data['mail']->openCount = $openCount;
+        // In anonymous mode the count is a total (not a unique), so the rate can exceed 100%: cap it to keep a meaningful percentage
+        $openRate = empty($openSent) ? 0 : ($openCount * 100) / $openSent;
+        $data['mail']->percentageOpen = number_format($anonymousStats ? min($openRate, 100) : $openRate, 2);
+        $data['mail']->allOpen = empty($openSent)
+            ? acym_translationSprintf($openLabelKey, 0, 0)
+            : acym_translationSprintf($openLabelKey, $openCount, $openSent);
 
         //click rate
-        $clickRateCampaign = $urlClickClass->getNumberUsersClicked($this->selectedMailIds);
-        $data['mail']->percentageClick = empty($data['mail']->sent) ? 0 : number_format(($clickRateCampaign * 100) / $data['mail']->sent, 2);
+        // In anonymous mode $clickCount is a total (aggregated with user_id = 0), not a unique-user count, so use a wording that reflects total clicks
+        $clickLabelKey = $anonymousStats ? 'ACYM_X_CLICKS_REGISTERED_OF_X' : 'ACYM_X_MAIL_CLICKED_OF_X';
+        $data['mail']->clickCount = $clickCount;
+        // In anonymous mode the count is a total (not a unique), so the rate can exceed 100%: cap it to keep a meaningful percentage
+        $clickRate = empty($data['mail']->sent) ? 0 : ($clickCount * 100) / $data['mail']->sent;
+        $data['mail']->percentageClick = number_format($anonymousStats ? min($clickRate, 100) : $clickRate, 2);
         $data['mail']->allClick = empty($data['mail']->sent)
-            ? acym_translationSprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0)
-            : acym_translationSprintf(
-                'ACYM_X_MAIL_CLICKED_OF_X',
-                $clickRateCampaign,
-                $data['mail']->sent
-            );
+            ? acym_translationSprintf($clickLabelKey, 0, 0)
+            : acym_translationSprintf($clickLabelKey, $clickCount, $data['mail']->sent);
 
         //bounce rate
         $bounceRateCampaign = empty($this->selectedMailIds) ? $campaignClass->getBounceRateAllCampaign() : $campaignClass->getBounceRateCampaigns($this->selectedMailIds);

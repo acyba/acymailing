@@ -575,10 +575,19 @@ class FieldClass extends AcymClass
                 ).'</span>';
         }
         if ($useTitle) {
-            echo '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.acym_escapeHtmlWithAllowedTags(
-                    $field->name,
-                    SecurityHelper::ALLOWED_HTML_FIELD_NAME
-                ).'</div>';
+            if (in_array($field->type, ['date', 'radio', 'checkbox'])) {
+                $groupLabelId = 'acym__field__label__'.intval($field->id).'_'.acym_rand(1000, 9999);
+                echo '<div class="cell margin-top-1" role="group" aria-labelledby="'.acym_escape($groupLabelId).'"'.($field->required ? ' aria-required="true"' : '').'>';
+                echo '<div id="'.acym_escape($groupLabelId).'" class="acym__users__creation__fields__title">'.acym_escapeHtmlWithAllowedTags(
+                        $field->name,
+                        SecurityHelper::ALLOWED_HTML_FIELD_NAME
+                    ).'</div>';
+            } else {
+                echo '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.acym_escapeHtmlWithAllowedTags(
+                        $field->name,
+                        SecurityHelper::ALLOWED_HTML_FIELD_NAME
+                    ).'</div>';
+            }
         }
 
         $messageRequired = empty($field->option->error_message) ? '' : acym_translation($field->option->error_message);
@@ -586,8 +595,10 @@ class FieldClass extends AcymClass
         $required = '';
         if ($field->required) {
             $data['data-required'] = $requiredJson;
+            $data['aria-required'] = 'true';
             $required = ' data-required="'.acym_escape($requiredJson).'"';
             $attributesSelectField['data-required'] = $requiredJson;
+            $attributesSelectField['aria-required'] = 'true';
         }
 
         $readonly = '';
@@ -688,6 +699,9 @@ class FieldClass extends AcymClass
             if (!empty($data['data-required'])) {
                 echo ' data-required="'.acym_escape($data['data-required']).'"';
             }
+            if (!empty($data['aria-required'])) {
+                echo ' aria-required="true"';
+            }
             if (isset($data['maxCharacters'])) {
                 echo ' maxlength="'.acym_escape($data['maxCharacters']).'"';
             }
@@ -734,6 +748,7 @@ class FieldClass extends AcymClass
             ];
             if ($field->required) {
                 $attributes['data-required'] = $displayFront ? acym_escape($requiredJson) : $requiredJson;
+                $attributes['aria-required'] = 'true';
             }
 
             acym_selectMultiple(
@@ -767,6 +782,7 @@ class FieldClass extends AcymClass
                         'select' => [
                             'data-required' => true,
                             'acym-field-type' => true,
+                            'aria-label' => true,
                         ],
                         'div' => [
                             'class' => true,
@@ -807,7 +823,9 @@ class FieldClass extends AcymClass
             $number = !empty($defaultValue[1]) ? $defaultValue[1] : '';
 
             if ($displayOutside) {
-                echo '<div class="cell margin-top-1 grid-x"><div class="acym__users__creation__fields__title cell">'.acym_escapeHtmlWithAllowedTags(
+                $phoneLabelId = 'acym__field__label__'.intval($field->id).'_'.acym_rand(1000, 9999);
+                echo '<div class="cell margin-top-1 grid-x" role="group" aria-labelledby="'.acym_escape($phoneLabelId).'"'.($field->required ? ' aria-required="true"' : '').'>';
+                echo '<div id="'.acym_escape($phoneLabelId).'" class="acym__users__creation__fields__title cell">'.acym_escapeHtmlWithAllowedTags(
                         $field->name,
                         SecurityHelper::ALLOWED_HTML_FIELD_NAME
                     ).'</div>';
@@ -822,6 +840,9 @@ class FieldClass extends AcymClass
             $data['autocomplete'] = 'tel-national';
             $data['class'] = 'cell large-7 medium-8';
             $data['value'] = $number;
+            if ($displayOutside) {
+                $data['aria-label'] = acym_translation('ACYM_PHONE_NUMBER');
+            }
             include acym_getPartial('fields', 'input');
 
             if ($displayOutside) {
@@ -839,7 +860,7 @@ class FieldClass extends AcymClass
             echo '</div>';
         }
 
-        echo '<div class="acym__field__error__block" data-acym-field-id="'.intval($field->id).'"></div>';
+        echo '<div class="acym__field__error__block" data-acym-field-id="'.intval($field->id).'" aria-live="assertive"></div>';
         if ($displayFront && $extraErrors && !acym_isAdmin()) {
             echo '<div class="acym__message__invalid__field acym__color__error" style="display: none;">';
             echo '<i class="acymicon-times-circle acym__cross__invalid acym__color__error"></i>'.acym_escapeHtml(acym_translation('ACYM_THANKS_TO_FILL_IN_THIS_FIELD')).'</div>';
@@ -993,14 +1014,17 @@ class FieldClass extends AcymClass
         }
 
         $placeholder = !$displayOutside ? acym_translation('ACYM_EMAIL_CONFIRMATION') : '';
-        echo '<input id="'.acym_escape($uniqueId).'" 
-                        '.(empty($field->option->size) ? '' : ' style="width:'.intval($field->option->size).'px"').' 
-                        required 
-                        type="email" 
-                        class="cell acym__user__edit__email" 
-                        name="user[email_confirmation]" 
-                        placeholder="'.acym_escape($placeholder).'" />';
-        echo '<span class="acym__field__error__block"></span>';
+        echo '<input id="'.acym_escape($uniqueId).'"
+                        '.(empty($field->option->size) ? '' : ' style="width:'.intval($field->option->size).'px"').'
+                        required
+                        type="email"
+                        class="cell acym__user__edit__email"
+                        name="user[email_confirmation]"';
+        if (!$displayOutside) {
+            echo ' aria-label="'.acym_escape(acym_translation('ACYM_EMAIL_CONFIRMATION')).'"';
+        }
+        echo ' placeholder="'.acym_escape($placeholder).'" />';
+        echo '<span class="acym__field__error__block" aria-live="assertive"></span>';
 
         $extraErrors = $this->config->get('extra_errors', '0');
         if ($extraErrors && !acym_isAdmin()) {

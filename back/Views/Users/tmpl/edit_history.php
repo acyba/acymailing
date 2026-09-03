@@ -14,26 +14,31 @@ if (!empty($data['user-information']->id)) { ?>
 		<div class="cell grid-x align-middle" data-acym-type="mail">
             <?php if (empty($data['userMailHistory'])) {
                 echo '<h2 class="cell acym__title__primary__color text-center">'.acym_escapeHtml(acym_translation('ACYM_YOU_DIDNT_SENT_EMAIL_SUBSCRIBER')).'</h2>';
-            } else { ?>
+            } else {
+                $showStats = empty($data['anonymousStats']);
+                $subjectClass = $showStats ? 'medium-4' : 'medium-8';
+                ?>
 				<div class="grid-x cell grid-margin-x acym__listing__header acym__listing__header__user_history text-center">
-					<div class="medium-4 hide-for-small-only cell acym__listing__header__title">
+					<div class="<?php echo $subjectClass; ?> hide-for-small-only cell acym__listing__header__title">
                         <?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL_SUBJECT')); ?>
 					</div>
 					<div class="medium-2 hide-for-small-only cell acym__listing__header__title">
                         <?php echo acym_escapeHtml(acym_translation('ACYM_SEND_DATE')); ?>
 					</div>
-					<div class="medium-1 hide-for-small-only cell acym__listing__header__title">
-                        <?php echo acym_escapeHtml(acym_translation('ACYM_OPEN')); ?>
-					</div>
-					<div class="medium-2 hide-for-small-only cell acym__listing__header__title">
-                        <?php echo acym_escapeHtml(acym_translation('ACYM_OPEN_DATE')); ?>
-					</div>
-					<div class="medium-1 hide-for-small-only cell acym__listing__header__title">
-                        <?php echo acym_escapeHtml(acym_translation('ACYM_CLICK')); ?>
-					</div>
-					<div class="medium-2 hide-for-small-only cell acym__listing__header__title">
-                        <?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCES')); ?>
-					</div>
+                    <?php if ($showStats) { ?>
+						<div class="medium-1 hide-for-small-only cell acym__listing__header__title">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_OPEN')); ?>
+						</div>
+						<div class="medium-2 hide-for-small-only cell acym__listing__header__title">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_OPEN_DATE')); ?>
+						</div>
+						<div class="medium-1 hide-for-small-only cell acym__listing__header__title">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_CLICK')); ?>
+						</div>
+						<div class="medium-2 hide-for-small-only cell acym__listing__header__title">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_BOUNCES')); ?>
+						</div>
+                    <?php } ?>
 				</div>
 				<div class="acym__users__display__history__listing grid-x cell">
                     <?php foreach ($data['userMailHistory'] as $oneMailHistory) { ?>

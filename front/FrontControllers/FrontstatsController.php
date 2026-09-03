@@ -53,37 +53,50 @@ class FrontstatsController extends AcymController
             return;
         }
 
+        $anonymousStats = !empty($this->config->get('anonymous_stats', 0));
+
         $mailStat = new \stdClass();
         $mailStat->mail_id = $mailId;
-        $mailStat->open_unique = $userStat->open > 0 ? 0 : 1;
         $mailStat->open_total = 1;
+        $mailStat->open_unique = $anonymousStats ? 1 : ($userStat->open > 0 ? 0 : 1);
 
         $mailStatClass = new MailStatClass();
         $mailStatClass->save($mailStat);
 
-        $userStatToInsert = new \stdClass();
-        $userStatToInsert->user_id = $userId;
-        $userStatToInsert->mail_id = $mailId;
-        $userStatToInsert->open = 1;
-        $userStatToInsert->open_date = acym_date('now', 'Y-m-d H:i:s', false);
-        $userStatToInsert->device = '';
-        $userStatToInsert->opened_with = '';
+        $openDate = acym_date('now', 'Y-m-d H:i:s', false);
 
+        $device = '';
+        $openedWith = '';
         $userAgent = acym_getVar('string', 'HTTP_USER_AGENT', null, 'SERVER');
         if (!empty($userAgent)) {
             $browserDetection = new BrowserDetection();
             $openingInformation = $browserDetection->getAll($userAgent);
 
-            $userStatToInsert->device = $openingInformation['os_name'] === 'unknown' ? '' : $openingInformation['os_name'];
-            $userStatToInsert->opened_with = $openingInformation['browser_name'] === 'unknown' ? '' : $openingInformation['browser_name'];
+            $device = $openingInformation['os_name'] === 'unknown' ? '' : $openingInformation['os_name'];
+            $openedWith = $openingInformation['browser_name'] === 'unknown' ? '' : $openingInformation['browser_name'];
         }
 
-        $userStatClass->save($userStatToInsert);
+        if ($anonymousStats) {
+            $mailStatClass->incrementDetail($mailId, 'device', $device);
+            $mailStatClass->incrementDetail($mailId, 'client', $openedWith);
+            $mailStatClass->incrementDetail($mailId, 'open_time', acym_date('now', 'Y-m-d H', false).':00:00');
+        } else {
+            $userStatToInsert = new \stdClass();
+            $userStatToInsert->user_id = $userId;
+            $userStatToInsert->mail_id = $mailId;
+            $userStatToInsert->open = 1;
+            $userStatToInsert->open_date = $openDate;
+            $userStatToInsert->device = $device;
+            $userStatToInsert->opened_with = $openedWith;
+            $userStatClass->save($userStatToInsert);
+        }
+
+        UserStatClass::triggerActivity('user_open', $userId, $mailId);
 
         $userClass = new UserClass();
         $subscriber = $userClass->getOneById($userId);
         if (!empty($subscriber)) {
-            $subscriber->last_open_date = $userStatToInsert->open_date;
+            $subscriber->last_open_date = $openDate;
             $userClass->triggers = false;
             $userClass->sendConf = false;
             $userClass->save($subscriber);

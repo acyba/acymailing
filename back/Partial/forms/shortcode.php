@@ -8,7 +8,7 @@
     } else {
         echo '<form action="'.acym_escapeUrl($form->form_tag_action).'" id="'.acym_escape($form->form_tag_name).'" name="'.acym_escape(
                 $form->form_tag_name
-            ).'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.acym_escape($form->form_tag_name).'\', \'acymSubmitSubForm\')">';
+            ).'" aria-label="'.acym_escape(acym_translation('ACYM_SUBSCRIPTION')).'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.acym_escape($form->form_tag_name).'\', \'acymSubmitSubForm\')">';
     }
     include acym_getPartial('forms', 'fields');
     include acym_getPartial('forms', 'button');

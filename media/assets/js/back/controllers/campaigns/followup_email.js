@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     function followupEmail() {
         setDuplicateMail();
         setDeleteMail();
@@ -25,20 +25,24 @@ jQuery(function($) {
 
     function setEmailAddQueue() {
         $('.acym__followup__add_queue').off('click').on('click', function () {
+            const $button = $(this);
             let data = {
                 ctrl: 'followups',
                 task: 'addQueueAjax',
-                emailId: $(this).attr('data-acym-email-id')
+                emailId: $button.attr('data-acym-email-id')
             };
+
+            $button.prop('disabled', true);
 
             acym_helper.get(ACYM_AJAX_URL, data).then(res => {
                 if (res.error) {
+                    $button.prop('disabled', false);
                     acym_helperNotification.addNotification(res.message, 'error', true);
                     return;
                 }
 
                 acym_helperNotification.addNotification(res.message, 'success', true);
-                $(this).closest('.acym__message').remove();
+                $button.closest('.acym__message').remove();
             });
         });
     }
