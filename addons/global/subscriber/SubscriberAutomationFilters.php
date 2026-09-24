@@ -5,15 +5,25 @@ trait SubscriberAutomationFilters
     public function onAcymDeclareFilters(array &$filters): void
     {
         $this->filtersFromConditions($filters);
+        parent::onAcymDeclareFilters($filters);
+    }
 
-        $filters['random'] = new stdClass();
-        $filters['random']->name = acym_translationSprintf('ACYM_RANDOMLY_SELECT_X_SUBSCRIBERS', 'X');
-        $filters['random']->option = '<div class="cell">';
-        $filters['random']->option .= acym_translationSprintf(
-            'ACYM_RANDOMLY_SELECT_X_SUBSCRIBERS',
-            '<input type="number" class="intext_input_automation" style="width:60px" value="30" name="acym_action[filters][__numor__][__numand__][random][number]" />'
-        );
-        $filters['random']->option .= '</div>';
+    protected function initAutomationFilters(): void
+    {
+        $this->automationFilters['random'] = acym_translationSprintf('ACYM_RANDOMLY_SELECT_X_SUBSCRIBERS', 'X');
+    }
+
+    public function displayFilterOptions_random(string $fieldName): void
+    {
+        $numberInput = '<input type="number" class="intext_input_automation" style="width:60px" value="30" name="'.acym_escape($fieldName.'[number]').'" />';
+        ?>
+		<div class="cell">
+            <?php
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The field is built and escaped just above, and its position in the sentence depends on the language.
+            echo acym_translationSprintf('ACYM_RANDOMLY_SELECT_X_SUBSCRIBERS', $numberInput);
+            ?>
+		</div>
+        <?php
     }
 
     public function onAcymProcessFilter_acy_field(&$query, &$options, $num)

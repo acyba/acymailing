@@ -2,16 +2,18 @@
 
 trait VirtuemartAutomationTriggers
 {
-    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    protected function initAutomationTriggers(): void
     {
-        $triggers['user']['vmorder'] = new stdClass();
-        $triggers['user']['vmorder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_WHEN_ORDER'));
-        $triggers['user']['vmorder']->option = '<input type="hidden" name="[triggers][user][vmorder][]" value="">';
+        $this->automationTriggers['user']['vmorder'] = acym_translationSprintf(
+            'ACYM_COMBINED_TRANSLATIONS',
+            'VirtueMart',
+            acym_translation('ACYM_WHEN_ORDER')
+        );
     }
 
-    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
+    public function displayTriggerOptions_vmorder(string $fieldName): void
     {
-        $this->onAcymDeclareTriggers($triggers, $defaultValues);
+        echo '<input type="hidden" name="'.acym_escape($fieldName.'[]').'" value="">';
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

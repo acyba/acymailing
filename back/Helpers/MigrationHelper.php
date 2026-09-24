@@ -1408,6 +1408,7 @@ class MigrationHelper extends AcymObject
             'DELETE FROM #__acym_url_click',
             'DELETE FROM #__acym_mail_stat',
             'DELETE FROM #__acym_mail',
+            'UPDATE #__acym_configuration SET `value` = 0 WHERE `name` = "favorite_template"',
         ];
 
         return $this->finalizeClean($queryClean);

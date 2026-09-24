@@ -30,6 +30,25 @@ function acym_isMultilingual(): bool
     return true;
 }
 
+function acym_getDefaultNewsletterLanguage(): string
+{
+    $default = acym_config()->get('multilingual_default');
+
+    return empty($default) ? acym_getSiteLanguageTag() : $default;
+}
+
+function acym_getDefaultUserLanguage(): string
+{
+    if (acym_isMultilingual()) {
+        $configUserLanguage = acym_config()->get('multilingual_user_default', 'current_language');
+        if (!empty($configUserLanguage) && $configUserLanguage !== 'current_language') {
+            return $configUserLanguage;
+        }
+    }
+
+    return acym_getDefaultNewsletterLanguage();
+}
+
 function acym_getMultilingualLanguages(): array
 {
     $allLanguages = acym_getLanguages();

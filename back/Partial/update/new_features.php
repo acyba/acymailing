@@ -2,7 +2,7 @@
 // context verification
 ?>
 <script type="text/javascript">
-    window.acymailingSplash = <?php echo json_encode($version); ?>;
+    window.acymailingSplash = <?php echo json_encode($data['splashJson']); ?>;
 </script>
 
 <div id="acym__splashscreen" class="cell grid-x ">
@@ -17,13 +17,14 @@
 
 					<button class="acym_vcenter align-center large-shrink button"
 					        type="button" @click="skipButton">
-                        <?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?>
+						<?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?>
 					</button>
 				</div>
 
 				<div v-for="menu in menus" :key="menu.menu_title" @click="toggleMenu(menu)">
 					<h3 :class="{ acym__splashscreen__menu__active: activeMenu==menu }" class="acym__splashscreen__menu__container">
-						<span class="acym__splashscreen__menu__span"> ></span> {{ menu.menu_title }} <i :class="menu.menu_icon"></i></h3>
+						<span class="acym__splashscreen__menu__span"> ></span> {{ menu.menu_title }} <i :class="menu.menu_icon"></i>
+					</h3>
 				</div>
 			</div>
 
@@ -53,13 +54,10 @@
 					        class="acym_vcenter align-center large-shrink button acym__splashscreen__bottom__skip__button"
 					        type="button"
 					        @click="skipButton">
-                        <?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?>
+						<?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?>
 					</button>
 				</div>
-
-
 			</div>
 		</div>
 	</div>
 </div>
-

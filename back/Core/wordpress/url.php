@@ -33,12 +33,12 @@ function acym_baseURI(bool $pathonly = false): string
     return acym_rootURI();
 }
 
-function acym_rootURI(bool $pathonly = false, ?string $path = 'siteurl'): string
+function acym_rootURI(bool $pathonly = false, ?string $path = 'siteurl', bool $skipMultilingual = false): string
 {
-    $rootURI = rtrim(site_url(), '/').'/';
+    $rootURI = rtrim($skipMultilingual ? get_option('siteurl') : site_url(), '/').'/';
 
     // For WPML
-    if (!acym_isAdmin()) {
+    if (!$skipMultilingual && !acym_isAdmin()) {
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook for integration.
         $wpmlSiteUrl = apply_filters('wpml_home_url', $rootURI);
         if ($wpmlSiteUrl !== $rootURI) {
@@ -75,7 +75,7 @@ function acym_prepareAjaxURL(string $url): string
 
 function acym_frontendLink(string $link, bool $complete = true, bool $sef = true): string
 {
-    return acym_rootURI().acym_addPageParam($link, true, true);
+    return acym_rootURI(false, 'siteurl', true).acym_addPageParam($link, true, true);
 }
 
 function acym_backendLink(string $link): string

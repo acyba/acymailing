@@ -36,7 +36,7 @@ trait Ajax
                 'entity' => 'list',
                 'entityParams' => ['join' => 'join_lists-'.implode(',', $selectedListsIds)],
                 'columnsToDisplay' => $entityHelper->getColumnsForList('lists.list_id', true),
-                'additionalData' => $importHelper->additionalDataUsersImport($genericImport),
+                'additionalData' => fn() => $importHelper->displayAdditionalDataUsersImport($genericImport),
             ]
         );
         exit;

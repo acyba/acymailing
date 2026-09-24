@@ -108,7 +108,8 @@ trait Action
         $mailId = $actions['actions'][$and]['acy_add_queue']['mail_id'];
         $mailId = empty($mailId) ? '' : '&id='.$mailId;
 
-        $favoriteTemplate = $this->config->get('favorite_template', 0);
+        $mailClass = new MailClass();
+        $favoriteTemplate = $mailClass->getFavoriteTemplateId();
         $startFrom = empty($favoriteTemplate) || !empty($mailId) ? '' : '&from='.$favoriteTemplate;
 
         acym_redirect(

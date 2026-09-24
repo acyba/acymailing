@@ -3,7 +3,6 @@
 namespace AcyMailing\Controllers\Segments;
 
 use AcyMailing\Classes\SegmentClass;
-use AcyMailing\Controllers\AutomationController;
 use AcyMailing\Helpers\AutomationHelper;
 
 trait Edition

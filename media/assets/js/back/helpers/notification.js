@@ -84,11 +84,7 @@ const acym_helperNotification = {
                 jQuery.post(ajaxUrl, function (res) {
                     res = acym_helper.parseJson(res);
                     if (!res.error) {
-                        if (res.data.dashboardHtml.length > 0) {
-                            jQuery('.acym__dashboard__notifications').html(res.data.dashboardHtml);
-                        } else {
-                            jQuery('#acym__dashboard__notifications').remove();
-                        }
+                        acym_helperNotification.refreshDashboardNotifications(res.data.dashboardNotifications);
 
                         if (!isDashboardNotif) {
                             jQuery('.acym__header__notification__center').html(res.data.headerHtml);
@@ -107,6 +103,41 @@ const acym_helperNotification = {
                         .attr('class', 'acymicon-bell');
                 }
             });
+    },
+    refreshDashboardNotifications: function (notifications) {
+        if (notifications.length === 0) {
+            jQuery('#acym__dashboard__notifications').remove();
+
+            return;
+        }
+
+        const $container = jQuery('.acym__dashboard__notifications').empty();
+
+        notifications.forEach(function (notification) {
+            const icon = notification.level === 'warning' ? 'acymicon-exclamation-triangle' : 'acymicon-exclamation-circle';
+
+            const $notification = jQuery('<div>', {'class': 'cell grid-x acym__dashboard__notification acym__dashboard__notification__' + notification.level})
+                .append(
+                    jQuery('<div>', {'class': 'cell shrink small-1 align-center grid-x acym__dashboard__notification__icon'})
+                        .append(jQuery('<i>', {'class': 'cell shrink ' + icon}))
+                )
+                .append(
+                    jQuery('<div>', {'class': 'cell grid-x small-10'})
+                        .append(jQuery('<p>', {'class': 'cell acym__dashboard__notification__message'}).html(notification.message))
+                        .append(jQuery('<div>', {'class': 'cell acym__dashboard__notification__date'}).text(notification.date))
+                );
+
+            if (notification.removable) {
+                $notification.append(
+                    jQuery('<i>', {
+                        'class': 'cell shrink small-1 acym__dashboard__notification__delete acymicon-close',
+                        'data-id': notification.name
+                    })
+                );
+            }
+
+            $container.append($notification, jQuery('<span>', {'class': 'acym__dashboard__light__separator separator'}));
+        });
     },
     removeNotificationsCenter: function () {
         jQuery('.acym__header__notification__center').removeClass('acym__header__notification__center__visible');

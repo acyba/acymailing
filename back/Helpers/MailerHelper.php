@@ -621,6 +621,9 @@ class MailerHelper extends Mailer
 
         $this->mailId = $mailId;
         $this->id = $this->mailId;
+        if (empty($this->defaultMail[$mailId]->language)) {
+            $this->defaultMail[$mailId]->language = acym_getDefaultNewsletterLanguage();
+        }
         $this->mail = clone $this->defaultMail[$mailId];
         acym_trigger('replaceContent', [&$this->defaultMail[$mailId], true]);
 
@@ -1247,7 +1250,7 @@ class MailerHelper extends Mailer
             throw new Exception(acym_escape(acym_translation('ACYM_USER_NOT_FOUND')));
         }
 
-        $this->userLanguage = empty($receiver->language) ? acym_getLanguageTag() : $receiver->language;
+        $this->userLanguage = empty($receiver->language) ? acym_getDefaultNewsletterLanguage() : $receiver->language;
         $this->receiverEmail = (string)($receiver->email ?? '');
 
         return $receiver;
@@ -1650,7 +1653,7 @@ class MailerHelper extends Mailer
             return $this->defaultMail[$mailId]->$mailType;
         }
 
-        $lang = empty($this->userLanguage) ? acym_getLanguageTag() : $this->userLanguage;
+        $lang = empty($this->userLanguage) ? acym_getDefaultNewsletterLanguage() : $this->userLanguage;
         $setting = $this->config->get($type);
         $translation = $this->config->get('sender_info_translation');
 

@@ -29,4 +29,19 @@ trait Patchv11
             )'
         );
     }
+
+    private function updateFor1110(): void
+    {
+        if ($this->isPreviousVersionAtLeast('11.1.0')) {
+            return;
+        }
+
+        $this->updateQuery(
+            'UPDATE #__acym_configuration
+            SET `value` = 0
+            WHERE `name` = "favorite_template"
+                AND `value` != 0
+                AND `value` NOT IN (SELECT `id` FROM #__acym_mail)'
+        );
+    }
 }

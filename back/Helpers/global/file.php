@@ -78,6 +78,12 @@ function acym_createDir(string $dir, bool $report = true, bool $secured = false)
     return $status;
 }
 
+function acym_isForbiddenFileExtension(string $filename): bool
+{
+    // Always blocked regardless of the "allowed files" configuration, for security reasons
+    return (bool)preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $filename);
+}
+
 function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?string
 {
     // Check the token... no import without token!
@@ -142,7 +148,7 @@ function acym_importFile(array $file, string $uploadPath, bool $onlyPict): ?stri
 
     // We will never allow some files to be uploaded...
     // This should never happen... only if there is an hack tentative so no need to translate this error message
-    if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $file['name'])) {
+    if (acym_isForbiddenFileExtension($file['name'])) {
         acym_display(
             'This extension name is blocked by the system regardless your configuration for security reasons',
             'error'
@@ -251,10 +257,10 @@ function acym_inputFile(
 		<i class="acym__input__file__download cell shrink acym__color__blue cursor-pointer acymicon-download margin-right-1"
             <?php echo $hasValue ? '' : ' style="display: none;"'; ?>
             <?php echo !empty($downloadUrl) ? ' data-download-url="'.acym_escapeUrl($downloadUrl).'"' : ''; ?>
-           title="<?php echo acym_escape(acym_translation('ACYM_DOWNLOAD')); ?>" aria-label="<?php echo acym_escape(acym_translation('ACYM_DOWNLOAD')); ?>"></i>
+		   title="<?php echo acym_escape(acym_translation('ACYM_DOWNLOAD')); ?>" aria-label="<?php echo acym_escape(acym_translation('ACYM_DOWNLOAD')); ?>"></i>
 		<i class="acymicon-close acym__color__red acym__input__file__delete cursor-pointer cell shrink margin-left-1"
             <?php echo $hasValue ? '' : ' style="display: none;"'; ?>
-           title="<?php echo acym_escape(acym_translation('ACYM_DELETE')); ?>" aria-label="<?php echo acym_escape(acym_translation('ACYM_DELETE')); ?>"></i>
+		   title="<?php echo acym_escape(acym_translation('ACYM_DELETE')); ?>" aria-label="<?php echo acym_escape(acym_translation('ACYM_DELETE')); ?>"></i>
 	</div>
     <?php
 }
@@ -640,8 +646,8 @@ function acym_loaderLogo(bool $withContainer = true): void
     ?>
 	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 1024 1024">
 		<path class="acym__svg__loader"
-		      fill="#a6a9ab"
-		      d="M553.074 174.168c-12.201 7.319-26.84 10.573-40.668 10.573s-27.655-3.253-40.668-10.573l-242.376-139.081-229.362 132.575v732.011l254.576 143.963v-430.26l219.602 124.442c11.388 6.507 24.401 9.76 37.415 9.76 0 0 0 0 0 0s0 0 0 0c12.201 0 25.214-3.253 36.6-9.76l221.23-124.442v430.26l254.576-144.775v-732.011l-229.362-131.762-241.563 139.081zM491.261 701.215l-217.164-122.815-61.001-34.161v430.26l-173.243-97.601v-662.063l422.94 245.629c0 0 0 0 0 0 8.947 4.881 17.895 8.135 27.655 10.573v230.178zM983.334 876.086l-173.243 98.416v-431.073l-61.001 34.161-217.164 122.815v-229.362c9.76-2.441 18.707-5.694 27.655-10.573l423.753-246.444v662.063zM539.246 425.493c-17.080 9.76-38.227 9.76-55.307 0 0 0 0 0 0 0l-422.94-245.629 168.362-97.601 222.043 127.696c18.707 10.573 39.853 16.267 61.001 16.267s42.294-5.694 61.001-16.267l222.043-127.696 168.362 97.601-424.566 245.629z"></path>
+			  fill="#a6a9ab"
+			  d="M553.074 174.168c-12.201 7.319-26.84 10.573-40.668 10.573s-27.655-3.253-40.668-10.573l-242.376-139.081-229.362 132.575v732.011l254.576 143.963v-430.26l219.602 124.442c11.388 6.507 24.401 9.76 37.415 9.76 0 0 0 0 0 0s0 0 0 0c12.201 0 25.214-3.253 36.6-9.76l221.23-124.442v430.26l254.576-144.775v-732.011l-229.362-131.762-241.563 139.081zM491.261 701.215l-217.164-122.815-61.001-34.161v430.26l-173.243-97.601v-662.063l422.94 245.629c0 0 0 0 0 0 8.947 4.881 17.895 8.135 27.655 10.573v230.178zM983.334 876.086l-173.243 98.416v-431.073l-61.001 34.161-217.164 122.815v-229.362c9.76-2.441 18.707-5.694 27.655-10.573l423.753-246.444v662.063zM539.246 425.493c-17.080 9.76-38.227 9.76-55.307 0 0 0 0 0 0 0l-422.94-245.629 168.362-97.601 222.043 127.696c18.707 10.573 39.853 16.267 61.001 16.267s42.294-5.694 61.001-16.267l222.043-127.696 168.362 97.601-424.566 245.629z"></path>
 	</svg>
     <?php
     if ($withContainer) {
@@ -656,6 +662,15 @@ function acym_fileNameValid(string $filename): bool
     if (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) return false;
 
     return true;
+}
+
+function acym_isPathWithinDirectory(string $baseDir, string $path): bool
+{
+    $baseDir = rtrim($baseDir, DS).DS;
+
+    if (strpos($path, $baseDir) !== 0) return false;
+
+    return preg_match('#(^|[/\\\\])\.\.([/\\\\]|$)#', substr($path, strlen($baseDir))) !== 1;
 }
 
 function acym_getImageFileExtensions(bool $allowSvg = false): array

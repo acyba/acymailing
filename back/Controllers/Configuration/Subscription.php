@@ -52,7 +52,7 @@ trait Subscription
             '',
             [
                 'headerHtml' => $notificationCenter,
-                'dashboardHtml' => $data['dashboardNotifications'],
+                'dashboardNotifications' => $data['dashboardNotifications'],
             ]
         );
     }

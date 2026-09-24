@@ -49,7 +49,7 @@ class ImportHelper extends AcymObject
 
         $extension = strtolower(acym_fileGetExt($importFile['name']));
 
-        if (!preg_match('#^(csv)$#Ui', $extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui', $importFile['name'])) {
+        if (!preg_match('#^(csv)$#Ui', $extension) || acym_isForbiddenFileExtension($importFile['name'])) {
             acym_enqueueMessage(acym_translationSprintf('ACYM_ACCEPTED_TYPE', acym_escapeHtml($extension), $this->config->get('allowed_files')), 'error');
 
             return false;
@@ -115,7 +115,7 @@ class ImportHelper extends AcymObject
         global $acymCmsUserVars;
 
         //Update the users which already have a userid
-        $query = 'UPDATE IGNORE '.$acymCmsUserVars->table.' as b, #__acym_user as a SET a.email = b.'.$acymCmsUserVars->email.', a.name = b.'.$acymCmsUserVars->name.', a.active = 1 - b.'.$acymCmsUserVars->blocked.' WHERE a.cms_id = b.'.$acymCmsUserVars->id.' AND a.cms_id IS NOT NULL';
+        $query = 'UPDATE IGNORE '.$acymCmsUserVars->table.' as b, #__acym_user as a SET a.email = LOWER(b.'.$acymCmsUserVars->email.'), a.name = b.'.$acymCmsUserVars->name.', a.active = 1 - b.'.$acymCmsUserVars->blocked.' WHERE a.cms_id = b.'.$acymCmsUserVars->id.' AND a.cms_id IS NOT NULL';
         $nbUpdated = acym_query($query);
 
         //Step 1 : update the existing ones.
@@ -143,7 +143,7 @@ class ImportHelper extends AcymObject
         $time = time();
         $formattedTime = acym_date($time, 'Y-m-d H:i:s');
         $sourceImport = 'Import on '.$formattedTime;
-        $query = 'INSERT IGNORE INTO #__acym_user (`name`,`email`,`creation_date`,`active`,`cms_id`, `source`) SELECT `user`.`'.$acymCmsUserVars->name.'`,`user`.`'.$acymCmsUserVars->email.'`,`user`.`'.$acymCmsUserVars->registered.'`,1 - `user`.'.$acymCmsUserVars->blocked.',`user`.`'.$acymCmsUserVars->id.'`,\''.$sourceImport.'\' FROM '.$acymCmsUserVars->table.' AS `user` ';
+        $query = 'INSERT IGNORE INTO #__acym_user (`name`,`email`,`creation_date`,`active`,`cms_id`, `source`) SELECT `user`.`'.$acymCmsUserVars->name.'`,LOWER(`user`.`'.$acymCmsUserVars->email.'`),`user`.`'.$acymCmsUserVars->registered.'`,1 - `user`.'.$acymCmsUserVars->blocked.',`user`.`'.$acymCmsUserVars->id.'`,\''.$sourceImport.'\' FROM '.$acymCmsUserVars->table.' AS `user` ';
 
         $queryJoin = [];
         $queryWhere = [];
@@ -250,13 +250,23 @@ class ImportHelper extends AcymObject
         }
         $emailsString = implode(',', $emails);
         $existingUsersQuery = 'SELECT `id`, `email` FROM #__acym_user WHERE `email` IN ('.$emailsString.')';
-        $existingUsers = acym_loadObjectList($existingUsersQuery, 'email');
+        $existingUsersRaw = acym_loadObjectList($existingUsersQuery, 'email');
+        $existingUsers = [];
+        foreach ($existingUsersRaw as $existingEmail => $existingUser) {
+            $existingUser->email = strtolower($existingUser->email);
+            $existingUsers[strtolower($existingEmail)] = $existingUser;
+        }
 
         $insertValues = [];
         $updateQueries = [];
         $newUserIds = [];
+        $handledEmails = [];
         foreach ($contacts as $contact) {
-            $contact->email_to = trim($contact->email_to);
+            $contact->email_to = strtolower(trim($contact->email_to));
+            if (isset($handledEmails[$contact->email_to])) {
+                continue;
+            }
+            $handledEmails[$contact->email_to] = true;
             if (isset($existingUsers[$contact->email_to])) {
                 $existingUserId = $existingUsers[$contact->email_to]->id;
                 $updateQueries[] = 'UPDATE #__acym_user SET 
@@ -400,8 +410,11 @@ class ImportHelper extends AcymObject
         $sourceTxt = 'Import on '.$formattedTime;
         $select['`source`'] = acym_escapeDB($sourceTxt);
 
+        $emailColumn = acym_secureDBColumn($select['`email`']);
+        $select['`email`'] = 'LOWER('.$emailColumn.')';
+
         $query = 'INSERT IGNORE INTO #__acym_user ('.implode(' , ', array_keys($select)).') SELECT '.implode(' , ', $select);
-        $query .= ' FROM '.acym_secureDBColumn($table).' WHERE '.acym_secureDBColumn($select['`email`']).' LIKE "%@%"';
+        $query .= ' FROM '.acym_secureDBColumn($table).' WHERE '.$emailColumn.' LIKE "%@%"';
         if (!empty($this->dbWhere)) {
             $query .= ' AND ( '.implode(' ) AND (', $this->dbWhere).' )';
         }
@@ -438,7 +451,7 @@ class ImportHelper extends AcymObject
         $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(gmdate('Y-m-d H:i:s', time())).' 
                     FROM #__acym_list AS list, #__acym_user AS user 
                     WHERE list.`id` IN ('.implode(',', $listsSubscribe).') 
-                        AND user.`email` IN (SELECT '.acym_secureDBColumn($select['`email`']).' FROM '.acym_secureDBColumn($table).')';
+                        AND user.`email` IN (SELECT LOWER('.$emailColumn.') FROM '.acym_secureDBColumn($table).')';
 
         $nbsubscribed = acym_query($query);
         acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
@@ -455,7 +468,7 @@ class ImportHelper extends AcymObject
 
         $query = 'INSERT IGNORE INTO #__acym_user (`name`,`email`,`creation_date`,`active`, `confirmed`,`cms_id`, `source`) 
                   SELECT CONCAT(`subscriber`.`first_name`, `subscriber`.`last_name`),
-                         `subscriber`.`email`,
+                         LOWER(`subscriber`.`email`),
                          `subscriber`.`created_at`, 
                          IF(`subscriber`.`status` = "inactive", 0, 1),
                          IF(`subscriber`.`status` = "subscribed", 1, 0),
@@ -621,32 +634,39 @@ class ImportHelper extends AcymObject
         return $lists;
     }
 
-    public function additionalDataUsersImport(bool $isGeneric): string
+    public function displayAdditionalDataUsersImport(bool $isGeneric): void
     {
         $buttonAddListId = $isGeneric ? 'acym__users__generic__import__create-list__button' : 'acym__users__import__create-list__button';
         $buttonImportClass = $isGeneric ? 'acym__users__import__generic__import__button' : 'acym__users__import__button';
         $buttonSkipId = $isGeneric ? 'acym__users__generic__import__skip__button' : 'acym__users__import__skip__button';
         $buttonImportDataTask = $isGeneric ? 'listing' : '';
-
-        return '<div class="cell align-right grid-x margin-bottom-2">
-                    <div id="acym__users__import__create-list" class="grid-x" style="display: none;">
-                        <label for="acym__users__import__create-list__field" class="margin-right-1 acym_vcenter">'.acym_translation('ACYM_LIST_NAME').' : </label>
-                        <div>
-                            <input id="acym__users__import__create-list__field" type="text">
-                        </div>
-                    </div>
-                    <button type="button" class="button button-secondary margin-left-1 acym_vcenter margin-right-2" id="'.$buttonAddListId.'">'.acym_translation(
-                'ACYM_CREATE_NEW_LIST'
-            ).'</button>
-                    <i style="display: none;" class="acym_vcenter acymicon-circle-o-notch acymicon-spin" id="acym__users__import__create-list__loading-logo"></i>
-                </div>
-                <div class="cell align-right grid-x">
-                    <button type="button" class="button-secondary button cell shrink margin-right-1" id="'.$buttonSkipId.'">'.acym_translation('ACYM_SKIP').'</button>
-                    <button 
-                        type="button" 
-                        class="button-primary button acy_button_submit cell shrink margin-right-2 '.$buttonImportClass.'" 
-                        id="acym__entity_select__button__submit" data-task="'.$buttonImportDataTask.'">'.acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS').'</button>
-                </div>';
+        ?>
+		<div class="cell align-right grid-x margin-bottom-2">
+			<div id="acym__users__import__create-list" class="grid-x" style="display: none;">
+				<label for="acym__users__import__create-list__field" class="margin-right-1 acym_vcenter">
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_LIST_NAME')); ?> :
+				</label>
+				<div>
+					<input id="acym__users__import__create-list__field" type="text">
+				</div>
+			</div>
+			<button type="button" class="button button-secondary margin-left-1 acym_vcenter margin-right-2" id="<?php echo acym_escape($buttonAddListId); ?>">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_CREATE_NEW_LIST')); ?>
+			</button>
+			<i style="display: none;" class="acym_vcenter acymicon-circle-o-notch acymicon-spin" id="acym__users__import__create-list__loading-logo"></i>
+		</div>
+		<div class="cell align-right grid-x">
+			<button type="button" class="button-secondary button cell shrink margin-right-1" id="<?php echo acym_escape($buttonSkipId); ?>">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_SKIP')); ?>
+			</button>
+			<button
+					type="button"
+					class="button-primary button acy_button_submit cell shrink margin-right-2 <?php echo acym_escape($buttonImportClass); ?>"
+					id="acym__entity_select__button__submit" data-task="<?php echo acym_escape($buttonImportDataTask); ?>">
+                <?php echo acym_escapeHtml(acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS')); ?>
+			</button>
+		</div>
+        <?php
     }
 
     private function createUploadFolder(): string
@@ -858,6 +878,7 @@ class ImportHelper extends AcymObject
                 $newUser->email = acym_punycode($newUser->email);
             }
             $newUser->email = trim(str_replace([' ', "\t"], '', $encodingHelper->change($newUser->email, 'UTF-8', 'ISO-8859-1')));
+            $newUser->email = strtolower($newUser->email);
 
 
             if (!acym_isValidEmail($newUser->email)) {
@@ -1052,6 +1073,8 @@ class ImportHelper extends AcymObject
             acym_secureDBColumn($oneColumn);
         }
 
+        $dateColumns = $this->getUserDateColumns();
+
         $queryInsertUsers = 'INSERT'.($this->overwrite ? '' : ' IGNORE').' INTO #__acym_user (`'.implode('`,`', $colNames).'`) VALUES (';
         $values = [];
         $customFieldsvalues = [];
@@ -1065,13 +1088,15 @@ class ImportHelper extends AcymObject
 
                 $oneValue = htmlspecialchars_decode($oneValue, ENT_QUOTES);
 
-                if ($map !== 'id') {
+                if ($map === 'id') {
+                    $oneValue = intval($oneValue);
+                } elseif (isset($dateColumns[$map]) && strlen(trim((string)$oneValue)) === 0) {
+                    $oneValue = 'NULL';
+                } else {
                     $oneValue = acym_escapeDB($oneValue);
                     if ($map === 'email') {
                         $allemails[] = $oneValue;
                     }
-                } else {
-                    $oneValue = intval($oneValue);
                 }
 
                 $value[] = $oneValue;
@@ -1131,6 +1156,22 @@ class ImportHelper extends AcymObject
 
 
         $this->allUserIds = array_merge($this->allUserIds, array_keys($importedUsers));
+    }
+
+    private function getUserDateColumns(): array
+    {
+        static $dateColumns = null;
+        if ($dateColumns === null) {
+            $dateColumns = [];
+            foreach (acym_loadObjectList('SHOW COLUMNS FROM #__acym_user') as $column) {
+                $isDateColumn = stripos($column->Type, 'date') !== false || stripos($column->Type, 'time') !== false;
+                if ($isDateColumn && strtoupper($column->Null) === 'YES') {
+                    $dateColumns[strtolower($column->Field)] = true;
+                }
+            }
+        }
+
+        return $dateColumns;
     }
 
     private function checkData(object &$user, int $timestamp)

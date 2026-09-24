@@ -5,7 +5,16 @@ use AcyMailing\Classes\ListClass;
 
 trait SubscriptionAutomationActions
 {
-    public function onAcymDeclareActions(array &$actions): void
+    protected function initAutomationActions(): void
+    {
+        $this->automationActions = [
+            'acy_list' => acym_translation('ACYM_ACYMAILING_LIST'),
+            'subscribe_followup' => acym_translation('ACYM_SUBSCRIBE_FOLLOW_UP'),
+            'unsubscribe_followup' => acym_translation('ACYM_UNSUBSCRIBE_FOLLOW_UP'),
+        ];
+    }
+
+    public function displayActionOptions_acy_list(): void
     {
         $listClass = new ListClass();
 
@@ -16,30 +25,23 @@ trait SubscriptionAutomationActions
         ];
         $lists = $listClass->getAllForSelect();
 
-        $actions['acy_list'] = new stdClass();
-        $actions['acy_list']->name = acym_translation('ACYM_ACYMAILING_LIST');
-        ob_start();
         include acym_getPartial('actions', 'acy_list');
-        $actions['acy_list']->option = ob_get_clean();
-
-        $followupClass = new FollowupClass();
-        $allListFollowups = $followupClass->getAll();
-        $actions['subscribe_followup'] = new stdClass();
-        $actions['subscribe_followup']->name = acym_translation('ACYM_SUBSCRIBE_FOLLOW_UP');
-        ob_start();
-        include acym_getPartial('actions', 'subscribe_followup');
-        $actions['subscribe_followup']->option = ob_get_clean();
-
-        $actions['unsubscribe_followup'] = new stdClass();
-        $actions['unsubscribe_followup']->name = acym_translation('ACYM_UNSUBSCRIBE_FOLLOW_UP');
-        ob_start();
-        include acym_getPartial('actions', 'unsubscribe_followup');
-        $actions['unsubscribe_followup']->option = ob_get_clean();
     }
 
-    public function onAcymDeclareActionsScenario(array &$actions): void
+    public function displayActionOptions_subscribe_followup(): void
     {
-        $this->onAcymDeclareActions($actions);
+        $followupClass = new FollowupClass();
+        $allListFollowups = $followupClass->getAll();
+
+        include acym_getPartial('actions', 'subscribe_followup');
+    }
+
+    public function displayActionOptions_unsubscribe_followup(): void
+    {
+        $followupClass = new FollowupClass();
+        $allListFollowups = $followupClass->getAll();
+
+        include acym_getPartial('actions', 'unsubscribe_followup');
     }
 
     public function onAcymProcessAction_acy_list(&$query, $action)

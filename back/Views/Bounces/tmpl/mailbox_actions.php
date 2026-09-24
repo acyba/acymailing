@@ -1,5 +1,29 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
 // context verification
+
+$displayMailboxActionFields = static function (string $rowNumber) use ($data): void {
+    acym_select(
+        $data['actionOptions'],
+        'acym_action['.$rowNumber.'][action]',
+        '',
+        [
+            'class' => 'acym__select acym__mailbox__edition__action__one__choice',
+            'acym-data-infinite' => '',
+        ],
+        'value',
+        'text',
+        null,
+        false,
+        true
+    );
+
+    foreach ($data['actionDeclarations'] as $key => $oneAction) {
+        echo '<div class="acym__mailbox__edition__action__one__parameters '.acym_escape($key).' margin-top-1">';
+        acym_displayAddonOption($oneAction, 'acym_action['.$rowNumber.']['.$key.']');
+        echo '</div>';
+    }
+};
 ?>
 <div class="acym__content cell grid-x margin-bottom-1 margin-y">
 	<span class="cell acym__content__title__light-blue"><?php echo acym_escapeHtml(acym_translation('ACYM_ACTIONS')); ?></span>
@@ -16,14 +40,14 @@
 					<i class="cell medium-shrink small-1 cursor-pointer acymicon-close acym__color__red acym__mailbox__edition__action__delete"></i>
 				</div>
 				<div class="large-5 cell">
-                    <?php echo $data['initialAction']; ?>
+                    <?php $displayMailboxActionFields('__num__'); ?>
 				</div>
 			</div>
 		</template>
 
 		<div class="acym__mailbox__edition__action__one cell grid-x" data-action-number="0">
 			<div class="large-5 cell">
-                <?php echo str_replace('__num__', 0, $data['initialAction']); ?>
+                <?php $displayMailboxActionFields('0'); ?>
 			</div>
 		</div>
 		<div class="cell grid-x">
@@ -35,24 +59,28 @@
 
 	<div class="cell grid-x">
         <?php
-        acym_switch([
-            'name' => 'mailbox[senderfrom]',
-            'value' => $data['mailboxActions']->senderfrom,
-            'label' => acym_translation('ACYM_SENDER_AS_FROM'),
-            'tip' => ['textShownInTooltip' => 'ACYM_SENDER_AS_FROM_DESC'],
-            'labelClass' => 'medium-4 small-9',
-        ]);
+        acym_switch(
+            [
+                'name' => 'mailbox[senderfrom]',
+                'value' => $data['mailboxActions']->senderfrom,
+                'label' => acym_translation('ACYM_SENDER_AS_FROM'),
+                'tip' => ['textShownInTooltip' => 'ACYM_SENDER_AS_FROM_DESC'],
+                'labelClass' => 'medium-4 small-9',
+            ]
+        );
         ?>
 	</div>
 	<div class="cell grid-x">
         <?php
-        acym_switch([
-            'name' => 'mailbox[senderto]',
-            'value' => $data['mailboxActions']->senderto,
-            'label' => acym_translation('ACYM_SENDER_AS_REPLY_TO'),
-            'tip' => ['textShownInTooltip' => 'ACYM_SENDER_AS_REPLY_TO_DESC'],
-            'labelClass' => 'medium-4 small-9',
-        ]);
+        acym_switch(
+            [
+                'name' => 'mailbox[senderto]',
+                'value' => $data['mailboxActions']->senderto,
+                'label' => acym_translation('ACYM_SENDER_AS_REPLY_TO'),
+                'tip' => ['textShownInTooltip' => 'ACYM_SENDER_AS_REPLY_TO_DESC'],
+                'labelClass' => 'medium-4 small-9',
+            ]
+        );
         ?>
 	</div>
 </div>

@@ -24,7 +24,6 @@ class plgAcymSmtp extends AcymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
-        ob_start();
         ?>
 		<div class="send_settings grid-x cell large-6 xlarge-5 xxlarge-4 margin-auto" id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
@@ -146,7 +145,6 @@ class plgAcymSmtp extends AcymPlugin
 			</div>
 		</div>
         <?php
-        $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }
 
     public function onAcymGetSettingsSendingMethodFromPlugin(&$data, $plugin, $method)

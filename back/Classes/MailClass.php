@@ -534,17 +534,17 @@ class MailClass extends AcymClass
         $this->deleteMediaFolder($elements);
         acym_arrayToInteger($elements);
 
-        $favoriteTemplate = (int)$this->config->get('favorite_template', 0);
-        if (in_array($favoriteTemplate, $elements)) {
-            $this->config->saveConfig(['favorite_template' => 0]);
-        }
-
         $allThumbnailToDelete = acym_loadResultArray('SELECT DISTINCT thumbnail FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
 
         $translations = acym_loadResultArray('SELECT id FROM #__acym_mail WHERE parent_id IN ('.implode(',', $elements).')');
         $elements = array_merge($elements, $translations);
         if (!empty($translations)) {
             acym_query('UPDATE #__acym_mail SET `parent_id` = null WHERE `id` IN ('.implode(',', $translations).')');
+        }
+
+        $favoriteTemplate = (int)$this->config->get('favorite_template', 0);
+        if (in_array($favoriteTemplate, $elements)) {
+            $this->config->saveConfig(['favorite_template' => 0]);
         }
 
         acym_query('UPDATE #__acym_list SET welcome_id = null WHERE welcome_id IN ('.implode(',', $elements).')');
@@ -563,6 +563,23 @@ class MailClass extends AcymClass
         $this->deleteUnusedThumbnails($allThumbnailToDelete);
 
         return $return;
+    }
+
+    public function getFavoriteTemplateId(): int
+    {
+        $favoriteTemplate = (int)$this->config->get('favorite_template', 0);
+        if (empty($favoriteTemplate)) {
+            return 0;
+        }
+
+        $exists = acym_loadResult('SELECT `id` FROM #__acym_mail WHERE `id` = '.intval($favoriteTemplate));
+        if (empty($exists)) {
+            $this->config->saveConfig(['favorite_template' => 0]);
+
+            return 0;
+        }
+
+        return $favoriteTemplate;
     }
 
     public function deleteMediaFolder(array $elements): void
@@ -768,7 +785,7 @@ class MailClass extends AcymClass
         }
 
         if (!$allowedFileType) {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_ACCEPTED_TYPE', $extension, 'zip'), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_ACCEPTED_TYPE', acym_escapeHtml($extension), 'zip'), 'error');
 
             return null;
         }

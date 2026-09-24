@@ -1,21 +1,8 @@
-.c-datepicker__day-body:hover {
-    background-color: #b2e4ff !important;
-    border-radius: 30px !important;
-}
-
-.c-datepicker, .c-scrim {
-    z-index: 99999;
-}
-
-.c-datepicker *, .c-datepicker {
-    box-sizing: content-box;
+.acy_date_picker {
+    color-scheme: light;
 }
 
 #acym_wrapper {
-    .acy_date_picker {
-        cursor: pointer;
-    }
-
     input.rs_date_field {
         margin: 0;
         width: 160px;
@@ -23,9 +10,5 @@
 
     .date_rs_selection_popup {
         margin-top: 1.5rem;
-
-        .acy_date_picker {
-            cursor: pointer !important;
-        }
     }
 }

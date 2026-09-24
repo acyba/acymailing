@@ -123,11 +123,11 @@ jQuery(function ($) {
         let startDate = $start.attr('data-start');
         let endDate = $end.attr('data-end');
 
-        $start.val(startDate);
-        $end.val(endDate);
+        $start.val(startDate ? startDate.replace(' ', 'T') : startDate);
+        $end.val(endDate ? endDate.replace(' ', 'T') : endDate);
         $('.acym__stats__chart__line__input__date').off('change').on('change', function () {
-            let timestampStartDate = moment($start.val(), 'YYYY-MM-DD HH:mm').unix();
-            let timestampEndDate = moment($end.val(), 'YYYY-MM-DD HH:mm').add(1, 'hours').unix();
+            let timestampStartDate = moment($start.val()).unix();
+            let timestampEndDate = moment($end.val()).add(1, 'hours').unix();
             setAjaxCallForChartLine(timestampStartDate, timestampEndDate);
         });
     }

@@ -9,7 +9,12 @@ trait BirthdayAutomationTriggers
         $triggers[] = 'on_birthday';
     }
 
-    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    protected function initAutomationTriggers(): void
+    {
+        $this->automationTriggers['user']['on_birthday'] = acym_translation('ACYM_ON_USER_BIRTHDAY');
+    }
+
+    public function displayTriggerOptions_on_birthday(string $fieldName, array $defaultValues): void
     {
         $dataSources = [];
         acym_trigger('onAcymDeclareDataSourcesBirthdayTrigger', [&$dataSources]);
@@ -17,6 +22,9 @@ trait BirthdayAutomationTriggers
         $this->dataSources = $dataSources;
 
         $sourceOptions = [];
+        foreach ($this->dataSources as $key => $oneSource) {
+            $sourceOptions[] = acym_selectOption($key, $oneSource['source_name']);
+        }
 
         $defaultSource = empty($defaultValues['on_birthday']['source']) ? 'acymailing' : $defaultValues['on_birthday']['source'];
         $defaultField = empty($defaultValues['on_birthday']['field']) ? '' : $defaultValues['on_birthday']['field'];
@@ -24,94 +32,99 @@ trait BirthdayAutomationTriggers
         $defaultBeforeHour = empty($defaultValues['on_birthday']['hour']) ? '12' : $defaultValues['on_birthday']['hour'];
         $defaultBeforeMinutes = empty($defaultValues['on_birthday']['minutes']) ? '00' : $defaultValues['on_birthday']['minutes'];
 
-        foreach ($this->dataSources as $key => $oneSource) {
-            $sourceOptions[] = acym_selectOption($key, $oneSource['source_name']);
-        }
+        $hasFields = !empty($this->dataSources[$defaultSource]['fields']);
+        $noFieldsErrorMessage = empty($this->dataSources[$defaultSource]['no_fields_error_message'])
+            ? ''
+            : $this->dataSources[$defaultSource]['no_fields_error_message'];
+        ?>
+		<div class="grid-x grid-margin-x grid-margin-y">
+			<div class="cell grid-x">
+				<div class="cell medium-shrink" style="display: none">
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_SOURCE')); ?> :
+                    <?php acym_select(
+                        $sourceOptions,
+                        $fieldName.'[source]',
+                        $defaultSource,
+                        ['data-class' => 'intext_select acym__select'],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
+                    ); ?>
+				</div>
+			</div>
+            <?php if (!$hasFields && !empty($noFieldsErrorMessage)) { ?>
+				<div class="cell grid-x">
+					<span class="cell small-1 vertical-align-middle"><i class="acymicon-exclamation-circle acym__color__orange"></i></span>
+					<span class="cell small-11"><b><?php echo acym_escapeHtml(acym_translation($noFieldsErrorMessage)); ?></b></span>
+				</div>
+            <?php } else { ?>
+				<div class="cell grid-x">
+					<div class="cell medium-shrink">
+                        <?php echo acym_escapeHtml(acym_translation('ACYM_FIELD')); ?> :
+                        <?php acym_select(
+                            $this->getFieldsForTable('acymailing'),
+                            $fieldName.'[field]',
+                            $defaultField,
+                            ['data-class' => 'intext_select acym__select'],
+                            'value',
+                            'text',
+                            null,
+                            false,
+                            true
+                        ); ?>
+					</div>
+				</div>
+				<div class="cell grid-x">
+					<div class="cell auto word-break acym__automation__trigger__action__birthday">
+                        <?php $this->displayBirthdayDelaySentence($fieldName, $defaultDayBefore, $defaultBeforeHour, $defaultBeforeMinutes); ?>
+					</div>
+				</div>
+				<span class="cell margin-top-1 acym__color__dark-gray word-break">
+                    <?php echo acym_escapeHtml(acym_translation('ACYM_BIRTHDAY_TRIGGER_INFO')); ?>
+				</span>
+            <?php } ?>
+		</div>
+        <?php
+    }
 
-        $triggers['user']['on_birthday'] = new stdClass();
-        $triggers['user']['on_birthday']->name = acym_translation('ACYM_ON_USER_BIRTHDAY');
-
-        $hour = [];
-        $minutes = [];
+    /**
+     * "Trigger X day(s) before the date at HH:MM", where the position of the three fields inside the
+     * sentence depends on the language, so the sentence cannot be split in escaped parts
+     */
+    private function displayBirthdayDelaySentence(string $fieldName, string $dayBefore, string $hour, string $minutes): void
+    {
+        $hours = [];
+        $minutesOptions = [];
         $i = 0;
         while ($i <= 59) {
             $j = $i < 10 ? '0'.$i : $i;
             if ($i <= 23) {
-                $hour[$j] = $j;
+                $hours[$j] = $j;
             }
-            $minutes[$j] = $j;
+            $minutesOptions[$j] = $j;
             $i++;
         }
 
-        $option = '<div class="grid-x grid-margin-x grid-margin-y">
-                        <div class="cell grid-x">
-                            <div class="cell medium-shrink" style="display: none">
-                                '.acym_translation('ACYM_SOURCE').' : ';
+        $dayBeforeInput = '<input type="number" name="'.acym_escape($fieldName.'[day_before]').'" class="intext_input" min="0" value="'.acym_escape($dayBefore).'">';
 
-        $option .= acym_select(
-            $sourceOptions,
-            '[triggers][user][on_birthday][source]',
-            $defaultSource,
+        $hourSelect = acym_select(
+            $hours,
+            $fieldName.'[hour]',
+            $hour,
             ['data-class' => 'intext_select acym__select']
         );
-        $option .= ' 
-                            </div>
-                        </div>';
 
-        if (empty($this->dataSources[$defaultSource]['fields']) && !empty($this->dataSources[$defaultSource]['no_fields_error_message'])) {
-            $option .= '<div class="cell grid-x"><span class="cell small-1 vertical-align-middle"><i class="acymicon-exclamation-circle acym__color__orange"></i></span><span class="cell small-11"><b>'.acym_translation(
-                    $this->dataSources[$defaultSource]['no_fields_error_message']
-                ).'</b></span></div>';
-        } else {
-            $option .= '<div class="cell grid-x">
-                            <div class="cell medium-shrink">
-                                '.acym_translation('ACYM_FIELD').' : ';
-            $fieldsOption = $this->getFieldsForTable('acymailing');
+        $minuteSelect = acym_select(
+            $minutesOptions,
+            $fieldName.'[minutes]',
+            $minutes,
+            ['data-class' => 'intext_select acym__select']
+        );
 
-            $option .= acym_select(
-                $fieldsOption,
-                '[triggers][user][on_birthday][field]',
-                $defaultField,
-                ['data-class' => 'intext_select acym__select']
-            );
-
-            $hourSelector = acym_select(
-                $hour,
-                '[triggers][user][on_birthday][hour]',
-                $defaultBeforeHour,
-                ['data-class' => 'intext_select acym__select']
-            );
-            $minuteSelector = acym_select(
-                $minutes,
-                '[triggers][user][on_birthday][minutes]',
-                $defaultBeforeMinutes,
-                ['data-class' => 'intext_select acym__select']
-            );
-
-            $option .= '
-                            </div>
-                        </div>
-                        <div class="cell grid-x">
-                            <div class="cell auto word-break acym__automation__trigger__action__birthday">
-                            '.acym_translationSprintf(
-                    'ACYM_TRIGGER_EVENT_BEFORE_BIRTHDAY',
-                    '<input type="number" name="[triggers][user][on_birthday][day_before]" class="intext_input" min="0" value="'.acym_escape($defaultDayBefore).'">',
-                    $hourSelector,
-                    $minuteSelector
-                ).'
-                            </div>
-                        </div>
-                        <span class="cell margin-top-1 acym__color__dark-gray word-break">'.acym_translation('ACYM_BIRTHDAY_TRIGGER_INFO').'</span>';
-        }
-
-        $option .= '</div>';
-
-        $triggers['user']['on_birthday']->option = $option;
-    }
-
-    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
-    {
-        $this->onAcymDeclareTriggers($triggers, $defaultValues);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The three fields are built and escaped just above, and the translation itself holds HTML entities on purpose.
+        echo acym_translationSprintf('ACYM_TRIGGER_EVENT_BEFORE_BIRTHDAY', $dayBeforeInput, $hourSelect, $minuteSelect);
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

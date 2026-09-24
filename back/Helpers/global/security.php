@@ -16,7 +16,7 @@ function acym_escape(string $text): string
         return $text;
     }
 
-    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8', false);
 }
 
 /**
@@ -132,17 +132,18 @@ function acym_escapeUrl(?string $url): string
 
     if (strpos($url, '[') !== false || strpos($url, ']') !== false) {
         $to_unset = [];
+        $urlToParse = $url;
 
         if (strpos($url, '//') === 0) {
             $to_unset[] = 'scheme';
-            $url = 'placeholder:'.$url;
+            $urlToParse = 'placeholder:'.$url;
         } elseif (strpos($url, '/') === 0) {
             $to_unset[] = 'scheme';
             $to_unset[] = 'host';
-            $url = 'placeholder://placeholder'.$url;
+            $urlToParse = 'placeholder://placeholder'.$url;
         }
 
-        $parsed = acym_parseUrl($url);
+        $parsed = acym_parseUrl($urlToParse);
 
         if (!empty($parsed)) {
             foreach ($to_unset as $key) {
@@ -308,9 +309,9 @@ function acym_isRobot(): bool
 
 function acym_displayErrors(): void
 {
-    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting -- intended error printing on export and debug mode.
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting,PluginCheck.CodeAnalysis.PHPErrorReporting.DirectErrorReportingCall -- intended error printing on export and debug mode.
     error_reporting(E_ALL);
-    // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Error display is toggled intentionally for debugging purposes.
+    // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged,PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors -- Error display is toggled intentionally for debugging purposes.
     @ini_set('display_errors', 1);
 }
 

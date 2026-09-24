@@ -52,10 +52,7 @@ trait BirthdayFollowup
                 ]
             );
             $tooltip = ob_get_clean();
-            $additionalCondition['birthday_field'] = acym_translationSprintf(
-                'ACYM_BIRTHDAY_FIELD',
-                $tooltip.$fieldsSelect
-            );
+            $additionalCondition['birthday_field'] = $this->followupConditionRow('ACYM_BIRTHDAY_FIELD', $tooltip.$fieldsSelect);
         }
     }
 

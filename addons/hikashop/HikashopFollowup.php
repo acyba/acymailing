@@ -36,7 +36,7 @@ trait HikashopFollowup
                     !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
                     ['class' => 'acym__select']
                 ).'</span>';
-            $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
+            $additionalCondition['order_status'] = $this->followupConditionRow('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
             $parametersProductSelect = [
                 'class' => 'acym__select acym_select2_ajax',
@@ -59,7 +59,7 @@ trait HikashopFollowup
                     !empty($followup->condition) ? $followup->condition['products_status'] : '',
                     ['class' => 'acym__select']
                 ).'</span>';
-            $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
+            $additionalCondition['products'] = $this->followupConditionRow('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
             $parametersCategoriesSelect = [
                 'class' => 'acym__select acym_select2_ajax',
@@ -82,7 +82,7 @@ trait HikashopFollowup
                     !empty($followup->condition) ? $followup->condition['categories_status'] : '',
                     ['class' => 'acym__select']
                 ).'</span>';
-            $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
+            $additionalCondition['categories'] = $this->followupConditionRow('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
         }
     }
 

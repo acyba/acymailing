@@ -1,19 +1,31 @@
 const acym_helperDatePicker = {
     setDatePickerGlobal: function () {
-        jQuery('.acy_date_picker').off('click').on('click', function () {
-            let $inputDatePicker = jQuery(this);
-            let needTranslate = undefined === $inputDatePicker.attr('data-acym-translate') || $inputDatePicker.attr('data-acym-translate') !== '0';
+        jQuery('.acy_date_picker').each(function () {
+            if (this.tagName === 'INPUT' && this.type !== 'datetime-local') {
+                this.type = 'datetime-local';
+            }
 
-            let $default = $inputDatePicker.val() ? moment($inputDatePicker.val(), needTranslate ? 'DD MMM YYYY HH:mm' : 'YYYY-MM-DD HH:mm') : moment();
+            let value = jQuery(this).attr('value');
+            if (value && value.indexOf(' ') !== -1) {
+                jQuery(this).val(value.replace(' ', 'T').substring(0, 16));
+            }
 
-            new MaterialDatetimePicker({
-                'default': $default
-            }).on('submit', function (d) {
-                $inputDatePicker.val(moment(d, 'MM-DD-YYYY').format(needTranslate ? 'DD MMM YYYY HH:mm' : 'YYYY-MM-DD HH:mm'));
-                $inputDatePicker.trigger('change');
-                $inputDatePicker.trigger('acy_change');
-            }).open();
+            jQuery(this).off('focus.acyDefaultDate').on('focus.acyDefaultDate', function () {
+                if (this.value === '') {
+                    this.value = acym_helperDatePicker.currentDateTime();
+                }
+            });
         });
+    },
+    currentDateTime: function () {
+        if (typeof ACYM_DATE_NOW !== 'undefined' && ACYM_DATE_NOW) {
+            return ACYM_DATE_NOW;
+        }
+
+        let now = new Date();
+        let pad = value => (value < 10 ? '0' : '') + value;
+
+        return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
     },
     setRelativeTime: function ($element) {
         let $parent = $element.closest('.reveal');
@@ -26,7 +38,7 @@ const acym_helperDatePicker = {
         let $parent = $element.closest('.reveal');
         let $intput = $parent.find('[name^="specific_"]');
         jQuery('[data-rs="' + $parent.attr('id') + '"]').val(moment($intput.val()).unix());
-        jQuery('[data-open="' + $parent.attr('id') + '"]').val($intput.val()).trigger('change');
+        jQuery('[data-open="' + $parent.attr('id') + '"]').val($intput.val().replace('T', ' ')).trigger('change');
     },
     setRSDateChoice: function () {
         jQuery('.acym__button__clear__time').on('click', function () {
@@ -90,8 +102,8 @@ const acym_helperDatePicker = {
                 $modal.find('.relativenumber').val(finalValuePopup).trigger('change');
             } else {
                 $modal.find('[data-type="specific"]').trigger('click');
-                //We convert the unix time to a format the lib can understand
-                $modal.find('.acy_date_picker').val(moment.unix($input.val()).format('YYYY-MM-DD HH:mm'));
+                //We convert the unix time to the format expected by the native datetime-local input
+                $modal.find('.acy_date_picker').val(moment.unix($input.val()).format('YYYY-MM-DDTHH:mm'));
             }
         });
     }

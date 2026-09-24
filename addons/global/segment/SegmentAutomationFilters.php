@@ -5,7 +5,12 @@ use AcyMailing\Helpers\AutomationHelper;
 
 trait SegmentAutomationFilters
 {
-    public function onAcymDeclareFilters(array &$filters): void
+    protected function initAutomationFilters(): void
+    {
+        $this->automationFilters['acy_segment'] = acym_translation('ACYM_ACYMAILING_SEGMENT');
+    }
+
+    public function displayFilterOptions_acy_segment(string $fieldName): void
     {
         $segmentClass = new SegmentClass();
         $segments = $segmentClass->getAll();
@@ -13,19 +18,21 @@ trait SegmentAutomationFilters
         foreach ($segments as $oneSegment) {
             $selectOptionSegment[] = acym_selectOption($oneSegment->id, $oneSegment->name);
         }
-
-        $filters['acy_segment'] = new stdClass();
-        $filters['acy_segment']->name = acym_translation('ACYM_ACYMAILING_SEGMENT');
-        $filters['acy_segment']->option = '<div class="intext_select_automation cell">';
-        $filters['acy_segment']->option .= acym_select(
-            $selectOptionSegment,
-            'acym_action[filters][__numor__][__numand__][acy_segment][id]',
-            null,
-            [
-                'class' => 'intext_select_automation acym__select',
-            ]
-        );
-        $filters['acy_segment']->option .= '</div>';
+        ?>
+		<div class="intext_select_automation cell">
+            <?php acym_select(
+                $selectOptionSegment,
+                $fieldName.'[id]',
+                null,
+                ['class' => 'intext_select_automation acym__select'],
+                'value',
+                'text',
+                null,
+                false,
+                true
+            ); ?>
+		</div>
+        <?php
     }
 
     public function onAcymProcessFilterCount_acy_segment(&$query, &$options, &$num)

@@ -19,7 +19,7 @@ if (!empty($data['user-information']->id)) { ?>
                 $subjectClass = $showStats ? 'medium-4' : 'medium-8';
                 ?>
 				<div class="grid-x cell grid-margin-x acym__listing__header acym__listing__header__user_history text-center">
-					<div class="<?php echo $subjectClass; ?> hide-for-small-only cell acym__listing__header__title">
+					<div class="<?php echo acym_escape($subjectClass); ?> hide-for-small-only cell acym__listing__header__title">
                         <?php echo acym_escapeHtml(acym_translation('ACYM_EMAIL_SUBJECT')); ?>
 					</div>
 					<div class="medium-2 hide-for-small-only cell acym__listing__header__title">
@@ -142,7 +142,7 @@ if (!empty($data['user-information']->id)) { ?>
                                     $details = '<div><h5>'.acym_escapeHtml(acym_translation('ACYM_DETAILS')).'</h5><br />';
                                     if (!empty($oneHistory->mail_id)) {
                                         $details .= '<b>'.acym_escapeHtml(acym_translation('ACYM_CAMPAIGN')).' : </b>';
-                                        $details .= acym_escapeHtml($oneHistory->subject).' ( '.acym_escapeHtml(acym_translation('ACYM_ID').' : '.$oneHistory->mail_id).' )<br />';
+                                        $details .= acym_escapeHtml($oneHistory->subject ?? '').' ( '.acym_escapeHtml(acym_translation('ACYM_ID').' : '.$oneHistory->mail_id).' )<br />';
                                     }
 
                                     foreach ($historyData as $value) {

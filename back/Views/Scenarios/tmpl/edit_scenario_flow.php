@@ -24,15 +24,42 @@
     <?php include acym_getView('scenarios', 'right_panel'); ?>
 	<div>
 		<div id="acym_scenario_triggers">
+            <?php
+            $triggersForJs = [];
+            foreach ($data['triggers'] as $oneTrigger) {
+                $triggersForJs[] = [
+                    'key' => $oneTrigger->key,
+                    'name' => $oneTrigger->name,
+                ];
+            }
+
+            $conditionsForJs = [];
+            foreach ($data['conditions'] as $oneCondition) {
+                $conditionsForJs[] = [
+                    'key' => $oneCondition->key,
+                    'name' => $oneCondition->name,
+                ];
+            }
+
+            $actionsForJs = [];
+            foreach ($data['actions'] as $oneAction) {
+                $actionsForJs[] = [
+                    'key' => $oneAction->key,
+                    'name' => $oneAction->name,
+                ];
+            }
+            ?>
 			<script>
-                var acymailingScenarioTriggers = <?php echo json_encode($data['triggers']); ?>;
-                var acymailingScenarioConditions = <?php echo json_encode($data['conditions']); ?>;
-                var acymailingScenarioActions = <?php echo json_encode($data['actions']); ?>;
+                var acymailingScenarioTriggers = <?php echo json_encode($triggersForJs); ?>;
+                var acymailingScenarioConditions = <?php echo json_encode($conditionsForJs); ?>;
+                var acymailingScenarioActions = <?php echo json_encode($actionsForJs); ?>;
 			</script>
             <?php
             acym_select($data['triggers'], 'acym_scenario_triggers_input', null, ['class' => 'acym__select'], 'key', 'name', null, false, true);
             foreach ($data['triggers'] as $trigger) {
-                echo '<div style="display: none;" data-acym-trigger-option="'.acym_escape($trigger->key).'">'.$trigger->option.'</div>';
+                echo '<div style="display: none;" data-acym-trigger-option="'.acym_escape($trigger->key).'">';
+                acym_displayAddonOption($trigger);
+                echo '</div>';
             }
             ?>
 		</div>
@@ -60,7 +87,9 @@
             <?php
             acym_select($data['conditions'], 'acym_scenario_conditions_input', null, ['class' => 'acym__select'], 'key', 'name', null, false, true);
             foreach ($data['conditions'] as $key => $condition) {
-                echo '<div style="display: none;" data-acym-condition-option="'.acym_escape($condition->key).'">'.$condition->option.'</div>';
+                echo '<div style="display: none;" data-acym-condition-option="'.acym_escape($condition->key).'">';
+                acym_displayAddonOption($condition);
+                echo '</div>';
             }
             ?>
 		</div>
@@ -68,7 +97,9 @@
             <?php
             acym_select($data['actions'], 'acym_scenario_actions_input', null, ['class' => 'acym__select'], 'key', 'name', null, false, true);
             foreach ($data['actions'] as $key => $action) {
-                echo '<div style="display: none;" data-acym-action-option="'.acym_escape($action->key).'">'.$action->option.'</div>';
+                echo '<div style="display: none;" data-acym-action-option="'.acym_escape($action->key).'">';
+                acym_displayAddonOption($action);
+                echo '</div>';
             }
             ?>
 		</div>

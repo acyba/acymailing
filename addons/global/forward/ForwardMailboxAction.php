@@ -7,11 +7,48 @@ use AcyMailing\Helpers\MailerHelper;
 
 trait ForwardMailboxAction
 {
-    public function onAcymMailboxActionDefine(&$actions)
+    protected function initMailboxActions(): void
+    {
+        $this->mailboxActions = [
+            'forward_specific' => acym_translation('ACYM_FORWARD_EMAIL'),
+            'forward_list' => acym_translation('ACYM_FORWARD_TO_A_LIST'),
+        ];
+    }
+
+    public function displayMailboxActionOptions_forward_specific(string $fieldName): void
+    {
+        ?>
+		<input type="text"
+		       name="<?php echo acym_escape($fieldName.'[addresses]'); ?>"
+		       placeholder="address@example.com,other@example.com"><br />
+        <?php
+        $this->displayForwardTemplateChoice($fieldName);
+    }
+
+    public function displayMailboxActionOptions_forward_list(string $fieldName): void
     {
         $listClass = new ListClass();
-        $lists = $listClass->getAllWithIdName();
+        ?>
+		<div class="intext_select_mailbox cell">
+            <?php acym_select(
+                $listClass->getAllWithIdName(),
+                $fieldName.'[list_id]',
+                null,
+                ['class' => 'acym__select'],
+                'value',
+                'text',
+                null,
+                false,
+                true
+            ); ?>
+		</div>
+		<br /><br />
+        <?php
+        $this->displayForwardTemplateChoice($fieldName);
+    }
 
+    private function displayForwardTemplateChoice(string $fieldName): void
+    {
         $mailClass = new MailClass();
         $templates = $mailClass->getTemplatesForMailboxAction();
 
@@ -20,50 +57,19 @@ trait ForwardMailboxAction
         $firstOption->name = acym_translation('ACYM_CHOOSE_TEMPLATE');
         array_unshift($templates, $firstOption);
 
-        $actions['forward_specific'] = new stdClass();
-        $actions['forward_specific']->name = acym_translation('ACYM_FORWARD_EMAIL');
-        $actions['forward_specific']->option = '<input type="text" 
-                                                        name="acym_action[__num__][forward_specific][addresses]" 
-                                                        placeholder="address@example.com,other@example.com"><br />';
-        $actions['forward_specific']->option .= acym_translationSprintf(
-            'ACYM_INCLUDE_IN_TEMPLATE',
-            '<div class="intext_select_mailbox cell">'.acym_select(
+        $templateSelect = '<div class="intext_select_mailbox cell">'.acym_select(
                 $templates,
-                'acym_action[__num__][forward_specific][template_id]',
+                $fieldName.'[template_id]',
                 null,
                 ['class' => 'acym__select'],
                 'id',
                 'name'
-            ).'</div>'
-        );
-        ob_start();
-        acym_info(['textShownInTooltip' => 'ACYM_INCLUDE_IN_TEMPLATE_DESC']);
-        $actions['forward_specific']->option .= ob_get_clean();
+            ).'</div>';
 
-        $actions['forward_list'] = new stdClass();
-        $actions['forward_list']->name = acym_translation('ACYM_FORWARD_TO_A_LIST');
-        $actions['forward_list']->option = '<div class="intext_select_mailbox cell">';
-        $actions['forward_list']->option .= acym_select(
-            $lists,
-            'acym_action[__num__][forward_list][list_id]',
-            null,
-            ['class' => 'acym__select']
-        );
-        $actions['forward_list']->option .= '</div><br /><br />';
-        $actions['forward_list']->option .= acym_translationSprintf(
-            'ACYM_INCLUDE_IN_TEMPLATE',
-            '<div class="intext_select_mailbox cell">'.acym_select(
-                $templates,
-                'acym_action[__num__][forward_list][template_id]',
-                null,
-                ['class' => 'acym__select'],
-                'id',
-                'name'
-            ).'</div>'
-        );
-        ob_start();
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The select is built and escaped by acym_select just above, and its position in the sentence depends on the language.
+        echo acym_translationSprintf('ACYM_INCLUDE_IN_TEMPLATE', $templateSelect);
+
         acym_info(['textShownInTooltip' => 'ACYM_INCLUDE_IN_TEMPLATE_DESC']);
-        $actions['forward_list']->option .= ob_get_clean();
     }
 
     public function onAcymMailboxActionSummaryListing(&$action, &$result)

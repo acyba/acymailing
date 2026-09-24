@@ -177,15 +177,12 @@ abstract class AcymController extends AcymObject
         }
 
         if (in_array('datepicker', $scripts)) {
-            // Must be loaded in the right order
             if (ACYM_CMS === 'joomla') {
                 acym_addScript(false, ACYM_JS.'libraries/moment.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'moment.min.js'));
+            } else {
+                wp_enqueue_script('moment');
             }
-            acym_addScript(false, ACYM_JS.'libraries/rome.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'rome.min.js'), [
-                'dependencies' => ['moment'],
-            ]);
-            acym_addScript(false, ACYM_JS.'libraries/material-datetime-picker.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'material-datetime-picker.min.js'));
-            acym_addStyle(false, ACYM_CSS.'libraries/material-datetime-picker.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'material-datetime-picker.min.css'));
+            acym_addScript(true, 'window.ACYM_DATE_NOW = "'.gmdate('Y-m-d\TH:i', time() + acym_getTimeOffsetCMS()).'";');
         }
 
         if (in_array('dtextPicker', $scripts)) {

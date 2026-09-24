@@ -51,12 +51,6 @@ class DashboardController extends AcymController
             return;
         }
 
-        ob_start();
-        include ACYM_NEW_FEATURES_SPLASHSCREEN;
-        $data = [
-            'content' => ob_get_clean(),
-        ];
-
         if (!acym_deleteFile(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
             $this->listing();
 

@@ -73,7 +73,7 @@ function acym_dateField(string $name, $value = '', string $class = '', string $a
     $result .= '<div class="cell date_rs_selection_choice date_rs_selection_specific grid-x align-center acym_vcenter" style="display: none;">
                     <span class="cell shrink margin-right-1">'.acym_translation('ACYM_CHOOSE_DATE').'</span>
                     <div class="cell shrink">
-                        <input type="text" name="specific_'.acym_escape($name).'" class="acy_date_picker" data-acym-translate="0" readonly>
+                        <input type="datetime-local" name="specific_'.acym_escape($name).'" class="acy_date_picker">
                     </div>
                 </div>
                 <div class="cell grid-x grid-margin-x">

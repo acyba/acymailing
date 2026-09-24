@@ -2,7 +2,12 @@
 
 trait UserAutomationActions
 {
-    public function onAcymDeclareActions(array &$actions): void
+    protected function initAutomationActions(): void
+    {
+        $this->automationActions['acy_group_action'] = acym_translation('ACYM_ACTION_ON_GROUPS');
+    }
+
+    public function displayActionOptions_acy_group_action(): void
     {
         $allGroups = acym_getGroups();
         $groups = ['none' => acym_translation('ACYM_SELECT_GROUP')];
@@ -11,16 +16,7 @@ trait UserAutomationActions
         }
         unset($groups[ACYM_ADMIN_GROUP]);
 
-        $actions['acy_group_action'] = new stdClass();
-        $actions['acy_group_action']->name = acym_translation('ACYM_ACTION_ON_GROUPS');
-        ob_start();
         include acym_getPartial('actions', 'acy_group_action');
-        $actions['acy_group_action']->option = ob_get_clean();
-    }
-
-    public function onAcymDeclareActionsScenario(array &$actions): void
-    {
-        $this->onAcymDeclareActions($actions);
     }
 
     public function onAcymProcessAction_acy_group_action(&$query, $action)

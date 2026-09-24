@@ -81,7 +81,7 @@
 								<div class="queue_lists">
                                     <?php
                                     if (!$row->iscampaign) {
-                                        echo $row->lists;
+                                        echo acym_escapeHtml($row->lists);
                                     } else {
                                         $i = 0;
                                         $class = 'acym_subscription acymicon-circle';

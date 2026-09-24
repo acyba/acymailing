@@ -11,7 +11,12 @@
 	<h1 class="contentheading"><?php echo acym_escapeHtml($data['mail']->subject); ?></h1>
 
 	<input type="hidden" id="archive_view__content" value="<?php echo acym_escape($data['mail']->body); ?>" />
-	<div style="min-width:80%" id="archive_view__preview"><?php echo $data['mail']->body; ?></div>
+	<div style="min-width:80%" id="archive_view__preview">
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Campaign content, built by admin and cannot be escaped.
+		echo $data['mail']->body;
+		?>
+	</div>
 
     <?php
     $attachments = json_decode(!empty($data['mail']->attachments) ? $data['mail']->attachments : '[]', true);

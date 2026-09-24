@@ -19,17 +19,17 @@
 					<label for="automation_name"><?php echo acym_escapeHtml(acym_translation('ACYM_NAME')); ?></label>
                     <?php if (empty($data['automation']->admin)) { ?>
 						<input required
-						       type="text"
-						       id="automation_name"
-						       name="automation[name]"
-						       value="<?php echo !empty($data['automation']->name) ? acym_escape($data['automation']->name) : ''; ?>">
+							   type="text"
+							   id="automation_name"
+							   name="automation[name]"
+							   value="<?php echo !empty($data['automation']->name) ? acym_escape($data['automation']->name) : ''; ?>">
                     <?php } else { ?>
 						<input required
-						       type="text"
-						       id="automation_name"
-						       name="automation[name]"
-						       disabled
-						       value="<?php echo acym_escape(acym_translation($data['automation']->name)); ?>">
+							   type="text"
+							   id="automation_name"
+							   name="automation[name]"
+							   disabled
+							   value="<?php echo acym_escape(acym_translation($data['automation']->name)); ?>">
                     <?php } ?>
 				</div>
 				<div class="cell medium-shrink grid-x acym_vcenter margin-left-2" <?php echo empty($data['automation']->id) ? 'style="display: none"' : ''; ?>>
@@ -46,8 +46,8 @@
 					</h6>
                     <?php if (!empty($data['automation']->admin)) $data['automation']->description = acym_escapeHtml(acym_translation($data['automation']->description)); ?>
 					<textarea style="display: none"
-					          name="automation[description]" <?php echo empty($data['automation']->admin) ? '' : 'disabled'; ?>  rows="6"
-					          class="margin-top-1"><?php echo !empty($data['automation']->description) ? acym_escapeHtml(
+							  name="automation[description]" <?php echo empty($data['automation']->admin) ? '' : 'disabled'; ?>  rows="6"
+							  class="margin-top-1"><?php echo !empty($data['automation']->description) ? acym_escapeHtml(
                             $data['automation']->description
                         ) : ''; ?></textarea>
 				</label>
@@ -55,9 +55,9 @@
 			<div class="medium-12 cell grid-x acym__content acym__automation__info__trigger margin-top-2">
 				<div class="cell grid-x margin-bottom-2" id="acym__automation__info__choose__trigger__type">
 					<input type="hidden"
-					       name="type_trigger"
-					       value="<?php echo !empty($data['type_trigger']) ? acym_escape($data['type_trigger']) : 'classic'; ?>"
-					       id="acym__automation__trigger__type__input">
+						   name="type_trigger"
+						   value="<?php echo !empty($data['type_trigger']) ? acym_escape($data['type_trigger']) : 'classic'; ?>"
+						   id="acym__automation__trigger__type__input">
 					<div class="cell auto"></div>
                     <?php
                     $class = '';
@@ -82,25 +82,26 @@
 					<div class="cell auto"></div>
 				</div>
 				<div class="acym__automation__info__choose__trigger cell grid-x grid-margin-x grid-margin-y"
-				     id="acym__automation__info__choose__trigger__classic" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'classic') ? ''
+					 id="acym__automation__info__choose__trigger__classic" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'classic') ? ''
                     : (empty($data['type_trigger']) ? '' : 'style="display: none"'); ?>>
 					<div class="cell large-6 acym__content grid-x acym__automation__draggable">
 						<h6 class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_ALL_TRIGGER')); ?></h6>
 						<div class="cell acym__automation__all-trigger__classic grid-x">
-							<!-- TODO : Handle the escape of ->option var in the addons themself -->
                             <?php
-                            $allowedTriggerNameTags = [
-                                'div' => ['class' => true],
-                                'span' => ['class' => true],
-                            ];
                             foreach ($data['classic'] as $key => $classic) {
-                                echo '<div '.(in_array(
-                                        $key,
-                                        $data['defaultValues']
-                                    ) ? 'style="display: none"' : '').' class="acym__automation__trigger__droppable__classic margin-top-1 cell" data-trigger="'.acym_escape(
-                                        $key
-                                    ).'"><span class="acym__automation__trigger__name">'.acym_escapeHtmlWithAllowedTags($classic->name, $allowedTriggerNameTags).'</span><span class="acym__automation__trigger__action">'.$classic->option.'</span></div>';
-                            } ?>
+                                ?>
+								<div
+                                    <?php echo in_array($key, $data['defaultValues']) ? 'style="display: none"' : ''; ?>
+										class="acym__automation__trigger__droppable__classic margin-top-1 cell"
+										data-trigger="<?php echo acym_escape($key); ?>">
+									<span class="acym__automation__trigger__name">
+										<?php echo acym_escapeHtml($classic->name); ?>
+									</span>
+									<span class="acym__automation__trigger__action">
+										<?php acym_displayAddonOption($classic); ?>
+									</span>
+								</div>
+                            <?php } ?>
 						</div>
 					</div>
 
@@ -116,8 +117,12 @@
                                 ?>
 								<div class="acym__automation__droppable__trigger margin-top-1">
 									<div class="acym__automation__one__trigger">
-										<span class="acym__automation__trigger__name"><?php echo acym_escapeHtmlWithAllowedTags($classic->name, $allowedTriggerNameTags); ?></span>
-										<span class="acym__automation__trigger__action"><?php echo $classic->option; ?></span>
+										<span class="acym__automation__trigger__name">
+											<?php echo acym_escapeHtml($classic->name); ?>
+										</span>
+										<span class="acym__automation__trigger__action">
+											<?php acym_displayAddonOption($classic); ?>
+										</span>
 									</div>
 									<i data-trigger-show="<?php echo acym_escape($key); ?>"
 									   class="acymicon-close acym__color__red acym__automation__delete__trigger cursor-pointer"></i>
@@ -129,21 +134,26 @@
 					</div>
 				</div>
 				<div class="acym__automation__info__choose__trigger cell grid-x grid-margin-x grid-margin-y"
-				     id="acym__automation__info__choose__trigger__user" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'user') ? ''
+					 id="acym__automation__info__choose__trigger__user" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'user') ? ''
                     : 'style="display: none"'; ?>>
 					<div class="cell large-6 acym__content grid-x acym__automation__draggable">
 						<h6 class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_ALL_TRIGGER')); ?></h6>
 						<div class="cell acym__automation__all-trigger__action grid-x">
                             <?php
                             foreach ($data['user'] as $key => $triggerUser) {
-                                echo '<div '.(in_array(
-                                        $key,
-                                        $data['defaultValues']
-                                    ) ? 'style="display: none"' : '').' class="acym__automation__trigger__droppable__action margin-top-1 cell" data-trigger="'.acym_escape(
-                                        $key
-                                    ).'"><span class="acym__automation__trigger__name">'.acym_escapeHtmlWithAllowedTags($triggerUser->name, $allowedTriggerNameTags).'</span><span class="acym__automation__trigger__action">'.$triggerUser->option.'</span></div>';
-                            }
-                            ?>
+                                ?>
+								<div
+                                    <?php echo in_array($key, $data['defaultValues']) ? 'style="display: none"' : ''; ?>
+										class="acym__automation__trigger__droppable__action margin-top-1 cell"
+										data-trigger="<?php echo acym_escape($key); ?>">
+									<span class="acym__automation__trigger__name">
+										<?php echo acym_escapeHtml($triggerUser->name); ?>
+									</span>
+									<span class="acym__automation__trigger__action">
+										<?php acym_displayAddonOption($triggerUser); ?>
+									</span>
+								</div>
+                            <?php } ?>
 						</div>
 					</div>
 
@@ -158,8 +168,13 @@
                                 if (!in_array($key, $data['defaultValues'])) continue;
                                 ?>
 								<div class="acym__automation__droppable__trigger margin-top-1">
-									<div class="acym__automation__one__trigger"><span class="acym__automation__trigger__name"><?php echo acym_escapeHtmlWithAllowedTags($triggerUser->name, $allowedTriggerNameTags); ?></span></b>
-										<span class="acym__automation__trigger__action"><?php echo $triggerUser->option; ?></span>
+									<div class="acym__automation__one__trigger">
+										<span class="acym__automation__trigger__name">
+											<?php echo acym_escapeHtml($triggerUser->name); ?>
+										</span>
+										<span class="acym__automation__trigger__action">
+											<?php acym_displayAddonOption($triggerUser); ?>
+										</span>
 									</div>
 									<i data-trigger-show="<?php echo acym_escape($key); ?>"
 									   class="acymicon-close acym__color__red acym__automation__delete__trigger cursor-pointer"></i>
@@ -178,8 +193,8 @@
 				<div class="cell medium-auto grid-x grid-margin-x text-right">
 					<div class="cell auto"></div>
 					<button class="cell medium-shrink button medium-margin-bottom-0 margin-bottom-1 acy_button_submit button-secondary"
-					        type="button"
-					        data-task="saveExitInfo"><?php echo acym_escapeHtml(acym_translation('ACYM_SAVE_EXIT')); ?></button>
+							type="button"
+							data-task="saveExitInfo"><?php echo acym_escapeHtml(acym_translation('ACYM_SAVE_EXIT')); ?></button>
 					<button class="cell medium-shrink button margin-bottom-0 acy_button_submit" type="button" data-task="saveInfo">
                         <?php echo acym_escapeHtml(acym_translation('ACYM_SAVE_CONTINUE')); ?>
 					</button>

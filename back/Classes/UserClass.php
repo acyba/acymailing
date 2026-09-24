@@ -935,10 +935,8 @@ class UserClass extends AcymClass
 
                 if (!empty($cmsUserLanguage)) {
                     $user->language = $cmsUserLanguage;
-                } elseif (acym_isMultilingual()) {
-                    // Take the configuration's language
-                    $configUserLanguage = $this->config->get('multilingual_user_default', 'current_language');
-                    $user->language = $configUserLanguage === 'current_language' ? acym_getLanguageTag() : $configUserLanguage;
+                } else {
+                    $user->language = acym_getDefaultUserLanguage();
                 }
             }
 

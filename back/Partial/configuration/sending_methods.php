@@ -67,10 +67,6 @@
     }
     ?>
 	<div class="cell <?php echo acym_escape($class); ?> grid-x">
-        <?php
-        foreach ($data['sendingMethodsHtmlSettings'] as $html) {
-            echo $html;
-        }
-        ?>
+        <?php acym_trigger('onAcymGetSendingMethodsHtmlSetting', [&$data]); ?>
 	</div>
 </div>

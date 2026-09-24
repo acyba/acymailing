@@ -63,23 +63,9 @@ trait Edition
         acym_trigger('onAcymMailboxActionDefine', [&$actions]);
 
         $actionOptions = ['' => acym_translation('ACYM_CHOOSE_ACTION')];
-        $actionParameters = '';
-
         foreach ($actions as $key => $oneAction) {
             $actionOptions[$key] = $oneAction->name;
-            $actionParameters .= '<div class="acym__mailbox__edition__action__one__parameters '.$key.' margin-top-1">'.$oneAction->option.'</div>';
         }
-
-        $initialAction = acym_select(
-            $actionOptions,
-            'acym_action[__num__][action]',
-            '',
-            [
-                'class' => 'acym__select acym__mailbox__edition__action__one__choice',
-                'acym-data-infinite' => '',
-            ]
-        );
-        $initialAction .= $actionParameters;
 
         $data = [
             'mailboxId' => $mailboxId,
@@ -87,7 +73,8 @@ trait Edition
             'delayType' => new DelayType(),
             'groups' => acym_getGroups(),
             'lists' => $listsClass->getAllWithIdName(),
-            'initialAction' => $initialAction,
+            'actionDeclarations' => $actions,
+            'actionOptions' => $actionOptions,
         ];
 
         parent::display($data);

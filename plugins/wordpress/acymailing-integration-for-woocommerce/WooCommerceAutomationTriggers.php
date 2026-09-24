@@ -9,33 +9,46 @@ trait WooCommerceAutomationTriggers
 {
     private $purchaseTriggerName = 'woocommerce_purchase';
 
-    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    protected function initAutomationTriggers(): void
     {
-        $orderStatuses = $this->getOrderStatuses(true);
-
-        $triggers['user']['woocommerce_order_change'] = new stdClass();
-        $triggers['user']['woocommerce_order_change']->name = acym_translation('ACYM_ON_WOOCOMMERCE_ORDER_CHANGE');
-        $triggers['user']['woocommerce_order_change']->option = '<div class="grid-x grid-margin-x" style="height: 40px;">';
-        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-shrink acym_vcenter">'.acym_translation('ACYM_FROM').'</div>';
-        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-4">'.acym_select(
-                $orderStatuses,
-                '[triggers][user][woocommerce_order_change][from]',
-                empty($defaultValues['woocommerce_order_change']['from']) ? 0 : $defaultValues['woocommerce_order_change']['from'],
-                ['data-class' => 'acym__select']
-            ).'</div>';
-        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-shrink acym_vcenter">'.acym_translation('ACYM_TO').'</div>';
-        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-4">'.acym_select(
-                $orderStatuses,
-                '[triggers][user][woocommerce_order_change][to]',
-                empty($defaultValues['woocommerce_order_change']['to']) ? 'wc-completed' : $defaultValues['woocommerce_order_change']['to'],
-                ['data-class' => 'acym__select']
-            ).'</div>';
-        $triggers['user']['woocommerce_order_change']->option .= '</div>';
+        $this->automationTriggers['user']['woocommerce_order_change'] = acym_translation('ACYM_ON_WOOCOMMERCE_ORDER_CHANGE');
     }
 
-    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
+    public function displayTriggerOptions_woocommerce_order_change(string $fieldName, array $defaultValues): void
     {
-        $this->onAcymDeclareTriggers($triggers, $defaultValues);
+        $orderStatuses = $this->getOrderStatuses(true);
+        ?>
+		<div class="grid-x grid-margin-x" style="height: 40px;">
+			<div class="cell medium-shrink acym_vcenter"><?php echo acym_escapeHtml(acym_translation('ACYM_FROM')); ?></div>
+			<div class="cell medium-4">
+                <?php acym_select(
+                    $orderStatuses,
+                    $fieldName.'[from]',
+                    empty($defaultValues['woocommerce_order_change']['from']) ? 0 : $defaultValues['woocommerce_order_change']['from'],
+                    ['data-class' => 'acym__select'],
+                    'value',
+                    'text',
+                    null,
+                    false,
+                    true
+                ); ?>
+			</div>
+			<div class="cell medium-shrink acym_vcenter"><?php echo acym_escapeHtml(acym_translation('ACYM_TO')); ?></div>
+			<div class="cell medium-4">
+                <?php acym_select(
+                    $orderStatuses,
+                    $fieldName.'[to]',
+                    empty($defaultValues['woocommerce_order_change']['to']) ? 'wc-completed' : $defaultValues['woocommerce_order_change']['to'],
+                    ['data-class' => 'acym__select'],
+                    'value',
+                    'text',
+                    null,
+                    false,
+                    true
+                ); ?>
+			</div>
+		</div>
+        <?php
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

@@ -639,17 +639,22 @@ class FormClass extends AcymClass
         return $form;
     }
 
-    public function prepareMenuHtml(object $form, string $type): array
+    public function prepareMenuHtml(object $form, string $type): void
     {
         $this->initSettings();
 
         $sections = $this->getSectionTranslations();
-        $htmlMenu = [];
         foreach ($this->settings[$type] as $category => $options) {
-            $categoryOptions = [];
+            $hasOptions = false;
+
             foreach ($options as $key => $option) {
                 if (!empty($option['allowed_types']) && !in_array($form->type, $option['allowed_types'])) {
                     continue;
+                }
+
+                if (!$hasOptions) {
+                    $hasOptions = true;
+                    echo '<h3 class="cell acym__forms__menu__title acym__title acym__title__tertiary">'.acym_escapeHtml(acym_translation($sections[$category])).'</h3>';
                 }
 
                 $id = 'form_'.$category.'_'.$key;
@@ -657,28 +662,18 @@ class FormClass extends AcymClass
                 $vModel = 'form.settings.'.$category.'.'.$key;
                 $value = $form->settings[$category][$key] ?? $option['default'];
 
-                $label = '<label class="cell" for="'.$id.'">'.acym_translation($option['label']);
+                echo '<div class="cell grid-x acym__forms__menu__options grid-margin-x acym_vcenter">';
+
+                echo '<label class="cell" for="'.acym_escape($id).'">'.acym_escapeHtml(acym_translation($option['label']));
                 if (!empty($option['description'])) {
-                    ob_start();
                     acym_info(['textShownInTooltip' => $option['description']]);
-                    $label .= ob_get_clean();
                 }
-                $label .= '</label>';
+                echo '</label>';
 
-                ob_start();
                 include acym_getPartial('fields', $option['type']);
-                $categoryOptions[$key] = $label.ob_get_clean();
-            }
-
-            if (!empty($categoryOptions)) {
-                $htmlMenu[] = [
-                    'title' => acym_translation($sections[$category]),
-                    'render' => $categoryOptions,
-                ];
+                echo '</div>';
             }
         }
-
-        return $htmlMenu;
     }
 
     public function renderForm(object $form, bool $edition = false, bool $isShortcode = false): string

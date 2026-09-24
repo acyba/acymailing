@@ -300,6 +300,10 @@ trait DpcalendarInsertion
 
         $varFields = $this->getCustomLayoutVars($element);
         $link = 'index.php?option=com_dpcalendar&view=event&id='.$tag->id.'&calid='.$element->catid;
+        $menuId = $this->getParam('itemid');
+        if (!empty($menuId)) {
+            $link .= '&Itemid='.intval($menuId);
+        }
         $link = $this->finalizeLink($link, $tag);
 
         $varFields['{link}'] = $link;

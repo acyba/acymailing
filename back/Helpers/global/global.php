@@ -2,6 +2,7 @@
 // context verification
 
 use AcyMailing\Classes\ConfigurationClass;
+use AcyMailing\Helpers\SecurityHelper;
 
 /**
  * @param ?mixed $arg
@@ -77,8 +78,7 @@ function acym_display($messages, string $type = 'success', bool $close = true): 
     $remindme = json_decode($config->get('remindme', '[]'), true);
     foreach ($messages as $id => $message) {
         if (strpos($message, 'acym__do__not__remindme') !== false) {
-            preg_match('/title="(.*)"/Ui', $message, $matches);
-            if (in_array($matches[1], $remindme)) {
+            if (preg_match('/title="(.*)"/Ui', $message, $matches) && in_array($matches[1], $remindme)) {
                 continue;
             }
         }
@@ -87,7 +87,7 @@ function acym_display($messages, string $type = 'success', bool $close = true): 
 
         if (is_array($message)) $message = implode('</div><div>', $message);
 
-        echo '<div class="cell auto"><div>'.$message.'</div></div>';
+        echo '<div class="cell auto"><div>'.acym_escapeHtmlWithAllowedTags($message, SecurityHelper::ALLOWED_HTML_MESSAGE).'</div></div>';
 
         if ($close && strpos($message, 'acym__do__not__remindme') === false) {
             echo '<i data-id="'.acym_escape($id).'" class="cell shrink acym__message__close acymicon-close"></i>';

@@ -5,32 +5,35 @@ use AcyMailing\Classes\ListClass;
 
 trait SubscriptionMailboxAction
 {
-    public function onAcymMailboxActionDefine(&$actions)
+    protected function initMailboxActions(): void
+    {
+        $this->mailboxActions = [
+            'acy_list_subscribe' => acym_translation('ACYM_SUBSCRIBE_USER'),
+            'acy_list_unsubscribe' => acym_translation('ACYM_UNSUB_USER'),
+        ];
+    }
+
+    /**
+     * Both actions offer the same list selector
+     */
+    public function displayMailboxActionOptions(string $fieldName): void
     {
         $listClass = new ListClass();
-        $lists = $listClass->getAllWithIdName();
-
-        $actions['acy_list_subscribe'] = new stdClass();
-        $actions['acy_list_subscribe']->name = acym_translation('ACYM_SUBSCRIBE_USER');
-        $actions['acy_list_subscribe']->option = '<div class="intext_select_mailbox cell">';
-        $actions['acy_list_subscribe']->option .= acym_select(
-            $lists,
-            'acym_action[__num__][acy_list_subscribe][list_id]',
-            null,
-            ['class' => 'acym__select']
-        );
-        $actions['acy_list_subscribe']->option .= '</div>';
-
-        $actions['acy_list_unsubscribe'] = new stdClass();
-        $actions['acy_list_unsubscribe']->name = acym_translation('ACYM_UNSUB_USER');
-        $actions['acy_list_unsubscribe']->option = '<div class="intext_select_mailbox cell">';
-        $actions['acy_list_unsubscribe']->option .= acym_select(
-            $lists,
-            'acym_action[__num__][acy_list_unsubscribe][list_id]',
-            null,
-            ['class' => 'acym__select']
-        );
-        $actions['acy_list_unsubscribe']->option .= '</div>';
+        ?>
+		<div class="intext_select_mailbox cell">
+            <?php acym_select(
+                $listClass->getAllWithIdName(),
+                $fieldName.'[list_id]',
+                null,
+                ['class' => 'acym__select'],
+                'value',
+                'text',
+                null,
+                false,
+                true
+            ); ?>
+		</div>
+        <?php
     }
 
     public function onAcymMailboxActionSummaryListing(&$action, &$result)

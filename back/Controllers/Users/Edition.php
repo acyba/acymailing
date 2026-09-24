@@ -61,7 +61,7 @@ trait Edition
         }
 
         if (empty($data['user-information']->language)) {
-            $data['user-information']->language = acym_getLanguageTag();
+            $data['user-information']->language = acym_getDefaultUserLanguage();
         }
 
         return true;
@@ -226,6 +226,7 @@ trait Edition
                     $valuesArray[$value->value] = $valueTmp;
                 }
             }
+
             if (!empty($fieldDB) && !empty($fieldDB->value)) {
                 $fromDB = $fieldClass->getValueFromDB($fieldDB);
                 foreach ($fromDB as $value) {
@@ -234,13 +235,13 @@ trait Edition
             }
 
             $one->display = empty($one->option->display) ? '' : json_decode($one->option->display);
-            $data['allFields'][$one->id] = $one;
+
             if ($one->id == 1) {
                 $defaultValue = empty($data['user-information']->id) ? '' : $data['user-information']->name;
             } elseif ($one->id == 2) {
                 $defaultValue = empty($data['user-information']->id) ? '' : $data['user-information']->email;
             } elseif ($one->id == $languageFieldId) {
-                $defaultValue = empty($data['user-information']->id) ? acym_getLanguageTag() : $data['user-information']->language;
+                $defaultValue = empty($data['user-information']->id) ? acym_getDefaultUserLanguage() : $data['user-information']->language;
             } elseif (
                 isset($data['fieldsValues'][$one->id])
                 && (
@@ -263,17 +264,13 @@ trait Edition
                 $defaultValue = $one->default_value;
             }
 
-            ob_start();
-            $fieldClass->displayField(
-                $one,
-                $defaultValue,
-                $valuesArray,
-                true,
-                !acym_isAdmin(),
-                $data['user-information'],
-                $one->$fieldVisibility != 0
-            );
-            $data['allFields'][$one->id]->html = ob_get_clean();
+            $data['allFields'][$one->id] = [
+                'field' => $one,
+                'defaultValue' => $defaultValue,
+                'values' => $valuesArray,
+                'user' => $data['user-information'],
+                'showField' => $one->$fieldVisibility != 0,
+            ];
         }
     }
 

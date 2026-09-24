@@ -1,85 +1,26 @@
 <?php
 
-use AcyMailing\Types\OperatorInType;
-use AcyMailing\Types\OperatorType;
-
 trait UserAutomationFilters
 {
-    public function onAcymDeclareFilters(array &$filters): void
+    protected function initAutomationFilters(): void
     {
-        $allGroups = acym_getGroups();
-        $groups = ['' => acym_translation('ACYM_NO_GROUP')];
-        foreach ($allGroups as $group) {
-            $groups[$group->id] = $group->text;
-        }
-        $operatorIn = new OperatorInType();
+        $this->automationFilters = [
+            'acy_group' => acym_translation('ACYM_GROUP'),
+            'acy_cmsfield' => acym_translation('ACYM_ACCOUNT_USER_FIELD'),
+        ];
+    }
 
-        $filters['acy_group'] = new stdClass();
-        $filters['acy_group']->name = acym_translation('ACYM_GROUP');
-        $filters['acy_group']->option = '<div class="intext_select_automation cell">';
-        $filters['acy_group']->option .= $operatorIn->display('acym_action[filters][__numor__][__numand__][acy_group][in]');
-        $filters['acy_group']->option .= '</div>';
-        $filters['acy_group']->option .= '<div class="intext_select_automation cell">';
-        $filters['acy_group']->option .= acym_select(
-            $groups,
-            'acym_action[filters][__numor__][__numand__][acy_group][group]',
-            null,
-            ['class' => 'acym__select']
-        );
-        $filters['acy_group']->option .= '</div>';
+    /**
+     * Same fields as the matching condition, only the field name differs
+     */
+    public function displayFilterOptions_acy_group(string $fieldName): void
+    {
+        $this->displayConditionOptions_acy_group($fieldName);
+    }
 
-        if (ACYM_CMS == 'joomla') {
-            $filters['acy_group']->option .= '<div class="cell grid-x medium-3">';
-            ob_start();
-            acym_switch([
-                'name' => 'acym_action[filters][__numor__][__numand__][acy_group][subgroup]',
-                'value' => 1,
-                'label' => acym_translation('ACYM_INCLUDE_SUB_GROUPS'),
-            ]);
-            $filters['acy_group']->option .= ob_get_clean();
-            $filters['acy_group']->option .= '</div>';
-        }
-
-
-        $cmsFields = [];
-        foreach (acym_getColumns('users', false) as $key => $column) {
-            $cmsFields[$column] = $column;
-        }
-
-        // Handle custom fields
-        if (ACYM_CMS == 'joomla' && ACYM_J37) {
-            $query = 'SELECT id, title 
-						FROM #__fields 
-						WHERE context = "com_users.user"
-							AND state = 1
-							AND type IN ("calendar", "checkboxes", "color", "integer", "list", "radio", "sql", "text", "url")
-						ORDER BY title ASC';
-            $customFields = acym_loadObjectList($query);
-            foreach ($customFields as $oneCF) {
-                $cmsFields['cf_'.$oneCF->id] = $oneCF->title;
-            }
-        }
-        $excluded = ['password', 'params', 'activation', 'lastResetTime', 'resetCount', 'optKey', 'otep', 'requireReset', 'user_pass', 'user_activation_key'];
-        foreach ($excluded as $oneExcluded) {
-            unset($cmsFields[$oneExcluded]);
-        }
-
-        $operator = new OperatorType();
-
-        $filters['acy_cmsfield'] = new stdClass();
-        $filters['acy_cmsfield']->name = acym_translation('ACYM_ACCOUNT_USER_FIELD');
-        $filters['acy_cmsfield']->option = '<div class="intext_select_automation cell">';
-        $filters['acy_cmsfield']->option .= acym_select(
-            $cmsFields,
-            'acym_action[filters][__numor__][__numand__][acy_cmsfield][field]',
-            null,
-            ['class' => 'acym__select']
-        );
-        $filters['acy_cmsfield']->option .= '</div>';
-        $filters['acy_cmsfield']->option .= '<div class="intext_select_automation cell">';
-        $filters['acy_cmsfield']->option .= $operator->display('acym_action[filters][__numor__][__numand__][acy_cmsfield][operator]');
-        $filters['acy_cmsfield']->option .= '</div>';
-        $filters['acy_cmsfield']->option .= '<input class="intext_input_automation cell" type="text" name="acym_action[filters][__numor__][__numand__][acy_cmsfield][value]">';
+    public function displayFilterOptions_acy_cmsfield(string $fieldName): void
+    {
+        $this->displayConditionOptions_acy_cmsfield($fieldName);
     }
 
     public function onAcymProcessFilter_acy_group(&$query, $options, $num)

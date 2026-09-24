@@ -55,8 +55,10 @@ class EntitySelectHelper extends AcymObject
         $this->displayListing('available', 'select', $options['entity'], $options['columnsToDisplay'], $options['displayedName']);
         echo '<div class="cell medium-shrink text-center grid-x acym_vcenter"><i class="acymicon-arrows-h cell"></i></div>';
         $this->displayListing('selected', 'unselect', $options['entity'], $options['columnsToDisplay'], $options['displayedName']);
-        if (!empty($options['additionalData'])) {
-            echo $options['additionalData'];
+
+        // Callable rendering extra content
+        if (!empty($options['additionalData']) && !is_string($options['additionalData']) && is_callable($options['additionalData'])) {
+            $options['additionalData']();
         }
 
         if (!empty($options['buttonSubmit']['text'])) {

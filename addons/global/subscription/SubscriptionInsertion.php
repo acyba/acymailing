@@ -302,11 +302,11 @@ trait SubscriptionInsertion
             }
         }
 
-        $unsubscribeLink = str_replace(
+        $unsubscribeLink = htmlspecialchars_decode(str_replace(
             ['{subscriber:id}', '{subscriber:key|urlencode}'],
             [$user->id, urlencode($user->key)],
             $this->unsubscribeLink[$email->id]
-        );
+        ));
         $email->addCustomHeader('List-Unsubscribe', '<'.$unsubscribeLink.'&ajax=1>, <mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body='.$body.'>');
         $email->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
     }

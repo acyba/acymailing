@@ -39,7 +39,7 @@ trait WooCommerceFollowup
                 ['class' => 'acym__select']
             ).'</span>';
 
-        $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
+        $additionalCondition['order_status'] = $this->followupConditionRow('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
         $multiselectProducts = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.acym_selectMultiple(
@@ -64,7 +64,7 @@ trait WooCommerceFollowup
                 ['class' => 'acym__select']
             ).'</span>';
 
-        $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
+        $additionalCondition['products'] = $this->followupConditionRow('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
 
         $multiselectCategories = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.acym_selectMultiple(
@@ -88,15 +88,28 @@ trait WooCommerceFollowup
                 ['class' => 'acym__select']
             ).'</span>';
 
-        $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
+        $additionalCondition['categories'] = $this->followupConditionRow('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
 
         if ($this->wcsInstalled) {
-            $additionalCondition['order_type'] = acym_translation('ACYM_ORDER_TYPE').'<span class="cell large-2 medium-6 acym__followup__condition__select__in-text">'.acym_select(
-                    $this->orderTypes,
+            $orderTypes = $this->orderTypes;
+            $selectedOrderType = empty($followup->condition['order_type']) ? '' : $followup->condition['order_type'];
+
+            $additionalCondition['order_type'] = static function () use ($orderTypes, $selectedOrderType): void {
+                echo esc_html(acym_translation('ACYM_ORDER_TYPE'));
+                echo '<span class="cell large-2 medium-6 acym__followup__condition__select__in-text">';
+                acym_select(
+                    $orderTypes,
                     'followup[condition][order_type]',
-                    empty($followup->condition['order_type']) ? '' : $followup->condition['order_type'],
-                    ['class' => 'acym__select']
-                ).'</span>';
+                    $selectedOrderType,
+                    ['class' => 'acym__select'],
+                    'value',
+                    'text',
+                    null,
+                    false,
+                    true
+                );
+                echo '</span>';
+            };
         }
     }
 

@@ -45,7 +45,3 @@
     @import "global/editor_wysid/modal";
     @import "global/editor_wysid/modalCMS";
 }
-
-.c-scrim--shown, .c-datepicker--open {
-    z-index: 999999999;
-}

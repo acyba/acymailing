@@ -407,7 +407,7 @@ class BounceHelper extends AcymObject
                         } else {
                             $this->_message->html .= ' '.trim(preg_replace('#(charset=".*?\r\n)|Content-(Type|ID|Disposition|Transfer-Encoding):.*?\r\n#is', "", $segment));
                         }
-                    } elseif (preg_match("#Content-Type: .*?/(png|jpg|jpeg|gif)#i", $segment) !== false) {
+                    } elseif (preg_match("#Content-Type: .*?/(png|jpg|jpeg|gif)#i", $segment) === 1) {
                         preg_match('#name="([^"]+)"#i', $segment, $filename);
                         if (empty($filename) || empty($filename[1])) {
                             continue;
@@ -421,6 +421,10 @@ class BounceHelper extends AcymObject
                         }
 
                         $extension = substr($filename, $extensionPos + 1);
+
+                        if (!in_array(strtolower($extension), $this->allowed_extensions) || acym_isForbiddenFileExtension($filename)) {
+                            continue;
+                        }
 
                         // Make sure there is no double extension or space
                         $filename = preg_replace('#[^a-zA-Z0-9]#Uis', '_', substr($filename, 0, $extensionPos));
@@ -438,7 +442,7 @@ class BounceHelper extends AcymObject
                             $filename = $filename.'_('.$fileNumber.')';
                         }
 
-                        if ($attachments && preg_match("#Content-Disposition: attachment;#i", $segment) !== false) {
+                        if ($attachments && preg_match("#Content-Disposition: attachment;#i", $segment) === 1) {
                             $data = trim(substr($segment, strpos($segment, "\r\n\r\n")));
                             if (strpos($segment, 'Content-Transfer-Encoding: base64') !== false) {
                                 $data = base64_decode($data);
@@ -611,9 +615,9 @@ class BounceHelper extends AcymObject
             return;
         }
 
-        // Upload only allowed extensions in the configuration
+        // Upload only allowed extensions in the configuration, and never executable ones
         $extension = substr($filename, $extensionPos + 1);
-        if (!in_array(strtolower($extension), $this->allowed_extensions)) {
+        if (!in_array(strtolower($extension), $this->allowed_extensions) || acym_isForbiddenFileExtension($filename)) {
             return;
         }
 

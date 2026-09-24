@@ -222,8 +222,7 @@
 							<input
 									class="acy_date_picker auto cell text-center acym__stats__chart__line__input__date"
 									id="chart__line__start"
-									type="text"
-									data-acym-translate="0"
+									type="datetime-local"
 									data-start="<?php echo acym_escape($data['mail']->startEndDateHour['start']); ?>">
 						</label>
 						<label class="cell grid-x large-3 medium-6 small-12 acym__stats__chart__date ">
@@ -231,8 +230,7 @@
 							<input
 									class="acy_date_picker auto cell text-center acym__stats__chart__line__input__date"
 									id="chart__line__end"
-									type="text"
-									data-acym-translate="0"
+									type="datetime-local"
 									data-end="<?php echo acym_escape($data['mail']->startEndDateHour['end']); ?>">
 						</label>
 					</div>

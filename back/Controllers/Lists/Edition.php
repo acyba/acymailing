@@ -263,7 +263,7 @@ trait Edition
             }
 
             $returnLink = acym_completeLink('lists&task=settings&listId='.$data['listInformation']->id.'&edition=1&'.$short.'mailid={mailid}');
-            $favoriteTemplate = $this->config->get('favorite_template', 0);
+            $favoriteTemplate = $mailClass->getFavoriteTemplateId();
             $startFrom = empty($favoriteTemplate) ? '' : '&from='.$favoriteTemplate;
 
             if (empty($data['listInformation']->{$full.'_id'})) {

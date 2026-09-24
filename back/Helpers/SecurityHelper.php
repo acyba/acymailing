@@ -22,7 +22,6 @@ class SecurityHelper extends AcymObject
             'class' => true,
             'data-open' => true,
             'readonly' => true,
-            'data-acym-translate' => true,
             'data-rs' => true,
             'onchange' => true,
             'data-reveal' => true,
@@ -108,6 +107,97 @@ class SecurityHelper extends AcymObject
         ],
         'span' => [
             'class' => true,
+        ],
+    ];
+
+    const ALLOWED_HTML_NOTIFICATION = [
+        'a' => [
+            'href' => true,
+            'target' => true,
+            'id' => true,
+            'class' => true,
+            'title' => true,
+        ],
+        'b' => [],
+        'br' => [],
+        'i' => [],
+        'p' => [
+            'class' => true,
+            'title' => true,
+        ],
+        'pre' => [],
+        'strong' => [],
+    ];
+
+    const ALLOWED_HTML_MESSAGE = [
+        'a' => [
+            'href' => true,
+            'target' => true,
+            'id' => true,
+            'class' => true,
+            'title' => true,
+        ],
+        'b' => [],
+        'br' => [],
+        'div' => [
+            'class' => true,
+        ],
+        'i' => [],
+        'li' => [],
+        'p' => [
+            'class' => true,
+            'title' => true,
+        ],
+        'pre' => [],
+        'span' => [
+            'class' => true,
+            'data-acym-email-id' => true,
+        ],
+        'strong' => [],
+        'ul' => [],
+    ];
+
+    const ALLOWED_HTML_CHECKBOX_LABEL = [
+        'div' => [
+            'class' => true,
+        ],
+        'span' => [
+            'class' => true,
+        ],
+        'input' => [
+            'class' => true,
+            'type' => true,
+            'name' => true,
+            'value' => true,
+        ],
+        'select' => [
+            'class' => true,
+            'name' => true,
+            'id' => true,
+        ],
+        'option' => [
+            'value' => true,
+            'selected' => true,
+            'disabled' => true,
+        ],
+    ];
+
+    const ALLOWED_HTML_PARAM_FIELD = [
+        'input' => [
+            'type' => true,
+            'name' => true,
+            'value' => true,
+        ],
+        'select' => [
+            'class' => true,
+            'id' => true,
+            'name' => true,
+            'multiple' => true,
+        ],
+        'option' => [
+            'value' => true,
+            'selected' => true,
+            'disabled' => true,
         ],
     ];
 }

@@ -2,7 +2,7 @@
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
 // context verification
 ?>
-<?php echo acym_escapeHtml($data['warnings']); ?>
+<?php echo acym_escapeHtmlWithAllowedTags($data['warnings'], ['div' => ['class' => true], 'i' => ['class' => true, 'data-id' => true]]); ?>
 <form id="acym_form" enctype="multipart/form-data" action="<?php echo acym_escapeUrl(acym_completeLink(acym_getVar('cmd', 'ctrl'))); ?>" method="post" name="acyForm">
 	<div id="acym__file__select">
 		<div class="acym__file__select grid-x">

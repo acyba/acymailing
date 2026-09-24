@@ -84,8 +84,6 @@ trait Edition
             'all_languages' => $languagesName,
             'form' => $form,
             'all_pages' => $allPagesCMS,
-            'menu_render_settings' => $formClass->prepareMenuHtml($form, 'options'),
-            'menu_render_style' => $formClass->prepareMenuHtml($form, 'styles'),
         ];
 
         parent::display($data);

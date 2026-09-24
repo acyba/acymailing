@@ -143,6 +143,7 @@ class FieldClass extends AcymClass
 
     public function store(int $userID, array $fields, bool $ajax = false): void
     {
+        $uploadedFileFields = [];
         $customField = acym_getVar('array', 'customField', [], 'FILES');
         if (!empty($customField['tmp_name'])) {
             $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
@@ -161,8 +162,9 @@ class FieldClass extends AcymClass
                 while (is_array($fileName) && isset($fileName[0])) {
                     $fileName = $fileName[0];
                 }
+                $fileName = basename($fileName);
 
-                if (!preg_match('#\.('.implode('|', $allowedExtensions).')$#Ui', $fileName)) {
+                if (!acym_fileNameValid($fileName) || !preg_match('#\.('.implode('|', array_map('preg_quote', $allowedExtensions)).')$#i', $fileName)) {
                     $ext = substr($fileName, strrpos($fileName, '.') + 1);
                     if ($ajax) {
                         $this->errors[] = acym_translationSprintf(
@@ -185,7 +187,7 @@ class FieldClass extends AcymClass
                     continue;
                 }
 
-                if (!acym_uploadFile($value, $uploadPath.$fileName)) {
+                if (!acym_isPathWithinDirectory($uploadPath, $uploadPath.$fileName) || !acym_uploadFile($value, $uploadPath.$fileName)) {
                     if ($ajax) {
                         $this->errors[] = acym_translation('ACYM_ERROR_SAVING');
                     } else {
@@ -194,7 +196,8 @@ class FieldClass extends AcymClass
 
                     continue;
                 }
-                $fields[$key] = $customField['name'][$key];
+                $fields[$key] = $fileName;
+                $uploadedFileFields[$key] = true;
             }
         }
 
@@ -249,6 +252,11 @@ class FieldClass extends AcymClass
                 $value = substr($value, 0, $fieldOptions->max_characters);
             }
 
+            // A file field value can only be set through an actual upload, never through a plain posted string
+            if ($field->type === 'file' && strlen($value) !== 0 && empty($uploadedFileFields[$id])) {
+                continue;
+            }
+
             // If deleting a file field, also delete the physical file
             if ($field->type === 'file' && strlen($value) === 0) {
                 $oldValue = acym_loadResult(
@@ -259,13 +267,19 @@ class FieldClass extends AcymClass
                     if (is_array($fileName)) $fileName = $fileName[0];
                     if (empty($fileName)) $fileName = $oldValue;
 
-                    $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
-                    // Try new path (with user folder) first, then legacy path (without user folder)
-                    $filePath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$userID.DS.$fileName);
-                    if (!file_exists($filePath)) {
-                        $filePath = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$fileName);
+                    $fileName = basename($fileName);
+                    if (acym_fileNameValid($fileName)) {
+                        $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
+                        $userfilesBase = acym_cleanPath(ACYM_ROOT.$uploadFolder.'userfiles'.DS);
+                        // Try new path (with user folder) first, then legacy path (without user folder)
+                        $filePath = acym_cleanPath($userfilesBase.$userID.DS.$fileName);
+                        if (!file_exists($filePath)) {
+                            $filePath = acym_cleanPath($userfilesBase.$fileName);
+                        }
+                        if (acym_isPathWithinDirectory($userfilesBase, $filePath)) {
+                            acym_deleteFile($filePath);
+                        }
                     }
-                    acym_deleteFile($filePath);
                 }
             }
 
@@ -562,6 +576,17 @@ class FieldClass extends AcymClass
                 );
         }
 
+        $allowedFieldNameTags = array_merge(SecurityHelper::ALLOWED_HTML_FIELD_NAME, [
+            'a' => [
+                'href' => true,
+                'target' => true,
+                'title' => true,
+                'class' => true,
+                'rel' => true,
+                'aria-label' => true,
+            ],
+        ]);
+
         $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'language'];
         $titleTypes = ['date', 'radio', 'checkbox', 'file'];
 
@@ -580,12 +605,12 @@ class FieldClass extends AcymClass
                 echo '<div class="cell margin-top-1" role="group" aria-labelledby="'.acym_escape($groupLabelId).'"'.($field->required ? ' aria-required="true"' : '').'>';
                 echo '<div id="'.acym_escape($groupLabelId).'" class="acym__users__creation__fields__title">'.acym_escapeHtmlWithAllowedTags(
                         $field->name,
-                        SecurityHelper::ALLOWED_HTML_FIELD_NAME
+                        $allowedFieldNameTags
                     ).'</div>';
             } else {
                 echo '<div class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.acym_escapeHtmlWithAllowedTags(
                         $field->name,
-                        SecurityHelper::ALLOWED_HTML_FIELD_NAME
+                        $allowedFieldNameTags
                     ).'</div>';
             }
         }
@@ -800,7 +825,8 @@ class FieldClass extends AcymClass
                 $downloadUrl = '';
                 if (!empty($defaultValue) && !empty($user->id)) {
                     $fileName = is_array($defaultValue) ? $defaultValue[0] : $defaultValue;
-                    if (!empty($fileName)) {
+                    $fileName = basename($fileName);
+                    if (!empty($fileName) && acym_fileNameValid($fileName)) {
                         $uploadFolder = trim(acym_cleanPath(html_entity_decode(acym_getFilesFolder(true))), DS.' ').DS;
                         $userFilePath = $uploadFolder.'userfiles'.DS.$user->id.DS.$fileName;
                         $legacyFilePath = $uploadFolder.'userfiles'.DS.$fileName;

@@ -18,6 +18,12 @@
             'languages' => 'ACYM_CONFIGURATION_LANGUAGES',
         ];
 
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            unset($tabs['security']);
+        }
+        //__END__demo_
+
         acym_trigger('onConfigurationAddTabs', [&$tabs]);
 
         foreach ($tabs as $oneTab => $title) {

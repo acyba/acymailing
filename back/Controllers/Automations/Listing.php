@@ -34,7 +34,7 @@ trait Listing
     {
         acym_checkToken();
 
-        $automations = acym_getVar('int', 'elements_checked');
+        $automations = acym_getVar('array', 'elements_checked', []);
 
         if (empty($automations)) {
             $this->listing();

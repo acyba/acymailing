@@ -60,7 +60,7 @@ trait Listing
     {
         acym_checkToken();
 
-        $mailboxActionSelected = acym_getVar('int', 'elements_checked');
+        $mailboxActionSelected = acym_getVar('array', 'elements_checked', []);
         if (empty($mailboxActionSelected)) {
             return;
         }

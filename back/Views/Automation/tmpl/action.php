@@ -62,7 +62,7 @@ use AcyMailing\Classes\TagClass;
             }
             ?>
 			<template id="acym__automation__actions__template__<?php echo acym_escape($key); ?>">
-                <?php echo $action->option; ?>
+                <?php acym_displayAddonOption($action); ?>
 			</template>
         <?php } ?>
 		<h6 class="acym__title acym__title__secondary cell"><?php echo acym_escapeHtml(acym_translation('ACYM_SELECT_YOUR_ACTIONS')); ?></h6>

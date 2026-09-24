@@ -14,18 +14,16 @@ trait SubscriptionAutomationTriggers
         'user_unsubscribe' => 'ACYM_WHEN_USER_UNSUBSCRIBES',
     ];
 
-    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    protected function initAutomationTriggers(): void
     {
         foreach ($this->triggers as $key => $name) {
-            $triggers['user'][$key] = new stdClass();
-            $triggers['user'][$key]->name = '<div class="cell shrink">'.acym_translation($name).'</div>';
-            $triggers['user'][$key]->option = '<input type="hidden" name="[triggers][user]['.$key.'][]" value="">';
+            $this->automationTriggers['user'][$key] = acym_translation($name);
         }
     }
 
-    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
+    public function displayTriggerOptions(string $fieldName): void
     {
-        $this->onAcymDeclareTriggers($triggers, $defaultValues);
+        echo '<input type="hidden" name="'.acym_escape($fieldName.'[]').'" value="">';
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

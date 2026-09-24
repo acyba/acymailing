@@ -43,7 +43,7 @@
         [
             'entity' => 'list',
             'columnsToDisplay' => $data['entitySelect']->getColumnsForList(),
-            'additionalData' => $data['importHelper']->additionalDataUsersImport(false),
+            'additionalData' => fn() => $data['importHelper']->displayAdditionalDataUsersImport(false),
         ]
     );
     acym_modal(

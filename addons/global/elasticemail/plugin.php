@@ -33,7 +33,6 @@ class plgAcymElasticemail extends AcymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
-        ob_start();
         ?>
 		<div class="send_settings grid-x cell" id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
@@ -55,7 +54,6 @@ class plgAcymElasticemail extends AcymPlugin
 			</div>
 		</div>
         <?php
-        $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }
 
     public function onAcymTestCredentialSendingMethod($sendingMethod, $credentials)

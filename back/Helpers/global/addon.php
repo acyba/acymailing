@@ -87,3 +87,45 @@ function acym_checkPluginsVersion(): bool
 
     return true;
 }
+
+/**
+ * Displays the option fields of a trigger / filter / condition / action declared by an add-on
+ */
+function acym_displayAddonOption(object $declaration, ?string $fieldName = null): void
+{
+    if (isset($declaration->displayOptions) && is_callable($declaration->displayOptions)) {
+        ($declaration->displayOptions)($fieldName);
+
+        return;
+    }
+
+    if (empty($declaration->option)) {
+        return;
+    }
+
+    // TODO: remove this on version 12, only there for retro-compat of add-ons/plugins not updated along with AcyMailing
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Add-on that still declares its option as a string, escaped on its side. Migrate it to declareTrigger().
+    echo preg_replace_callback(ACYM_REGEX_SWITCHES, 'acym_prefixSwitchIds', $declaration->option);
+}
+
+function acym_getAddonOption(object $declaration, ?string $fieldName = null): string
+{
+    ob_start();
+    try {
+        acym_displayAddonOption($declaration, $fieldName);
+    } finally {
+        $html = ob_get_clean();
+    }
+
+    return $html === false ? '' : $html;
+}
+
+/**
+ * Makes the ids of a switch unique per row of a filter/condition form.
+ *
+ * TODO: remove this on version 12, along with the string options
+ */
+function acym_prefixSwitchIds(array $matches): string
+{
+    return '__numand__'.$matches[1].$matches[2].'__numand__'.$matches[3].'__numand__'.$matches[4].'__numand__'.$matches[5];
+}

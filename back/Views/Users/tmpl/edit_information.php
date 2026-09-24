@@ -1,13 +1,27 @@
 <?php
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- View file, its variables are local to the include scope, not true globals.
 // context verification
+
+use AcyMailing\Classes\FieldClass;
 ?>
 <div class="cell acym__content acym__user__edit__custom__fields margin-y">
     <?php
     if (!empty($data['allFields'])) {
+        $fieldClass = new FieldClass();
         foreach ($data['allFields'] as $field) {
-            if (intval($field->active) === 0) continue;
-            echo $field->html;
+            if (intval($field['field']->active) === 0) {
+				continue;
+            }
+
+            $fieldClass->displayField(
+                $field['field'],
+                $field['defaultValue'],
+                $field['values'],
+                true,
+                !acym_isAdmin(),
+                $field['user'],
+                $field['showField']
+            );
         }
     }
     ?>

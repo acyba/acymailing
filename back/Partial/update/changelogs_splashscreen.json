@@ -1,17 +1,26 @@
 {
-    "max_version": "11.0.0",
+    "max_version": "11.1.0",
     "splash_content": [
         {
-            "menu_title": "Top feature 🔥",
-            "title": "DISCOVER THE BEST FEATURES OF THIS VERSION",
+            "menu_title": "General",
+            "menu_icon": "acymicon-star",
+            "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "Full security rework",
-                    "desc": "The code base has been completely reworked to improve security throughout the whole extension."
+                    "title": "Native date picker",
+                    "desc": "We replaced the date picker with the default html date picker to improve the user experience, the accessibility and performance."
                 },
                 {
-                    "title": "GDPR pixel tracking",
-                    "desc": "We added a new option to handle the pixel tracking according to the new GDPR regulation."
+                    "title": "Tracking preferences checkbox",
+                    "desc": "We added on the profile edition (front-end), a checkbox available for all users to manage their tracking preferences."
+                },
+                {
+                    "title": "Lighter installation package",
+                    "desc": "Development files are no longer included in the third-party libraries shipped with the package, resulting in a lighter and cleaner installation."
+                },
+                {
+                    "title": "Website default language",
+                    "desc": "Newsletters now use the website default language instead of the administrator language for dynamic tags like {date:X}, the 'Read more' text and the default templates."
                 }
             ]
         },
@@ -21,12 +30,59 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "404 after data deletion",
-                    "desc": "We fixed a redirection to a 404 page that occurred after a user deleted their data from the profile page."
+                    "title": "Custom fields security",
+                    "desc": "Security for some custom fields has been enhanced."
                 },
                 {
-                    "title": "Tracked link redirection",
-                    "desc": "We fixed an issue where clicking a tracked link in an email could redirect to the unsubscribe URL when a subscriber custom field containing HTML was inserted in the email body."
+                    "title": "Mailbox actions security",
+                    "desc": "A security issue related to a very specific scenario has been fixed in the mailbox actions."
+                },
+                {
+                    "title": "File upload error message",
+                    "desc": "We fixed the error message displayed when uploading a file of a non-accepted type that showed raw HTML instead of a readable message."
+                },
+                {
+                    "title": "Links in form texts",
+                    "desc": "We have fixed the display of links added in subscription form texts and custom fields that were removed on display."
+                },
+                {
+                    "title": "List-Unsubscribe header",
+                    "desc": "We fixed the List-Unsubscribe header so one-click unsubscribe works again."
+                },
+                {
+                    "title": "HTML characters in translations",
+                    "desc": "Some translations were not properly replacing HTML characters."
+                },
+                {
+                    "title": "Lower case imported emails",
+                    "desc": "Imported email addresses are now always stored in lower case, preventing case sensitive duplicates and subscriptions or custom fields being silently skipped during an import."
+                },
+                {
+                    "title": "Empty date columns on import",
+                    "desc": "Importing users with an empty date column (like the last open or last click date) no longer triggers a database error, the value is now stored as empty."
+                },
+                {
+                    "title": "Campaign creation access error",
+                    "desc": "An 'Access denied for this email' error has been fixed when creating a campaign from the dashboard while the favorite template had been deleted."
+                },
+                {
+                    "title": "Listing action buttons",
+                    "desc": "The action buttons now work again on the follow-up, automation and mailbox action listings, where the duplicate buttons silently reloaded the page without doing the action asked and the statistics button did nothing when clicked."
+                }
+            ]
+        },
+        {
+            "menu_title": "Joomla",
+            "menu_icon": "acymicon-joomla",
+            "title": "WHAT CHANGED FOR JOOMLA",
+            "articles": [
+                {
+                    "title": "Joomla contacts import",
+                    "desc": "We fixed the importing of Joomla contacts that could fail due to a case sensitive issue."
+                },
+                {
+                    "title": "DP Calendar menu item",
+                    "desc": "[add-ons] We added an option to specify the menu item to use for DP Calendar event links."
                 }
             ]
         },
@@ -36,20 +92,8 @@
             "title": "WHAT CHANGED FOR WORDPRESS",
             "articles": [
                 {
-                    "title": "Events Manager timezone",
-                    "desc": "[add-on] The event dates for Events Manager now use the correct timezone."
-                },
-                {
-                    "title": "Transactional emails blocked",
-                    "desc": "We fixed an issue that caused transactional WordPress emails to be silently blocked and not sent when AcyMailing had already handled another email during the same request."
-                },
-                {
-                    "title": "Events in emails timezone",
-                    "desc": "[add-ons] A better timezone management is made for Events Manager events inserted in emails."
-                },
-                {
-                    "title": "Multiple Contact Form 7 forms",
-                    "desc": "[add-ons] A conflict has been fixed when multiple Contact Form 7 forms are shown on the same page and use the same field identifiers."
+                    "title": "Multilingual form 404",
+                    "desc": "The subscription form no longer returns a 404 error when submitted from a secondary language on multilingual websites using Polylang or WPML."
                 }
             ]
         }

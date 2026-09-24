@@ -37,9 +37,14 @@
                 echo '<h5 class="cell acym__title__primary__color padding-left-1">'.acym_escapeHtml(acym_translation('ACYM_SPECIFIC_CONDITIONS_TRIGGER')).'</h5>';
             }
             foreach ($data['additionalCondition'] as $condition) {
-                ?>
-				<span class="cell grid-x acym_vcenter margin-top-1 padding-left-2"><?php echo $condition; ?></span>
-                <?php
+                echo '<span class="cell grid-x acym_vcenter margin-top-1 padding-left-2">';
+                if (!is_string($condition) && is_callable($condition)) {
+                    $condition();
+                } else {
+                    // TODO: remove this on version 12, only there for retro-compat of add-ons/plugins not updated along with AcyMailing
+                    echo acym_escapeHtmlWithAllowedTags($condition, $allowedConditionTags);
+                }
+                echo '</span>';
             }
 
             ?>

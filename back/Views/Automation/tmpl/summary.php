@@ -48,16 +48,20 @@ $summaryAllowedTags = [
 					<br />
 					<div class="cell acym__automation__summary__information__one">
                         <?php
-                        foreach ($data['step']->triggers as $name => $oneTrigger) {
-                            if (!is_string($oneTrigger)) {
-                                $data['step']->triggers[$name] = acym_translation('ACYM_UNKNOWN');
+                        $triggerNum = 0;
+                        foreach ($data['step']->triggers as $oneTrigger) {
+                            if ($triggerNum > 0) {
+                                echo '<br /><span class="acym__automation__summary__information__one__title">'.acym_escapeHtml(
+                                        acym_translation('ACYM_OR')
+                                    ).'</span><br />';
                             }
-                        }
 
-                        echo implode(
-                            '<br /><span class="acym__automation__summary__information__one__title">'.acym_escapeHtml(acym_translation('ACYM_OR')).'</span><br />',
-                            $data['step']->triggers
-                        );
+                            echo acym_escapeHtmlWithAllowedTags(
+                                is_string($oneTrigger) ? $oneTrigger : acym_translation('ACYM_UNKNOWN'),
+                                $summaryAllowedTags
+                            );
+                            $triggerNum++;
+                        }
                         ?>
 					</div>
 				</div>

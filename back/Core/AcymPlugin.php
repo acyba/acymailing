@@ -9,6 +9,11 @@ use Joomla\CMS\HTML\HTMLHelper;
 
 class AcymPlugin extends AcymObject
 {
+    // The row placeholders are replaced by the JS when a row is added to the form
+    const CONDITION_FIELD_NAME = 'acym_condition[conditions][__numor__][__numand__]';
+    const FILTER_FIELD_NAME = 'acym_action[filters][__numor__][__numand__]';
+    const MAILBOX_ACTION_FIELD_NAME = 'acym_action[__num__]';
+
     public string $cms = 'all';
     public string $name = '';
     public bool $installed = true;
@@ -57,6 +62,12 @@ class AcymPlugin extends AcymObject
     private bool $active;
     public array $settings = [];
     private array $savedSettings = [];
+
+    public array $automationTriggers = [];
+    public array $automationActions = [];
+    public array $automationConditions = [];
+    public array $automationFilters = [];
+    public array $mailboxActions = [];
 
     public function __construct()
     {
@@ -336,7 +347,11 @@ class AcymPlugin extends AcymObject
             'title' => 'ACYM_DOCUMENTATION',
             'type' => 'custom',
             'name' => 'documentation',
-            'output' => '<a target="_blank" href="'.ACYM_DOCUMENTATION.'main-pages/campaigns/automatic-campaigns#dont-send-twice-the-same-content"><i class="acymicon-book"></i></a>',
+            'output' => static function (): void {
+                echo '<a target="_blank" href="'.acym_escapeUrl(
+                        ACYM_DOCUMENTATION.'main-pages/campaigns/automatic-campaigns#dont-send-twice-the-same-content'
+                    ).'"><i class="acymicon-book"></i></a>';
+            },
             'js' => '',
             'section' => 'ACYM_AUTO_CAMPAIGNS_OPTIONS',
         ];
@@ -790,14 +805,229 @@ class AcymPlugin extends AcymObject
         return $this->pluginHelper->managePicts($insertionOptions, $htmlResult);
     }
 
+    /**
+     * Keep this method untyped until v12
+     */
+    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    {
+        if (empty($this->automationTriggers) && method_exists($this, 'initAutomationTriggers')) {
+            $this->initAutomationTriggers();
+        }
+
+        foreach ($this->automationTriggers as $group => $groupTriggers) {
+            foreach ($groupTriggers as $key => $name) {
+                $triggers[$group][$key] = $this->declareTrigger($key, $name, $defaultValues, $group);
+            }
+        }
+    }
+
+    /**
+     * Keep this method untyped until v12
+     */
+    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
+    {
+        $this->onAcymDeclareTriggers($triggers, $defaultValues);
+    }
+
+    /**
+     * Declares name and options callbacks for automation/scenario triggers
+     */
+    protected function declareTrigger(string $key, string $name, $defaultValues = [], string $group = 'user'): object
+    {
+        $trigger = new \stdClass();
+        $trigger->name = $name;
+
+        if (!is_array($defaultValues)) {
+            $defaultValues = [];
+        }
+
+        $method = 'displayTriggerOptions_'.$key;
+        if (!method_exists($this, $method)) {
+            $method = 'displayTriggerOptions';
+        }
+
+        if (method_exists($this, $method)) {
+            $automationFieldName = '[triggers]['.$group.']['.$key.']';
+            $trigger->displayOptions = function (?string $fieldName = null) use ($method, $defaultValues, $key, $automationFieldName): void {
+                $this->$method($fieldName === null ? $automationFieldName : $fieldName, $defaultValues, $key);
+            };
+        }
+
+        return $trigger;
+    }
+
+    public function onAcymDeclareActions(array &$actions): void
+    {
+        if (empty($this->automationActions) && method_exists($this, 'initAutomationActions')) {
+            $this->initAutomationActions();
+        }
+
+        foreach ($this->automationActions as $key => $name) {
+            $actions[$key] = $this->declareAction($key, $name);
+        }
+    }
+
+    public function onAcymDeclareActionsScenario(array &$actions): void
+    {
+        $this->onAcymDeclareActions($actions);
+    }
+
+    /**
+     * Declares name and options callbacks for an automation/scenario action
+     */
+    protected function declareAction(string $key, string $name): object
+    {
+        $action = new \stdClass();
+        $action->name = $name;
+
+        $method = 'displayActionOptions_'.$key;
+        if (!method_exists($this, $method)) {
+            $method = 'displayActionOptions';
+        }
+
+        if (method_exists($this, $method)) {
+            $action->displayOptions = function () use ($method, $key): void {
+                $this->$method($key);
+            };
+        }
+
+        return $action;
+    }
+
+    public function onAcymDeclareConditions(array &$conditions): void
+    {
+        if (empty($this->automationConditions) && method_exists($this, 'initAutomationConditions')) {
+            $this->initAutomationConditions();
+        }
+
+        foreach ($this->automationConditions as $group => $groupConditions) {
+            foreach ($groupConditions as $key => $name) {
+                $conditions[$group][$key] = $this->declareCondition($key, $name);
+            }
+        }
+    }
+
+    public function onAcymDeclareConditionsScenario(array &$conditions): void
+    {
+        $this->onAcymDeclareConditions($conditions);
+    }
+
+    public function onAcymDeclareFilters(array &$filters): void
+    {
+        if (empty($this->automationFilters) && method_exists($this, 'initAutomationFilters')) {
+            $this->initAutomationFilters();
+        }
+
+        foreach ($this->automationFilters as $key => $name) {
+            $filters[$key] = $this->declareFilter($key, $name);
+        }
+    }
+
+    /**
+     * Returns a field name without its acym_condition / acym_action prefix.
+     */
+    protected function getFieldNameWithoutPrefix(string $fieldName): string
+    {
+        return str_replace(['acym_condition', 'acym_action'], '', $fieldName);
+    }
+
+    protected function declareCondition(string $key, string $name): object
+    {
+        $condition = new \stdClass();
+        $condition->name = $name;
+
+        $renderer = $this->getOptionsRenderer('displayConditionOptions', $key, self::CONDITION_FIELD_NAME.'['.$key.']');
+        if ($renderer !== null) {
+            $condition->displayOptions = $renderer;
+        }
+
+        return $condition;
+    }
+
+    public function onAcymMailboxActionDefine(&$actions)
+    {
+        if (empty($this->mailboxActions) && method_exists($this, 'initMailboxActions')) {
+            $this->initMailboxActions();
+        }
+
+        foreach ($this->mailboxActions as $key => $name) {
+            $actions[$key] = $this->declareMailboxAction($key, $name);
+        }
+    }
+
+    /**
+     * A follow-up condition row: a translated sentence holding the selectors the add-on built.
+     */
+    protected function followupConditionRow(string $translationKey, string ...$fields): callable
+    {
+        return static function () use ($translationKey, $fields): void {
+            echo acym_translationSprintf($translationKey, ...$fields);
+        };
+    }
+
+    protected function declareMailboxAction(string $key, string $name): object
+    {
+        $action = new \stdClass();
+        $action->name = $name;
+
+        $renderer = $this->getOptionsRenderer('displayMailboxActionOptions', $key, self::MAILBOX_ACTION_FIELD_NAME.'['.$key.']');
+        if ($renderer !== null) {
+            $action->displayOptions = $renderer;
+        }
+
+        return $action;
+    }
+
+    protected function declareFilter(string $key, string $name): object
+    {
+        $filter = new \stdClass();
+        $filter->name = $name;
+
+        $renderer = $this->getOptionsRenderer('displayFilterOptions', $key, self::FILTER_FIELD_NAME.'['.$key.']');
+        if ($renderer !== null) {
+            $filter->displayOptions = $renderer;
+        }
+
+        return $filter;
+    }
+
+    /**
+     * Builds the callback that displays the option fields of a declaration.
+     */
+    private function getOptionsRenderer(string $methodPrefix, string $key, string $defaultFieldName): ?callable
+    {
+        $method = $methodPrefix.'_'.$key;
+        if (!method_exists($this, $method)) {
+            $method = $methodPrefix;
+        }
+
+        if (!method_exists($this, $method)) {
+            return null;
+        }
+
+        return function (?string $fieldName = null) use ($method, $key, $defaultFieldName): void {
+            $this->$method($fieldName === null ? $defaultFieldName : $fieldName, $key);
+        };
+    }
+
+    /**
+     * Most add-ons offer the same choices as conditions and as filters, the only difference being the name the fields are nested under
+     */
     protected function filtersFromConditions(array &$filters): void
     {
-        $newFilters = [];
+        $conditions = [];
+        $this->onAcymDeclareConditions($conditions);
 
-        $this->onAcymDeclareConditions($newFilters);
-        foreach ($newFilters as $oneType) {
-            foreach ($oneType as $oneFilterName => $oneFilter) {
-                if (!empty($oneFilter->option)) $oneFilter->option = str_replace(['acym_condition', '[conditions]'], ['acym_action', '[filters]'], $oneFilter->option);
+        foreach ($conditions as $oneGroup) {
+            foreach ($oneGroup as $oneFilterName => $oneFilter) {
+                $renderer = $this->getOptionsRenderer('displayConditionOptions', $oneFilterName, self::FILTER_FIELD_NAME.'['.$oneFilterName.']');
+                if ($renderer !== null) {
+                    $oneFilter->displayOptions = $renderer;
+                } elseif (!empty($oneFilter->option)) {
+                    // TODO: remove this on version 12, only there for retro-compat of add-ons/plugins not updated along with AcyMailing
+                    $oneFilter->option = str_replace(['acym_condition', '[conditions]'], ['acym_action', '[filters]'], $oneFilter->option);
+                }
+
                 $filters[$oneFilterName] = $oneFilter;
             }
         }
@@ -1120,12 +1350,7 @@ class AcymPlugin extends AcymObject
 
     public function displayCustomViewEditor(): void
     {
-        $plugin = new \stdClass();
-        $plugin->folder_name = $this->name;
-        $plugin->settings = $this->settings;
-        $this->generateSettings($plugin);
-
-        if (empty($plugin->settings['custom_view'])) {
+        if (empty($this->settings['custom_view']) || !acym_isAdmin()) {
             return;
         }
 
@@ -1133,7 +1358,7 @@ class AcymPlugin extends AcymObject
         echo acym_escapeHtml(acym_translation('ACYM_ADDON_SETTINGS'));
         echo '<i class="acymicon-keyboard-arrow-up"></i></p>';
         echo '<div class="acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">';
-        echo $plugin->settings['custom_view'];
+        $this->displayCustomView($this->settings['custom_view']);
         echo '</div>';
     }
 
@@ -1234,81 +1459,11 @@ class AcymPlugin extends AcymObject
                     $field['value'],
                     'cell shrink'
                 );
-            } elseif ($field['type'] === 'custom_view' && acym_isAdmin()) {
-                $idCustomView = 'acym__plugins__installed__custom-view__'.$this->name;
-                $ctrl = acym_getVar('string', 'ctrl', '');
-                $classTooltip = $ctrl === 'dynamics' ? '' : 'wysid_tooltip';
-                $text .= '<label class="cell">';
-                $text .= acym_translation('ACYM_CUSTOM_VIEW');
+            } elseif ($field['type'] === 'custom_view') {
                 ob_start();
-                acym_info(
-                    [
-                        'textShownInTooltip' => 'ACYM_CUSTOM_VIEW_DESC',
-                        'classText' => $classTooltip,
-                    ]
-                );
+                $this->displayCustomView($field);
                 $text .= ob_get_clean();
-                $text .= '</label>';
-
-                if (empty($field['tags'])) {
-                    $field['tags'] = [];
-                }
-
-                ob_start();
-                acym_info(
-                    [
-                        'textShownInTooltip' => acym_translation('ACYM_DYNAMIC_CONTENT_DESC'),
-                    ]
-                );
-                $tooltip = ob_get_clean();
-
-                $modalContent = '<div id="'.acym_escape($idCustomView).'" class="cell grid-x acym__plugins__installed__custom-view" acym-data-tags="'.acym_escape(
-                        json_encode($field['tags'])
-                    ).'">
-						<h2 class="cell text-center acym__title__primary__color">'.acym_translationSprintf('ACYM_CUSTOM_VIEW_FOR_X', $this->pluginDescription->name).'</h2>
-						<div class="cell grid-x acym__plugins__installed__custom-view__edit-container">
-							<div class="acym__plugins__installed__custom-view__editor-loader grid-x cell align-center acym_vcenter" v-if="loading">
-								<div class="cell shrink acym_loader_logo">
-									'.acym_fileGetContent(ACYM_IMAGES.'logos/logo_grey.svg').'
-								</div>
-							</div>
-							<vue-prism-editor :emitEvents="true" class="cell acym__plugins__installed__custom-view__code cell auto" v-model="code" :language="language" lineNumbers="true"></vue-prism-editor>
-							<div class="cell grid-x medium-3 margin-left-1 acym__plugins__installed__custom-view__tags">
-								<h3 class="acym__title acym__title__secondary cell text-center">'.acym_escapeHtml(acym_translation('ACYM_DYNAMIC_CONTENT')).$tooltip.'</h3>
-								<div class="cell acym__plugins__installed__custom-view__tag" v-for="(trad, tag) in tags" :key="tag" @click.prevent="insertTag(tag)">{{ trad }}</div>
-							</div>
-						</div>
-						<div class="cell grid-x acym__plugins__installed__custom-view__actions acym_vcenter margin-top-1 padding-bottom-1">
-							<div class="cell auto grid-x">
-								<button type="button" class="cell shrink button-secondary button" @click="resetView">'.acym_escapeHtml(acym_translation('ACYM_RESET_VIEW')).'</button>
-								<div class="cell shrink margin-right-2 acym_vcenter margin-left-1">
-									<i v-if="deleting" class="acymicon-spin acymicon-circle-o-notch" style="margin-bottom: 0; line-height: 26px;"></i>
-									<span v-if="deleted">{{ messageDeleted }}</span>
-								</div>
-							</div>
-							<div class="cell auto align-right grid-x">
-								<div class="cell shrink margin-right-2 acym_vcenter">
-									<i v-if="saving" class="acymicon-spin acymicon-circle-o-notch" style="margin-bottom: 0; line-height: 26px;"></i>
-									<span v-if="saved">{{ messageSaved }}</span>
-								</div>
-								<button @click="save()" class="cell shrink button" type="button">'.acym_escapeHtml(acym_translation('ACYM_SAVE_NEW_CUSTOM_VIEW_VERSION')).'</button>
-							</div>
-						</div>
-					</div>';
-                ob_start();
-                acym_modal(
-                    acym_translation('ACYM_EDIT_CUSTOM_VIEW'),
-                    $modalContent,
-                    null,
-                    [
-                        'acym-data-plugins-id' => $idCustomView,
-                        'acym-data-plugin-class' => get_class($this),
-                        'acym-data-plugin-folder' => $this->name,
-                    ],
-                    ['class' => 'cell button']
-                );
-                $text .= ob_get_clean();
-            } elseif ($field['type'] == 'multikeyvalue') {
+            } elseif ($field['type'] === 'multikeyvalue') {
                 $text .= '<label class="cell shrink">'.$field['label'].'</label>';
 
                 $text .= '<div class="multikeyvalue_container grid-x">';
@@ -1316,26 +1471,105 @@ class AcymPlugin extends AcymObject
                 if (!empty($field['value'])) {
                     $headers = json_decode($field['value'], true);
                     foreach ($headers as $headerKey => $headerValue) {
-                        $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_DKIM_KEY', true).'" value="'.acym_escape($headerKey).'"/>';
-                        $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_VALUE', true).'" value="'.acym_escape($headerValue).'" />';
+                        $text .= '<input type="text" class="cell" placeholder="'.acym_escape(acym_translation('ACYM_DKIM_KEY')).'" value="'.acym_escape($headerKey).'"/>';
+                        $text .= '<input type="text" class="cell" placeholder="'.acym_escape(acym_translation('ACYM_VALUE')).'" value="'.acym_escape($headerValue).'" />';
                         $text .= '<div class="multikeyvalue_container_separator cell small-6"></div>';
                     }
                 }
 
-                $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_DKIM_KEY', true).'" value=""/>';
-                $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_VALUE', true).'" value="" />';
+                $text .= '<input type="text" class="cell" placeholder="'.acym_escape(acym_translation('ACYM_DKIM_KEY')).'" value=""/>';
+                $text .= '<input type="text" class="cell" placeholder="'.acym_escape(acym_translation('ACYM_VALUE')).'" value="" />';
 
-                $text .= '<button class="button multikeyvalue_container_new">'.acym_translation('ACYM_ADD_NEW').'</button>';
+                $text .= '<button class="button multikeyvalue_container_new">'.acym_escapeHtml(acym_translation('ACYM_ADD_NEW')).'</button>';
 
-                $text .= '<input type="hidden" name="'.$name.'" value="" />';
+                $text .= '<input type="hidden" name="'.acym_escape($name).'" value="" />';
                 $text .= '</div>';
-            } elseif ($field['type'] == 'custom') {
+            } elseif ($field['type'] === 'custom') {
                 $text .= $field['content'];
             }
             $plugin->settings[$key] = $text;
         }
 
         return true;
+    }
+
+    protected function displayCustomView(array $field): void
+    {
+        if (!acym_isAdmin()) {
+            return;
+        }
+
+        $idCustomView = 'acym__plugins__installed__custom-view__'.$this->name;
+        $ctrl = acym_getVar('string', 'ctrl', '');
+        $classTooltip = $ctrl === 'dynamics' ? '' : 'wysid_tooltip';
+
+        echo '<label class="cell">';
+        echo acym_escapeHtml(acym_translation('ACYM_CUSTOM_VIEW'));
+        acym_info(
+            [
+                'textShownInTooltip' => 'ACYM_CUSTOM_VIEW_DESC',
+                'classText' => $classTooltip,
+            ]
+        );
+        echo '</label>';
+
+        if (empty($field['tags'])) {
+            $field['tags'] = [];
+        }
+
+        ob_start();
+        acym_info(
+            [
+                'textShownInTooltip' => acym_translation('ACYM_DYNAMIC_CONTENT_DESC'),
+            ]
+        );
+        $tooltip = ob_get_clean();
+
+        $modalContent = '<div id="'.acym_escape($idCustomView).'" class="cell grid-x acym__plugins__installed__custom-view" acym-data-tags="'.acym_escape(
+                json_encode($field['tags'])
+            ).'">
+				<h2 class="cell text-center acym__title__primary__color">'.acym_escapeHtml(acym_translationSprintf('ACYM_CUSTOM_VIEW_FOR_X', $this->pluginDescription->name)).'</h2>
+				<div class="cell grid-x acym__plugins__installed__custom-view__edit-container">
+					<div class="acym__plugins__installed__custom-view__editor-loader grid-x cell align-center acym_vcenter" v-if="loading">
+						<div class="cell shrink acym_loader_logo">
+							'.acym_fileGetContent(ACYM_IMAGES.'logos/logo_grey.svg').'
+						</div>
+					</div>
+					<vue-prism-editor :emitEvents="true" class="cell acym__plugins__installed__custom-view__code cell auto" v-model="code" :language="language" lineNumbers="true"></vue-prism-editor>
+					<div class="cell grid-x medium-3 margin-left-1 acym__plugins__installed__custom-view__tags">
+						<h3 class="acym__title acym__title__secondary cell text-center">'.acym_escapeHtml(acym_translation('ACYM_DYNAMIC_CONTENT')).$tooltip.'</h3>
+						<div class="cell acym__plugins__installed__custom-view__tag" v-for="(trad, tag) in tags" :key="tag" @click.prevent="insertTag(tag)">{{ trad }}</div>
+					</div>
+				</div>
+				<div class="cell grid-x acym__plugins__installed__custom-view__actions acym_vcenter margin-top-1 padding-bottom-1">
+					<div class="cell auto grid-x">
+						<button type="button" class="cell shrink button-secondary button" @click="resetView">'.acym_escapeHtml(acym_translation('ACYM_RESET_VIEW')).'</button>
+						<div class="cell shrink margin-right-2 acym_vcenter margin-left-1">
+							<i v-if="deleting" class="acymicon-spin acymicon-circle-o-notch" style="margin-bottom: 0; line-height: 26px;"></i>
+							<span v-if="deleted">{{ messageDeleted }}</span>
+						</div>
+					</div>
+					<div class="cell auto align-right grid-x">
+						<div class="cell shrink margin-right-2 acym_vcenter">
+							<i v-if="saving" class="acymicon-spin acymicon-circle-o-notch" style="margin-bottom: 0; line-height: 26px;"></i>
+							<span v-if="saved">{{ messageSaved }}</span>
+						</div>
+						<button @click="save()" class="cell shrink button" type="button">'.acym_escapeHtml(acym_translation('ACYM_SAVE_NEW_CUSTOM_VIEW_VERSION')).'</button>
+					</div>
+				</div>
+			</div>';
+
+        acym_modal(
+            acym_translation('ACYM_EDIT_CUSTOM_VIEW'),
+            $modalContent,
+            null,
+            [
+                'acym-data-plugins-id' => $idCustomView,
+                'acym-data-plugin-class' => get_class($this),
+                'acym-data-plugin-folder' => $this->name,
+            ],
+            ['class' => 'cell button']
+        );
     }
 
     /**

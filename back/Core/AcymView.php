@@ -66,13 +66,6 @@ abstract class AcymView extends AcymObject
             $controller->loadScripts($view);
         }
 
-        // Display enqueued messages
-        $notifications = acym_getVar('array', 'acynotif', [], 'SESSION');
-        if (!empty($notifications)) {
-            echo implode('', $notifications);
-            acym_setSession('acynotif', []);
-        }
-
         // On pages with the editor, we need to put the wrapper inside the form
         $outsideForm = (strpos($name, 'mails') !== false && $view === 'edit') || (strpos($name, 'campaigns') !== false && $view === 'edit_email');
         if ($outsideForm) {

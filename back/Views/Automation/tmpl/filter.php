@@ -107,13 +107,13 @@
 		<div class="cell grid-x acym__automation__filter__container"
 		     id="acym__automation__filters__type__classic" <?php echo $data['type_filter'] === 'classic' ? '' : 'style="display:none;"'; ?>>
             <?php
-            foreach ($data['classic_option'] as $key => $filterHtml) {
+            foreach ($data['classic_filters'] as $key => $filter) {
                 if (empty($key)) {
                     continue;
                 }
                 ?>
 				<template id="acym__automation__filter__classic__template__<?php echo acym_escape($key); ?>">
-                    <?php echo $filterHtml; ?>
+                    <?php acym_displayAddonOption($filter); ?>
 				</template>
             <?php } ?>
 			<div class="cell grid-x acym__content acym__automation__group__filter" data-filter-number="0">

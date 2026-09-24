@@ -22,10 +22,10 @@ use AcyMailing\Classes\CampaignClass;
                 $class .= $data['currentCampaign']->draft ? '' : ' disabled';
                 ?>
 				<button type="button"
-				        class="cell medium-6 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo acym_escape($class); ?>"
-				        acym-button-radio-group="sendingType"
-				        id="acym__campaign__sendsettings__now"
-				        data-sending-type="<?php echo acym_escape($data['campaignClass']::SENDING_TYPE_NOW); ?>">
+						class="cell medium-6 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo acym_escape($class); ?>"
+						acym-button-radio-group="sendingType"
+						id="acym__campaign__sendsettings__now"
+						data-sending-type="<?php echo acym_escape($data['campaignClass']::SENDING_TYPE_NOW); ?>">
                     <?php echo acym_escapeHtml(acym_translation('ACYM_NOW')); ?>
 				</button>
 			</div>
@@ -39,10 +39,10 @@ use AcyMailing\Classes\CampaignClass;
                     echo 'data-acym-tooltip="'.acym_escape(acym_translationSprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Essential')).'"';
                 };
                 ?>
-				        class="cell medium-6 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo acym_escape($class); ?>"
-				        acym-button-radio-group="sendingType"
-				        id="acym__campaign__sendsettings__scheduled"
-				        data-sending-type="<?php echo acym_escape(CampaignClass::SENDING_TYPE_SCHEDULED); ?>">
+						class="cell medium-6 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo acym_escape($class); ?>"
+						acym-button-radio-group="sendingType"
+						id="acym__campaign__sendsettings__scheduled"
+						data-sending-type="<?php echo acym_escape(CampaignClass::SENDING_TYPE_SCHEDULED); ?>">
                     <?php echo acym_escapeHtml(acym_translation('ACYM_SCHEDULED')); ?>
 				</button>
 			</div>
@@ -53,29 +53,27 @@ use AcyMailing\Classes\CampaignClass;
 <h5 class="cell margin-top-1 margin-bottom-1 acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_ADDITIONAL_SETTINGS')); ?></h5>
 <div class="cell grid-x margin-top-1 margin-y">
 	<div class="cell medium-11 grid-margin-x grid-x acym__campaign__sendsettings__params"
-	     data-show="acym__campaign__sendsettings__now" <?php echo $data['currentCampaign']->send_now ? '' : 'style="display: none"'; ?>>
+		 data-show="acym__campaign__sendsettings__now" <?php echo $data['currentCampaign']->send_now ? '' : 'style="display: none"'; ?>>
 		<p class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_SENT_AS_SOON_CAMPAIGN_SAVE')); ?></p>
 	</div>
 	<div class="cell grid-x acym__campaign__sendsettings__params"
-	     data-show="acym__campaign__sendsettings__scheduled" <?php echo $data['currentCampaign']->send_scheduled ? '' : 'style="display: none"'; ?>>
+		 data-show="acym__campaign__sendsettings__scheduled" <?php echo $data['currentCampaign']->send_scheduled ? '' : 'style="display: none"'; ?>>
 		<div class="cell grid-x acym__campaign__sendsettings__display-send-type-scheduled">
 			<p id="acym__campaign__sendsettings__scheduled__send-date__label" class="cell shrink padding-next-1">
                 <?php echo acym_escapeHtml(acym_translation('ACYM_CAMPAIGN_WILL_BE_SENT')); ?>
 			</p>
 			<label class="cell shrink" for="acym__campaign__sendsettings__send">
                 <?php
-                $value = empty($data['currentCampaign']->sending_date) ? '' : acym_date($data['currentCampaign']->sending_date, 'Y-m-d H:i');
+                $value = empty($data['currentCampaign']->sending_date) ? '' : acym_date($data['currentCampaign']->sending_date, 'Y-m-d\TH:i');
                 $required = $data['currentCampaign']->send_scheduled ? 'required="required"' : '';
                 acym_tooltip(
                     [
-                        'hoveredText' => '<input 
-							class="text-center acy_date_picker" 
-							data-acym-translate="0" 
-							type="text" 
-							name="sendingDate" 
-							id="acym__campaign__sendsettings__send-type-scheduled__date" 
-							value="'.acym_escape($value).'" 
-							readonly
+                        'hoveredText' => '<input
+							class="text-center acy_date_picker"
+							type="datetime-local"
+							name="sendingDate"
+							id="acym__campaign__sendsettings__send-type-scheduled__date"
+							value="'.acym_escape($value).'"
 							'.$required.'>',
                         'textShownInTooltip' => acym_translation('ACYM_CLICK_TO_EDIT'),
                     ]

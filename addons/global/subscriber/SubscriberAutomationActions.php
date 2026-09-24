@@ -49,7 +49,29 @@ trait SubscriberAutomationActions
         exit;
     }
 
-    public function onAcymDeclareActions(array &$actions): void
+    protected function initAutomationActions(): void
+    {
+        $this->automationActions = [
+            'acy_user' => acym_translation('ACYM_ACTION_ON_USERS'),
+            'acy_user_value' => acym_translation('ACYM_SET_USER_VALUE'),
+            'acy_add_queue' => acym_translation('ACYM_ADD_EMAIL_QUEUE'),
+            'acy_send_email' => acym_translation('ACYM_SEND_EMAIL'),
+            'acy_remove_queue' => acym_translation('ACYM_REMOVE_EMAIL_QUEUE'),
+        ];
+
+        if ($this->config->get('require_confirmation', '1') === '1') {
+            $this->automationActions['resend_confirmation'] = acym_translation('ACYM_RESEND_CONFIRMATION');
+        }
+    }
+
+    public function onAcymDeclareActionsScenario(array &$actions): void
+    {
+        $this->onAcymDeclareActions($actions);
+
+        unset($actions['acy_add_queue']);
+    }
+
+    public function displayActionOptions_acy_user(): void
     {
         $userActions = [
             'confirm' => acym_translation('ACYM_CONFIRM_USER'),
@@ -59,13 +81,11 @@ trait SubscriberAutomationActions
             'delete' => acym_translation('ACYM_DELETE_USER'),
         ];
 
-        $actions['acy_user'] = new stdClass();
-        $actions['acy_user']->name = acym_translation('ACYM_ACTION_ON_USERS');
-
-        ob_start();
         include acym_getPartial('actions', 'acy_user');
-        $actions['acy_user']->option = ob_get_clean();
+    }
 
+    public function displayActionOptions_acy_user_value(): void
+    {
         $userClass = new UserClass();
         $userFields = $userClass->getAllColumnsUserAndCustomField(true);
         unset($userFields['id']);
@@ -87,49 +107,34 @@ trait SubscriberAutomationActions
 
         $fieldClass = new FieldClass();
         $customFields = $fieldClass->getAllFieldsForUser();
-        $customFieldValues = [];
 
-        $actions['acy_user_value'] = new stdClass();
-        $actions['acy_user_value']->name = acym_translation('ACYM_SET_USER_VALUE');
-        ob_start();
         include acym_getPartial('actions', 'acy_user_value');
-        $actions['acy_user_value']->option = ob_get_clean();
+    }
 
-        $actions['acy_add_queue'] = new stdClass();
-        $actions['acy_add_queue']->name = acym_translation('ACYM_ADD_EMAIL_QUEUE');
-        ob_start();
+    public function displayActionOptions_acy_add_queue(): void
+    {
         include acym_getPartial('actions', 'acy_add_queue');
-        $actions['acy_add_queue']->option = ob_get_clean();
+    }
 
-        $actions['acy_send_email'] = new stdClass();
-        $actions['acy_send_email']->name = acym_translation('ACYM_SEND_EMAIL');
-        ob_start();
+    public function displayActionOptions_acy_send_email(): void
+    {
         include acym_getPartial('actions', 'acy_send_email');
-        $actions['acy_send_email']->option = ob_get_clean();
+    }
 
-        $actions['acy_remove_queue'] = new stdClass();
-        $actions['acy_remove_queue']->name = acym_translation('ACYM_REMOVE_EMAIL_QUEUE');
+    public function displayActionOptions_acy_remove_queue(): void
+    {
         $ajaxParams = [
             'plugin' => __CLASS__,
             'trigger' => 'searchEmails',
         ];
-        ob_start();
-        include acym_getPartial('actions', 'acy_remove_queue');
-        $actions['acy_remove_queue']->option = ob_get_clean();
 
-        if ($this->config->get('require_confirmation', '1') === '1') {
-            $actions['resend_confirmation'] = new stdClass();
-            $actions['resend_confirmation']->name = acym_translation('ACYM_RESEND_CONFIRMATION');
-            // The action doesn't save if there are no options
-            $actions['resend_confirmation']->option = '<input type="hidden" name="acym_action[actions][__and__][resend_confirmation][save]" />';
-        }
+        include acym_getPartial('actions', 'acy_remove_queue');
     }
 
-    public function onAcymDeclareActionsScenario(array &$actions): void
+    public function displayActionOptions_resend_confirmation(): void
     {
-        $this->onAcymDeclareActions($actions);
-
-        unset($actions['acy_add_queue']);
+        // The action doesn't save if there are no options
+        echo '<input type="hidden" name="acym_action[actions][__and__][resend_confirmation][save]" />';
     }
 
     public function onAcymProcessAction_acy_user(&$query, $action)

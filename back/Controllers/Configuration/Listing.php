@@ -90,9 +90,6 @@ trait Listing
         acym_trigger('onAcymGetSendingMethods', [&$data]);
         acym_trigger('onAcymGetSendingMethodsSelected', [&$data]);
 
-        $data['sendingMethodsHtmlSettings'] = [];
-        acym_trigger('onAcymGetSendingMethodsHtmlSetting', [&$data]);
-
         $data['embedImage'] = [];
         $data['embedAttachment'] = [];
         acym_trigger('onAcymSendingMethodOptions', [&$data]);
@@ -294,9 +291,9 @@ trait Listing
         $this->handleReplyTo($formData);
         $this->handleWordWrap($formData);
         $this->handleQueueSettings($formData);
-        $this->handleDemoSite($formData);
         $this->handleAcl($formData);
         $this->handleSelect2Fields($formData);
+        $this->handleDemoSite($formData);
         $this->handleAcyChecker($formData);
         $this->handleNewDkim($formData);
         $this->handleEmails($formData);
@@ -389,6 +386,11 @@ trait Listing
         if (!ACYM_PRODUCTION) {
             $formData['wp_access'] = 'demo';
             $formData['license_key'] = '';
+
+            unset($formData['uploadfolder']);
+            unset($formData['allowed_files']);
+            unset($formData['allowed_hosts']);
+            unset($formData['cron_savepath']);
         }
         //__END__demo_
     }

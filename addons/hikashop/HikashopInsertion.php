@@ -401,16 +401,26 @@ trait HikashopInsertion
                 'title' => 'DISCOUNT_FLAT_AMOUNT',
                 'type' => 'custom',
                 'name' => 'flat',
-                'output' => '<input type="number" name="flathikashop_coupon" id="flat" onchange="updateDynamichikashop_coupon();" value="'.$flatValue.'" class="acym_plugin_text_field" style="display: inline-block;" />
-                            '.acym_select(
+                'output' => static function () use ($flatValue, $currencies, $flatCurrency): void {
+                    echo '<input type="number" name="flathikashop_coupon" id="flat" onchange="updateDynamichikashop_coupon();" value="'.acym_escape(
+                            $flatValue
+                        ).'" class="acym_plugin_text_field" style="display: inline-block;" />';
+
+                    acym_select(
                         $currencies,
                         'currencyhikashop_coupon',
                         $flatCurrency,
                         [
                             'onchange' => 'updateDynamichikashop_coupon();',
                             'style' => 'width: 80px;',
-                        ]
-                    ),
+                        ],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
+                    );
+                },
                 'js' => 'otherinfo += "| flat:" + jQuery(\'input[name="flathikashop_coupon"]\').val();
                         otherinfo += "| currency:" + jQuery(\'[name="currencyhikashop_coupon"]\').val();',
             ],

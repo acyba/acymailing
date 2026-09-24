@@ -6,6 +6,7 @@ class plgAcymAmazon extends AcymPlugin
 {
     const SENDING_METHOD_ID = 'amazon';
     const SENDING_METHOD_NAME = 'Amazon SES';
+    // phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- False alarm.
     const SENDING_METHOD_HOST = 'email-smtp.us-east-2.amazonaws.com';
 
     public function __construct()
@@ -25,7 +26,6 @@ class plgAcymAmazon extends AcymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
-        ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
@@ -45,31 +45,30 @@ class plgAcymAmazon extends AcymPlugin
                         'https://aws.amazon.com/en/ses/pricing/'
                     ); ?>
 					<input id="amazon_host"
-					       class="cell"
-					       type="text"
-					       name="config[amazon_host]"
-					       value="<?php echo acym_escape($this->config->get('amazon_host', self::SENDING_METHOD_HOST)); ?>">
+						   class="cell"
+						   type="text"
+						   name="config[amazon_host]"
+						   value="<?php echo acym_escape($this->config->get('amazon_host', self::SENDING_METHOD_HOST)); ?>">
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<label for="amazon_username" class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_AMAZON_SES_USERNAME')); ?></label>
 					<input id="amazon_username"
-					       class="cell"
-					       type="text"
-					       name="config[amazon_username]"
-					       value="<?php echo acym_escape($this->config->get('amazon_username')); ?>">
+						   class="cell"
+						   type="text"
+						   name="config[amazon_username]"
+						   value="<?php echo acym_escape($this->config->get('amazon_username')); ?>">
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<label for="amazon_password" class="cell"><?php echo acym_escapeHtml(acym_translation('ACYM_AMAZON_SES_PASSWORD')); ?></label>
 					<input id="amazon_password"
-					       class="cell"
-					       type="text"
-					       name="config[amazon_password]"
-					       value="<?php echo acym_escape(str_repeat('*', strlen($this->config->get('amazon_password')))); ?>">
+						   class="cell"
+						   type="text"
+						   name="config[amazon_password]"
+						   value="<?php echo acym_escape(str_repeat('*', strlen($this->config->get('amazon_password')))); ?>">
 				</div>
 			</div>
 		</div>
         <?php
-        $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }
 
     /**

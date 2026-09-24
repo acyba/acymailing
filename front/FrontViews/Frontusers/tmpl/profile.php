@@ -5,6 +5,16 @@
 use AcyMailing\Helpers\SecurityHelper;
 
 $formName = acym_getModuleFormName();
+$allowedIntroTags = array_merge(SecurityHelper::ALLOWED_HTML_INTRO, [
+    'a' => [
+        'href' => true,
+        'target' => true,
+        'title' => true,
+        'class' => true,
+        'rel' => true,
+        'aria-label' => true,
+    ],
+]);
 ?>
 <div id="acym_fulldiv_<?php echo acym_escape($formName); ?>" class="acym_front_page <?php echo empty($data['suffix']) ? '' : acym_escape($data['suffix']); ?>">
     <?php
@@ -15,17 +25,17 @@ $formName = acym_getModuleFormName();
     if (!empty($data['introtext'])) {
         echo '<span class="acym_introtext">'.acym_escapeHtmlWithAllowedTags(
                 $data['introtext'],
-                SecurityHelper::ALLOWED_HTML_INTRO
+                $allowedIntroTags
             ).'</span>';
     }
     ?>
 
 	<form enctype="multipart/form-data"
-	      action="<?php echo acym_escapeUrl(acym_frontendLink('frontusers'.(acym_isNoTemplate() ? '&'.acym_noTemplate() : ''))); ?>"
-	      method="post"
-	      name="<?php echo acym_escape($formName); ?>"
-	      id="<?php echo acym_escape($formName); ?>"
-	      onsubmit="this.querySelector('input[type=submit]').click(); return false;" novalidate>
+		  action="<?php echo acym_escapeUrl(acym_frontendLink('frontusers'.(acym_isNoTemplate() ? '&'.acym_noTemplate() : ''))); ?>"
+		  method="post"
+		  name="<?php echo acym_escape($formName); ?>"
+		  id="<?php echo acym_escape($formName); ?>"
+		  onsubmit="this.querySelector('input[type=submit]').click(); return false;" novalidate>
 		<fieldset class="adminform acy_user_info">
 			<legend>
 				<span>
@@ -74,13 +84,14 @@ $formName = acym_getModuleFormName();
 			</div>
 
             <?php
-            if ($this->config->get('user_tracking_control', 0) && !empty($data['user']->id)) {
+            if ($this->config->get('user_tracking_control', 0)) {
+                $trackingChecked = isset($data['user']->tracking) ? (int)$data['user']->tracking === 1 : !$this->config->get('dont_track_by_default', 0);
                 echo '<div class="onefield fieldacytracking" id="field_tracking_'.acym_escape($formName).'">';
                 echo '<label for="mailingdata_tracking_'.acym_escape($formName).'">';
                 echo '<input type="hidden" name="user[tracking]" value="0"/>';
                 echo '<input id="mailingdata_tracking_'.acym_escape(
                         $formName
-                    ).'" class="checkbox" type="checkbox" name="user[tracking]" value="1" '.((int)$data['user']->tracking === 1 ? 'checked="checked"' : '').'/> '.acym_escapeHtml(
+                    ).'" class="checkbox" type="checkbox" name="user[tracking]" value="1" '.acym_checked($trackingChecked, true, false).'/> '.acym_escapeHtml(
                         acym_translation('ACYM_ALLOW_TRACKING')
                     );
                 echo '</label>';
@@ -110,7 +121,7 @@ $formName = acym_getModuleFormName();
                                 ?>
 								<td id="acybutton_subscriber_delete_data">
 									<button class="btn btn-secondary button"
-									        onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'gdprDelete'; this.form.submit(); } return false;">
+											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'gdprDelete'; this.form.submit(); } return false;">
                                         <?php echo acym_escapeHtml(acym_translation('ACYM_DELETE_MY_DATA')); ?>
 									</button>
 								</td>
@@ -226,8 +237,8 @@ $formName = acym_getModuleFormName();
 
 		<p class="acymodifybutton">
 			<button class="btn btn-primary"
-			        type="submit"
-			        onclick="<?php echo acym_escape($actionClick); ?>">
+					type="submit"
+					onclick="<?php echo acym_escape($actionClick); ?>">
                 <?php echo acym_escapeHtml(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>
 			</button>
 		</p>
@@ -235,7 +246,7 @@ $formName = acym_getModuleFormName();
     <?php if (!empty($data['posttext'])) {
         echo '<span class="acym_posttext">'.acym_escapeHtmlWithAllowedTags(
                 $data['posttext'],
-                SecurityHelper::ALLOWED_HTML_INTRO
+                $allowedIntroTags
             ).'</span>';
     } ?>
 </div>

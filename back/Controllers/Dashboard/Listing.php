@@ -134,13 +134,11 @@ trait Listing
 
     public function getDashboardNotifications(array &$data): void
     {
-        $data['dashboardNotifications'] = '';
+        $data['dashboardNotifications'] = [];
 
         if (empty($data['notifications'])) {
             return;
         }
-
-        $data['dashboardNotifications'] = '<div class="acym__dashboard__notifications">';
 
         $notifications = array_map(fn($notif) => is_array($notif) ? (object)$notif : $notif, $data['notifications']);
         $notifications = array_filter($notifications, fn($notif) => isset($notif->message, $notif->level, $notif->date));
@@ -150,33 +148,14 @@ trait Listing
                 continue;
             }
 
-            $fullMessageHover = $notif->message ?? '';
-
-            $fullMessageHover = ($fullMessageHover !== $notif->message)
-                ? 'data-acym-full="'.acym_escape($fullMessageHover).'"'
-                : '';
-
-            $logo = ($notif->level === 'warning')
-                ? 'acymicon-exclamation-triangle'
-                : 'acymicon-exclamation-circle';
-
-            $date = acym_date($notif->date ?? 'now', 'Y-m-d H:i:s', false);
-
-            $data['dashboardNotifications'] .= '<div class="cell grid-x acym__dashboard__notification acym__dashboard__notification__'.$notif->level.'">'
-                .'<div class="cell shrink small-1 align-center grid-x acym__dashboard__notification__icon"><i class="cell shrink '.$logo.'"></i></div>'
-                .'<div class="cell grid-x small-10"><p class="cell acym__dashboard__notification__message" '.$fullMessageHover.'>'.$notif->message
-                .'<div class="cell acym__dashboard__notification__date">'.$date.'</div></div>';
-
-            if (!isset($notif->removable) || $notif->removable != 0) {
-                $data['dashboardNotifications'] .= '<i class="cell shrink small-1 acym__dashboard__notification__delete acymicon-close" data-id="'.acym_escape(
-                        $notif->name
-                    ).'"></i>';
-            }
-
-            $data['dashboardNotifications'] .= '</div><span class="acym__dashboard__light__separator separator"></span>';
+            $data['dashboardNotifications'][] = [
+                'level' => $notif->level,
+                'message' => $notif->message,
+                'date' => acym_date($notif->date ?? 'now', 'Y-m-d H:i:s', false),
+                'removable' => !isset($notif->removable) || $notif->removable != 0,
+                'name' => $notif->name,
+            ];
         }
-
-        $data['dashboardNotifications'] .= '</div>';
     }
 
     private function doDisplayBeginnerSteps(array $data): void

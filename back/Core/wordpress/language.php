@@ -176,6 +176,13 @@ function acym_getLanguageTag(bool $simple = false): string
     return $simple ? substr($acymLanguages['currentLanguage'], 0, 2) : $acymLanguages['currentLanguage'];
 }
 
+function acym_getSiteLanguageTag(bool $simple = false): string
+{
+    $currentLocale = acym_convertWPLocaleToAcyLocale(get_locale());
+
+    return $simple ? substr($currentLocale, 0, 2) : $currentLocale;
+}
+
 function acym_getCustomTranslation()
 {
     global $acymailingCustomTranslation;

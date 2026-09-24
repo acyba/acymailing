@@ -49,7 +49,7 @@ trait Listing
     public function delete(): void
     {
         $fieldClass = new FieldClass();
-        $ids = acym_getVar('cmd', 'elements_checked');
+        $ids = acym_getVar('array', 'elements_checked', []);
         if (in_array('1', $ids) || in_array('2', $ids) || in_array($fieldClass->getLanguageFieldId(), $ids)) {
             acym_enqueueMessage(acym_translation('ACYM_CANT_DELETE'), 'error');
             $this->listing();

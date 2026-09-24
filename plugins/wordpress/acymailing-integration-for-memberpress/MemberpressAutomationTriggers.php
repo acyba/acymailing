@@ -27,7 +27,12 @@ trait MemberpressAutomationTriggers
         $scenarioHelper->trigger('member_transaction_complete', ['userId' => $user->id, 'subscription_id' => $subscription->product_id]);
     }
 
-    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    protected function initAutomationTriggers(): void
+    {
+        $this->automationTriggers['user']['member_transaction_complete'] = acym_translation('ACYM_ON_MEMBER_TRANSACTION_COMPLETE');
+    }
+
+    public function displayTriggerOptions_member_transaction_complete(string $fieldName, array $defaultValues): void
     {
         $membership = acym_loadObjectList(
             'SELECT post_meta.meta_value AS `text`, `ID` AS `value` FROM #__posts AS post
@@ -39,23 +44,24 @@ trait MemberpressAutomationTriggers
         $firstGroup->text = acym_translation('ACYM_ANY_MEMBERSHIP');
         $firstGroup->value = 0;
         array_unshift($membership, $firstGroup);
-
-        $triggers['user']['member_transaction_complete'] = new stdClass();
-        $triggers['user']['member_transaction_complete']->name = acym_translation('ACYM_ON_MEMBER_TRANSACTION_COMPLETE');
-        $triggers['user']['member_transaction_complete']->option = '<div class="grid-x grid-margin-x" style="height: 40px;">';
-        $triggers['user']['member_transaction_complete']->option .= '<div class="cell medium-shrink acym_vcenter">'.acym_translation('ACYM_ON_MEMBERSHIP').'</div>';
-        $triggers['user']['member_transaction_complete']->option .= '<div class="cell medium-5">'.acym_select(
-                $membership,
-                '[triggers][user][member_transaction_complete][membership]',
-                empty($defaultValues['member_transaction_complete']['membership']) ? 0 : $defaultValues['member_transaction_complete']['membership'],
-                ['data-class' => 'acym__select']
-            ).'</div>';
-        $triggers['user']['member_transaction_complete']->option .= '</div>';
-    }
-
-    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
-    {
-        $this->onAcymDeclareTriggers($triggers, $defaultValues);
+        ?>
+		<div class="grid-x grid-margin-x" style="height: 40px;">
+			<div class="cell medium-shrink acym_vcenter"><?php echo acym_escapeHtml(acym_translation('ACYM_ON_MEMBERSHIP')); ?></div>
+			<div class="cell medium-5">
+                <?php acym_select(
+                    $membership,
+                    $fieldName.'[membership]',
+                    empty($defaultValues['member_transaction_complete']['membership']) ? 0 : $defaultValues['member_transaction_complete']['membership'],
+                    ['data-class' => 'acym__select'],
+                    'value',
+                    'text',
+                    null,
+                    false,
+                    true
+                ); ?>
+			</div>
+		</div>
+        <?php
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

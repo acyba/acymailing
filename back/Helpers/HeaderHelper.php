@@ -231,7 +231,7 @@ class HeaderHelper extends AcymObject
                 echo ' data-acym-full="'.acym_escape($fullMessageHover).'"';
             }
             echo '>';
-            echo $notif['message'];
+            echo acym_escapeHtmlWithAllowedTags($notif['message'], SecurityHelper::ALLOWED_HTML_NOTIFICATION);
             echo '<div class="cell acym__header__notification__one__date">'.acym_escapeHtml(acym_date($notif['date'])).'</div></div>';
             echo '<i class="cell small-1 acym__header__notification__one__delete acymicon-close" data-id="'.acym_escape($key).'"></i>';
             echo '</div>';
@@ -252,7 +252,17 @@ class HeaderHelper extends AcymObject
         }
 
         $notif->message = str_replace('<br />', "\r\n", $notif->message);
-        $notif->message = acym_stripTags($notif->message, '<a>');
+        $notif->message = acym_escapeHtmlWithAllowedTags(
+            $notif->message,
+            [
+                'a' => [
+                    'href' => true,
+                    'class' => true,
+                    'id' => true,
+                    'target' => true,
+                ],
+            ]
+        );
 
         // Prevent duplicated notifications
         foreach ($notifications as $key => $oneNotif) {

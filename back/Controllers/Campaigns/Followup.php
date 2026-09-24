@@ -192,7 +192,8 @@ trait Followup
             return;
         }
 
-        $favoriteTemplate = $this->config->get('favorite_template', 0);
+        $mailClass = new MailClass();
+        $favoriteTemplate = $mailClass->getFavoriteTemplateId();
         $startFrom = empty($favoriteTemplate) ? '' : '&from='.$favoriteTemplate;
         $data = [
             'workflowHelper' => new WorkflowHelper(),

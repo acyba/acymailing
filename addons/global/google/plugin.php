@@ -35,10 +35,6 @@ class plgAcymGoogle extends AcymPlugin
         $refreshToken = $this->config->get('google_refresh_token');
         $refreshTokenExpiration = $this->config->get('google_refresh_token_expiration');
         $mustAuthenticate = empty($refreshToken) || (!empty($refreshTokenExpiration) && $refreshTokenExpiration < time());
-
-        $mailerHelper = new MailerHelper();
-
-        ob_start();
         ?>
 		<div class="send_settings grid-x cell large-6 xlarge-5 xxlarge-4 margin-auto" id="<?php echo acym_escape(self::SENDING_METHOD_ID); ?>_settings">
 			<div class="acym_port_465_closed is-hidden">
@@ -102,7 +98,6 @@ class plgAcymGoogle extends AcymPlugin
 			</div>
 		</div>
         <?php
-        $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }
 
     public function onAcymGetSettingsSendingMethodFromPlugin(&$data, $plugin, $method)

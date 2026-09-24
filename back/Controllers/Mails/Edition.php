@@ -651,11 +651,11 @@ trait Edition
                 ];
 
                 //We will never allow some files to be uploaded...
-                if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $attachment['filename'])) {
+                if (acym_isForbiddenFileExtension($attachment['filename'])) {
                     acym_enqueueMessage(
                         acym_translationSprintf(
                             'ACYM_ACCEPTED_TYPE',
-                            substr($attachment['filename'], strrpos($attachment['filename'], '.') + 1),
+                            acym_escapeHtml(substr($attachment['filename'], strrpos($attachment['filename'], '.') + 1)),
                             $this->config->get('allowed_files')
                         ),
                         'notice'
@@ -990,7 +990,7 @@ trait Edition
 
         $allowedExtensions = acym_getImageFileExtensions(true);
         if (!in_array($extension, $allowedExtensions)) {
-            $errorMessage = acym_translationSprintf('ACYM_ACCEPTED_TYPE', $extension, implode(', ', $allowedExtensions));
+            $errorMessage = acym_translationSprintf('ACYM_ACCEPTED_TYPE', acym_escapeHtml($extension), implode(', ', $allowedExtensions));
         } elseif (!acym_uploadFile($file['tmp_name'], ACYM_ROOT.$newPathComplete)) {
             $errorMessage = acym_translationSprintf('ACYM_ERROR_UPLOADING_FILE_X', $newPathComplete);
         } elseif (strtolower($extension) === 'svg' && !acym_isSvgFileSafe(ACYM_ROOT.$newPathComplete)) {

@@ -8,48 +8,73 @@ use AcyMailing\Helpers\ScenarioHelper;
 trait HikashopAutomationTriggers
 {
     // Add trigger configuration for Hikashop order status change and wishlist
-    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    protected function initAutomationTriggers(): void
     {
-        if (!include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php') {
+        if (!$this->includeHikashopHelper()) {
             return;
         }
 
-        $triggers['user']['hikashopNewOrder'] = new stdClass();
-        $triggers['user']['hikashopNewOrder']->name = acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop');
-        $triggers['user']['hikashopNewOrder']->option = '<input type="hidden" name="[triggers][user][hikashopNewOrder][hidden]" value="">';
+        $this->automationTriggers['user'] = [
+            'hikashopNewOrder' => acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop'),
+            'hikashopWishlistUpdated' => acym_translationSprintf('ACYM_X_ADD_TO_WISHLIST', 'HikaShop'),
+        ];
 
-        $triggers['user']['hikashopWishlistUpdated'] = new stdClass();
-        $triggers['user']['hikashopWishlistUpdated']->name = acym_translationSprintf('ACYM_X_ADD_TO_WISHLIST', 'HikaShop');
-        $triggers['user']['hikashopWishlistUpdated']->option = '<input type="hidden" name="[triggers][user][hikashopWishlistUpdated][hidden]" value="">';
+        if (!empty($this->getHikashopOrderStatuses())) {
+            $this->automationTriggers['user']['hikashoporder'] = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', '');
+        }
+    }
+
+    public function displayTriggerOptions_hikashopNewOrder(string $fieldName): void
+    {
+        echo '<input type="hidden" name="'.acym_escape($fieldName.'[hidden]').'" value="">';
+    }
+
+    public function displayTriggerOptions_hikashopWishlistUpdated(string $fieldName): void
+    {
+        echo '<input type="hidden" name="'.acym_escape($fieldName.'[hidden]').'" value="">';
+    }
+
+    public function displayTriggerOptions_hikashoporder(string $fieldName, array $defaultValues): void
+    {
+        acym_selectMultiple(
+            $this->getHikashopOrderStatuses(),
+            $fieldName.'[status]',
+            empty($defaultValues['hikashoporder']['status']) ? [] : $defaultValues['hikashoporder']['status'],
+            ['data-class' => 'acym__select'],
+            'value',
+            'text',
+            true
+        );
+    }
+
+    private function includeHikashopHelper(): bool
+    {
+        $included = include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php';
+
+        return !empty($included);
+    }
+
+    private function getHikashopOrderStatuses(): array
+    {
+        if (!$this->includeHikashopHelper()) {
+            return [];
+        }
 
         $rows = acym_loadObjectList('SELECT * FROM #__hikashop_orderstatus');
         if (empty($rows)) {
-            return;
+            return [];
         }
-        $cats = [];
+
+        $statuses = [];
         foreach ($rows as $row) {
             $name = hikashop_orderStatus($row->orderstatus_namekey);
             if ($name == $row->orderstatus_namekey) {
                 $name = $row->orderstatus_name;
             }
-            $cats[$row->orderstatus_namekey] = $name;
+            $statuses[$row->orderstatus_namekey] = $name;
         }
 
-        $selectedValue = empty($defaultValues['hikashoporder']['status']) ? [] : $defaultValues['hikashoporder']['status'];
-
-        $triggers['user']['hikashoporder'] = new stdClass();
-        $triggers['user']['hikashoporder']->name = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', '');
-        $triggers['user']['hikashoporder']->option = acym_selectMultiple(
-            $cats,
-            '[triggers][user][hikashoporder][status]',
-            $selectedValue,
-            ['data-class' => 'acym__select']
-        );
-    }
-
-    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
-    {
-        $this->onAcymDeclareTriggers($triggers, $defaultValues);
+        return $statuses;
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

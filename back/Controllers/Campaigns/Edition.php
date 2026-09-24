@@ -10,7 +10,6 @@ use AcyMailing\Classes\QueueClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Classes\UserClass;
-use AcyMailing\Controllers\AutomationController;
 use AcyMailing\Controllers\MailsController;
 use AcyMailing\Controllers\SegmentsController;
 use AcyMailing\Helpers\EditorHelper;
@@ -26,6 +25,7 @@ trait Edition
     public function newEmail(): void
     {
         acym_setVar('layout', 'new_email');
+        $mailClass = new MailClass();
 
         $data = [
             'selectedType' => acym_getVar('string', 'email_type', ''),
@@ -35,7 +35,7 @@ trait Edition
         $listClass = new ListClass();
         if (acym_isAdmin()) {
             $returnUrl = urlencode(base64_encode(acym_completeLink('campaigns')));
-            $favoriteTemplate = $this->config->get('favorite_template', 0);
+            $favoriteTemplate = $mailClass->getFavoriteTemplateId();
             $welcomeUnsub = '&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl;
 
             if (empty($favoriteTemplate)) {
@@ -563,7 +563,7 @@ trait Edition
 
         foreach ($triggers as $key => $trigger) {
             $data['triggers_select'][$key] = $trigger->name;
-            $data['triggers_display'][$key] = $trigger->option;
+            $data['triggers_display'][$key] = $trigger;
         }
 
         if (!empty($data['currentCampaign']->sending_params) && empty($data['currentCampaign']->sending_params['trigger_type'])) {

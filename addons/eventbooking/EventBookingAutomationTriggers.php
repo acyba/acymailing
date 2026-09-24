@@ -2,41 +2,73 @@
 
 trait EventBookingAutomationTriggers
 {
-    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
+    protected function initAutomationTriggers(): void
+    {
+        $this->automationTriggers['classic']['eventbooking_reminder'] = acym_translationSprintf(
+            'ACYM_COMBINED_TRANSLATIONS',
+            'EventBooking',
+            acym_translation('ACYM_REMINDER')
+        );
+    }
+
+    public function displayTriggerOptions_eventbooking_reminder(string $fieldName, array $defaultValues): void
     {
         $params = $this->getTriggerParams();
-
-        $triggers['classic']['eventbooking_reminder'] = new stdClass();
-        $triggers['classic']['eventbooking_reminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'EventBooking', acym_translation('ACYM_REMINDER'));
-        $triggers['classic']['eventbooking_reminder']->option = '<div class="grid-x cell acym_vcenter"><div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1">';
-        $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-shrink">
-                                                                <input 
-                                                                    type="number" 
-                                                                    name="[triggers][classic][eventbooking_reminder][number]" 
-                                                                    class="intext_input" 
-                                                                    value="'.(empty($defaultValues['eventbooking_reminder']) ? '1'
-                : $defaultValues['eventbooking_reminder']['number']).'">
-                                                            </div>';
-        $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-shrink">'.acym_select(
-                $params['every'],
-                '[triggers][classic][eventbooking_reminder][time]',
-                empty($defaultValues['eventbooking_reminder']) ? '86400' : $defaultValues['eventbooking_reminder']['time'],
-                ['data-class' => 'intext_select acym__select']
-            ).'</div></div>';
-        $triggers['classic']['eventbooking_reminder']->option .= '<div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1"><div class="cell medium-shrink">'.acym_select(
-                $params['when'],
-                '[triggers][classic][eventbooking_reminder][when]',
-                empty($defaultValues['eventbooking_reminder']) ? 'before' : $defaultValues['eventbooking_reminder']['when'],
-                ['data-class' => 'intext_select acym__select']
-            ).'</div>';
-        $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-shrink">'.acym_translation('ACYM_AN_EVENT_IN').'</div>';
-        $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-auto">'.acym_select(
-                $params['categories'],
-                '[triggers][classic][eventbooking_reminder][cat]',
-                empty($defaultValues['eventbooking_reminder']) ? '' : $defaultValues['eventbooking_reminder']['cat'],
-                ['data-class' => 'intext_select_larger intext_select acym__select']
-            ).'</div>';
-        $triggers['classic']['eventbooking_reminder']->option .= '</div></div>';
+        $defaults = empty($defaultValues['eventbooking_reminder']) ? [] : $defaultValues['eventbooking_reminder'];
+        ?>
+		<div class="grid-x cell acym_vcenter">
+			<div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1">
+				<div class="cell medium-shrink">
+					<input type="number"
+					       name="<?php echo acym_escape($fieldName.'[number]'); ?>"
+					       class="intext_input"
+					       value="<?php echo acym_escape(empty($defaults) ? '1' : $defaults['number']); ?>">
+				</div>
+				<div class="cell medium-shrink">
+                    <?php acym_select(
+                        $params['every'],
+                        $fieldName.'[time]',
+                        empty($defaults) ? '86400' : $defaults['time'],
+                        ['data-class' => 'intext_select acym__select'],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
+                    ); ?>
+				</div>
+			</div>
+			<div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1">
+				<div class="cell medium-shrink">
+                    <?php acym_select(
+                        $params['when'],
+                        $fieldName.'[when]',
+                        empty($defaults) ? 'before' : $defaults['when'],
+                        ['data-class' => 'intext_select acym__select'],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
+                    ); ?>
+				</div>
+				<div class="cell medium-shrink"><?php echo acym_escapeHtml(acym_translation('ACYM_AN_EVENT_IN')); ?></div>
+				<div class="cell medium-auto">
+                    <?php acym_select(
+                        $params['categories'],
+                        $fieldName.'[cat]',
+                        empty($defaults) ? '' : $defaults['cat'],
+                        ['data-class' => 'intext_select_larger intext_select acym__select'],
+                        'value',
+                        'text',
+                        null,
+                        false,
+                        true
+                    ); ?>
+				</div>
+			</div>
+		</div>
+        <?php
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

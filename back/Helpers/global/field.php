@@ -1,6 +1,8 @@
 <?php
 // context verification
 
+use AcyMailing\Helpers\SecurityHelper;
+
 /**
  * @param ?mixed $selected
  */
@@ -326,7 +328,8 @@ function acym_switch(
     static $occurrence = 100;
     $occurrence++;
 
-    $id = 'switch_'.$occurrence;
+    // A switch displayed in a filter or a condition is cloned for every row
+    $id = (is_array($options) && !empty($options['idPrefix']) ? $options['idPrefix'] : '').'switch_'.$occurrence;
 
     //TODO remove old parameters in January 2027 (only used in WC, Hika, VM and ultimate member plugins, which were updated in July 2026
     if (!is_array($options)) {
@@ -843,7 +846,7 @@ function acym_checkbox(
                     echo 'data-attr="'.acym_escape($dataAttr[$key]).'"';
                 }
                 ?>>
-            <?php echo $value; ?>
+            <?php echo acym_escapeHtmlWithAllowedTags($value, SecurityHelper::ALLOWED_HTML_CHECKBOX_LABEL); ?>
 		</label>
         <?php
     }
@@ -930,7 +933,7 @@ function acym_displayParam(string $type, $value, string $name): void
     $field->value = $value;
     $field->name = $name;
 
-    echo $field->getInput();
+    echo acym_escapeHtmlWithAllowedTags($field->getInput(), SecurityHelper::ALLOWED_HTML_PARAM_FIELD);
 }
 
 function acym_externalLink(
