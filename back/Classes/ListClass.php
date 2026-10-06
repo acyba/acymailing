@@ -37,7 +37,11 @@ class ListClass extends AcymClass
 
         $query = 'SELECT '.$columns.' FROM #__acym_list AS list';
         $queryCount = 'SELECT COUNT(list.id) AS total FROM #__acym_list AS list';
-        if (!empty($settings['join'])) $query .= $this->getJoinForQuery($settings['join']);
+        if (!empty($settings['join'])) {
+            $join = $this->getJoinForQuery($settings['join']);
+            $query .= $join;
+            $queryCount .= $join;
+        }
         /*
         This query will return for example:
 
@@ -97,7 +101,14 @@ class ListClass extends AcymClass
             if (empty($allowedStatus[$settings['status']])) {
                 die('Injection denied');
             }
-            $filters[] = 'list.'.$allowedStatus[$settings['status']];
+            $statusFilter = 'list.'.$allowedStatus[$settings['status']];
+
+            $selectedColumn = empty($settings['join']) ? '' : $this->getSelectedColumnForQuery($settings['join']);
+            if (!empty($selectedColumn)) {
+                $statusFilter .= ' OR '.acym_secureDBColumn($selectedColumn).' IS NOT NULL';
+            }
+
+            $filters[] = $statusFilter;
         }
 
         if (!empty($settings['where'])) {
@@ -212,6 +223,18 @@ class ListClass extends AcymClass
             $userId = explode('-', $joinType);
 
             return ' LEFT JOIN #__acym_user_has_list as userlist ON list.id = userlist.list_id AND userlist.status = 1 AND userlist.user_id = '.intval($userId[1]);
+        }
+
+        return '';
+    }
+
+    private function getSelectedColumnForQuery(string $joinType): string
+    {
+        if (strpos($joinType, 'join_mail') !== false) {
+            return 'maillist.list_id';
+        }
+        if (strpos($joinType, 'join_user') !== false) {
+            return 'userlist.list_id';
         }
 
         return '';

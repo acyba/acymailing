@@ -47,7 +47,7 @@ class UpdateHelper extends AcymObject
         $pluginClass = new PluginClass();
         $pluginsToUpdate = $pluginClass->getNotUptoDatePlugins();
         foreach ($pluginsToUpdate as $onePlugin) {
-            $pluginClass->updateAddon($onePlugin);
+            $pluginClass->updateAddon($onePlugin, false);
         }
     }
 

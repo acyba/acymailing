@@ -16,6 +16,7 @@ jQuery(function ($) {
         acym_helperTab.setTab();
         acym_helperDatePicker.setDatePickerGlobal();
         acym_helperInput.setInputFile();
+        acym_helperDelay.setDelayFieldsGlobal();
         acym_helperTooltip.setTooltip();
         acym_helperBack.setDoNotRemindMe();
         acym_helperNotification.setNotificationCenter();

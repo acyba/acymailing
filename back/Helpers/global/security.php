@@ -395,7 +395,7 @@ function acym_isAllowed(string $controller, string $task = ''): bool
     }
 
     // Having access to campaigns gives access to some email actions
-    if ($controller === 'mails' && in_array($task, ['autoSave', 'getTemplateAjax']) && acym_isAllowed('campaigns')) {
+    if ($controller === 'mails' && $task === 'getTemplateAjax' && acym_isAllowed('campaigns')) {
         return true;
     }
 

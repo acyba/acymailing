@@ -78,7 +78,7 @@ trait VirtuemartAutomationConditions
 
         $paymentMethods = ['' => acym_translation('ACYM_ANY_PAYMENT_METHOD')];
         $payments = acym_loadObjectList(
-            'SELECT `method`.`virtuemart_paymentmethod_id` AS `id`, `translation`.`payment_name` AS `name` 
+            'SELECT `method`.`virtuemart_paymentmethod_id` AS `id`, COALESCE(NULLIF(`translation`.`payment_name`, ""), `method`.`payment_element`) AS `name` 
             FROM `#__virtuemart_paymentmethods` AS `method` 
             LEFT JOIN `#__virtuemart_paymentmethods_'.$this->lang.'` AS `translation` ON `method`.`virtuemart_paymentmethod_id` = `translation`.`virtuemart_paymentmethod_id` 
             WHERE `published` = 1 

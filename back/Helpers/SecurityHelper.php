@@ -140,7 +140,20 @@ class SecurityHelper extends AcymObject
         'b' => [],
         'br' => [],
         'div' => [
+            'button' => [
+                'type' => true,
+                'class' => true,
+                'aria-label' => true,
+                'data-open' => true,
+                'data-ajax' => true,
+                'data-iframe' => true,
+                'data-close' => true,
+                'data-acym-email-id' => true,
+            ],
             'class' => true,
+            'id' => true,
+            'data-reveal' => true,
+            'data-reveal-larger' => true,
         ],
         'i' => [],
         'li' => [],
@@ -152,6 +165,7 @@ class SecurityHelper extends AcymObject
         'span' => [
             'class' => true,
             'data-acym-email-id' => true,
+            'aria-hidden' => true,
         ],
         'strong' => [],
         'ul' => [],

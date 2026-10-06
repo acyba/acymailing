@@ -348,10 +348,20 @@ class BounceHelper extends AcymObject
 
     public function decodeMessage(bool $attachments = false): bool
     {
-        if ($this->usePear) {
-            return $this->decodeMessagePear($attachments);
-        } else {
-            return $this->decodeMessageImap($attachments);
+        try {
+            if ($this->usePear) {
+                return $this->decodeMessagePear($attachments);
+            } else {
+                return $this->decodeMessageImap($attachments);
+            }
+        } catch (\Throwable $e) {
+            $subject = is_string($this->_message->subject ?? '') ? $this->_message->subject : '';
+            $this->display(
+                acym_translationSprintf('ACYM_ERROR_DECODING_MESSAGE_X_X', acym_stripTags($this->decodeHeader($subject)), $e->getMessage()),
+                self::MESSAGE_TYPE_ERROR
+            );
+
+            return false;
         }
     }
 
@@ -511,10 +521,11 @@ class BounceHelper extends AcymObject
 
     private function decodeMessageImap(bool $attachments): bool
     {
-        $this->_message->structure = $this->callImapFunction('imap_fetchstructure', [$this->mailbox, $this->_message->messageNB]);
-
-        if (empty($this->_message->structure)) {
-            return false;
+        try {
+            $this->_message->structure = $this->callImapFunction('imap_fetchstructure', [$this->mailbox, $this->_message->messageNB]);
+        } catch (\Throwable $e) {
+            $this->_message->structure = null;
+            $this->display(acym_translationSprintf('ACYM_BOUNCE_STRUCTURE_ERROR_X', $e->getMessage()), self::MESSAGE_TYPE_INFO);
         }
 
         $this->_message->headerinfo = $this->callImapFunction('imap_fetchheader', [$this->mailbox, $this->_message->messageNB]);
@@ -522,8 +533,17 @@ class BounceHelper extends AcymObject
         $this->_message->html = '';
         $this->_message->text = '';
 
-        //Multipart message : type == 1
-        if ($this->_message->structure->type == 1) {
+        // We could not read the structure of the message, we analyse its raw content instead
+        if (empty($this->_message->structure)) {
+            $body = $this->callImapFunction('imap_body', [$this->mailbox, $this->_message->messageNB]);
+            if (empty($body)) {
+                return false;
+            }
+
+            $this->_message->contentType = 0;
+            $this->_message->text = substr($body, 0, 100000);
+        } elseif ($this->_message->structure->type == 1) {
+            // Multipart message : type == 1
             $this->_message->contentType = 2;
             if ($this->_message->structure->subtype === 'MIXED') {
                 $allParts = $this->explodeBodyMixed($this->_message->structure);
@@ -1560,7 +1580,7 @@ class BounceHelper extends AcymObject
         if ($this->config->get('bounce_server') === 'imap.gmail.com') {
             $url = 'https://oauth2.googleapis.com/token';
         } else {
-            $tenant = $this->config->get('bounce_tenant', 'consumers');
+            $tenant = trim($this->config->get('bounce_tenant')) ?: 'consumers';
             $url = 'https://login.microsoftonline.com/'.$tenant.'/oauth2/v2.0/token';
         }
 

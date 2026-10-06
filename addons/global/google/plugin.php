@@ -203,13 +203,14 @@ class plgAcymGoogle extends AcymPlugin
 
         acym_logError('Response from OAuth call: '.json_encode($response), self::SENDING_METHOD_ID);
 
-        if (!empty($response['error'])) {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_ERROR', $response['error']), 'error', false);
+        if (!empty($response['error']) || empty($response['access_token']) || empty($response['refresh_token'])) {
+            $error = $response['error'] ?? 'HTTP '.($response['status_code'] ?? 0);
+            acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_ERROR', $error), 'error', false);
 
             return;
         }
 
-        $expiringTime = time() + (int)$response['expires_in'];
+        $expiringTime = time() + (int)($response['expires_in'] ?? 0);
 
         if (!empty($response['refresh_token_expires_in'])) {
             $refreshExpiringTime = time() + (int)$response['refresh_token_expires_in'];

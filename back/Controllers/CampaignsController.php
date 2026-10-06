@@ -16,6 +16,7 @@ use AcyMailing\Controllers\Campaigns\Followup;
 use AcyMailing\Controllers\Campaigns\ListEmails;
 use AcyMailing\Controllers\Campaigns\Listing;
 use AcyMailing\Controllers\Campaigns\Tests;
+use AcyMailing\Controllers\Shared\EditorActions;
 
 class CampaignsController extends AcymController
 {
@@ -26,6 +27,7 @@ class CampaignsController extends AcymController
     use Edition;
     use Actions;
     use Tests;
+    use EditorActions;
 
     const TASK_TYPE_CAMPAIGN = 'campaigns';
     const TASK_TYPE_CAMPAIGN_AUTO = 'campaigns_auto';

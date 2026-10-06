@@ -39,8 +39,11 @@ class plgAcymGravityforms extends AcymPlugin
         $user = new stdClass();
         foreach ($form['fields'] as $field) {
             if ($field->type == 'email') {
-                $user->email = acym_getVar('string', 'input_'.$field->id, '');
-                break;
+                $user->email = rgar($entry, $field->id);
+            }
+
+            if ($field->type == 'acy') {
+                $lists = rgar($entry, $field->id);
             }
         }
 
@@ -51,13 +54,8 @@ class plgAcymGravityforms extends AcymPlugin
             return;
         }
 
-        $hiddenLists = acym_getVar('string', 'acy_hidden_lists', '');
-        $checkedLists = acym_getVar('array', 'acy_list_sub', []);
-
-        $hiddenLists = empty($hiddenLists) ? [] : explode(',', $hiddenLists);
-        acym_arrayToInteger($hiddenLists);
-
-        $lists = array_merge($hiddenLists, $checkedLists);
+        $lists = empty($lists) ? [] : explode(',', $lists);
+        acym_arrayToInteger($lists);
         $lists = array_unique($lists);
 
         if (empty($lists)) {

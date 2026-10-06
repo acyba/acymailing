@@ -112,7 +112,7 @@ class PluginClass extends AcymClass
         parent::delete([$plugin->id]);
     }
 
-    public function updateAddon(string $addon): ?int
+    public function updateAddon(string $addon, bool $ajax = true): ?int
     {
         $plugin = $this->getOnePluginByFolderName($addon);
 
@@ -121,7 +121,9 @@ class PluginClass extends AcymClass
         }
 
         $pluginClass = new PluginClass();
-        $pluginClass->downloadAddon($addon);
+        if (!empty($pluginClass->downloadAddon($addon, $ajax))) {
+            return null;
+        }
 
         $pluginToSave = new \stdClass();
         $pluginToSave->id = $plugin->id;

@@ -58,39 +58,67 @@ class GF_Field_Acy extends GF_Field
      */
     public function get_field_input($form, $value = '', $entry = null)
     {
-        //We get the hidden lists
-        $autoSubLists = isset($this->acymAutoSubList) ? implode(',', $this->acymAutoSubList) : '';
-        $inputHidden = '<input type="hidden" name="acy_hidden_lists" value="'.esc_attr($autoSubLists).'">';
+        $id = (int)$this->id;
+        $formId = $form['id'];
 
-        //For the two others parameters: the lists that we displays and the one that are checked
         $checkboxes = '';
         if (isset($this->acymDisplayedList)) {
             $listClass = new ListClass();
             $lists = $listClass->getAllForSelect(true, 0, true, true);
 
-            if (empty($lists)) return $inputHidden;
+            if (!empty($lists)) {
+                $acymCheckedList = $this->acymCheckedList ?? [];
 
-            $acymCheckedList = $this->acymCheckedList ?? [];
+                foreach ($this->acymDisplayedList as $listId) {
+                    if (!empty($this->acymAutoSubList) && in_array($listId, $this->acymAutoSubList)) {
+                        continue;
+                    }
 
-            //We generate the checkboxes
-            foreach ($this->acymDisplayedList as $listId) {
-                if (!empty($this->acymAutoSubList) && in_array($listId, $this->acymAutoSubList)) {
-                    continue;
+                    $uniqueId = 'gform_acy_list_sub_'.$formId.'_'.$id.'_'.$listId;
+                    $checkboxes .= '<input type="checkbox" class="acy_list_checkbox_'.esc_attr($formId).'_'.esc_attr($id).'" id="'.esc_attr($uniqueId).'" value="'.intval($listId).'" '.checked(
+                            in_array($listId, $acymCheckedList),
+                            true,
+                            false
+                        ).'>';
+                    $checkboxes .= '<label for="'.esc_attr($uniqueId).'" style="margin-left:5px;">'.esc_html($lists[$listId]).'</label><br>';
                 }
-
-                $uniqueId = 'gform_acy_list_sub_'.$listId;
-                //this line allows to know if we are on the editor or the front-end
-                $isDisabled = $this->is_form_editor() ? 'disabled' : '';
-                $checkboxes .= '<input type="checkbox" id="'.esc_attr($uniqueId).'" name="acy_list_sub[]" value="'.intval($listId).'" '.checked(
-                        in_array($listId, $acymCheckedList),
-                        true,
-                        false
-                    ).' '.$isDisabled.'>';
-                $checkboxes .= '<label for="'.$uniqueId.'" style="margin-left: 5px;">'.$lists[$listId].'</label><br>';
             }
         }
 
-        return '<br>'.$checkboxes.$inputHidden;
+        // It is THIS field, named input_{id}, that Gravity Forms will automatically detect and save
+        $hiddenId = 'input_'.$formId.'_'.$id;
+        $hiddenValue = esc_attr(implode(',', array_unique(array_merge((array)($this->acymAutoSubList ?? []), $acymCheckedList))));
+        $input = '<input type="hidden" name="input_'.$id.'" id="'.$hiddenId.'" value="'.$hiddenValue.'">';
+        $input .= '<br>'.$checkboxes;
+        // Input hidden to access auto sub lists
+        $hiddenAutoSubId = 'acy_hidden_lists_'.$formId.'_'.$id;
+        $initAutoSubLists = array_unique(array_merge($this->acymAutoSubList ?? [], $acymCheckedList ?? []));
+        $autoSubLists = implode(',', $initAutoSubLists);
+        $input .= '<input type="hidden" name="acy_hidden_lists" id="'.esc_attr($hiddenAutoSubId).'" value="'.esc_attr($autoSubLists).'"><br>';
+
+        // Script to populate hidden field with values to save with user selection and autosub values
+        $input .= '<script>(function(){
+                function sync(){
+                    const ids = [];
+                    document.querySelectorAll(\'.acy_list_checkbox_'.$formId.'_'.$id.':checked\')
+                            .forEach(function(el){
+                                ids.push(el.value); 
+                             });
+                    let tmpIds = [];
+                    if(\'\' != document.getElementById(\''.$hiddenAutoSubId.'\').value){
+                        tmpIds = document.getElementById(\''.$hiddenAutoSubId.'\').value.split(\',\');
+                    }
+                    let tmpLists = ids.concat(tmpIds).join(\',\');
+                    document.getElementById(\''.$hiddenId.'\').value = tmpLists;
+                }
+                document.addEventListener(\'change\', function(e){
+                    if (e.target.classList.contains(\'acy_list_checkbox_'.$formId.'_'.$id.'\')){
+					    sync();	
+                    }
+                });
+            })();</script>';
+
+        return $input;
     }
 
     /**
@@ -103,6 +131,30 @@ class GF_Field_Acy extends GF_Field
     public function validate($value, $form)
     {
         return true;
+    }
+
+    // What GF will record in the entry (automatically called up upon submission)
+    public function get_value_save_entry($value, $form, $input_name, $lead_id, $lead)
+    {
+        return is_array($value) ? implode(',', array_map('intval', $value)) : sanitize_text_field($value);
+    }
+
+    // Clear display in the entry details / notifications
+    public function get_value_entry_detail($value, $currency = '', $use_text = false, $format = 'html', $media = 'screen')
+    {
+        if (empty($value)) {
+            return '';
+        }
+        $listClass = new ListClass();
+        $lists = $listClass->getAllForSelect(true, 0, true, true);
+        $names = [];
+        foreach (array_filter(explode(',', $value)) as $id) {
+            if (isset($lists[$id])) {
+                $names[] = $lists[$id];
+            }
+        }
+
+        return implode(', ', $names);
     }
 }
 

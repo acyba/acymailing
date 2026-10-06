@@ -85,7 +85,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                         include acym_getView('campaigns', 'summary_abtest', true);
                     }
                     ?>
-					<input type="hidden" class="acym__hidden__mail__content" value="<?php echo acym_escape(acym_absoluteURL($data['mailInformation']->body)); ?>">
+                    <?php acym_mailContentInput(acym_absoluteURL($data['mailInformation']->body), '', 'acym__hidden__mail__content'); ?>
 					<input type="hidden" class="acym__hidden__mail__stylesheet" value="<?php echo acym_escape($data['mailInformation']->stylesheet); ?>">
 					<div class="cell grid-x">
 						<div id="acym__wysid__email__preview" class="acym__email__preview grid-x cell"></div>
@@ -148,6 +148,11 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 									   style="color: <?php echo acym_escape($oneList->color ?? '#0079d3'); ?>">
 									</i>
 									<b><?php echo acym_escapeHtml($oneList->name); ?></b>
+                                    <?php if (empty($oneList->active)) { ?>
+										<span class="acym__campaign__summary__recipients__list__inactive">
+											<?php echo acym_escapeHtml(acym_translation('ACYM_INACTIVE')); ?>
+										</span>
+                                    <?php } ?>
 								</span>
 								<span class="cell small-6">
 									<?php

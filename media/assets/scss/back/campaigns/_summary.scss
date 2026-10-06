@@ -123,6 +123,15 @@
             vertical-align: bottom;
         }
 
+        .acym__campaign__summary__recipients__list__inactive {
+            font-size: 12px;
+            padding: 2px 5px;
+            margin-left: .5rem;
+            color: $white;
+            background-color: map-get($foundation-palette, warning);
+            border-radius: $primary-radius;
+        }
+
         hr {
             margin-top: 0;
             margin-bottom: 0;

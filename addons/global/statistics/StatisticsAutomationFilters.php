@@ -194,7 +194,7 @@ trait StatisticsAutomationFilters
         ob_start();
         $delayType->display(
             '[filters][__numor__][__numand__][statistics][time]',
-            1,
+            0,
             DelayType::TYPE_HOURS_DAYS_WEEKS_MONTHS
         );
         $delay = ob_get_clean();

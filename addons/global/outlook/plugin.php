@@ -157,7 +157,7 @@ class plgAcymOutlook extends AcymPlugin
 
             $clientId = $this->config->get('outlook_client_id');
             $clientSecret = $this->config->get('outlook_client_secret');
-            $tenant = $this->config->get('outlook_tenant');
+            $tenant = trim($this->config->get('outlook_tenant')) ?: 'consumers';
             $redirectUrl = $this->config->get('outlook_redirect_url');
             $scope = self::SCOPE_SMTP;
         } else {
@@ -167,7 +167,7 @@ class plgAcymOutlook extends AcymPlugin
 
             $clientId = $this->config->get('bounce_client_id');
             $clientSecret = $this->config->get('bounce_client_secret');
-            $tenant = $this->config->get('bounce_tenant');
+            $tenant = trim($this->config->get('bounce_tenant')) ?: 'consumers';
             $redirectUrl = acym_baseURI();
             $scope = self::SCOPE_IMAP;
         }
@@ -200,7 +200,7 @@ class plgAcymOutlook extends AcymPlugin
 
             $clientId = trim($this->config->get('outlook_client_id'));
             $clientSecret = trim($this->config->get('outlook_client_secret'));
-            $tenant = trim($this->config->get('outlook_tenant', 'consumers'));
+            $tenant = trim($this->config->get('outlook_tenant')) ?: 'consumers';
             $redirectUrl = trim($this->config->get('outlook_redirect_url', acym_baseURI()));
             $scope = self::SCOPE_SMTP;
         } else {
@@ -210,7 +210,7 @@ class plgAcymOutlook extends AcymPlugin
 
             $clientId = trim($this->config->get('bounce_client_id'));
             $clientSecret = trim($this->config->get('bounce_client_secret'));
-            $tenant = trim($this->config->get('bounce_tenant', 'consumers'));
+            $tenant = trim($this->config->get('bounce_tenant')) ?: 'consumers';
             $redirectUrl = acym_baseURI();
             $scope = self::SCOPE_IMAP;
         }
@@ -238,13 +238,14 @@ class plgAcymOutlook extends AcymPlugin
 
         acym_logError('Response from OAuth call: '.json_encode($response), self::SENDING_METHOD_ID);
 
-        if (!empty($response['error'])) {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_ERROR', $response['error']), 'error', false);
+        if (!empty($response['error']) || empty($response['access_token']) || empty($response['refresh_token'])) {
+            $error = $response['error'] ?? 'HTTP '.($response['status_code'] ?? 0);
+            acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_ERROR', $error), 'error', false);
 
             return;
         }
 
-        $expiringTime = time() + (int)$response['expires_in'];
+        $expiringTime = time() + (int)($response['expires_in'] ?? 0);
 
         if (!empty($response['refresh_token_expires_in'])) {
             $refreshExpiringTime = time() + (int)$response['refresh_token_expires_in'];

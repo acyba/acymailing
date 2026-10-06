@@ -24,7 +24,7 @@
 
         if (empty($version->id) || empty($data['abtest_mails'][$version->id])) continue;
 
-        echo '<input type="hidden" id="acym__summary-body-'.acym_escape($version->code).'" value="'.acym_escape(acym_absoluteURL($data['abtest_mails'][$version->id]->body)).'">';
+        acym_mailContentInput(acym_absoluteURL($data['abtest_mails'][$version->id]->body), 'acym__summary-body-'.$version->code);
         echo '<input type="hidden" id="acym__summary-subject-'.acym_escape($version->code).'" value="'.acym_escape($data['abtest_mails'][$version->id]->subject).'">';
         echo '<input type="hidden" id="acym__summary-preview-'.acym_escape($version->code).'" value="'.acym_escape($data['abtest_mails'][$version->id]->preheader).'">';
     }

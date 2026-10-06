@@ -2,6 +2,8 @@
 
 namespace AcyMailing\Helpers\Update;
 
+use AcyMailing\Classes\ConfigurationClass;
+
 trait Patchv11
 {
     private function updateFor1102(): void
@@ -43,5 +45,22 @@ trait Patchv11
                 AND `value` != 0
                 AND `value` NOT IN (SELECT `id` FROM #__acym_mail)'
         );
+    }
+
+    private function updateFor1111(ConfigurationClass $config): void
+    {
+        if ($this->isPreviousVersionAtLeast('11.1.1')) {
+            return;
+        }
+
+        $sendMethod = $config->get('mailer_method');
+        if ($sendMethod === 'acymailer') {
+            $config->saveConfig(
+                [
+                    'embed_images' => 0,
+                    'embed_files' => 0,
+                ]
+            );
+        }
     }
 }

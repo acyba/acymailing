@@ -68,7 +68,7 @@ const acym_editorWysidVersioning = {
             type: 'POST',
             url: ACYM_AJAX_URL,
             data: {
-                ctrl: acym_helper.ctrlMails,
+                ctrl: acym_helper.ctrlEditor(),
                 task: 'autoSave',
                 language: acym_editorWysidVersions.currentVersion,
                 autoSave: encodedContentSave,

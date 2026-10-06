@@ -28,9 +28,7 @@
             continue;
         }
 
-        echo '<input type="hidden" id="acym__summary-body-'.acym_escape($language->code).'" value="'.acym_escape(
-                acym_absoluteURL($data['multilingual_mails'][$language->code]->body)
-            ).'">';
+        acym_mailContentInput(acym_absoluteURL($data['multilingual_mails'][$language->code]->body), 'acym__summary-body-'.$language->code);
         echo '<input type="hidden" id="acym__summary-subject-'.acym_escape($language->code).'" value="'.acym_escape($data['multilingual_mails'][$language->code]->subject).'">';
         echo '<input type="hidden" id="acym__summary-preview-'.acym_escape($language->code).'" value="'.acym_escape($data['multilingual_mails'][$language->code]->preheader).'">';
     }

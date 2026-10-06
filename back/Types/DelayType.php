@@ -12,6 +12,32 @@ class DelayType extends AcymObject
     const TYPE_HOURS_DAYS_WEEKS_MONTHS = 3;
     const TYPE_WEEKS_MONTHS = 4;
 
+    const UNITS = [
+        'month' => 2592000,
+        'week' => 604800,
+        'day' => 86400,
+        'hour' => 3600,
+        'minute' => 60,
+        'second' => 1,
+    ];
+
+    const UNITS_TEXT = [
+        'second' => 'ACYM_SECONDS',
+        'minute' => 'ACYM_MINUTES',
+        'hour' => 'ACYM_HOURS',
+        'day' => 'ACYM_DAYS',
+        'week' => 'ACYM_WEEKS',
+        'month' => 'ACYM_MONTHS',
+    ];
+
+    const TYPES_UNITS = [
+        self::TYPE_SECONDS_MINUTES => ['second', 'minute'],
+        self::TYPE_MINUTES_HOURS_DAYS_WEEKS => ['minute', 'hour', 'day', 'week'],
+        self::TYPE_MINUTES_HOURS => ['minute', 'hour'],
+        self::TYPE_HOURS_DAYS_WEEKS_MONTHS => ['hour', 'day', 'week', 'month'],
+        self::TYPE_WEEKS_MONTHS => ['week', 'month'],
+    ];
+
     public function display(
         string $map,
         int    $value,
@@ -22,49 +48,13 @@ class DelayType extends AcymObject
         static $num = 0;
         $num++;
 
-        $js = '
-        function updateDelay'.$num.'() {
-            delayvar = window.document.getElementById("delayvar'.$num.'");
-            delaytype = window.document.getElementById("delaytype'.$num.'").value;
-            delayvalue = window.document.getElementById("delayvalue'.$num.'");
-            realValue = delayvalue.value;
-            if(delaytype === "minute"){ realValue = realValue*60; }
-            if(delaytype === "hour"){ realValue = realValue*3600; }
-            if(delaytype === "day"){ realValue = realValue*86400; }
-            if(delaytype === "week"){ realValue = realValue*604800; }
-            if(delaytype === "month"){ realValue = realValue*2592000; }
-            delayvar.value = realValue;
-            delayvar.dispatchEvent(new Event("change"));
-        }';
-        $updateFunction = 'updateDelay'.$num.'();';
-        acym_addScript(true, $js);
-
         $values = [];
-
-        if ($type === self::TYPE_SECONDS_MINUTES) {
-            $values[] = acym_selectOption('second', 'ACYM_SECONDS');
-            $values[] = acym_selectOption('minute', 'ACYM_MINUTES');
-        } elseif ($type === self::TYPE_MINUTES_HOURS_DAYS_WEEKS) {
-            $values[] = acym_selectOption('minute', 'ACYM_MINUTES');
-            $values[] = acym_selectOption('hour', 'ACYM_HOURS');
-            $values[] = acym_selectOption('day', 'ACYM_DAYS');
-            $values[] = acym_selectOption('week', 'ACYM_WEEKS');
-        } elseif ($type === self::TYPE_MINUTES_HOURS) {
-            $values[] = acym_selectOption('minute', 'ACYM_MINUTES');
-            $values[] = acym_selectOption('hour', 'ACYM_HOURS');
-        } elseif ($type === self::TYPE_HOURS_DAYS_WEEKS_MONTHS) {
-            $values[] = acym_selectOption('hour', 'ACYM_HOURS');
-            $values[] = acym_selectOption('day', 'ACYM_DAYS');
-            $values[] = acym_selectOption('week', 'ACYM_WEEKS');
-            $values[] = acym_selectOption('month', 'ACYM_MONTHS');
-        } elseif ($type === self::TYPE_WEEKS_MONTHS) {
-            $values[] = acym_selectOption('week', 'ACYM_WEEKS');
-            $values[] = acym_selectOption('month', 'ACYM_MONTHS');
+        foreach ($this->getUnits($type) as $unit) {
+            $values[] = acym_selectOption($unit, self::UNITS_TEXT[$unit]);
         }
 
         $return = $this->get($value, $type);
-        echo '<input class="intext_input '.acym_escape($inputClass).'" 
-                    onchange="'.acym_escape($updateFunction).'" 
+        echo '<input class="intext_input acym__delay__value '.acym_escape($inputClass).'" 
                     type="number" 
                     min="0" 
                     id="delayvalue'.acym_escape($num).'" 
@@ -75,8 +65,7 @@ class DelayType extends AcymObject
             'delaytype'.$num,
             $return->type,
             [
-                'class' => 'intext_select',
-                'onchange' => $updateFunction,
+                'class' => 'intext_select acym__delay__type',
             ],
             'value',
             'text',
@@ -85,48 +74,34 @@ class DelayType extends AcymObject
             true
         );
 
-        echo '<input class="'.acym_escape($hiddenInputClass).'" type="hidden" name="'.acym_escape($map).'" id="delayvar'.acym_escape($num).'" value="'.acym_escape($value).'"/>';
+        echo '<input class="acym__delay__hidden '.acym_escape($hiddenInputClass).'" type="hidden" name="'.acym_escape($map).'" id="delayvar'.acym_escape(
+                $num
+            ).'" value="'.acym_escape($value).'"/>';
     }
 
     public function get(int $value, int $type): object
     {
+        $units = $this->getUnits($type);
 
         $return = new \stdClass();
-
+        $return->type = reset($units);
         $return->value = $value;
-        if ($type === 0) {
-            $return->type = 'second';
-            $return->typeText = acym_translation('ACYM_SECONDS');
-        } else {
-            $return->type = 'minute';
-            $return->typeText = acym_translation('ACYM_MINUTES');
+
+        foreach (self::UNITS as $unit => $seconds) {
+            if (!in_array($unit, $units, true) || $value < $seconds || $value % $seconds !== 0) continue;
+
+            $return->type = $unit;
+            $return->value = intdiv($value, $seconds);
+            break;
         }
 
-        if ($return->value >= 60 && $return->value % 60 == 0) {
-            $return->value = (int)$return->value / 60;
-            $return->type = 'minute';
-            $return->typeText = acym_translation('ACYM_MINUTES');
-            if ($type !== 0 && $return->value >= 60 && $return->value % 60 == 0) {
-                $return->type = 'hour';
-                $return->typeText = acym_translation('ACYM_HOURS');
-                $return->value = $return->value / 60;
-                if ($type !== 2 && $return->value >= 24 && $return->value % 24 == 0) {
-                    $return->type = 'day';
-                    $return->typeText = acym_translation('ACYM_DAYS');
-                    $return->value = $return->value / 24;
-                    if ($type >= 3 && $return->value >= 30 && $return->value % 30 == 0) {
-                        $return->type = 'month';
-                        $return->typeText = acym_translation('ACYM_MONTHS');
-                        $return->value = $return->value / 30;
-                    } elseif ($return->value >= 7 && $return->value % 7 == 0) {
-                        $return->type = 'week';
-                        $return->typeText = acym_translation('ACYM_WEEKS');
-                        $return->value = $return->value / 7;
-                    }
-                }
-            }
-        }
+        $return->typeText = acym_translation(self::UNITS_TEXT[$return->type]);
 
         return $return;
+    }
+
+    private function getUnits(int $type): array
+    {
+        return self::TYPES_UNITS[$type] ?? self::TYPES_UNITS[self::TYPE_MINUTES_HOURS_DAYS_WEEKS];
     }
 }

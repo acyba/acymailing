@@ -988,6 +988,12 @@ class plgAcymAcymailer extends AcymPlugin
         }
     }
 
+    public function onAcymSendingMethodOptions(&$data)
+    {
+        $data['embedImage'][self::SENDING_METHOD_ID] = false;
+        $data['embedAttachment'][self::SENDING_METHOD_ID] = false;
+    }
+
     private function getDomainsUnVerified(): array
     {
         if ($this->config->get('mailer_method') !== self::SENDING_METHOD_ID) {

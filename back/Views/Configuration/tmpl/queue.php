@@ -89,7 +89,6 @@ use AcyMailing\Helpers\CronHelper;
                                     'max' => true,
                                     'name' => true,
                                     'value' => true,
-                                    'onchange' => true,
                                     'id' => true,
                                 ],
                                 'span' => [
@@ -97,7 +96,6 @@ use AcyMailing\Helpers\CronHelper;
                                 ],
                                 'select' => [
                                     'class' => true,
-                                    'onchange' => true,
                                     'name' => true,
                                     'id' => true,
                                 ],
@@ -105,7 +103,6 @@ use AcyMailing\Helpers\CronHelper;
                                     'value' => true,
                                     'selected' => true,
                                 ],
-                                'script' => [],
                             ]
                         );
                         echo '<span id="automatic_sending_speed_too_many_batches">';

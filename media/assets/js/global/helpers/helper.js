@@ -22,6 +22,10 @@ const acym_helper = {
     ctrlLists: ACYM_IS_ADMIN ? 'lists' : 'frontlists',
     ctrlUsers: ACYM_IS_ADMIN ? 'users' : 'frontusers',
     ctrlCampaigns: ACYM_IS_ADMIN ? 'campaigns' : 'frontcampaigns',
+    // The editor is shared between screens, its ajax calls must stay on the controller of the current one
+    ctrlEditor: function () {
+        return jQuery('#acym_form input[name="ctrl"]').val() || acym_helper.ctrlMails;
+    },
     emailValid: function (email) {
         return email.match(ACYM_REGEX_EMAIL) !== null;
     },

@@ -205,7 +205,7 @@ const acym_helperEditorWysid = {
                     url: ACYM_AJAX_URL,
                     data: {
                         page: 'acymailing_mails',
-                        ctrl: acym_helper.ctrlMails,
+                        ctrl: acym_helper.ctrlEditor(),
                         task: 'getMailContent',
                         from: jQuery(this).attr('id')
                     },

@@ -26,8 +26,7 @@ if (acym_getVar('boolean', 'runBounce')) {
                 [
                     'data-ajax' => 'true',
                     'data-iframe' => '&ctrl=bounces&task=process',
-                    'class' => 'acym__color__light-blue cursor-pointer',
-                    'style' => 'margin: 0',
+                    'class' => 'acym__color__light-blue cursor-pointer margin-0',
                 ]
             );
             $messages[] = ob_get_clean();

@@ -204,6 +204,9 @@ function acym_select(
             $text = $oneOption;
         }
 
+        $value = (string)$value;
+        $text = (string)$text;
+
         if ($translate) {
             $text = acym_translation($text);
         }
@@ -271,6 +274,9 @@ function acym_selectMultiple(
             $value = $oneDataKey;
             $text = $oneDataValue;
         }
+
+        $value = (string)$value;
+        $text = (string)$text;
 
         if (strtolower($value) === '<optgroup>') {
             echo '<optgroup label="'.acym_escape($text).'">';

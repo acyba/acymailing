@@ -59,6 +59,11 @@ class FrontcampaignsController extends CampaignsController
                 'clearFilters',
                 'addQueue',
                 'listing',
+                'autoSave',
+                'sendTest',
+                'setNewIconShare',
+                'ajaxCheckVideoUrl',
+                'getMailContent',
             ],
         ];
     }

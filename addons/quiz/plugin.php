@@ -65,6 +65,10 @@ class plgAcymQuiz extends AcymPlugin
                     ],
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 

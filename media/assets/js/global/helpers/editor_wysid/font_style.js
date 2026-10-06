@@ -241,7 +241,7 @@ const acym_editorWysidFontStyle = {
             const form_data = new FormData();
             form_data.append('file', file_data);
             const whichIcon = $input.attr('name').replace('icon_', '');
-            const ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlMails + '&task=setNewIconShare&social=' + whichIcon;
+            const ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlEditor() + '&task=setNewIconShare&social=' + whichIcon;
 
             jQuery.ajax({
                 url: ajaxUrl,

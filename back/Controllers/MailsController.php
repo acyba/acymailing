@@ -7,12 +7,14 @@ use AcyMailing\Core\AcymController;
 use AcyMailing\Controllers\Mails\Listing;
 use AcyMailing\Controllers\Mails\Edition;
 use AcyMailing\Controllers\Mails\Automation;
+use AcyMailing\Controllers\Shared\EditorActions;
 
 class MailsController extends AcymController
 {
     use Listing;
     use Edition;
     use Automation;
+    use EditorActions;
 
     public function __construct()
     {

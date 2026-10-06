@@ -7,6 +7,7 @@ use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\RegacyHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use AcyMailing\Helpers\ScenarioHelper;
 
@@ -308,6 +309,7 @@ class plgSystemAcymtriggers extends CMSPlugin
 
     public function onAfterRoute()
     {
+
         // Fix a bug in Joomla: the session com_media.return_url is deleted the first time we submit the image upload form
         if (!empty($_REQUEST['author']) && 'acymailing' === $_REQUEST['author'] && !empty($_REQUEST['task']) && 'file.upload' === $_REQUEST['task'] && !empty($_REQUEST['option']) && 'com_media' === $_REQUEST['option']) {
             $session = Factory::getSession();
@@ -370,6 +372,7 @@ class plgSystemAcymtriggers extends CMSPlugin
 
         return true;
     }
+
 
     private function displayForms()
     {

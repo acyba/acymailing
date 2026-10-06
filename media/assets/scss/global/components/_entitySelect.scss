@@ -39,6 +39,15 @@
                 .acym_subscription {
                     vertical-align: middle;
                 }
+
+                .acym__entity_select__list__inactive {
+                    font-size: 12px;
+                    padding: 2px 5px;
+                    margin-left: .5rem;
+                    color: $white;
+                    background-color: map-get($foundation-palette, warning);
+                    border-radius: $primary-radius;
+                }
             }
 
             .plus-container {

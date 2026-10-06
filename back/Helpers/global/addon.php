@@ -36,7 +36,10 @@ function acym_trigger(string $method, array $args = [], ?string $plugin = null, 
         if (!method_exists($onePlugin, $method)) continue;
         if (!empty($plugin) && $class !== $plugin) continue;
 
-        // There may be an error here, but I don't know how to handle it. At least don't block the execution
+        // An add-on failing while it builds its HTML would otherwise leak a half written tag and its own buffers in the page, breaking the whole layout
+        $bufferLevel = ob_get_level();
+        $failed = false;
+        ob_start();
         try {
             $value = call_user_func_array([$onePlugin, $method], $args);
             if (isset($value)) {
@@ -47,8 +50,15 @@ function acym_trigger(string $method, array $args = [], ?string $plugin = null, 
                 $onePlugin->errorCallback();
             }
         } catch (\Throwable $e) {
+            $failed = true;
             acym_logError('An error occurred when triggering the method '.$method.': '.$e->getMessage());
         }
+
+        while (ob_get_level() > $bufferLevel + 1) {
+            ob_end_clean();
+        }
+
+        $failed ? ob_end_clean() : ob_end_flush();
     }
 
     if (!empty($previousLanguage)) {

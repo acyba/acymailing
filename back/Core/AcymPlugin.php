@@ -1532,7 +1532,7 @@ class AcymPlugin extends AcymObject
 				<div class="cell grid-x acym__plugins__installed__custom-view__edit-container">
 					<div class="acym__plugins__installed__custom-view__editor-loader grid-x cell align-center acym_vcenter" v-if="loading">
 						<div class="cell shrink acym_loader_logo">
-							'.acym_fileGetContent(ACYM_IMAGES.'logos/logo_grey.svg').'
+							'.acym_fileGetContent(ACYM_MEDIA.'images'.DS.'logos'.DS.'logo_grey.svg').'
 						</div>
 					</div>
 					<vue-prism-editor :emitEvents="true" class="cell acym__plugins__installed__custom-view__code cell auto" v-model="code" :language="language" lineNumbers="true"></vue-prism-editor>

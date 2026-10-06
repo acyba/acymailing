@@ -120,6 +120,13 @@ class ConfigurationClass extends AcymClass
         $mailClass = new MailClass();
         $mailClass->updateFollowupPriority($oldFollowupPriority, $newFollowupPriority);
 
+        //__START__joomla_
+        // Joomla sends the license key to our download endpoint through the extra query of our update site
+        if ($status !== false && isset($newConfig['license_key']) && ACYM_CMS === 'joomla') {
+            acym_syncUpdateSite($this->get('license_key', ''));
+        }
+        //__END__joomla_
+
         return (bool)$status;
     }
 }

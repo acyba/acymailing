@@ -299,7 +299,7 @@ const acym_editorWysidNewContent = {
 
             $result.html(`<i class="acymicon-circle-o-notch acymicon-spin" id="acym__wysid__modal__video__spinner"></i>`);
 
-            const ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlMails + '&task=ajaxCheckVideoUrl';
+            const ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlEditor() + '&task=ajaxCheckVideoUrl';
             acym_helper.post(ajaxUrl, {
                 'url': url
             }).then(res => {

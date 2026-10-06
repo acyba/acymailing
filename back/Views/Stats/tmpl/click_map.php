@@ -56,7 +56,7 @@
         ?>
 		<div id="acym__stats__click-map" class="acym__content">
 			<input type="hidden" id="acym__stats_click__map__all-links__click" value="<?php echo empty($data['url_click']) ? '' : acym_escape($data['url_click']); ?>">
-			<input type="hidden" class="acym__hidden__mail__content" value="<?php echo acym_escape(acym_absoluteURL($data['mailInformation']->body)); ?>">
+            <?php acym_mailContentInput(acym_absoluteURL($data['mailInformation']->body), '', 'acym__hidden__mail__content'); ?>
 			<input type="hidden" class="acym__hidden__mail__stylesheet" value="<?php echo acym_escape($data['mailInformation']->stylesheet); ?>">
 			<div class="cell grid-x">
 				<div class="cell grid-x align-right">

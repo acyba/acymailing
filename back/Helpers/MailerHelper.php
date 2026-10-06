@@ -201,7 +201,7 @@ class MailerHelper extends Mailer
             }
         } elseif ($mailerMethodConfig === 'outlook') {
             $this->isSMTP();
-            $tenant = trim($this->getSendingMethodSettings('outlook_tenant', 'consumers'));
+            $tenant = trim($this->getSendingMethodSettings('outlook_tenant')) ?: 'consumers';
             $host = $tenant === 'consumers' ? 'smtp-mail.outlook.com' : 'smtp.office365.com';
             $this->Host = $host.':587';
             $this->SMTPAuth = true;

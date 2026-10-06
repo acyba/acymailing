@@ -58,7 +58,7 @@ const acym_editorWysidTest = {
     sendTest: function (id) {
         let url = ACYM_AJAX_URL;
         url += '&page=acymailing_mails';
-        url += '&ctrl=' + acym_helper.ctrlMails;
+        url += '&ctrl=' + acym_helper.ctrlEditor();
         url += '&task=sendTest';
         url += '&id=' + id;
         url += '&controller=' + jQuery('[name="ctrl"]').val();

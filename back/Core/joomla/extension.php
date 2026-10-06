@@ -14,6 +14,73 @@ function acym_getPluginPath(string $plugin): string
     return ACYM_ADDONS_FOLDER_PATH.$plugin.DS.'plugin.php';
 }
 
+function acym_syncUpdateSite(?string $licenseKey = null): void
+{
+    $extensionId = acym_loadResult(
+        'SELECT `extension_id`
+        FROM #__extensions
+        WHERE `element` = "pkg_acymailing"
+            AND `type` = "package"'
+    );
+
+    if (empty($extensionId)) {
+        return;
+    }
+
+    if (is_null($licenseKey)) {
+        $config = acym_config();
+        $licenseKey = $config->get('license_key', '');
+    }
+    $extraQuery = empty($licenseKey) ? '' : 'licenseKey='.urlencode($licenseKey);
+
+    // Must be the same URL as in pkg_acymailing.xml
+    $location = ACYM_UPDATEME_API_URL.'public/updatexml/component?extension=acymailing&cms=joomla&level={__LEVEL__}&type=package';
+    $updateSiteId = acym_loadResult('SELECT `update_site_id` FROM #__update_sites WHERE `location` = '.acym_escapeDB($location));
+
+    if (empty($updateSiteId)) {
+        // First install, add it and Joomla will reuse it
+        $updateSiteDefinition = new stdClass();
+        $updateSiteDefinition->enabled = 1;
+        $updateSiteDefinition->type = 'extension';
+        $updateSiteDefinition->name = 'AcyMailing';
+        $updateSiteDefinition->location = $location;
+        $updateSiteDefinition->extra_query = $extraQuery;
+
+        $updateSiteId = acym_insertObject('#__update_sites', $updateSiteDefinition);
+        if (empty($updateSiteId)) {
+            return;
+        }
+    } else {
+        acym_query(
+            'UPDATE #__update_sites
+            SET `enabled` = 1, `extra_query` = '.acym_escapeDB($extraQuery).'
+            WHERE `update_site_id` = '.intval($updateSiteId)
+        );
+    }
+
+    acym_query(
+        'INSERT IGNORE INTO #__update_sites_extensions (update_site_id, extension_id)
+        VALUES ('.intval($updateSiteId).','.intval($extensionId).')'
+    );
+
+    $oldUpdateSites = acym_loadResultArray(
+        'SELECT `update_site_id`
+        FROM #__update_sites
+        WHERE `location` LIKE '.acym_escapeDB('%updatexml/component%extension=acymailing%').'
+            AND `update_site_id` != '.intval($updateSiteId)
+    );
+
+    if (empty($oldUpdateSites)) {
+        return;
+    }
+
+    $oldUpdateSites = implode(',', array_map('intval', $oldUpdateSites));
+
+    acym_query('DELETE FROM #__updates WHERE `update_site_id` IN ('.$oldUpdateSites.')');
+    acym_query('DELETE FROM #__update_sites_extensions WHERE `update_site_id` IN ('.$oldUpdateSites.')');
+    acym_query('DELETE FROM #__update_sites WHERE `update_site_id` IN ('.$oldUpdateSites.')');
+}
+
 function acym_coreAddons(): array
 {
     acym_loadLanguageFile('com_modules', JPATH_ADMINISTRATOR);

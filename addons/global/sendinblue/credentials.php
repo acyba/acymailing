@@ -116,15 +116,14 @@ class SendinblueCredentials extends SendinblueClass
                                 'class' => true,
                                 'type' => true,
                                 'id' => true,
+                                'name' => true,
                                 'value' => true,
-                                'onchange' => true,
                                 'min' => true,
                             ],
                             'select' => [
                                 'name' => true,
                                 'id' => true,
                                 'class' => true,
-                                'onchange' => true,
                             ],
                             'option' => [
                                 'value' => true,

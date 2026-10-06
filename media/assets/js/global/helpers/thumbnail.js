@@ -23,7 +23,7 @@ const acym_helperThumbnail = {
         $savedThumbnail.val('');
 
         const data = {
-            ctrl: acym_helper.ctrlMails,
+            ctrl: acym_helper.ctrlEditor(),
             task: 'setNewThumbnail',
             content: $editorThumbnail.val(),
             thumbnail: generatedThumbnail,

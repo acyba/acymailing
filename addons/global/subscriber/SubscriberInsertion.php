@@ -156,7 +156,7 @@ trait SubscriberInsertion
                 $fieldValue = $oneTag->default;
             }
 
-            $fieldValue = acym_translation(nl2br($fieldValue));
+            $fieldValue = acym_translation(nl2br(acym_escapeHtml($fieldValue)));
             $this->pluginHelper->formatString($fieldValue, $oneTag);
             $tags[$i] = $fieldValue;
         }

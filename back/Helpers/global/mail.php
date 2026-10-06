@@ -32,6 +32,15 @@ function acym_getMailThumbnail(?string $thumbnail): string
     return ACYM_IMAGES.'templates/default_template_thumbnail.png';
 }
 
+function acym_mailContentInput(string $body, string $id = '', string $class = ''): void
+{
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The body is double-encoded here, as the JS reading this attribute injects it as HTML.
+    echo '<input value="'.htmlspecialchars($body, ENT_QUOTES, 'UTF-8').'"
+        type="hidden"
+        '.(empty($id) ? '' : ' id="'.acym_escape($id).'"').' 
+        '.(empty($class) ? '' : ' class="'.acym_escape($class).'"').'>';
+}
+
 function acym_getFlagByCode(string $code): string
 {
     $code = explode('-', $code);

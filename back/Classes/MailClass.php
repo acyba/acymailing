@@ -534,10 +534,11 @@ class MailClass extends AcymClass
         $this->deleteMediaFolder($elements);
         acym_arrayToInteger($elements);
 
-        $allThumbnailToDelete = acym_loadResultArray('SELECT DISTINCT thumbnail FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
-
         $translations = acym_loadResultArray('SELECT id FROM #__acym_mail WHERE parent_id IN ('.implode(',', $elements).')');
         $elements = array_merge($elements, $translations);
+
+        $allThumbnailToDelete = acym_loadResultArray('SELECT DISTINCT thumbnail FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
+
         if (!empty($translations)) {
             acym_query('UPDATE #__acym_mail SET `parent_id` = null WHERE `id` IN ('.implode(',', $translations).')');
         }
@@ -607,11 +608,9 @@ class MailClass extends AcymClass
             return;
         }
 
-        foreach ($thumbnails as $key => $oneThumb) {
-            $thumbnails[$key] = acym_escapeDB($oneThumb);
-        }
+        $escapedThumbnails = array_map('acym_escapeDB', $thumbnails);
 
-        $stillUsedThumbnails = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE thumbnail IN ('.implode(',', $thumbnails).')');
+        $stillUsedThumbnails = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE thumbnail IN ('.implode(',', $escapedThumbnails).')');
         $thumbnailToDelete = array_diff($thumbnails, $stillUsedThumbnails);
         foreach ($thumbnailToDelete as $one) {
             if (!empty($one) && file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one)) {
