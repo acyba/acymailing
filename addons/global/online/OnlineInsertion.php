@@ -152,9 +152,14 @@ trait OnlineInsertion
         foreach ($results[0] as $i => $oneTag) {
             if (isset($tags[$oneTag])) continue;
 
-            if (ACYM_CMS == 'joomla' && strpos($oneTag, 'modify_profile') !== false) {
-                $link = acym_getPageLink('view=frontusers&layout=profile');
-                $link .= strpos($link, '?') ? '&' : '?';
+            if (strpos($oneTag, 'modify_profile') !== false) {
+                if (ACYM_CMS === 'joomla') {
+                    $link = acym_getPageLink('view=frontusers&layout=profile');
+                    $link .= (strpos($link, '?') === false ? '?' : '&').acym_noTemplate();
+                } else {
+                    $link = acym_frontendLink('frontusers&task=profile');
+                }
+                $link .= strpos($link, '?') === false ? '?' : '&';
                 $link .= 'id={subscriber:id}&key={subscriber:key}';
                 $link .= $this->getLanguage($email->links_language);
             } else {

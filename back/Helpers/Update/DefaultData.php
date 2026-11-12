@@ -146,6 +146,20 @@ trait DefaultData
             ];
         }
 
+        // Identification email for double opt-out, when the address was not proven
+        if (empty($notifications['acy_identification'])) {
+            $addNotif[] = [
+                'name' => 'acy_identification',
+                'subject' => '{trans:ACYM_IDENTIFICATION_SUBJECT}',
+                'content' => $this->getFormatedNotification(
+                    '<h1 style="font-size: 24px;">{trans:ACYM_HELLO} '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
+                    <p>{trans:ACYM_IDENTIFICATION_MESSAGE}</p>
+                    <p style="text-align: center;"><strong>{unsubscribe}{trans:ACYM_MODIFY_SUBSCRIPTION}{/unsubscribe}</strong></p>
+                    <p>{trans:ACYM_IDENTIFICATION_IGNORE}</p>'
+                ),
+            ];
+        }
+
         if (empty($notifications['acy_notification_create'])) {
             $addNotif[] = [
                 'name' => 'acy_notification_create',
@@ -350,9 +364,27 @@ trait DefaultData
         $emailOverrides = acym_getEmailOverrides();
         $existingOverrides = $mailClass->getMailsByType(MailClass::TYPE_OVERRIDE, ['offset' => 0, 'mailsPerPage' => 9000, 'key' => 'name']);
         $existingOverrides = $existingOverrides['mails'];
+        $existingDetections = acym_loadObjectList(
+            'SELECT mail.name, override.mail_id, override.base_subject, override.base_body
+            FROM #__acym_mail_override AS override
+            JOIN #__acym_mail AS mail ON mail.id = override.mail_id',
+            'name'
+        );
 
         foreach ($emailOverrides as $oneOverride) {
+            $baseSubject = json_encode($oneOverride['base_subject']);
+            $baseBody = empty($oneOverride['base_body']) ? '' : json_encode($oneOverride['base_body']);
+
             if (!empty($existingOverrides[$oneOverride['name']])) {
+                // The CMS texts an override is detected with change over the versions, the detection must follow them
+                $detection = $existingDetections[$oneOverride['name']] ?? null;
+                if (!empty($detection) && ($detection->base_subject !== $baseSubject || $detection->base_body !== $baseBody)) {
+                    acym_query(
+                        'UPDATE #__acym_mail_override SET `base_subject` = '.acym_escapeDB($baseSubject).', `base_body` = '.acym_escapeDB($baseBody)
+                        .' WHERE `mail_id` = '.intval($detection->mail_id)
+                    );
+                }
+
                 continue;
             }
 
@@ -375,8 +407,8 @@ trait DefaultData
             $override->description = $oneOverride['description'];
             $override->source = $oneOverride['source'];
             $override->active = 0;
-            $override->base_subject = json_encode($oneOverride['base_subject']);
-            $override->base_body = empty($oneOverride['base_body']) ? '' : json_encode($oneOverride['base_body']);
+            $override->base_subject = $baseSubject;
+            $override->base_body = $baseBody;
 
             $overrideClass->save($override);
         }

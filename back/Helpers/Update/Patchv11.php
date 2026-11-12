@@ -63,4 +63,23 @@ trait Patchv11
             );
         }
     }
+
+    private function updateFor1112(): void
+    {
+        if ($this->isPreviousVersionAtLeast('11.1.2')) {
+            return;
+        }
+
+        $this->updateQuery('ALTER TABLE `#__acym_user_stat` ADD INDEX `#__index_acym_user_stat1` (`open_date`, `open`), ADD INDEX `#__index_acym_user_stat2` (`send_date`)');
+        $this->updateQuery('ALTER TABLE `#__acym_url_click` ADD INDEX `#__index_acym_url_click1` (`date_click`, `click`)');
+        $this->updateQuery('ALTER TABLE `#__acym_history` ADD INDEX `#__index_acym_history1` (`date`)');
+        $this->updateQuery(
+            'CREATE TABLE IF NOT EXISTS `#__acym_stats_cache` (
+            `name` VARCHAR(100) NOT NULL,
+            `value` LONGTEXT NOT NULL,
+            `expiration_date` INT NOT NULL,
+            PRIMARY KEY (`name`)
+            )'
+        );
+    }
 }

@@ -26,6 +26,8 @@ class UserClass extends AcymClass
         'tracking',
     ];
 
+    private const IDENTIFICATION_ACTION = 'identification';
+
     public bool $checkVisitor = true;
     public bool $requireId = false;
     public bool $sendConf = true;
@@ -454,8 +456,8 @@ class UserClass extends AcymClass
 
     public function getAllListsUserSubscriptionById(int $userId, string $key = 'id', bool $needTranslation = false): array
     {
-        $query = 'SELECT list.id, list.translation, list.name, list.color, list.active, list.visible, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
-                FROM #__acym_list AS list 
+        $query = 'SELECT list.id, list.translation, list.name, list.display_name, list.color, list.active, list.visible, userlist.status, userlist.subscription_date, userlist.unsubscribe_date
+                FROM #__acym_list AS list
                 LEFT JOIN #__acym_user_has_list AS userlist 
                     ON list.id = userlist.list_id 
                     AND userlist.user_id = '.intval($userId);
@@ -1251,7 +1253,14 @@ class UserClass extends AcymClass
             $this->newUser ? 'acy_notification_create' : 'acy_notification_profile'
         );
 
-        if (!$this->newUser) $this->unsubscribe([$id], $unsubLists);
+        if (!$this->newUser && !empty($unsubLists)) {
+            if ($this->isIdentifiedAs($connectedUser, $user->email)) {
+                $this->unsubscribe([$id], $unsubLists);
+            } else {
+                $this->requireId = true;
+                $this->sendIdentification($id);
+            }
+        }
 
         return true;
     }
@@ -1280,6 +1289,46 @@ class UserClass extends AcymClass
         $confirmationEmail = $mailClass->getOneByName('acy_confirm');
         $this->confirmationSentSuccess = !empty($confirmationEmail) && $mailerHelper->sendOne($confirmationEmail->id, $myUser->id);
         $this->confirmationSentError = $mailerHelper->reportMessage;
+    }
+
+    public function isIdentifiedAs(?object $identifiedUser, string $email): bool
+    {
+        $identifiedEmails = [];
+        if (!empty($identifiedUser->email)) {
+            $identifiedEmails[] = strtolower($identifiedUser->email);
+        }
+
+        $currentEmail = acym_currentUserEmail();
+        if (!empty($currentEmail)) {
+            $identifiedEmails[] = strtolower($currentEmail);
+        }
+
+        return in_array(strtolower($email), $identifiedEmails, true);
+    }
+
+    public function sendIdentification(int $userId): bool
+    {
+        if (empty($userId)) {
+            return false;
+        }
+
+        $mailClass = new MailClass();
+        $identificationEmail = $mailClass->getOneByName('acy_identification');
+        if (empty($identificationEmail)) {
+            return false;
+        }
+
+        $mailerHelper = new MailerHelper();
+        $mailerHelper->report = false;
+
+        if (!$mailerHelper->sendOne($identificationEmail->id, $userId)) {
+            return false;
+        }
+
+        $historyClass = new HistoryClass();
+        $historyClass->insert($userId, self::IDENTIFICATION_ACTION);
+
+        return true;
     }
 
     public function setInactive(array $elements): void

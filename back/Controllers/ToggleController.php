@@ -202,7 +202,14 @@ class ToggleController extends AcymController
         acym_checkToken();
 
         $table = acym_getVar('word', 'table', '');
-        $id = acym_getVar('int', 'id', 0);
+        if ($table === 'queue') {
+            $elementId = acym_getVar('string', 'id', 0);
+            $parts = explode('_', $elementId);
+            $id = (int)$parts[0];
+            $userId = (int)$parts[1];
+        } else {
+            $id = acym_getVar('int', 'id', 0);
+        }
 
         if (empty($table) || !in_array($table, $this->deletableRows) || empty($id)) {
             exit;
@@ -219,11 +226,14 @@ class ToggleController extends AcymController
             acym_sendAjaxResponse(acym_translation('ACYM_ACCESS_DENIED'), [], false);
         }
 
-        $method = $table === 'queue' ? 'deleteQueuedByUserIds' : 'delete';
-
         $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($table).'Class';
         $elementClass = new $namespaceClass();
-        $elementClass->$method([$id]);
+
+        if ($table === 'queue') {
+            $elementClass->deleteQueuedByUserIds([$userId], $id);
+        } else {
+            $elementClass->delete([$id]);
+        }
 
         exit;
     }

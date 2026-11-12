@@ -111,7 +111,7 @@ $allowedIntroTags = array_merge(SecurityHelper::ALLOWED_HTML_INTRO, [
 								<td id="acybutton_subscriber_download_data" <?php if ($deleteButton == 1) {
                                     echo 'style="padding-right: 10px;"';
                                 } ?>>
-									<button class="btn btn-secondary button" onclick="this.form.task.value='exportdata'; this.form.submit(); return false;">
+									<button class="btn btn-secondary button button-secondary" onclick="this.form.task.value='exportdata'; this.form.submit(); return false;">
                                         <?php echo acym_escapeHtml(acym_translation('ACYM_EXPORT_MY_DATA')); ?>
 									</button>
 								</td>
@@ -120,7 +120,7 @@ $allowedIntroTags = array_merge(SecurityHelper::ALLOWED_HTML_INTRO, [
                             if ($deleteButton == 1) {
                                 ?>
 								<td id="acybutton_subscriber_delete_data">
-									<button class="btn btn-secondary button"
+									<button class="btn btn-secondary button button-secondary"
 											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'gdprDelete'; this.form.submit(); } return false;">
                                         <?php echo acym_escapeHtml(acym_translation('ACYM_DELETE_MY_DATA')); ?>
 									</button>
@@ -142,33 +142,26 @@ $allowedIntroTags = array_merge(SecurityHelper::ALLOWED_HTML_INTRO, [
 				<div id="acyusersubscription">
                     <?php
                     if (empty($data['dropdown'])) {
-                        $values = [];
-                        $values[0] = acym_selectOption('-1', 'ACYM_NO');
-                        $values[1] = acym_selectOption('1', 'ACYM_YES');
-                        $values[0]->class = 'btn-danger';
-                        $values[1]->class = 'btn-success';
-
-                        $k = 0;
                         foreach ($data['subscription'] as $row) {
                             if (empty($row->active) || !$row->visible) {
                                 continue;
                             }
-                            if (empty($row->status)) {
-                                $row->status = -1;
-                            }
+
+                            $listName = !empty($row->display_name) ? $row->display_name : $row->name;
+                            $listFieldName = 'data[listsub]['.$row->id.'][status]';
 
                             echo '<div class="acym_list">
                                     <div class="acystatus">';
-                            acym_radio(
-                                $values,
-                                'data[listsub]['.$row->id.'][status]',
-                                $row->status,
-                                [],
-                                ['id' => 'status'.$k++],
-                                true
-                            );
+                            acym_switch([
+                                'name' => $listFieldName,
+                                'value' => $row->status == 1 ? 1 : 0,
+                                'attributes' => [
+                                    'name' => $listFieldName,
+                                    'aria-label' => $listName,
+                                ],
+                            ]);
                             echo '</div>
-                                    <div class="list_name">'.acym_escapeHtml(!empty($row->display_name) ? $row->display_name : $row->name).'</div>
+                                    <div class="list_name">'.acym_escapeHtml($listName).'</div>
                                 </div>';
                         }
                     } else {
@@ -232,11 +225,11 @@ $allowedIntroTags = array_merge(SecurityHelper::ALLOWED_HTML_INTRO, [
 		<input type="hidden" name="user[id]" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="userId" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="userKey" value="<?php echo acym_escape($data['user']->key ?? ''); ?>" />
-		<input type="hidden" name="ajax" value="1" />
+		<input type="hidden" name="<?php echo empty($data['profilePage']) ? 'ajax' : 'profile_page'; ?>" value="1" />
 		<input type="hidden" name="acyprofile" value="1" />
 
 		<p class="acymodifybutton">
-			<button class="btn btn-primary"
+			<button class="btn btn-primary button button-primary"
 					type="submit"
 					onclick="<?php echo acym_escape($actionClick); ?>">
                 <?php echo acym_escapeHtml(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>

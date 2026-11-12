@@ -93,7 +93,7 @@ const acym_helperFilter = {
                                     'automation'
                                 ].forEach(function (selector) {
                                     let containerClasses = '.acym__' + selector + '__one__filter.acym__' + selector + '__one__filter__classic';
-                                    let inputClasses = '.acym__' + selector + '__inserted__filter input';
+                                    let inputClasses = '.acym__' + selector + '__inserted__filter input:not(.switch-input)';
                                     inputClasses += ', .acym__' + selector + '__inserted__filter textarea';
                                     inputClasses += ', .acym__' + selector + '__inserted__filter select';
 

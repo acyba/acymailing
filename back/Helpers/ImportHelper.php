@@ -1158,6 +1158,18 @@ class ImportHelper extends AcymObject
         $this->allUserIds = array_merge($this->allUserIds, array_keys($importedUsers));
     }
 
+    public function isUserEmailIndexMissing(): bool
+    {
+        $emailIndex = acym_loadResult('SHOW INDEX FROM #__acym_user WHERE `Column_name` = "email" AND `Non_unique` = 0');
+        if (!empty($emailIndex)) {
+            return false;
+        }
+
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_USER_EMAIL_INDEX_MISSING', acym_translation('ACYM_CHECK_DB')), 'error');
+
+        return true;
+    }
+
     private function getUserDateColumns(): array
     {
         static $dateColumns = null;

@@ -62,7 +62,7 @@ function acym_loadAssets(string $ctrl, string $task): void
 
     if (file_exists(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js')) {
         $params = [];
-        if ($ctrl === 'frontusers' && $task === 'unsubscribepage') {
+        if ($ctrl === 'frontusers' && in_array($task, ['unsubscribepage', 'profilepage'], true)) {
             $params['defer'] = true;
         }
         acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js'), $params);

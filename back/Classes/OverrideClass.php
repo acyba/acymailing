@@ -165,13 +165,15 @@ class OverrideClass extends AcymClass
             }
 
             // The content didn't match the identifier
-            if (!$matches) continue;
+            if (!$matches) {
+                continue;
+            }
 
             // We found the override
             $mailClass = new MailClass();
             $mail = $mailClass->getOneById($oneOverride->mail_id);
 
-            if ($oneOverride->source == 'woocommerce' && $translatepressIsActive) {
+            if ($oneOverride->source === 'woocommerce' && $translatepressIsActive) {
                 $subjectTranslated = $params[0];
                 for ($i = 1; $i < count($params); $i++) {
                     $pattern = '/'.$params[$i].'/i';

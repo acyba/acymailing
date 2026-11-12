@@ -5,6 +5,7 @@ use Joomla\CMS\Language\Language;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Installer\Installer;
+use Joomla\CMS\Component\ComponentHelper;
 
 global $acymLanguages;
 
@@ -95,7 +96,12 @@ function acym_getLanguageTag(bool $simple = false): string
 
 function acym_getSiteLanguageTag(bool $simple = false): string
 {
-    $langCode = Factory::getConfig()->get('language');
+    // The application overrides its config language with the one it currently runs in, the default site language is only in com_languages
+    $langCode = ComponentHelper::getParams('com_languages')->get('site');
+
+    if (empty($langCode)) {
+        $langCode = Factory::getConfig()->get('language');
+    }
 
     if (empty($langCode)) {
         $langCode = acym_getLanguageTag();

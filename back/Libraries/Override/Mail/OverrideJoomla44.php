@@ -14,8 +14,18 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.mail.helper');
 
+if (interface_exists(FormatConfigurableMailerInterface::class) && interface_exists(TransportConfigurableMailerInterface::class)) {
+    interface AcymConfigurableMailerInterface extends FormatConfigurableMailerInterface, TransportConfigurableMailerInterface
+    {
+    }
+} else {
+    interface AcymConfigurableMailerInterface
+    {
+    }
+}
+
 // Redefine the Joomla mail class
-class Mail extends PHPMailer implements MailerInterface
+class Mail extends PHPMailer implements MailerInterface, AcymConfigurableMailerInterface
 {
     public static $instances = [];
     public $CharSet = 'utf-8';
@@ -95,6 +105,7 @@ class Mail extends PHPMailer implements MailerInterface
                     'headers' => $headers,
                     'bcc' => $bcc,
                     'attachments' => $attachments,
+                    'replyto' => acym_getOverrideReplyTo($this),
                 ]
             );
         }
@@ -180,7 +191,7 @@ class Mail extends PHPMailer implements MailerInterface
 
     public function setSubject($subject)
     {
-        $this->Subject = MailHelper::cleanLine($subject);
+        $this->Subject = MailHelper::cleanSubject($subject);
 
         return $this;
     }
@@ -356,19 +367,28 @@ class Mail extends PHPMailer implements MailerInterface
         }
     }
 
-    public function useSmtp($auth = null, $host = null, $user = null, $pass = null, $secure = null, $port = 25)
+    public function useSmtp($auth = null, $host = null, $user = null, $pass = null, $secure = null, $port = 25, $oauthTokenProvider = null)
     {
-        $this->SMTPAuth = $auth;
+        $this->SMTPAuth = !empty($auth);
         $this->Host = $host;
         $this->Username = $user;
         $this->Password = $pass;
         $this->Port = $port;
 
-        if ($secure == 'ssl' || $secure == 'tls') {
+        if ($secure === 'ssl' || $secure === 'tls') {
             $this->SMTPSecure = $secure;
         }
 
-        if (($this->SMTPAuth !== null && $this->Host !== null && $this->Username !== null && $this->Password !== null) || ($this->SMTPAuth === null && $this->Host !== null)) {
+        if ($oauthTokenProvider) {
+            $this->AuthType = 'XOAUTH2';
+            $this->setOAuth($oauthTokenProvider);
+        }
+
+        if (
+            ($this->SMTPAuth && $this->Host !== null && $this->Username !== null && $this->Password !== null)
+            || ($this->SMTPAuth && $this->Host !== null && $this->Username !== null && $this->AuthType === 'XOAUTH2')
+            || (!$this->SMTPAuth && $this->Host !== null)
+        ) {
             $this->isSMTP();
 
             return true;

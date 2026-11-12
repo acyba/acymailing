@@ -453,7 +453,7 @@ class PluginHelper extends AcymObject
                 foreach ($codes as $oneCode) {
                     // Dtext specific syntax
                     $text = preg_replace(
-                        '#<span[^>]+'.preg_quote($oneCode, '#').'.+</em>[^<]*</span>#Uis',
+                        '#<span[^>]+'.preg_quote($oneCode, '#').'.+</(?:em|span)>[^<]*</span>#Uis',
                         $safePregValue,
                         $text
                     );

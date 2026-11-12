@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, e-commerce, digital store
 Tested up to: 7.1
-Stable tag: 4.5
+Stable tag: 4.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -43,6 +43,17 @@ Features :
 = Where can I find a documentation? =
 
 You can find the complete documentation here: https://docs.acymailing.com/addons/wordpress-add-ons/easydigitaldownloads
+
+== Security ==
+
+Please report security issues privately to security@acyba.com, or through https://www.acymailing.com/contact/
+
+Never report them in the support forum or in any public thread: that exposes every site running this add-on until a patch is out.
+
+Include the add-on version, the AcyMailing version, the WordPress version, the steps to reproduce and the privileges required. We acknowledge reports within one business day and send an initial assessment within three to five business days.
+
+* Disclosure policy: https://www.acymailing.com/security-policy
+* Published advisories: https://www.acymailing.com/security
 
 == Changelog ==
 

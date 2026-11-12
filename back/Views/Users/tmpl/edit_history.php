@@ -146,8 +146,8 @@ if (!empty($data['user-information']->id)) { ?>
                                     }
 
                                     foreach ($historyData as $value) {
-                                        if (!strpos($value, '::')) {
-                                            $details .= $value.'<br />';
+                                        if (strpos($value, '::') === false) {
+                                            $details .= acym_escapeHtml($value).'<br />';
                                             continue;
                                         }
                                         [$part1, $part2] = explode('::', $value);

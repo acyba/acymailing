@@ -1,4 +1,5 @@
 .switch {
+    position: relative;
     --color-switch: #{$color-palette-dark-blue};
     --color-switch-disabled: #{$very-light-gray};
     --height-switch: 18px;
@@ -50,8 +51,33 @@
         outline: 2px solid var(--color-switch);
         outline-offset: 2px;
     }
+
+    input.switch-input:focus:not(:focus-visible) + .switch-paddle {
+        outline: none;
+    }
+
+    @media (forced-colors: active) {
+        .switch-paddle:after {
+            forced-color-adjust: none;
+            background: CanvasText;
+        }
+
+        input:checked ~ .switch-paddle:after {
+            background: Highlight;
+        }
+    }
 }
 
-.switch-active, .switch-inactive, input[type="checkbox"].switch-input {
+.switch-active, .switch-inactive {
     display: none;
+}
+
+input[type="checkbox"].switch-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    visibility: visible;
+    pointer-events: none;
 }

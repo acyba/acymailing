@@ -96,7 +96,7 @@ trait Import
 
         $importHelper = new ImportHelper();
 
-        if (empty($function) || !$importHelper->$function()) {
+        if (empty($function) || $importHelper->isUserEmailIndexMissing() || !$importHelper->$function()) {
             $this->import();
 
             return;
@@ -142,7 +142,9 @@ trait Import
         acym_checkToken();
 
         $importHelper = new ImportHelper();
-        $importHelper->finalizeImport();
+        if (!$importHelper->isUserEmailIndexMissing()) {
+            $importHelper->finalizeImport();
+        }
 
         $this->listing();
     }

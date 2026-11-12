@@ -10,6 +10,22 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.mail.helper');
 
+/**
+ * Returns the Reply-To addresses explicitly set on the email, as a list of [address, name].
+ */
+function acym_getOverrideReplyTo($mailer): array
+{
+    $replyTo = method_exists($mailer, 'getReplyToAddresses') ? $mailer->getReplyToAddresses() : $mailer->ReplyTo;
+
+    if (empty($replyTo)) {
+        return [];
+    }
+
+    unset($replyTo[strtolower($mailer->From)]);
+
+    return array_values($replyTo);
+}
+
 class jMail_acym extends PHPMailer
 {
     protected static $instances = [];
@@ -88,6 +104,7 @@ class jMail_acym extends PHPMailer
                     'headers' => $headers,
                     'bcc' => $bcc,
                     'attachments' => $attachments,
+                    'replyto' => acym_getOverrideReplyTo($this),
                 ]
             );
         }
@@ -166,7 +183,7 @@ class jMail_acym extends PHPMailer
 
     public function setSubject($subject)
     {
-        $this->Subject = MailHelper::cleanLine($subject);
+        $this->Subject = MailHelper::cleanSubject($subject);
 
         return $this;
     }

@@ -99,7 +99,7 @@ trait Configuration
         $allPref['trackingsystem'] = 'acymailing';
         $allPref['trackingsystemexternalwebsite'] = 1;
         $allPref['generate_name'] = 1;
-        $allPref['allow_modif'] = 'data';
+        $allPref['allow_modif'] = 'none';
         $allPref['from_as_replyto'] = '1';
         $allPref['bounceVersion'] = self::BOUNCE_VERSION;
         $allPref['numberThumbnail'] = 2;

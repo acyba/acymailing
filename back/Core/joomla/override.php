@@ -123,12 +123,16 @@ function acym_getEmailOverrides(): array
     ];
 
     if (ACYM_J40) {
+        $enquiryText = ACYM_J53
+            ? 'ACYM_COM_CONTACT_ENQUIRY_TEXT_WITHOUT_CUSTOM_FIELDS_J53'
+            : 'ACYM_COM_CONTACT_ENQUIRY_TEXT_WITHOUT_CUSTOM_FIELDS';
+
         $emailOverrides[] = [
             'name' => 'joomla-contact',
             'base_subject' => ['COM_CONTACT_ENQUIRY_SUBJECT'],
-            'base_body' => ['ACYM_COM_CONTACT_ENQUIRY_TEXT_WITHOUT_CUSTOM_FIELDS'],
+            'base_body' => [$enquiryText],
             'new_subject' => '{trans:COM_CONTACT_ENQUIRY_SUBJECT|param1|param2}',
-            'new_body' => '{trans:ACYM_COM_CONTACT_ENQUIRY_TEXT_WITHOUT_CUSTOM_FIELDS|param3|param4|param5|param6}',
+            'new_body' => '{trans:'.$enquiryText.'|param3|param4|param5|param6}',
             'description' => 'ACYM_COM_CONTACT_ENQUIRY',
             'source' => 'com_contact',
         ];
@@ -390,6 +394,32 @@ function acym_getOverrideParamsByName(string $name): array
             'param7' => [
                 'nicename' => acym_translation('ACYM_ACTIVATION_LINK'),
                 'description' => acym_translation('ACYM_ACTIVATION_LINK_OVERRIDE_DESC'),
+            ],
+        ],
+        'joomla-contact' => [
+            'param1' => [
+                'nicename' => acym_translation('ACYM_SITE_NAME'),
+                'description' => acym_translation('ACYM_SITE_NAME_OVERRIDE_DESC'),
+            ],
+            'param2' => [
+                'nicename' => acym_translation('ACYM_EMAIL_SUBJECT'),
+                'description' => acym_translation('ACYM_ENQUIRY_SUBJECT_OVERRIDE_DESC'),
+            ],
+            'param3' => [
+                'nicename' => acym_translation('ACYM_SITE_URL'),
+                'description' => acym_translation('ACYM_SITE_URL_OVERRIDE_DESC'),
+            ],
+            'param4' => [
+                'nicename' => acym_translation('ACYM_SENDER_NAME'),
+                'description' => acym_translation('ACYM_ENQUIRY_SENDER_NAME_OVERRIDE_DESC'),
+            ],
+            'param5' => [
+                'nicename' => acym_translation('ACYM_SENDER_EMAIL'),
+                'description' => acym_translation('ACYM_ENQUIRY_SENDER_EMAIL_OVERRIDE_DESC'),
+            ],
+            'param6' => [
+                'nicename' => acym_translation('ACYM_MESSAGE'),
+                'description' => acym_translation('ACYM_ENQUIRY_MESSAGE_OVERRIDE_DESC'),
             ],
         ],
         'joomla-frontsendarticle' => [

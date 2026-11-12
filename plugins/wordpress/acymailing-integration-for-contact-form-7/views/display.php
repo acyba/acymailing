@@ -34,11 +34,8 @@ if (!defined('ABSPATH')) {
 		<input type="hidden"
 		       name="acymhiddenlists_<?php echo esc_attr($data['identifier']); ?>"
 		       data-acymfield="<?php echo esc_attr($data['identifier']); ?>"
-		       data-acymmail="<?php echo esc_attr($data['emailField']); ?>"
-		       data-acymname="<?php echo esc_attr($data['nameField']); ?>"
 		       data-acymcf="<?php echo esc_attr(wp_json_encode($data['customFields'])); ?>"
 		       value="<?php echo esc_attr(implode(',', $data['listsSubbedOnSubmit'])); ?>" />
-		<input type="hidden" name="acymaction_<?php echo esc_attr($data['identifier']); ?>" value="<?php echo esc_url($data['submitUrl']); ?>" />
 	</span>
 	<?php
     echo wp_kses(

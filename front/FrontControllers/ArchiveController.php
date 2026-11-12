@@ -39,11 +39,15 @@ class ArchiveController extends AcymController
         $mailId = acym_getVar('int', 'id', 0);
         $isPopup = acym_getVar('int', 'is_popup', 0);
 
-        $mailArchiveClass = new MailArchiveClass();
-        $oneMail = $mailArchiveClass->getOneByMailId($mailId);
-        if (empty($oneMail) && $this->canViewMailOnline($mailId)) {
-            $mailerHelper = new MailerHelper();
-            $oneMail = $mailerHelper->load($mailId);
+        // An archived version exists for every campaign ever sent, so it must go through the same visibility check
+        $oneMail = null;
+        if ($this->canViewMailOnline($mailId)) {
+            $mailArchiveClass = new MailArchiveClass();
+            $oneMail = $mailArchiveClass->getOneByMailId($mailId);
+            if (empty($oneMail)) {
+                $mailerHelper = new MailerHelper();
+                $oneMail = $mailerHelper->load($mailId);
+            }
         }
 
         if (empty($oneMail)) {
@@ -151,21 +155,21 @@ class ArchiveController extends AcymController
             return false;
         }
 
-        $historyClass = new HistoryClass();
-        $userHistory = $historyClass->getHistoryOfOneById($userId);
-        foreach ($userHistory as $userHistoryItem) {
-            if ((int)$userHistoryItem->mail_id === $mailId && $userHistoryItem->action === 'test_sent') {
-                return true;
-            }
-        }
-
         acym_setVar('id', $userId);
         acym_setVar('key', $userKey);
         $userClass = new UserClass();
         $user = $userClass->identify(true);
 
-        if (empty($user)) {
+        if (empty($user->id) || (int)$user->id !== $userId) {
             return false;
+        }
+
+        $historyClass = new HistoryClass();
+        $userHistory = $historyClass->getHistoryOfOneById($user->id);
+        foreach ($userHistory as $userHistoryItem) {
+            if ((int)$userHistoryItem->mail_id === $mailId && $userHistoryItem->action === 'test_sent') {
+                return true;
+            }
         }
 
         if (!empty($user->cms_id) && $mailClass->hasUserAccess($mailId, false, $user->cms_id)) {
@@ -174,7 +178,7 @@ class ArchiveController extends AcymController
 
         $userStatClass = new UserStatClass();
 
-        return $userStatClass->hasUserReceivedMail($mailId, $userId);
+        return $userStatClass->hasUserReceivedMail($mailId, (int)$user->id);
     }
 
     public function listing(): void

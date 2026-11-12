@@ -123,11 +123,6 @@ const acym_helperSegment = {
             jQuery(document).foundation();
             jQuery(document).trigger('acym__modal__users__summary__ready');
 
-            jQuery('.switch-label').off('click').on('click', function () {
-                const input = jQuery('input[data-switch="' + jQuery(this).attr('for') + '"]');
-                input.attr('value', 1 - input.attr('value'));
-            });
-
             const $fieldsDropdown = jQuery(this).closest('.acym__segments__one__filter').find('.acym__automation__conditions__fields__dropdown');
             const $operatorDropdown = jQuery(this).closest('.acym__segments__one__filter').find('.acym__automation__conditions__operator__dropdown');
 
@@ -169,7 +164,7 @@ const acym_helperSegment = {
 
             jQuery(this)
                 .closest('.acym__segments__one__filter.acym__segments__one__filter__classic')
-                .find('.acym__segments__inserted__filter input, .acym__segments__inserted__filter select')
+                .find('.acym__segments__inserted__filter input:not(.switch-input), .acym__segments__inserted__filter select')
                 .on('change', function () {
                     acym_helperSegment.reloadCounters(this);
                 });

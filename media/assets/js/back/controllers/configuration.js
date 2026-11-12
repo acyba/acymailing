@@ -449,15 +449,12 @@ jQuery(function ($) {
 
     function setAttachmentsPositionToggle() {
         jQuery('[name="config[embed_files]"]').off('change').on('change', function () {
-            // The input hidden value is changed after the on change on itself, which doesn't make sense but it is the case
-            setTimeout(() => {
-                const $attachmentsPositionContainer = jQuery('#attachments_position');
-                if (jQuery(this).val() === '1') {
-                    $attachmentsPositionContainer.css('display', 'none');
-                } else {
-                    $attachmentsPositionContainer.css('display', '');
-                }
-            }, 10);
+            const $attachmentsPositionContainer = jQuery('#attachments_position');
+            if (jQuery(this).val() === '1') {
+                $attachmentsPositionContainer.css('display', 'none');
+            } else {
+                $attachmentsPositionContainer.css('display', '');
+            }
         });
     }
 
@@ -721,41 +718,39 @@ jQuery(function ($) {
     }
 
     function setColorPicker() {
-        const $colorField = $('#acym__config__settings__color-picker');
-        if (typeof $colorField.spectrum == 'function') {
-            $colorField
-                .spectrum({
-                    showInput: true,
-                    preferredFormat: 'hex'
-                });
-        }
+        ['#acym__config__settings__color-picker', '#acym__config__settings__profile-color-picker'].forEach(function (selector) {
+            const $colorField = $(selector);
+            if (typeof $colorField.spectrum == 'function') {
+                $colorField
+                    .spectrum({
+                        showInput: true,
+                        preferredFormat: 'hex'
+                    });
+            }
+        });
     }
 
     function initButtonImage() {
-        $('#acym__unsubscribe__logo').on('click', function () {
-            acym_helperImage.openMediaManager(function (mediaObject) {
-                $('#acym__unsubscribe__logo_value').val(mediaObject.url).trigger('change');
-                $('.acym__unsub__logo__text')
-                    .html(mediaObject.url + ' <i class="acymicon-trash-o margin-left-1 acym__color__red acym__unsub__logo__remove"></i>');
+        const imageFields = [
+            {button: '#acym__unsubscribe__logo', value: '#acym__unsubscribe__logo_value', text: '.acym__unsub__logo__text', remove: 'acym__unsub__logo__remove'},
+            {button: '#acym__unsubscribe__image', value: '#acym__unsubscribe__image_value', text: '.acym__unsub__image__text', remove: 'acym__unsub__image__remove'},
+            {button: '#acym__profile__logo', value: '#acym__profile__logo_value', text: '.acym__profile__logo__text', remove: 'acym__profile__logo__remove'},
+            {button: '#acym__profile__image', value: '#acym__profile__image_value', text: '.acym__profile__image__text', remove: 'acym__profile__image__remove'}
+        ];
+
+        imageFields.forEach(function (field) {
+            $(field.button).on('click', function () {
+                acym_helperImage.openMediaManager(function (mediaObject) {
+                    $(field.value).val(mediaObject.url).trigger('change');
+                    $(field.text)
+                        .html(mediaObject.url + ' <i class="acymicon-close margin-left-1 acym__color__red cursor-pointer ' + field.remove + '"></i>');
+                });
             });
-        });
 
-        $('#acym__unsubscribe__image').on('click', function () {
-            acym_helperImage.openMediaManager(function (mediaObject) {
-                $('#acym__unsubscribe__image_value').val(mediaObject.url).trigger('change');
-                $('.acym__unsub__image__text')
-                    .html(mediaObject.url + ' <i class="acymicon-trash-o margin-left-1 acym__color__red acym__unsub__image__remove"></i>');
+            $(document).on('click', '.' + field.remove, function () {
+                $(field.value).val('').trigger('change');
+                $(field.text).empty();
             });
-        });
-
-        $(document).on('click', '.acym__unsub__logo__remove', function () {
-            $('#acym__unsubscribe__logo_value').val('').trigger('change');
-            $('.acym__unsub__logo__text').empty();
-        });
-
-        $(document).on('click', '.acym__unsub__image__remove', function () {
-            $('#acym__unsubscribe__image_value').val('').trigger('change');
-            $('.acym__unsub__image__text').empty();
         });
     }
 });

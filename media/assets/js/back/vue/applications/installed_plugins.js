@@ -32,8 +32,8 @@ jQuery(function ($) {
             }
         },
         template: '<div class="cell shrink grid-x"><div class="switch cell shrink"> '
-                  + '<input class="switch-input" :id="id" type="checkbox" name="exampleSwitch" :checked="ischecked"> '
-                  + '<label class="switch-paddle" @click="toggleActive(plugin.id)" :for="id"> '
+                  + '<input class="switch-input" :id="id" type="checkbox" role="switch" name="exampleSwitch" :aria-label="plugin.title" :checked="ischecked" @change="toggleActive(plugin.id)"> '
+                  + '<label class="switch-paddle" :for="id"> '
                   + '</label> '
                   + '</div>'
                   + '<i v-show="loading" class="cell shrink acym__card__loader acymicon-circle-o-notch acymicon-spin"></i></div>'

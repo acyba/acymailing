@@ -31,6 +31,7 @@ class plgAcymGravityforms extends AcymPlugin
         add_action('gform_field_standard_settings', [$this, 'subscriptionFormSettings'], 10, 2);
         add_action('gform_editor_js', [$this, 'subscriptionFormScript']);
         add_action('gform_after_submission', [$this, 'onFormProcess'], 10, 2);
+        add_action('gform_editor_js_set_default_values', [$this, 'setDefaultLabel']);
     }
 
     public function onFormProcess($entry, $form)
@@ -175,6 +176,15 @@ class plgAcymGravityforms extends AcymPlugin
                 ?>
             });
 		</script>
+        <?php
+    }
+
+    public function setDefaultLabel()
+    {
+        ?>
+		case 'acy' :
+		field.label = <?php echo wp_json_encode(esc_html__(acym_translation('ACYM_SUBSCRIBE_NEWSLETTER'))); ?>;
+		break;
         <?php
     }
 }

@@ -109,11 +109,6 @@ jQuery(function ($) {
             jQuery(document).foundation();
             jQuery(document).trigger('acym__modal__users__summary__ready');
 
-            $('.switch-label').off('click').on('click', function () {
-                const input = $('input[data-switch="' + $(this).attr('for') + '"]');
-                input.attr('value', 1 - input.attr('value'));
-            });
-
             const $fieldsDropdown = $(this).closest('.acym__automation__one__filter').find('.acym__automation__conditions__fields__dropdown');
             const $operatorDropdown = $(this).closest('.acym__automation__one__filter').find('.acym__automation__conditions__operator__dropdown');
 
@@ -157,7 +152,7 @@ jQuery(function ($) {
             if ('classic' === type) {
                 $(this)
                     .closest('.acym__automation__one__filter.acym__automation__one__filter__classic')
-                    .find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter textarea, .acym__automation__inserted__filter select')
+                    .find('.acym__automation__inserted__filter input:not(.switch-input), .acym__automation__inserted__filter textarea, .acym__automation__inserted__filter select')
                     .on('change', function () {
                         $.reloadCounters(this);
                     });

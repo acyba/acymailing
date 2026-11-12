@@ -1,13 +1,13 @@
 const acym_helperSwitch = {
     setSwitchFieldsGlobal: function () {
-        jQuery('.switch-label').on('click', function () {
-            if (jQuery(this).hasClass('disabled')) {
-                return;
-            }
+        document.addEventListener('change', acym_helperSwitch.syncHiddenInput, true);
+    },
+    syncHiddenInput: function (event) {
+        if (!event.target.classList || !event.target.classList.contains('switch-input')) {
+            return;
+        }
 
-            let input = jQuery('input[data-switch="' + jQuery(this).attr('for') + '"]');
-            input.attr('value', 1 - input.attr('value'));
-        });
+        jQuery('input[data-switch="' + event.target.id + '"]').attr('value', event.target.checked ? 1 : 0).trigger('change');
     },
     setButtonSwitch: function () {
         let $switchButtons = jQuery('button[acym-button-switch-type]');

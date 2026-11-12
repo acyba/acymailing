@@ -199,3 +199,50 @@ function acym_isImageUrl(string $url): bool
 
     return in_array($extension, acym_getImageFileExtensions(true));
 }
+
+function acym_checkRedirect(string $redirectUrl): bool
+{
+    $config = acym_config();
+    $allowedHosts = $config->get('allowed_hosts', '');
+    $allowedHosts = str_replace(',', '|', $allowedHosts);
+    $allowedHosts = str_replace(['https://', 'http://', 'www.'], '', $allowedHosts);
+
+    $regex = trim(preg_replace('#[^a-z0-9\|\.]#i', '', $allowedHosts), '|');
+    if (empty($regex) || $regex == 'all' || empty($redirectUrl)) return true;
+
+    preg_match('#^(https?://)?(www.)?([^/]*)#i', $redirectUrl, $resultsurl);
+    $domainredirect = preg_replace('#[^a-z0-9\.]#i', '', @$resultsurl[3]);
+    if (preg_match('#^'.$regex.'$#i', $domainredirect)) return true;
+
+    return false;
+}
+
+// A redirect target coming from the request may only leave the site when the admin listed the host, acym_checkRedirect alone allows everything as long as allowed_hosts is empty
+function acym_isTrustedRedirect(string $redirectUrl): bool
+{
+    if ($redirectUrl === '') {
+        return true;
+    }
+
+    // Browsers read //host and /\host as protocol relative, parse_url only reports a host for the first one
+    if (preg_match('~^/[/\\\\]~', $redirectUrl)) {
+        return false;
+    }
+
+    $parsedUrl = acym_parseUrl($redirectUrl);
+    if ($parsedUrl === false) {
+        return false;
+    }
+
+    $host = $parsedUrl['host'] ?? '';
+    if (empty($host)) {
+        return true;
+    }
+
+    $siteUrl = acym_parseUrl(ACYM_LIVE);
+    if (!empty($siteUrl['host']) && strcasecmp($host, $siteUrl['host']) === 0) {
+        return true;
+    }
+
+    return trim(acym_config()->get('allowed_hosts', '')) !== '' && acym_checkRedirect($redirectUrl);
+}

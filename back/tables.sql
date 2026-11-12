@@ -295,6 +295,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_stat` (
 	`device` VARCHAR(50) NULL,
 	`opened_with` VARCHAR(50) NULL,
 	PRIMARY KEY (`user_id`, `mail_id`),
+	INDEX `#__index_acym_user_stat1`(`open_date`, `open`),
+	INDEX `#__index_acym_user_stat2`(`send_date`),
 	CONSTRAINT `#__fk_acym_user_stat1`
 		FOREIGN KEY (`mail_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -321,6 +323,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_url_click` (
 	`date_click` DATETIME NULL,
 	PRIMARY KEY (`mail_id`, `url_id`, `user_id`),
 	INDEX `#__index_acym_url_has_url1`(`url_id` ASC),
+	INDEX `#__index_acym_url_click1`(`date_click`, `click`),
 	CONSTRAINT `#__fk_acym_url_click_has_mail`
 		FOREIGN KEY (`mail_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -404,7 +407,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_history` (
 	`source` text,
 	`mail_id` MEDIUMINT DEFAULT NULL,
 	`unsubscribe_reason` TEXT NULL,
-	PRIMARY KEY (`user_id`, `date`)
+	PRIMARY KEY (`user_id`, `date`),
+	INDEX `#__index_acym_history1`(`date`)
 )
 	ENGINE = InnoDB
 	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
@@ -698,6 +702,18 @@ CREATE TABLE IF NOT EXISTS `#__acym_scenario_history_line` (
     			REFERENCES `#__acym_scenario_process`(`id`)
     			ON DELETE NO ACTION
     			ON UPDATE NO ACTION
+)
+	ENGINE = InnoDB
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
+
+-- -----------------------------------------------------
+-- Table `#__acym_stats_cache`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__acym_stats_cache` (
+	`name` VARCHAR(100) NOT NULL,
+	`value` LONGTEXT NOT NULL,
+	`expiration_date` INT NOT NULL,
+	PRIMARY KEY (`name`)
 )
 	ENGINE = InnoDB
 	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;

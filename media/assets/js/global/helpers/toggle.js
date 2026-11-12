@@ -96,11 +96,6 @@ const acym_helperToggle = {
             }
         });
 
-        jQuery('.switch-label').off('click').on('click', function () {
-            let $id = jQuery(this).attr('for');
-            jQuery('[data-switch="' + $id + '"]').trigger('change');
-        });
-
         jQuery('.acym_toggle_switch').off('change').on('change', function () {
             let $element = jQuery(this);
             let $table = $element.attr('data-acy-table');
@@ -156,8 +151,7 @@ const acym_helperToggle = {
         $switchToggle.off('change').on('change', function () {
             let $open = jQuery(this).attr('data-toggle-switch-open');
 
-            // I know it seems weird but the foundation's switch triggers the hidden input's onchange before updating its data :/
-            if ((jQuery(this).val() != 1 && $open == 'show') || (jQuery(this).val() == 1 && $open == 'hide')) {
+            if ((jQuery(this).val() == 1 && $open == 'show') || (jQuery(this).val() != 1 && $open == 'hide')) {
                 jQuery('#' + jQuery(this).attr('data-toggle-switch')).show();
             } else {
                 jQuery('#' + jQuery(this).attr('data-toggle-switch')).hide();

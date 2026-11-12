@@ -76,6 +76,22 @@ class Forms
 
         if (empty($form->active)) return;
 
-        return $formClass->renderForm($form, false, true);
+        return $this->removeLineBreaks($formClass->renderForm($form, false, true));
+    }
+
+    // Themes and page builders running wpautop after the shortcode is replaced would otherwise break the form layout
+    private function removeLineBreaks(string $html): string
+    {
+        $cleanedHtml = preg_replace_callback(
+            '#(<textarea\b[^>]*>.*?</textarea>)|>\s*\R\s*</|\s*\R\s*#is',
+            function ($matches) {
+                if (!empty($matches[1])) return $matches[1];
+
+                return $matches[0][0] === '>' ? '></' : ' ';
+            },
+            $html
+        );
+
+        return $cleanedHtml ?? $html;
     }
 }

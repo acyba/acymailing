@@ -1,3 +1,22 @@
+@import "../../settings";
+@import "../../vendor/foundation-sites/scss/global";
+@import "../../vendor/foundation-sites/scss/components/switch";
+
+#acym_wrapper.frontusers_profile {
+    @include foundation-switch;
+    @import "../../global/components/switch";
+}
+
+#acym_wrapper .acym_front_page .acym_list {
+    display: flex;
+    align-items: center;
+    margin-bottom: .5rem;
+
+    .acystatus {
+        margin-right: .2rem;
+    }
+}
+
 .site-content-contain {
     .acym_front_page {
         #acyuseractions {
@@ -14,29 +33,6 @@
 .acym_front_page {
     fieldset {
         margin-bottom: 1rem;
-    }
-
-    .acym_list {
-        display: block;
-
-        .acystatus {
-            margin-right: .2rem;
-            display: inline-block;
-
-            .acym_radio_group {
-                input {
-                    margin: 0 4px;
-                }
-
-                label {
-                    display: inline-block;
-                }
-            }
-        }
-
-        .list_name {
-            display: inline-block;
-        }
     }
 
     #acyuserinfo {

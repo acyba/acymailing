@@ -158,7 +158,7 @@ class plgAcymOutlook extends AcymPlugin
             $clientId = $this->config->get('outlook_client_id');
             $clientSecret = $this->config->get('outlook_client_secret');
             $tenant = trim($this->config->get('outlook_tenant')) ?: 'consumers';
-            $redirectUrl = $this->config->get('outlook_redirect_url');
+            $redirectUrl = trim($this->config->get('outlook_redirect_url', acym_baseURI()));
             $scope = self::SCOPE_SMTP;
         } else {
             if ($this->config->get('bounce_server') !== 'outlook.office365.com') {

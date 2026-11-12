@@ -78,11 +78,19 @@ class ListClass extends AcymClass
             $filters[] = 'list.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
         }
 
-        if (!empty($settings['creator_id']) && !acym_isAdmin()) {
-            $userGroups = acym_getGroupsByUser($settings['creator_id']);
-            $groupCondition = '(list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
+        if (!acym_isAdmin()) {
+            if (empty($settings['creator_id'])) {
+                $settings['creator_id'] = acym_currentUserId();
+            }
 
-            $filters[] = 'list.cms_user_id = '.intval($settings['creator_id']).' OR '.$groupCondition.'';
+            if (empty($settings['creator_id'])) {
+                $filters[] = 'list.id = 0';
+            } else {
+                $userGroups = acym_getGroupsByUser($settings['creator_id']);
+                $groupCondition = '(list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
+
+                $filters[] = 'list.cms_user_id = '.intval($settings['creator_id']).' OR '.$groupCondition.'';
+            }
         }
 
         $filters[] = 'list.type = '.acym_escapeDB(self::LIST_TYPE_STANDARD);

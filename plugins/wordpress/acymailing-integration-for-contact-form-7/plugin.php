@@ -3,6 +3,7 @@
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\UserClass;
 
 class plgAcymContactform7 extends AcymPlugin
 {
@@ -47,6 +48,61 @@ class plgAcymContactform7 extends AcymPlugin
         add_action('wpcf7_init', [$this, 'addAcymBlockHandler']);
         add_filter('wpcf7_validate_'.self::BLOCK_IDENTIFIER, [$this, 'validationFilter'], 10, 2);
         add_filter('wpcf7_validate_'.self::BLOCK_IDENTIFIER.'*', [$this, 'validationFilter'], 10, 2);
+
+        add_action('wpcf7_mail_sent', [$this, 'subscribeOnMailSent']);
+        add_action('wpcf7_mail_failed', [$this, 'subscribeOnMailSent']);
+    }
+
+    /**
+     * Subscribes the user server side, so that rejected submissions never create subscribers
+     */
+    public function subscribeOnMailSent($contactForm): void
+    {
+        if ((int)$this->config->get('allow_visitor', 1) !== 1 && empty(acym_currentUserId())) {
+            return;
+        }
+
+        $tags = $contactForm->scan_form_tags(['type' => [self::BLOCK_IDENTIFIER, self::BLOCK_IDENTIFIER.'*']]);
+        foreach ($tags as $tag) {
+            if (empty($tag->name)) {
+                continue;
+            }
+
+            $emailField = $tag->get_option('acymmail', '.*', true) ? : 'your-email';
+            $email = trim(acym_getVar('string', $emailField, ''));
+            if (!acym_isValidEmail($email, true)) {
+                continue;
+            }
+
+            $checkedLists = array_intersect(acym_getVar('array', $tag->name, []), $this->prepareLists($tag, 'displayLists'));
+            $lists = array_unique(array_merge($this->prepareLists($tag, 'autoLists'), $checkedLists));
+            acym_arrayToInteger($lists);
+            if (empty($lists)) {
+                continue;
+            }
+
+            $allowedFieldIds = [];
+            foreach ($tag->options as $option) {
+                if (strpos($option, 'acycf') === 0) {
+                    $allowedFieldIds[] = (int)substr(explode(':', $option)[0], 5);
+                }
+            }
+            $customFields = array_intersect_key(acym_getVar('array', 'acymcf_'.$tag->name, []), array_flip($allowedFieldIds));
+
+            $nameField = $tag->get_option('acymname', '.*', true) ? : 'your-name';
+
+            acym_setVar('user', ['email' => $email, 'name' => acym_getVar('string', $nameField, '')]);
+            acym_setVar('hiddenlists', implode(',', $lists));
+            acym_setVar('subscription', []);
+            acym_setVar('customField', $customFields);
+            acym_setVar('data', []);
+            acym_setVar('acy_source', 'Contact Form 7');
+
+            $userClass = new UserClass();
+            if (!$userClass->saveForm() || !empty($userClass->errors)) {
+                acym_logError('Error while subscribing user '.$email.' to lists '.implode(',', $lists).': '.json_encode($userClass->errors), 'contactform7');
+            }
+        }
     }
 
     /**
@@ -187,11 +243,11 @@ class plgAcymContactform7 extends AcymPlugin
                     <?php echo esc_html(acym_translation('ACYM_MAIL_FIELD_CONTACT')); ?>
 				</legend>
 				<input type="text"
-				       data-tag-part="option"
-				       data-tag-option="acymmail:"
-				       pattern="[A-Za-z0-9_\-\s]*"
-				       placeholder="your-email"
-				       aria-labelledby="<?php echo esc_attr($tgg->ref('acymmail-legend')); ?>" />
+					   data-tag-part="option"
+					   data-tag-option="acymmail:"
+					   pattern="[A-Za-z0-9_\-\s]*"
+					   placeholder="your-email"
+					   aria-labelledby="<?php echo esc_attr($tgg->ref('acymmail-legend')); ?>" />
 			</fieldset>
 
 			<fieldset>
@@ -199,11 +255,11 @@ class plgAcymContactform7 extends AcymPlugin
                     <?php echo esc_html(acym_translation('ACYM_NAME_FIELD_CONTACT')); ?>
 				</legend>
 				<input type="text"
-				       data-tag-part="option"
-				       data-tag-option="acymname:"
-				       pattern="[A-Za-z0-9_\-\s]*"
-				       placeholder="your-name"
-				       aria-labelledby="<?php echo esc_attr($tgg->ref('acymname-legend')); ?>" />
+					   data-tag-part="option"
+					   data-tag-option="acymname:"
+					   pattern="[A-Za-z0-9_\-\s]*"
+					   placeholder="your-name"
+					   aria-labelledby="<?php echo esc_attr($tgg->ref('acymname-legend')); ?>" />
 			</fieldset>
             <?php
             foreach ($data['propertyLabels'] as $key => $label) {
@@ -226,9 +282,9 @@ class plgAcymContactform7 extends AcymPlugin
                     );
                     ?>
 					<input type="hidden"
-					       aria-labelledby="<?php echo esc_attr($tgg->ref($key.'-legend')); ?>"
-					       data-tag-part="option"
-					       data-tag-option="<?php echo esc_attr($key); ?>:" />
+						   aria-labelledby="<?php echo esc_attr($tgg->ref($key.'-legend')); ?>"
+						   data-tag-part="option"
+						   data-tag-option="<?php echo esc_attr($key); ?>:" />
 				</fieldset>
                 <?php
             }
@@ -243,11 +299,11 @@ class plgAcymContactform7 extends AcymPlugin
                         <?php echo esc_html(acym_translation($field->name)); ?>
 					</legend>
 					<input type="text"
-					       data-tag-part="option"
-					       data-tag-option="acycf<?php echo intval($field->id); ?>:"
-					       pattern="[A-Za-z0-9_\-\s]*"
-					       placeholder="form-field-name"
-					       aria-labelledby="<?php echo esc_attr($tgg->ref('acycf'.$field->id.'-legend')); ?>" />
+						   data-tag-part="option"
+						   data-tag-option="acycf<?php echo intval($field->id); ?>:"
+						   pattern="[A-Za-z0-9_\-\s]*"
+						   placeholder="form-field-name"
+						   aria-labelledby="<?php echo esc_attr($tgg->ref('acycf'.$field->id.'-legend')); ?>" />
 				</fieldset>
                 <?php
             }
@@ -271,11 +327,6 @@ class plgAcymContactform7 extends AcymPlugin
             return '';
         }
 
-        $submitted = acym_getVar('string', 'acymaction_'.$tag->name, '');
-        if (!empty($submitted)) {
-            return '';
-        }
-
         $listClass = new ListClass();
         $fieldClass = new FieldClass();
         $pluginUrl = ACYM_PLUGINS_URL.'/'.basename(__DIR__);
@@ -289,9 +340,6 @@ class plgAcymContactform7 extends AcymPlugin
         if ($validationError) {
             $class .= ' wpcf7-not-valid';
         }
-
-        $emailField = $tag->get_option('acymmail', '.*');
-        $nameField = $tag->get_option('acymname', '.*');
 
         $customFields = [];
         foreach ($tag->options as $option) {
@@ -313,22 +361,14 @@ class plgAcymContactform7 extends AcymPlugin
             ];
         }
 
-        $securityKey = '';
-        if (!empty($this->config->get('recaptcha_secretkey', ''))) {
-            $securityKey = '&seckey='.$this->config->get('security_key', '');
-        }
-
         $data = [
             'identifier' => $tag->name,
             'class' => $tag->get_class_option($class),
-            'emailField' => is_array($emailField) ? array_pop($emailField) : 'your-email',
-            'nameField' => is_array($nameField) ? array_pop($nameField) : 'your-name',
             'customFields' => $customFields,
             'listNames' => $listClass->getAllForSelect(true, 0, true, true),
             'listsToDisplay' => $this->prepareLists($tag, 'displayLists'),
             'listsToCheckByDefault' => $this->prepareLists($tag, 'defaultLists'),
             'listsSubbedOnSubmit' => $this->prepareLists($tag, 'autoLists'),
-            'submitUrl' => htmlspecialchars_decode(acym_frontendLink('frontusers&task=subscribe'.$securityKey)),
             'validationError' => $validationError,
         ];
 

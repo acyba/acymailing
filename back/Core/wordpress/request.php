@@ -79,16 +79,12 @@ function acym_makeCurlCall(string $url, array $options = []): array
         $headers['Content-Type'] = 'multipart/form-data; boundary='.$boundary;
         $args['body'] = $body;
     } else {
-        $dataFormatted = '';
-        if (!empty($data)) {
-            $isJson = $contentTypeKey !== '' && strtolower(trim($headers[$contentTypeKey])) === 'application/json';
-            $dataFormatted = ($method === 'POST' && $isJson) ? wp_json_encode($data) : http_build_query($data);
+        $isJson = $contentTypeKey !== '' && strtolower(trim($headers[$contentTypeKey])) === 'application/json';
+        if ($method === 'GET' && !empty($data)) {
+            $url .= (strpos($url, '?') === false ? '?' : '&').http_build_query($data);
         }
-        if ($method === 'GET' && !empty($dataFormatted)) {
-            $url .= (strpos($url, '?') === false ? '?' : '&').$dataFormatted;
-        }
-        if ($method === 'POST' && !empty($dataFormatted)) {
-            $args['body'] = $dataFormatted;
+        if ($method === 'POST' && !empty($data)) {
+            $args['body'] = $isJson ? wp_json_encode($data) : $data;
         }
     }
 

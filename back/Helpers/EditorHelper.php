@@ -382,6 +382,10 @@ class EditorHelper extends AcymObject
 
         $styles = '';
         foreach ($settings as $element => $rules) {
+            if (!is_array($rules)) {
+                continue;
+            }
+
             $values = '';
             foreach ($rules as $ruleName => $value) {
                 if ($ruleName == 'overridden') continue;

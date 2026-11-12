@@ -4,7 +4,28 @@ document.addEventListener('DOMContentLoaded', function () {
     handleUnsubscribeReasonChange();
     handleDisplayedCheckedLists();
     handleLanguageChange();
+    handleListSwitches();
 });
+
+function handleListSwitches() {
+    document.addEventListener('change', function (event) {
+        const checkbox = event.target;
+        if (!checkbox.classList || !checkbox.classList.contains('switch-input')) {
+            return;
+        }
+
+        const hiddenInput = document.querySelector('input[data-switch="' + checkbox.id + '"]');
+        if (hiddenInput) {
+            hiddenInput.value = checkbox.checked ? 1 : 0;
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && event.target.classList && event.target.classList.contains('switch-input')) {
+            event.preventDefault();
+        }
+    });
+}
 
 function initUser() {
     let dropdowns = document.querySelectorAll('select[name="data[listsubdropdown]"]');
@@ -69,6 +90,12 @@ function acym_checkChangeForm() {
     acym_checkEmailConfirmationField(varform, 'user[email_confirmation]', validation);
 
     if (validation.errors > 0) {
+        return false;
+    }
+
+    // The standalone profile page posts natively so the controller can redirect back to the website
+    if (varform.elements['profile_page']) {
+        varform.submit();
         return false;
     }
 
@@ -186,9 +213,6 @@ function handleDisplayedCheckedLists() {
 
     displayedLists.forEach(item => {
         const hiddenInput = item.closest('.acym__unsubscribe__list__switch').querySelector('input[type="hidden"]');
-        item.addEventListener('change', () => {
-            hiddenInput.value = item.checked ? '1' : '0';
-        });
 
         if (item.checked) {
             hiddenInput.value = '1';

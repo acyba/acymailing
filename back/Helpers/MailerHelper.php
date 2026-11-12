@@ -679,7 +679,7 @@ class MailerHelper extends Mailer
 
         $this->prepareContent($mailId, $options);
         $this->prepareHeaders($mailId, $receiver->id, $options);
-        $this->prepareAddresses($mailId, $receiver);
+        $this->prepareAddresses($mailId, $receiver, $options);
         $this->prepareBcc($mailId, $options);
         $this->prepareAttachments($mailId, $options);
         $this->replaceDynamicContent($mailId);
@@ -1315,7 +1315,7 @@ class MailerHelper extends Mailer
         }
     }
 
-    private function prepareAddresses(int $mailId, object $receiver): void
+    private function prepareAddresses(int $mailId, object $receiver, array $options = []): void
     {
         $receiverName = '';
         if ($this->config->get('add_names', true)) {
@@ -1328,7 +1328,15 @@ class MailerHelper extends Mailer
         $this->addAddress($this->cleanText($receiver->email), $receiverName);
 
         $this->setFrom($this->getSendSettings('from_email', $mailId), $this->getSendSettings('from_name', $mailId));
-        $this->acymAddReplyTo($this->defaultMail[$mailId]->reply_to_email ?? '', $this->defaultMail[$mailId]->reply_to_name ?? '');
+        // When the CMS email we override already carries a Reply-To, we keep it unless the email defines its own
+        $replyToEmail = $this->defaultMail[$mailId]->reply_to_email ?? '';
+        if (empty($replyToEmail) && !empty($options['replyto'])) {
+            foreach ($options['replyto'] as $oneReplyTo) {
+                $this->acymAddReplyTo($oneReplyTo[0] ?? '', $oneReplyTo[1] ?? '');
+            }
+        } else {
+            $this->acymAddReplyTo($replyToEmail, $this->defaultMail[$mailId]->reply_to_name ?? '');
+        }
 
         // This is the bounce email address
         if (!empty($this->defaultMail[$mailId]->bounce_email)) {

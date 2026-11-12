@@ -62,6 +62,7 @@ class GF_Field_Acy extends GF_Field
         $formId = $form['id'];
 
         $checkboxes = '';
+        $acymCheckedList = [];
         if (isset($this->acymDisplayedList)) {
             $listClass = new ListClass();
             $lists = $listClass->getAllForSelect(true, 0, true, true);

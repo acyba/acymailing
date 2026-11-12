@@ -94,7 +94,7 @@ trait Security
                 // Remember the primary key and indexes of the table
                 if (strpos($oneField, 'PRIMARY KEY') === 0) {
                     $correctTablesStructure['indexes'][$tableName]['PRIMARY'] = $oneField;
-                } elseif (strpos($oneField, 'INDEX') === 0) {
+                } elseif (preg_match('#^(UNIQUE )?INDEX#', $oneField)) {
                     $firstBackquotePos = strpos($oneField, '`');
                     $indexName = substr($oneField, $firstBackquotePos + 1, strpos($oneField, '`', $firstBackquotePos + 1) - $firstBackquotePos - 1);
 

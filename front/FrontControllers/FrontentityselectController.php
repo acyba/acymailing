@@ -14,4 +14,13 @@ class FrontentityselectController extends EntitySelectController
             'loadEntityFront',
         ];
     }
+
+    public function loadEntityFront(): void
+    {
+        if (empty(acym_currentUserId()) || !acym_level(ACYM_ENTERPRISE)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_UNAUTHORIZED_ACCESS'), [], false);
+        }
+
+        parent::loadEntityFront();
+    }
 }

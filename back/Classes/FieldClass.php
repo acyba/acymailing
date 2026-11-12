@@ -157,6 +157,9 @@ class FieldClass extends AcymClass
                 if (is_array($value) && isset($value[0])) $value = $value[0];
                 if (empty($value)) continue;
 
+                $uploadField = $this->getOneById((int)$key);
+                if (empty($uploadField) || $uploadField->type !== 'file') continue;
+
                 // Get the uploaded file name
                 $fileName = $customField['name'][$key];
                 while (is_array($fileName) && isset($fileName[0])) {
@@ -164,7 +167,11 @@ class FieldClass extends AcymClass
                 }
                 $fileName = basename($fileName);
 
-                if (!acym_fileNameValid($fileName) || !preg_match('#\.('.implode('|', array_map('preg_quote', $allowedExtensions)).')$#i', $fileName)) {
+                if (
+                    !acym_fileNameValid($fileName)
+                    || acym_isForbiddenFileExtension($fileName)
+                    || !preg_match('#\.('.implode('|', array_map('preg_quote', $allowedExtensions)).')$#i', $fileName)
+                ) {
                     $ext = substr($fileName, strrpos($fileName, '.') + 1);
                     if ($ajax) {
                         $this->errors[] = acym_translationSprintf(
@@ -205,7 +212,7 @@ class FieldClass extends AcymClass
 
         foreach ($fields as $id => $value) {
             $field = $this->getOneById($id);
-            if (empty($field)) {
+            if (empty($field) || empty($field->active)) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_WRONG_FIELD_ID', $id), 'error');
                 continue;
             }

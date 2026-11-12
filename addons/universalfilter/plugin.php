@@ -601,7 +601,7 @@ class plgAcymUniversalfilter extends AcymPlugin
         unset($options['wherevalue']);
         $importHelper->fieldsMap = $options;
 
-        if (!$importHelper->database(true)) {
+        if ($importHelper->isUserEmailIndexMissing() || !$importHelper->database(true)) {
             $query->where[] = '1 = 0';
 
             return;

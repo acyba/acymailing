@@ -216,7 +216,7 @@
 							<span class="cell grid-x acym_vcenter shrink acym__unsub__logo__text margin-left-1">
 						    <?php if (!empty($this->config->get('unsubscribe_logo'))) { ?>
                                 <?php echo acym_escapeHtml($this->config->get('unsubscribe_logo')); ?>
-								<i class="acymicon-trash-o acym__color__red acym__unsub__logo__remove margin-left-1"></i>
+								<i class="acymicon-close acym__color__red cursor-pointer acym__unsub__logo__remove margin-left-1"></i>
                             <?php } ?>
 						</span>
 							<input type="hidden"
@@ -247,7 +247,7 @@
 							<span class="cell shrink grid-x acym_vcenter acym__unsub__image__text margin-left-1">
 							<?php if (!empty($this->config->get('unsubscribe_image'))) { ?>
                                 <?php echo acym_escapeHtml($this->config->get('unsubscribe_image')); ?>
-								<i class="acymicon-trash-o acym__color__red acym__unsub__image__remove margin-left-1"></i>
+								<i class="acymicon-close acym__color__red cursor-pointer acym__unsub__image__remove margin-left-1"></i>
                             <?php } ?>
 						</span>
 							<input type="hidden"
@@ -351,6 +351,88 @@
                     <?php if ('joomla' === ACYM_CMS) {
                         include acym_getPartial('joomla', 'media_modal');
                     } ?>
+				</div>
+			</div>
+			<div class="cell margin-bottom-2">
+				<div class="acym__title acym__title__secondary"><?php echo acym_escapeHtml(acym_translation('ACYM_PROFILE_PAGE')); ?></div>
+				<div class="grid-x grid-margin-x margin-y">
+					<div class="cell grid-x margin-bottom-1">
+						<label for="acym__configuration__subscription__profile-title" class="cell xlarge-3"><?php echo acym_escapeHtml(
+                                acym_translation(
+                                    'ACYM_PROFILE_PAGE_CHANGE'
+                                )
+                            ); ?></label>
+						<input id="acym__configuration__subscription__profile-title"
+						       class="cell xlarge-4 large-5 medium-6"
+						       type="text"
+						       name="config[profile_title]"
+						       value="<?php echo acym_escape($this->config->get('profile_title', '')); ?>">
+						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</div>
+					<div class="cell grid-x margin-bottom-1">
+						<label for="acym__config__settings__profile-color-picker" class="cell xlarge-3"><?php echo acym_escapeHtml(
+                                acym_translation(
+                                    'ACYM_PROFILE_PAGE_COLOR'
+                                )
+                            ); ?></label>
+						<p class="cell margin-bottom-1 small-6" id="acym__config__settings__profile-color">
+							<input type="text"
+							       name="config[profile_color]"
+							       id="acym__config__settings__profile-color-picker"
+							       value="<?php echo acym_escape($this->config->get('profile_color') ?: '#0079d3'); ?>" />
+						</p>
+					</div>
+					<div class="cell grid-x margin-bottom-1">
+						<label class="cell xlarge-3"><?php echo acym_escapeHtml(
+                                acym_translation(
+                                    'ACYM_PROFILE_PAGE_LOGO'
+                                )
+                            ); ?></label>
+						<button type="button" class="cell shrink button button-secondary margin-bottom-0" id="acym__profile__logo">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_UPLOAD_IMAGE')); ?>
+						</button>
+						<span class="cell grid-x acym_vcenter shrink acym__profile__logo__text margin-left-1">
+						<?php if (!empty($this->config->get('profile_logo'))) { ?>
+                            <?php echo acym_escapeHtml($this->config->get('profile_logo')); ?>
+							<i class="acymicon-close acym__color__red cursor-pointer acym__profile__logo__remove margin-left-1"></i>
+                        <?php } ?>
+					</span>
+						<input type="hidden"
+						       id="acym__profile__logo_value"
+						       name="config[profile_logo]"
+						       value="<?php echo acym_escape($this->config->get('profile_logo')); ?>">
+					</div>
+					<div class="cell grid-x margin-bottom-1">
+                        <?php
+                        acym_switch([
+                            'name' => 'config[display_profile_image]',
+                            'value' => $this->config->get('display_profile_image', 1),
+                            'label' => acym_translation('ACYM_DISPLAY_PROFILE_IMAGE'),
+                            'labelClass' => 'xlarge-3 medium-5 small-9',
+                            'toggle' => 'profile_image',
+                        ]);
+                        ?>
+					</div>
+					<div class="cell grid-x margin-bottom-1" id="profile_image">
+						<label class="cell xlarge-3"><?php echo acym_escapeHtml(
+                                acym_translation(
+                                    'ACYM_UNSUBSCRIBE_PAGE_IMAGE'
+                                )
+                            ); ?></label>
+						<button type="button" class="cell shrink button button-secondary margin-bottom-0" id="acym__profile__image">
+                            <?php echo acym_escapeHtml(acym_translation('ACYM_UPLOAD_IMAGE')); ?>
+						</button>
+						<span class="cell shrink grid-x acym_vcenter acym__profile__image__text margin-left-1">
+						<?php if (!empty($this->config->get('profile_image'))) { ?>
+                            <?php echo acym_escapeHtml($this->config->get('profile_image')); ?>
+							<i class="acymicon-close acym__color__red cursor-pointer acym__profile__image__remove margin-left-1"></i>
+                        <?php } ?>
+					</span>
+						<input type="hidden"
+						       id="acym__profile__image_value"
+						       name="config[profile_image]"
+						       value="<?php echo acym_escape($this->config->get('profile_image')); ?>">
+					</div>
 				</div>
 			</div>
 		</div>

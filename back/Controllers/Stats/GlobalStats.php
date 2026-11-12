@@ -5,6 +5,7 @@ namespace AcyMailing\Controllers\Stats;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\StatsCacheClass;
 use AcyMailing\Classes\UrlClickClass;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Helpers\ExportHelper;
@@ -291,6 +292,7 @@ trait GlobalStats
     {
         $statsCampaignSelected->hasStats = true;
         $anonymousStats = !empty($this->config->get('anonymous_stats', 0));
+        $isGlobal = empty($mailIdsOfCampaign) && empty($newStart) && empty($newEnd);
 
         //We get the opening by month, day, hour
         if ($anonymousStats) {
@@ -300,15 +302,15 @@ trait GlobalStats
             $campaignOpenByHour = $mailStatClass->getAnonOpensByFormat($mailIdsOfCampaign, '%Y-%m-%d %H:00:00', $newStart, $newEnd);
         } else {
             $campaignClass = new CampaignClass();
-            $campaignOpenByMonth = $campaignClass->getOpenByMonth($mailIdsOfCampaign, $newStart, $newEnd);
-            $campaignOpenByDay = $campaignClass->getOpenByDay($mailIdsOfCampaign, $newStart, $newEnd);
-            $campaignOpenByHour = $campaignClass->getOpenByHour($mailIdsOfCampaign, $newStart, $newEnd);
+            $campaignOpenByMonth = $this->getCachedGlobalStat('open_by_month', $isGlobal, fn() => $campaignClass->getOpenByMonth($mailIdsOfCampaign, $newStart, $newEnd));
+            $campaignOpenByDay = $this->getCachedGlobalStat('open_by_day', $isGlobal, fn() => $campaignClass->getOpenByDay($mailIdsOfCampaign, $newStart, $newEnd));
+            $campaignOpenByHour = $this->getCachedGlobalStat('open_by_hour', $isGlobal, fn() => $campaignClass->getOpenByHour($mailIdsOfCampaign, $newStart, $newEnd));
         }
 
         $urlClickClass = new UrlClickClass();
-        $campaignClickByMonth = $urlClickClass->getAllClickByMailMonth($mailIdsOfCampaign, $newStart, $newEnd);
-        $campaignClickByDay = $urlClickClass->getAllClickByMailDay($mailIdsOfCampaign, $newStart, $newEnd);
-        $campaignClickByHour = $urlClickClass->getAllClickByMailHour($mailIdsOfCampaign, $newStart, $newEnd);
+        $campaignClickByMonth = $this->getCachedGlobalStat('click_by_month', $isGlobal, fn() => $urlClickClass->getAllClickByMailMonth($mailIdsOfCampaign, $newStart, $newEnd));
+        $campaignClickByDay = $this->getCachedGlobalStat('click_by_day', $isGlobal, fn() => $urlClickClass->getAllClickByMailDay($mailIdsOfCampaign, $newStart, $newEnd));
+        $campaignClickByHour = $this->getCachedGlobalStat('click_by_hour', $isGlobal, fn() => $urlClickClass->getAllClickByMailHour($mailIdsOfCampaign, $newStart, $newEnd));
 
         // In anonymous mode a click doesn't register an open, and in any mode a link can be clicked without the open pixel firing: gating on opens alone wrongly hid the whole chart.
         $hasOpens = !empty($campaignOpenByMonth) && !empty($campaignOpenByDay) && !empty($campaignOpenByHour);
@@ -331,6 +333,17 @@ trait GlobalStats
             $statsCampaignSelected->startEndDateHour['start'] = $allHour[0];
             $statsCampaignSelected->startEndDateHour['end'] = end($allHour);
         }
+    }
+
+    private function getCachedGlobalStat(string $name, bool $isGlobal, callable $compute)
+    {
+        if (!$isGlobal) {
+            return $compute();
+        }
+
+        $statsCacheClass = new StatsCacheClass();
+
+        return $statsCacheClass->getOrCompute($name, $compute);
     }
 
     public function exportGlobal(): void
@@ -358,7 +371,7 @@ trait GlobalStats
             $mailStatClass = new MailStatClass();
             $statsDB = $mailStatClass->getAnonOpenTimeStats($this->selectedMailIds);
         } else {
-            $statsDB = $userStatClass->getOpenTimeStats($this->selectedMailIds);
+            $statsDB = $this->getCachedGlobalStat('open_time', empty($this->selectedMailIds), fn() => $userStatClass->getOpenTimeStats($this->selectedMailIds));
         }
 
         if (empty($statsDB['total_open'])) {
@@ -551,7 +564,7 @@ trait GlobalStats
             $devicesCampaign = $mailStatClass->getAnonDevices($this->selectedMailIds);
         } else {
             $campaignClass = new CampaignClass();
-            $devicesCampaign = $campaignClass->getDevicesWithCountByMailId($this->selectedMailIds);
+            $devicesCampaign = $this->getCachedGlobalStat('devices', empty($this->selectedMailIds), fn() => $campaignClass->getDevicesWithCountByMailId($this->selectedMailIds));
         }
 
         $defaultDataDevices = [
@@ -592,7 +605,7 @@ trait GlobalStats
             $openedFromStats = $mailStatClass->getAnonOpenSources($this->selectedMailIds);
         } else {
             $userStatClass = new UserStatClass();
-            $openedFromStats = $userStatClass->getOpenSourcesStats($this->selectedMailIds);
+            $openedFromStats = $this->getCachedGlobalStat('open_sources', empty($this->selectedMailIds), fn() => $userStatClass->getOpenSourcesStats($this->selectedMailIds));
         }
 
         $data['openedWith'] = [];
@@ -647,7 +660,7 @@ trait GlobalStats
             $openRateCampaign = empty($this->selectedMailIds) ? $campaignClass->getOpenRateAllCampaign() : $campaignClass->getOpenRateCampaigns($this->selectedMailIds);
             $openCount = (int)$openRateCampaign->open_unique;
             $openSent = (int)$openRateCampaign->sent;
-            $clickCount = $urlClickClass->getNumberUsersClicked($this->selectedMailIds);
+            $clickCount = $this->getCachedGlobalStat('users_clicked', empty($this->selectedMailIds), fn() => $urlClickClass->getNumberUsersClicked($this->selectedMailIds));
         }
 
         //open rate

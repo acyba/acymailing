@@ -315,6 +315,20 @@ function acym_getTimeFromUTCDate(?string $date): int
 
 function acym_getTimeFromCMSDate($date)
 {
+    // Parse the date in the CMS timezone so it gets the offset in effect on that day, not today's one (DST changes)
+    if (!empty($date)) {
+        try {
+            //We replace the . with : WordPress give format like UTC+5.45, but we want something like UTC+5:45
+            $dateTime = new DateTime((string)$date, new DateTimeZone(str_replace('.', ':', (string)acym_getCMSConfig('offset'))));
+            // Before 1970 timezones use local mean time offsets (e.g. 0000-00-00 null dates), keep the legacy offset there
+            if ($dateTime->getTimestamp() >= 0) {
+                return $dateTime->getTimestamp();
+            }
+        } catch (Throwable $e) {
+            // Unparsable date or timezone: fall back to the legacy conversion below
+        }
+    }
+
     return acym_getTimeFromUTCDate($date) - acym_getTimeOffsetCMS();
 }
 
@@ -354,16 +368,18 @@ function acym_date($date = 'now', $format = null, bool $useTz = true, bool $tran
         $cmsOffset = str_replace('.', ':', acym_getCMSConfig('offset'));
 
         $timezone = new DateTimeZone($cmsOffset);
+        $timestamp = strtotime($date.' UTC');
 
         if (!is_numeric($cmsOffset)) {
-            $cmsOffset = $timezone->getOffset(new DateTime());
+            // Use the offset in effect on that date, not today's one (DST changes). Same pre-1970 rule as acym_getTimeFromCMSDate
+            $cmsOffset = $timezone->getOffset(new DateTime($timestamp !== false && $timestamp >= 0 ? '@'.$timestamp : 'now'));
         }
 
         // $date is a UTC date string: apply the CMS timezone offset then format in UTC so the server timezone never shifts the displayed result
         if ($translate) {
-            return acym_translateDate(gmdate($format, strtotime($date.' UTC') + $cmsOffset));
+            return acym_translateDate(gmdate($format, $timestamp + $cmsOffset));
         } else {
-            return gmdate($format, strtotime($date.' UTC') + $cmsOffset);
+            return gmdate($format, $timestamp + $cmsOffset);
         }
     }
 }

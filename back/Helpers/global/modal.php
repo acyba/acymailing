@@ -64,6 +64,7 @@ function acym_modal(
             ],
             'span' => [
                 'class' => true,
+                'id' => true,
             ],
             'div' => [
                 'class' => true,

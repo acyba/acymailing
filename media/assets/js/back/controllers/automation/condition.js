@@ -101,11 +101,6 @@ jQuery(function ($) {
             acym_helperDatePicker.setDatePickerGlobal();
             acym_helperTooltip.setTooltip();
 
-            $('.switch-label').off('click').on('click', function () {
-                const input = $('input[data-switch="' + $(this).attr('for') + '"]');
-                input.attr('value', 1 - input.attr('value'));
-            });
-
             const $operatorDropdown = $(this).closest('.acym__automation__one__condition').find('.acym__automation__conditions__operator__dropdown');
             const $fieldsDropdown = $(this).closest('.acym__automation__one__condition').find('.acym__automation__conditions__fields__dropdown');
 

@@ -242,7 +242,7 @@ trait TimeAutomationTriggers
         // Every day at xx:xx
         if (!empty($triggers['day'])) {
             // The day it is currently based on the timezone specified in the CMS configuration
-            $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
+            $dayBasedOnCMSTimezone = acym_date($time, 'Y-m-d');
 
             $hour = $triggers['day']['hour'];
             $minutes = $triggers['day']['minutes'];
@@ -256,7 +256,8 @@ trait TimeAutomationTriggers
             if ($time < $dayBasedOnCMSTimezoneAtSpecifiedHour) {
                 $nextExecutionDate[] = $dayBasedOnCMSTimezoneAtSpecifiedHour;
             } else {
-                $nextExecutionDate[] = $dayBasedOnCMSTimezoneAtSpecifiedHour + 86400;
+                // Add a calendar day in the CMS timezone, not 86400s: a DST change day lasts 23 or 25 hours
+                $nextExecutionDate[] = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$hour.':'.$minutes.' +1 day');
 
                 // First trigger: if the hour is passed we execute
                 if (empty($step->last_execution)) $execute = true;
@@ -278,17 +279,18 @@ trait TimeAutomationTriggers
 
             foreach ($triggers['weeks_on']['day'] as $day) {
                 // The day it is currently based on the timezone specified in the CMS configuration
-                $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
+                $dayBasedOnCMSTimezone = acym_date($time, 'Y-m-d');
 
                 // The UTC timestamp of the current day based on the CMS timezone, at the specified hour
                 $dayBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$hour.':'.$minutes);
 
                 // Only store the next Execution date if it's in the future
-                if ($day == strtolower(acym_date('now', 'l', true, false))) {
+                if ($day == strtolower(acym_date($time, 'l', true, false))) {
                     if ($time < $dayBasedOnCMSTimezoneAtSpecifiedHour) {
                         $nextExecutionDate[] = $dayBasedOnCMSTimezoneAtSpecifiedHour;
                     } else {
-                        $nextExecutionDate[] = $dayBasedOnCMSTimezoneAtSpecifiedHour + 604800;
+                        // Add calendar days in the CMS timezone, not 604800s: a week containing a DST change lasts 167 or 169 hours
+                        $nextExecutionDate[] = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$hour.':'.$minutes.' +7 days');
 
                         // Current day is selected, the time is passed, and it's the first trigger
                         $lastExecutionIsNotToday = acym_date($step->last_execution, 'Y-m-d') !== $dayBasedOnCMSTimezone;
@@ -305,13 +307,13 @@ trait TimeAutomationTriggers
                         'saturday',
                         'sunday',
                     ];
-                    $currentDayOfWeek = acym_date('now', 'N') - 1;
+                    $currentDayOfWeek = acym_date($time, 'N') - 1;
                     $wantedDayOfWeek = array_search($day, $days);
 
                     $shift = $wantedDayOfWeek - $currentDayOfWeek;
                     if ($shift < 0) $shift += 7;
 
-                    $nextExecutionDate[] = $dayBasedOnCMSTimezoneAtSpecifiedHour + 86400 * $shift;
+                    $nextExecutionDate[] = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$hour.':'.$minutes.' +'.$shift.' days');
                 }
             }
         }
@@ -362,7 +364,7 @@ trait TimeAutomationTriggers
             // First trigger: we execute and set the next execution in X hours/days/weeks/months
             if (empty($step->last_execution)) {
                 $execute = true;
-            } else {
+            } elseif (!$execute) {
                 if ($triggers['every']['type'] == 2628000) {
                     $nextDate = new \DateTime(acym_date($step->last_execution, 'Y-m-d H:i:s', false), new \DateTimeZone('UTC'));
                     $nextDate = $nextDate->add(new \DateInterval('P'.$triggers['every']['number'].'M'));

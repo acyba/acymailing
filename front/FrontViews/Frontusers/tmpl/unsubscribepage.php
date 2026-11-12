@@ -181,9 +181,8 @@
 		border-color: <?php echo acym_escapeHtml($data['hoverColor']); ?> !important;
 	}
 
-	.switch input:checked ~ .switch-paddle{
-		background-color: <?php echo acym_escapeHtml($data['unsubscribeColor']); ?> !important;
-		border-color: <?php echo acym_escapeHtml($data['unsubscribeColor']); ?> !important;
+	#acym_wrapper .acym__unsubscribe__page .switch{
+		--color-switch: <?php echo acym_escapeHtml($data['unsubscribeColor']); ?>;
 	}
 
 	.acym__unsub__reason__selected{

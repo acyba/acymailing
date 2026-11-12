@@ -32,7 +32,7 @@ function acym_isMultilingual(): bool
 
 function acym_getDefaultNewsletterLanguage(): string
 {
-    $default = acym_config()->get('multilingual_default');
+    $default = acym_isMultilingual() ? acym_config()->get('multilingual_default') : '';
 
     return empty($default) ? acym_getSiteLanguageTag() : $default;
 }

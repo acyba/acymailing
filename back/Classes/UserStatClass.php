@@ -295,7 +295,7 @@ class UserStatClass extends AcymClass
         $date = acym_date(time() - $deleteAfterXSeconds, 'Y-m-d H:i', false);
 
         $queries = [
-            '#__acym_user_stat' => 'DELETE FROM #__acym_user_stat WHERE send_date < '.acym_escapeDB($date),
+            '#__acym_user_stat' => 'DELETE FROM #__acym_user_stat WHERE send_date < '.acym_escapeDB($date).' OR send_date IS NULL',
             '#__acym_url_click' => 'DELETE FROM #__acym_url_click WHERE date_click < '.acym_escapeDB($date),
         ];
 

@@ -716,7 +716,7 @@ class ImapClient
 
         // pre-login capabilities can be not complete
         $this->capability_readed = false;
-        $result = $this->authenticate($user, $password);
+        $result = $this->prefs['auth_type'] === 'XOAUTH2' ? $this->authenticate($user, $password) : $this->login($user, $password);
 
         // Connected and authenticated
         if (is_resource($result)) {

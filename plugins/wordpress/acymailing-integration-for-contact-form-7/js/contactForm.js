@@ -1,111 +1,49 @@
-document.addEventListener('wpcf7submit', function (event) {
-    const formcontainer = jQuery(event.target);
-    if (formcontainer.hasClass('invalid')) {
+document.addEventListener('wpcf7beforesubmit', function (event) {
+    const formData = event.detail.formData;
+    if (!formData) {
         return;
     }
 
+    const formcontainer = jQuery(event.target);
     const allAcyFields = formcontainer.find('[name^="acymhiddenlists_"]');
 
     // There may be multiple AcyMailing blocks in a single form
     for (let i = 0 ; i < allAcyFields.length ; i++) {
         const currentField = jQuery(allAcyFields[i]);
         const identifier = currentField.data('acymfield');
-
-        if (!identifier || identifier.length === 0) {
-            continue;
-        }
-
-        const urlAction = jQuery('[name="acymaction_' + identifier + '"]').val();
-        const emailField = currentField.data('acymmail');
-        const nameField = currentField.data('acymname');
-
-        if (!emailField || emailField.length === 0 || urlAction.length === 0) {
-            continue;
-        }
-
-        const emailAddress = formcontainer.find(`[name="${emailField}"]`).val();
-        if (!emailAddress || emailAddress.length === 0) {
-            console.error('The specified email field is empty or does not exist: ' + emailField);
-            continue;
-        }
-
-        let name = '';
-        if (undefined !== nameField && nameField.length !== 0) {
-            const nameFieldElement = formcontainer.find('[name="' + nameField + '"]');
-            if (nameFieldElement) {
-                name = nameFieldElement.val();
-            }
-        }
-
-        const hiddenLists = currentField.val();
-        const allListsField = formcontainer.find('[name="' + identifier + '[]"]');
-        const allLists = [];
-        for (let j = 0 ; j < allListsField.length ; j++) {
-            if (allListsField[j].checked) {
-                allLists.push(allListsField[j].value);
-            }
-        }
-
-        if (allLists.length === 0 && hiddenLists.length === 0) {
-            continue;
-        }
-
-        const data = {
-            'user[email]': emailAddress,
-            'user[name]': name,
-            'hiddenlists': hiddenLists,
-            'subscription': allLists,
-            'acy_source': 'Contact Form 7'
-        };
-
         const customFields = currentField.data('acymcf');
-        if (customFields && typeof customFields === 'object') {
-            for (const id in customFields) {
-                const fieldName = customFields[id]['matchingFieldName'];
-                let $fieldElement = formcontainer.find(`[name="${fieldName}"]`);
+
+        if (!identifier || identifier.length === 0 || !customFields || typeof customFields !== 'object') {
+            continue;
+        }
+
+        for (const id in customFields) {
+            const fieldName = customFields[id]['matchingFieldName'];
+            let $fieldElement = formcontainer.find(`[name="${fieldName}"]`);
+            if ($fieldElement.length === 0) {
+                $fieldElement = formcontainer.find(`[name="${fieldName}[]"]`);
                 if ($fieldElement.length === 0) {
-                    $fieldElement = formcontainer.find(`[name="${fieldName}[]"]`);
-                    if ($fieldElement.length === 0) {
-                        continue;
-                    }
+                    continue;
                 }
+            }
 
-                const fieldType = customFields[id]['type'];
+            const fieldType = customFields[id]['type'];
+            const dataKey = `acymcf_${identifier}[${id}]`;
 
-                if ([
-                    'text',
-                    'textarea',
-                    'date'
-                ].includes(fieldType)) {
-                    data[`customField[${id}]`] = $fieldElement.val();
-                } else if ([
-                    'radio',
-                    'checkbox'
-                ].includes(fieldType)) {
-                    const $selectedElements = $fieldElement.filter(':checked');
-                    const selectedValues = [];
-                    $selectedElements.each(function () {
-                        const currentValue = jQuery(this).val();
-                        const matchedOption = customFields[id]['values'].find(allowedValue => {
-                            return [
-                                allowedValue.value,
-                                allowedValue.title
-                            ].includes(currentValue);
-                        });
-
-                        if (!matchedOption) {
-                            console.warn(`The value "${currentValue}" is not allowed for field "${fieldName}". Skipping this value.`);
-                            return;
-                        }
-
-                        selectedValues.push(matchedOption.value);
-                    });
-                    data[`customField[${id}]`] = selectedValues.join(',');
-                } else if ([
-                    'single_dropdown',
-                    'multiple_dropdown'
-                ].includes(fieldType)) {
-                    const currentValue = $fieldElement.val();
+            if ([
+                'text',
+                'textarea',
+                'date'
+            ].includes(fieldType)) {
+                formData.append(dataKey, $fieldElement.val());
+            } else if ([
+                'radio',
+                'checkbox'
+            ].includes(fieldType)) {
+                const $selectedElements = $fieldElement.filter(':checked');
+                const selectedValues = [];
+                $selectedElements.each(function () {
+                    const currentValue = jQuery(this).val();
                     const matchedOption = customFields[id]['values'].find(allowedValue => {
                         return [
                             allowedValue.value,
@@ -118,32 +56,37 @@ document.addEventListener('wpcf7submit', function (event) {
                         return;
                     }
 
-                    data[`customField[${id}]`] = matchedOption.value;
-                } else if (fieldType === 'phone') {
-                    const currentValue = $fieldElement.val();
-                    if (!currentValue || currentValue.length === 0) {
-                        continue;
-                    }
+                    selectedValues.push(matchedOption.value);
+                });
+                formData.append(dataKey, selectedValues.join(','));
+            } else if ([
+                'single_dropdown',
+                'multiple_dropdown'
+            ].includes(fieldType)) {
+                const currentValue = $fieldElement.val();
+                const matchedOption = customFields[id]['values'].find(allowedValue => {
+                    return [
+                        allowedValue.value,
+                        allowedValue.title
+                    ].includes(currentValue);
+                });
 
-                    const parsed = parsePhoneNumber(currentValue);
-                    if (parsed.code) {
-                        data[`customField[${id}]`] = parsed.code + ',' + parsed.phone;
-                    } else {
-                        data[`customField[${id}]`] = ',' + parsed.phone;
-                    }
+                if (!matchedOption) {
+                    console.warn(`The value "${currentValue}" is not allowed for field "${fieldName}". Skipping this value.`);
+                    continue;
                 }
+
+                formData.append(dataKey, matchedOption.value);
+            } else if (fieldType === 'phone') {
+                const currentValue = $fieldElement.val();
+                if (!currentValue || currentValue.length === 0) {
+                    continue;
+                }
+
+                const parsed = parsePhoneNumber(currentValue);
+                formData.append(dataKey, (parsed.code || '') + ',' + parsed.phone);
             }
         }
-
-        jQuery.ajax({
-            type: 'POST',
-            url: urlAction,
-            data: data,
-            timeout: 5000,
-            error: function (request, status, error) {
-                console.log('Error subscribing user: '.request.responseText);
-            }
-        });
     }
 }, false);
 

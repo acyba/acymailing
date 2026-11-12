@@ -180,21 +180,3 @@ function acym_redirect(string $url, string $msg = '', string $msgType = 'message
         $acyapp->redirect($url, $msg, $msgType);
     }
 }
-
-function acym_checkRedirect(string $redirectUrl): bool
-{
-    $config = acym_config();
-    $allowedHosts = $config->get('allowed_hosts', '');
-    $allowedHosts = str_replace(',', '|', $allowedHosts);
-    $allowedHosts = str_replace(['https://', 'http://', 'www.'], '', $allowedHosts);
-
-    //Check the redirect url..
-    $regex = trim(preg_replace('#[^a-z0-9\|\.]#i', '', $allowedHosts), '|');
-    if (empty($regex) || $regex == 'all' || empty($redirectUrl)) return true;
-
-    preg_match('#^(https?://)?(www.)?([^/]*)#i', $redirectUrl, $resultsurl);
-    $domainredirect = preg_replace('#[^a-z0-9\.]#i', '', @$resultsurl[3]);
-    if (preg_match('#^'.$regex.'$#i', $domainredirect)) return true;
-
-    return false;
-}

@@ -133,7 +133,7 @@ class plgAcymGoogle extends AcymPlugin
 
             $clientId = $this->config->get('google_client_id');
             $clientSecret = $this->config->get('google_client_secret');
-            $redirectUrl = $this->config->get('google_redirect_url');
+            $redirectUrl = trim($this->config->get('google_redirect_url', acym_baseURI()));
         } else {
             if ($this->config->get('bounce_server') !== 'imap.gmail.com') {
                 return;

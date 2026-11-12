@@ -18,7 +18,11 @@ trait Campaigns
         //__START__production_
         if (ACYM_PRODUCTION) {
             if (acym_level(ACYM_ESSENTIAL) && $this->config->get('cron_last', 0) < (time() - 43200)) {
-                $message = acym_translation('ACYM_CREATE_CRON_REMINDER');
+                if (empty($this->config->get('active_cron', 0))) {
+                    $message = acym_translation('ACYM_CRON_REMINDER_DISABLED');
+                } else {
+                    $message = acym_translation('ACYM_CRON_REMINDER_NOT_CALLED');
+                }
                 $message .= ' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation('ACYM_GOTO_CONFIG').'</a>';
 
                 $notification = [
